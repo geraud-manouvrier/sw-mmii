@@ -45,8 +45,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,LOG_PATH).hasAnyRole(ROL_ADMIN, ROL_USER)
                 .antMatchers("/errores/**").hasAnyRole(ROL_ADMIN, ROL_USER)
                 .antMatchers("/mantenedores/parametros_instrumentos/**").hasAnyRole(ROL_ADMIN, ROL_USER)
-                .antMatchers("/cargar_transacciones").hasAnyRole(ROL_ADMIN)
-                .antMatchers("/listado_transacciones").hasAnyRole(ROL_USER)
                 .antMatchers("/uploads/**").hasAnyRole(ROL_USER)
                 .anyRequest().authenticated()
                 .and()

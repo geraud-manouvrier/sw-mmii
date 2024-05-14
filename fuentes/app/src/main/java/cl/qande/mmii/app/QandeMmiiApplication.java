@@ -19,8 +19,6 @@ import java.nio.file.Files;
 		AppConfigProperties.class,
 		AppDatasourceProperties.class,
 		AppSchedulingProperties.class,
-		FtpStonexProperties.class,
-		FtpSuraAmProperties.class,
 		AppNotificacionMailProperties.class,
 		AppApiProperties.class,
 		FtpPershingProperties.class
@@ -55,17 +53,9 @@ public class QandeMmiiApplication implements CommandLineRunner {
 			appConfig.customLog.info("Directorio Reportes Maestro no existe <{}>, creando..."+ appConfig.appConfigProperties.getReportesMaestrosFolder());
 			archivosHelper.creaDirectorioReportesMaestro();
 		}
-		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getReportesIngresosegresosFolder()))) {
-			appConfig.customLog.info("Directorio Reportes Ingresos Egresos no existe <{}>, creando..."+ appConfig.appConfigProperties.getReportesIngresosegresosFolder());
-			archivosHelper.creaDirectorioReportesIngresosEgresos();
-		}
 		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getDownloadableFolder()))) {
 			appConfig.customLog.info("Directorio de Descargables no existe <{}>, creando..."+ appConfig.appConfigProperties.getDownloadableFolder());
 			archivosHelper.creaDirectorioDownloadable();
-		}
-		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getReporteInversionesFolder()))) {
-			appConfig.customLog.info("Directorio raíz Reporte Inversiones no existe <{}>, creando..."+ appConfig.appConfigProperties.getReporteInversionesFolder());
-			archivosHelper.creaDirectorioReporteInversiones(appConfig.appConfigProperties.getReporteInversionesFolder());
 		}
 
 		appConfig.customLog.info("Método run finalizado");

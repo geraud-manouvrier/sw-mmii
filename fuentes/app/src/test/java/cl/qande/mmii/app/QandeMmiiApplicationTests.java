@@ -3,34 +3,25 @@ package cl.qande.mmii.app;
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
 import cl.qande.mmii.app.job.JobControlDiario;
-import cl.qande.mmii.app.job.JobFtpSuraChile;
 import cl.qande.mmii.app.job.JobGetFromFtpPershing;
 import cl.qande.mmii.app.models.db.core.dao.IControlDiarioDao;
-import cl.qande.mmii.app.models.db.core.dao.IIngresosEgresosDao;
-import cl.qande.mmii.app.models.db.core.dao.IParPaisAtencionDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.pershing.dao.IProcesoSflDao;
-import cl.qande.mmii.app.models.db.rep_inv.dao.IRentabilidadCalculadaDao;
-import cl.qande.mmii.app.models.db.stonex.dao.IProcesoFtpStonexDao;
-import cl.qande.mmii.app.models.db.stonex.dao.IStageActSumDao;
 import cl.qande.mmii.app.models.service.*;
 import cl.qande.mmii.app.util.helper.*;
 import cl.qande.mmii.app.util.reportes.MaestroDatosCsv;
 import cl.qande.mmii.app.util.reportes.MaestroDatosExcel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import static cl.qande.mmii.app.MvcConfig.passwordEncoder;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
 @SpringBootTest
@@ -38,21 +29,11 @@ class QandeMmiiApplicationTests {
 
 	private final static int DESFASE_DIAS = -1;
 	@Autowired
-	private UnzipStonex unzipStonex;
-	@Autowired
-	private FtpStonexService ftpStonexService;
-	@Autowired
-	private FtpSuraAmService ftpSuraAmService;
-	@Autowired
-	private IStageActSumDao stageActSumDao;
-	@Autowired
 	private CsvService csvService;
 	@Autowired
 	private AppConfig appConfig;
 	@Autowired
 	private CalendarioHelper calendarioHelper;
-	@Autowired
-	private StonexService stonexService;
 	@Autowired
 	private IReporteMaestroDatosService reporteMaestroDatosService;
 	@Autowired
@@ -64,21 +45,13 @@ class QandeMmiiApplicationTests {
 	@Autowired
 	private ReportesMaestrosService reportesMaestrosService;
 	@Autowired
-	private IProcesoFtpStonexDao procesoFtpStonexDao;
-	@Autowired
 	private IProcesoSflDao procesoSflDao;
 	@Autowired
 	private IEmailService emailService;
 	@Autowired
-	private IIngresosEgresosDao ingresosEgresosDao;
-	@Autowired
-	private IReporteIngresosEgresosService reporteIngresosEgresosService;
-	@Autowired
 	private AppNotificacionMailProperties appNotificacionMailProperties;
 	@Autowired
 	private NotificacionEmail notificacionEmail;
-    @Autowired
-    private ReportesIngresosEgresosService reportesIngresosEgresosService;
 	@Autowired
 	private UsuariosHelper usuariosHelper;
 	@Autowired
@@ -90,10 +63,6 @@ class QandeMmiiApplicationTests {
 	@Autowired
 	private JobControlDiario jobControlDiario;
 	@Autowired
-	private SuraChileService suraChileService;
-	@Autowired
-	private JobFtpSuraChile jobFtpSuraChile;
-	@Autowired
 	private FtpPershingService ftpPershingService;
 	@Autowired
 	private JobGetFromFtpPershing jobGetFromFtpPershing;
@@ -104,22 +73,7 @@ class QandeMmiiApplicationTests {
 	@Autowired
 	private IJobsService jobsService;
 	@Autowired
-	private ICuentaService cuentaService;
-	@Autowired
-	private IClienteService clienteService;
-	@Autowired
-	private IParPaisAtencionDao parPaisAtencionDao;
-	@Autowired
 	private IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao;
-
-	@Autowired
-	private IReporteInversionesService reporteInversionesService;
-
-	@Autowired
-	private IRentabilidadCalculadaDao rentabilidadCalculadaDao;
-	@Autowired
-	@Qualifier("v202404")
-	private IPdfReporteInversionesService pdfReporteInversionesService;
 
 	@Test
 	void generaPassword() {

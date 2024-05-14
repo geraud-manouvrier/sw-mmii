@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/reportes/maestro_datos")
 public class MaestroDatosController {
-    private static final int DESFASE_DIAS = -1;
     private static final String CAMPO_TITULO    = "titulo";
     private static final String CAMPO_STATUS    = "status";
     private static final String CAMPO_SESION    = "sesionWeb";
@@ -42,7 +41,7 @@ public class MaestroDatosController {
     public String clientes(
             Model model) {
 
-        return "redirect:/reportes/maestro_datos/clientes/fecha/"+defaultProcessDate();
+        return "redirect:/reportes/maestro_datos/clientes/fecha/"+calendarioHelper.defaultProcessDate();
     }
 
     @GetMapping({"/clientes/fecha/{processDate}"})
@@ -71,7 +70,7 @@ public class MaestroDatosController {
     public String saldos(
             Model model) {
 
-        return "redirect:/reportes/maestro_datos/saldos/fecha_desde/"+defaultProcessDate()+"/fecha_hasta/"+defaultProcessDate();
+        return "redirect:/reportes/maestro_datos/saldos/fecha_desde/"+calendarioHelper.defaultProcessDate()+"/fecha_hasta/"+calendarioHelper.defaultProcessDate();
     }
 
     @PreAuthorize("!hasAnyRole('ROLE_READER')")
@@ -105,7 +104,7 @@ public class MaestroDatosController {
     public String movimientos(
             Model model) {
 
-        return "redirect:/reportes/maestro_datos/movimientos/fecha_desde/"+defaultProcessDate()+"/fecha_hasta/"+defaultProcessDate();
+        return "redirect:/reportes/maestro_datos/movimientos/fecha_desde/"+calendarioHelper.defaultProcessDate()+"/fecha_hasta/"+calendarioHelper.defaultProcessDate();
     }
 
 
@@ -131,10 +130,5 @@ public class MaestroDatosController {
         model.addAttribute("startProcessDate", startProcessDate);
         model.addAttribute("endProcessDate", endProcessDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.REP_MAESTRO_MOVTOS, false);
-    }
-
-
-    private String defaultProcessDate() {
-        return calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
     }
 }

@@ -2,16 +2,11 @@ package cl.qande.mmii.app.controllers;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.job.JobControlDiario;
-import cl.qande.mmii.app.job.JobFtpSuraChile;
 import cl.qande.mmii.app.job.JobGetFromFtpPershing;
-import cl.qande.mmii.app.job.JobReporteInversiones;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.db.pershing.dao.IProcesoSflDao;
-import cl.qande.mmii.app.models.db.stonex.dao.IProcesoFtpStonexDao;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.ReportesIngresosEgresosService;
 import cl.qande.mmii.app.models.service.ReportesMaestrosService;
-import cl.qande.mmii.app.models.service.StonexService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.navegacion.Menu;
@@ -24,8 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Controller
 @RequestMapping("/jobs")
@@ -43,29 +36,19 @@ public class JobsController {
     @Autowired
     private CalendarioHelper calendarioHelper;
     @Autowired
-    private StonexService stonexService;
-    @Autowired
     private ReportesMaestrosService reportesMaestrosService;
     @Autowired
-    private ReportesIngresosEgresosService reportesIngresosEgresosService;
-    @Autowired
-    private IProcesoFtpStonexDao procesoFtpStonexDao;
-    @Autowired
     private IProcesoSflDao procesoSflPershingDao;
-    @Autowired
-    private JobFtpSuraChile jobFtpSuraChile;
     @Autowired
     private JobGetFromFtpPershing jobGetFromFtpPershing;
     @Autowired
     private JobControlDiario jobControlDiario;
-    @Autowired
-    private JobReporteInversiones jobReporteInversiones;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"", "/"})
     public String inicioJobs(Model model) throws QandeMmiiException {
 
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+        var processDate		= calendarioHelper.defaultProcessDate();
         appConfig.customLog.info("Pasando por método /jobs: ["+sesionWeb.getUsuario()+"]");
         return inicioJobsConFecha(processDate, model);
     }
@@ -104,28 +87,6 @@ public class JobsController {
         return inicioJobsConFecha(processDate, model);
     }
 
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/fecha/{processDate}/reporte_ingresos_egresos"})
-    public String jobsReporteIngresosEgresos(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            if (reportesIngresosEgresosService.generaReportesIngresosEgresos(processDate)) {
-                appConfig.customLog.info("Job Reporte Ingresos/Egresos con fecha [" + processDate + "] finalizado OK");
-                estadoPeticion.setEstadoOk("Job Reporte Ingresos/Egresos OK", "Job ejecutado correctamente.");
-            } else {
-                appConfig.customLog.error("Errores al generar Reporte Ingresos/Egresos con fecha [" + processDate + "]");
-                estadoPeticion.setEstadoError("Error Job Reporte Ingresos/Egresos", "No se pudo ejecutar el job.");
-            }
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Reporte Ingresos/Egresos", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/fecha/{processDate}/control_diario_segmentado", "/fecha/{processDate}/control_diario_segmentado_sin_mail"})
     public String jobsControlDiarioSegmentado(
@@ -146,79 +107,6 @@ public class JobsController {
         } catch (Exception e) {
             appConfig.customLog.error("Errores al realizar control diario con fecha ["+processDate+"]: "+e.getMessage());
             estadoPeticion.setEstadoError("Errores al realizar control diario con fecha ["+processDate+"]", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/fecha/{processDate}/calculo_reporte_ingresos_egresos"})
-    public String jobsCalculoReporteIngresosEgresos(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            if (reportesIngresosEgresosService.calculaReporteIngresosEgresos(processDate)!=null) {
-                appConfig.customLog.info("Job Cálculo Reporte Ingresos/Egresos con fecha [" + processDate + "] finalizado OK");
-                estadoPeticion.setEstadoOk("Job Reporte Ingresos/Egresos OK", "Job ejecutado correctamente.");
-            } else {
-                appConfig.customLog.error("Errores al Cálculo  Reporte Ingresos/Egresos con fecha [" + processDate + "]");
-                estadoPeticion.setEstadoError("Error Job Cálculo Reporte Ingresos/Egresos", "No se pudo ejecutar el job.");
-            }
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Cálculo Reporte Ingresos/Egresos", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/fecha/{processDate}/carga_maestros_ftp_chile"})
-    public String jobsCargaMaestrosFtpChile(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            jobFtpSuraChile.realizaCargaDiaria(processDate, false);
-            estadoPeticion.setEstadoOk(MSG_OK, "Job Carga Maestros FTP Chile OK");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Carga Maestros FTP Chile", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/fecha/{processDate}/carga_maestros_ftp_chile_forzada"})
-    public String jobsCargaMaestrosFtpChileForzada(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            jobFtpSuraChile.realizaCargaDiaria(processDate, true);
-            estadoPeticion.setEstadoOk(MSG_OK, "Job Carga Forzada Maestros FTP Chile OK");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Carga Forzada Maestros FTP Chile", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/fecha/{processDate}/ftp_stonex"})
-    public String jobsFtpStonex(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        var processStamp	= new SimpleDateFormat(processDate+"_yyyy.MM.dd.HH.mm.ss.SSS.Z").format(new Date());
-        try {
-            stonexService.processByDate(processDate, processStamp);
-            estadoPeticion.setEstadoOk(MSG_OK, "Jobs Stonex ejecutado correctamente.");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job FTP Stonex", PRE_DET_ERROR +e.getMessage());
         }
         model.addAttribute(CAMPO_STATUS, estadoPeticion);
         return inicioJobsConFecha(processDate, model);
@@ -260,61 +148,13 @@ public class JobsController {
         return inicioJobsConFecha(processDate, model);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/fecha/{processDate}/pre_calculo_rentabilidad"})
-    public String jobsPreCalculoRentabilidad(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            jobReporteInversiones.preCalculoDiario(processDate, processDate);
-            estadoPeticion.setEstadoOk(MSG_OK, "Job Precalculo Rentabilidad OK");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Precalculo Rentabilidad", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/reportes/proceso_ftp_stonex"})
-    public String reporteFtpStonex(
-            Model model) {
-
-        return "redirect:/jobs/reportes/proceso_ftp_stonex/fecha_desde/"+defaultProcessDate()+"/fecha_hasta/"+defaultProcessDate();
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping({"/reportes/proceso_ftp_stonex/fecha_desde/{startProcessDate}/fecha_hasta/{endProcessDate}"})
-    public String reporteFtpStonexPorFecha(
-            @PathVariable String startProcessDate,
-            @PathVariable String endProcessDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            var salidaReporte   = procesoFtpStonexDao.findByProcessDateBetween(startProcessDate, endProcessDate);
-            estadoPeticion.setEstadoOk("Reporte FTP OK", "Listado de estados generado correctamente");
-            model.addAttribute("salidaReporte", salidaReporte);
-        } catch (Exception e) {
-            appConfig.customLog.error("Error al listar reporte FTP Stonex con rango fechas [" + startProcessDate + " - "+endProcessDate+"]: "+e.getMessage());
-            estadoPeticion.setEstadoError("Error al listar reporte", "Se producjo un error al listar los registros");
-            model.addAttribute("salidaReporte", null);
-        }
-        model.addAttribute(CAMPO_TITULO, "Reporte FTP Stonex");
-        model.addAttribute(CAMPO_SESION, sesionWeb);
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        model.addAttribute("startProcessDate", startProcessDate);
-        model.addAttribute("endProcessDate", endProcessDate);
-        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.STONEX_ETDO_FTP, false);
-    }
-
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/reportes/proceso_ftp_pershing"})
     public String reporteFtpPershing(
             Model model) {
 
-        return "redirect:/jobs/reportes/proceso_ftp_pershing/fecha_desde/"+defaultProcessDate()+"/fecha_hasta/"+defaultProcessDate();
+        return "redirect:/jobs/reportes/proceso_ftp_pershing/fecha_desde/"+calendarioHelper.defaultProcessDate()+"/fecha_hasta/"+calendarioHelper.defaultProcessDate();
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -339,114 +179,6 @@ public class JobsController {
         model.addAttribute("startProcessDate", startProcessDate);
         model.addAttribute("endProcessDate", endProcessDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.PERSHING_ETDO_FTP, false);
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
-    @GetMapping({ "/jobs_por_usuario"})
-    public String inicioJobsPorUsuario(Model model) throws QandeMmiiException {
-
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
-        appConfig.customLog.info("Pasando por método /jobs/jobs_por_usuario: ["+sesionWeb.getUsuario()+"]");
-        return inicioJobsPorUsuarioConFecha(processDate, model);
-    }
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
-    @GetMapping({"/jobs_por_usuario/fecha/{processDate}"})
-    public String inicioJobsPorUsuarioConFecha(
-            @PathVariable(value = "processDate", required = false) String processDate,
-            Model model) throws QandeMmiiException {
-
-        appConfig.customLog.info("Pasando por método /jobs/jobs_por_usuario/{processDate}: ["+processDate+"]; usuario: ["+sesionWeb.getUsuario()+"]");
-        model.addAttribute(CAMPO_TITULO, "Ejecución Jobs");
-        model.addAttribute(CAMPO_SESION, sesionWeb);
-        model.addAttribute("processDate", processDate);
-        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.ADMIN_JOBS_BY_USER, false);
-    }
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
-    @GetMapping({"/jobs_por_usuario/fecha/{processDate}/reporte_maestros"})
-    public String jobsReporteMaestrosPorUsuario(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            if (reportesMaestrosService.generaReportesMaestros(processDate)) {
-                appConfig.customLog.info("Job Reportes Maestros con fecha [" + processDate + "]; usuario: ["+sesionWeb.getUsuario()+"]) finalizado OK");
-                estadoPeticion.setEstadoOk("Job Reportes Maestros OK", "Jobs ejecutado correctamente.");
-            } else {
-                appConfig.customLog.error("Errores al generar Reportes Maestros con fecha [" + processDate + "]; usuario: ["+sesionWeb.getUsuario()+"]");
-                estadoPeticion.setEstadoError("Error Job Reportes Maestros", "No se pudo ejecutar el job.");
-            }
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Reportes Maestros", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsPorUsuarioConFecha(processDate, model);
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
-    @GetMapping({"/jobs_por_usuario/fecha/{processDate}/control_diario_segmentado", "/jobs_por_usuario/fecha/{processDate}/control_diario_segmentado_sin_mail"})
-    public String jobsControlDiarioSegmentadoPorUsuario(
-            @PathVariable(value = "processDate") String processDate,
-            Model model,
-            HttpServletRequest request) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        appConfig.customLog.info("Iniciando reproceso control diario segmentado por usuario ["+sesionWeb.getUsuario()+"] con fecha [" + processDate + "]");
-        try {
-            var flagEnviarMail=true;
-            if(request.getRequestURI().contains("control_diario_segmentado_sin_mail")) {
-                appConfig.customLog.info("Job Control Diario Segmentado invocado sin envío de email");
-                flagEnviarMail=false;
-            }
-            jobControlDiario.realizaControlDiarioSegmentado(processDate, sesionWeb.getUsuario(), flagEnviarMail);
-            appConfig.customLog.info("Job Control Diario Segmentado con fecha [" + processDate + "] y usuario ["+sesionWeb.getUsuario()+"] OK");
-            estadoPeticion.setEstadoOk("Job Control Diario Segmentado OK", "Job ejecutado correctamente.");
-
-        } catch (Exception e) {
-            appConfig.customLog.error("Errores al realizar control diario segmentado con fecha ["+processDate+"] y usuario ["+sesionWeb.getUsuario()+"]: "+e.getMessage());
-            estadoPeticion.setEstadoError("Errores al realizar control diario con fecha ["+processDate+"]", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsPorUsuarioConFecha(processDate, model);
-    }
-
-
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
-    @GetMapping({"/jobs_por_usuario/fecha/{processDate}/carga_maestros_ftp_chile"})
-    public String jobsCargaMaestrosFtpChilePorUsuario(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            jobFtpSuraChile.realizaCargaDiaria(processDate, false);
-            estadoPeticion.setEstadoOk(MSG_OK, "Job Carga Maestros FTP Chile OK por usuario ["+sesionWeb.getUsuario()+"] OK");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Carga Maestros FTP Chile por usuario ["+sesionWeb.getUsuario()+"] ", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsPorUsuarioConFecha(processDate, model);
-    }
-
-
-
-
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
-    @GetMapping({"/jobs_por_usuario/fecha/{processDate}/carga_maestros_ftp_chile_forzada"})
-    public String jobsCargaMaestrosFtpChileForzadaPorUsuario(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            jobFtpSuraChile.realizaCargaDiaria(processDate, true);
-            estadoPeticion.setEstadoOk(MSG_OK, "Job Carga Forzada Maestros FTP Chile por usuario ["+sesionWeb.getUsuario()+"] OK");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Carga Forzada Maestros FTP Chile por usuario ["+sesionWeb.getUsuario()+"] ", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsPorUsuarioConFecha(processDate, model);
-    }
-
-
-    private String defaultProcessDate() {
-        return calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
     }
 
 }

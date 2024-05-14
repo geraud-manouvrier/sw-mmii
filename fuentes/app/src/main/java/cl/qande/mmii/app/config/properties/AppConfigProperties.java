@@ -24,11 +24,7 @@ public class AppConfigProperties {
     @NotBlank
     private final String reportesMaestrosFolder;
     @NotBlank
-    private final String reportesIngresosegresosFolder;
-    @NotBlank
     private final String downloadableFolder;
-    @NotBlank
-    private final String reporteInversionesFolder;
     @NotBlank
     private final String propertiesEnvironment;
     @NotBlank
@@ -36,24 +32,19 @@ public class AppConfigProperties {
     @NotBlank
     private final String defaultPwd;
     @NotBlank
-    private final String plantillaCargaManualClientes;
-    @NotBlank
     private final String pptHelp;
 
-    public AppConfigProperties(String rootFolder, String projectVersion, String contextPath, String logFolder, String uploadFolder, String reportesMaestrosFolder, String reportesIngresosegresosFolder, String downloadableFolder, String reporteInversionesFolder, String propertiesEnvironment, String propertiesSecrets, String defaultPwd, String plantillaCargaManualClientes, String pptHelp) {
+    public AppConfigProperties(String rootFolder, String projectVersion, String contextPath, String logFolder, String uploadFolder, String reportesMaestrosFolder, String downloadableFolder, String propertiesEnvironment, String propertiesSecrets, String defaultPwd, String pptHelp) {
         this.rootFolder = rootFolder;
         this.projectVersion = projectVersion;
         this.contextPath = contextPath;
         this.logFolder = logFolder;
         this.uploadFolder = uploadFolder;
         this.reportesMaestrosFolder = reportesMaestrosFolder;
-        this.reportesIngresosegresosFolder = reportesIngresosegresosFolder;
         this.downloadableFolder = downloadableFolder;
-        this.reporteInversionesFolder = reporteInversionesFolder;
         this.propertiesEnvironment = propertiesEnvironment;
         this.propertiesSecrets = propertiesSecrets;
         this.defaultPwd = defaultPwd;
-        this.plantillaCargaManualClientes = plantillaCargaManualClientes;
         this.pptHelp = pptHelp;
     }
 
@@ -81,9 +72,6 @@ public class AppConfigProperties {
         return reportesMaestrosFolder;
     }
 
-    public String getReportesIngresosegresosFolder() {
-        return reportesIngresosegresosFolder;
-    }
 
     public String getPropertiesEnvironment() {
         return propertiesEnvironment;
@@ -97,17 +85,11 @@ public class AppConfigProperties {
         return downloadableFolder;
     }
 
-    public String getReporteInversionesFolder() {
-        return reporteInversionesFolder;
-    }
 
     public String getDefaultPwd() {
         return defaultPwd;
     }
 
-    public String getPlantillaCargaManualClientes() {
-        return plantillaCargaManualClientes;
-    }
 
     public String getPptHelp() {
         return pptHelp;

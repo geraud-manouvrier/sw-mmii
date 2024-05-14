@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/archivos")
 public class VerArchivosController {
 
-    private static final int DESFASE_DIAS = -1;
     private static final String CAMPO_TITULO    = "titulo";
     private static final String CAMPO_SESION    = "sesionWeb";
     private static final String URL_BASE    = "lista_archivos";
@@ -34,11 +33,7 @@ public class VerArchivosController {
     private ArchivosHelper archivosHelper;
     @GetMapping({"/maestro_datos/listar"})
     public String listaMaestroDatos(Model model) {
-        return "redirect:/archivos/maestro_datos/listar/fecha/"+defaultProcessDate();
-    }
-    @GetMapping({"/ingresos_egresos/listar"})
-    public String listaIngresosEgresos(Model model) {
-        return "redirect:/archivos/ingresos_egresos/listar/fecha/"+defaultProcessDate();
+        return "redirect:/archivos/maestro_datos/listar/fecha/"+calendarioHelper.defaultProcessDate();
     }
     @GetMapping({"/maestro_datos/listar/fecha/{processDate}"})
     public String listaMaestroDatosPorFecha(
@@ -54,35 +49,11 @@ public class VerArchivosController {
         sesionWeb.getAppMenu().cambiaNavegacion(Menu.ARCHIVOS_MAESTROS, false);
         return URL_BASE;
     }
-    @GetMapping({"/ingresos_egresos/listar/fecha/{processDate}"})
-    public String listaIngresosEgresosPorFecha(
-            @PathVariable String processDate,
-            Model model) throws QandeMmiiException {
-
-        var listaArchivosFiltrado	= archivosHelper.listadoDeArchivosIngresosEgresos(processDate);
-        model.addAttribute("listaArchivos", listaArchivosFiltrado);
-        model.addAttribute(CAMPO_TITULO, "Ingresos Egresos");
-        model.addAttribute(CAMPO_SESION, sesionWeb);
-        model.addAttribute("processDate", processDate);
-        model.addAttribute("tipoArchivo", "ingresos_egresos");
-        sesionWeb.getAppMenu().cambiaNavegacion(Menu.ARCHIVOS_INGR_EGR, false);
-        return URL_BASE;
-    }
 
     @GetMapping({"/maestro_datos/ver/{filename}"})
     public ResponseEntity<Resource> descargaMaestroDatos(@PathVariable String filename) throws QandeMmiiException {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .body(archivosHelper.getFileAsResource(appConfig.appConfigProperties.getReportesMaestrosFolder(), filename));
-    }
-    @GetMapping({"/ingresos_egresos/ver/{filename}"})
-    public ResponseEntity<Resource> descargaIngresosEgresos(@PathVariable String filename) throws QandeMmiiException {
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .body(archivosHelper.getFileAsResource(appConfig.appConfigProperties.getReportesIngresosegresosFolder(), filename));
-    }
-
-    private String defaultProcessDate() {
-        return calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
     }
 }

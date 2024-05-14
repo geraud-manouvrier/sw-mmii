@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/reportes/sfl_pershing")
 public class SflPershingController {
-    private static final int DESFASE_DIAS = -1;
     private static final String TITULO_CTRL_DIARIO = "Contenido SFL";
 
     private static final String CAMPO_TITULO    = "titulo";
@@ -94,7 +93,7 @@ public class SflPershingController {
             @PathVariable String idSflLower,
             Model model) {
 
-        return "redirect:/reportes/sfl_pershing/"+idSflLower+"/"+defaultProcessDate();
+        return "redirect:/reportes/sfl_pershing/"+idSflLower+"/"+calendarioHelper.defaultProcessDate();
     }
     @GetMapping({"/acct/{processDate}"})
     public String acctPorFecha(
@@ -232,11 +231,5 @@ public class SflPershingController {
         model.addAttribute(CAMPO_STATUS, estadoPeticion);
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_ISRC, false);
-    }
-
-
-
-    private String defaultProcessDate() {
-        return calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
     }
 }

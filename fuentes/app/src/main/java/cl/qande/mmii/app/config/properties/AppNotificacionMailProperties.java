@@ -13,46 +13,24 @@ import javax.validation.constraints.NotNull;
 public class AppNotificacionMailProperties {
 
     private final NotificacionMailConfiguration reportesMaestros;
-    private final NotificacionMailConfiguration schemasStonex;
-    private final NotificacionMailConfiguration reportesIngresosEgresos;
     private final NotificacionMailConfiguration controlDiario;
-    private final NotificacionMailConfiguration cargaMaestrosFtpChile;
     private final NotificacionMailConfiguration sflPershing;
-    private final NotificacionMailConfiguration precalculoRentabilidades;
 
-    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration schemasStonex, NotificacionMailConfiguration reportesIngresosEgresos, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration cargaMaestrosFtpChile, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration precalculoRentabilidades) {
+    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing) {
         this.reportesMaestros = reportesMaestros;
-        this.schemasStonex = schemasStonex;
-        this.reportesIngresosEgresos = reportesIngresosEgresos;
         this.controlDiario = controlDiario;
-        this.cargaMaestrosFtpChile = cargaMaestrosFtpChile;
         this.sflPershing = sflPershing;
-        this.precalculoRentabilidades = precalculoRentabilidades;
     }
 
     public NotificacionMailConfiguration getReportesMaestros() {
         return reportesMaestros;
     }
 
-    public NotificacionMailConfiguration getSchemasStonex() {
-        return schemasStonex;
-    }
-
-    public NotificacionMailConfiguration getReportesIngresosEgresos() {
-        return reportesIngresosEgresos;
-    }
 
     public NotificacionMailConfiguration getControlDiario() {
         return controlDiario;
     }
 
-    public NotificacionMailConfiguration getPrecalculoRentabilidades() {
-        return precalculoRentabilidades;
-    }
-
-    public NotificacionMailConfiguration getCargaMaestrosFtpChile() {
-        return cargaMaestrosFtpChile;
-    }
 
     public NotificacionMailConfiguration getSflPershing() {
         return sflPershing;

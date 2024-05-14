@@ -74,12 +74,9 @@ public class InicioController {
             logger.info("(Usando request) Hola usuario autenticado, tu usuario es: "+request.getUserPrincipal().getName());
         }
 		List<String> listaDescripcionesCron = new ArrayList<>();
-		listaDescripcionesCron.add("Schemas FTP Stonex: "+descriptionCron(appSchedulingProperties.getCronFtpStonexAll()));
-		listaDescripcionesCron.add("Generación Reportes Maestros: "+descriptionCron(appSchedulingProperties.getCronReportesMaestros()));
-		listaDescripcionesCron.add("Generación Reportes Ingresos/Egresos: "+descriptionCron(appSchedulingProperties.getCronReportesIngresosEgresos()));
-		listaDescripcionesCron.add("Validaciones Control Diario: "+descriptionCron(appSchedulingProperties.getCronControlDiario()));
-		listaDescripcionesCron.add("Carga Maestros en FTP Chile: "+descriptionCron(appSchedulingProperties.getCronCargaMaestrosFtpChile()));
 		listaDescripcionesCron.add("SFL FTP Pershing: "+descriptionCron(appSchedulingProperties.getCronFtpPershing()));
+		listaDescripcionesCron.add("Generación Reportes Maestros: "+descriptionCron(appSchedulingProperties.getCronReportesMaestros()));
+		listaDescripcionesCron.add("Validaciones Control Diario: "+descriptionCron(appSchedulingProperties.getCronControlDiario()));
 		model.addAttribute("listaDescripcionesCron", listaDescripcionesCron);
 		model.addAttribute(CAMPO_TITULO, "Inicio");
 		model.addAttribute(CAMPO_SESION, sesionWeb);
@@ -95,14 +92,6 @@ public class InicioController {
 	@GetMapping({"/help/ppt"})
 	public ResponseEntity<Resource> descargaPptAyuda() throws QandeMmiiException {
 		var filename	= appConfig.appConfigProperties.getPptHelp();
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-				.body(archivosHelper.getFileAsResource(appConfig.appConfigProperties.getDownloadableFolder(), filename));
-	}
-
-	@GetMapping({"/help/plantilla-carga-manual-clientes"})
-	public ResponseEntity<Resource> descargaExcelCargaManual() throws QandeMmiiException {
-		var filename	= appConfig.appConfigProperties.getPlantillaCargaManualClientes();
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
 				.body(archivosHelper.getFileAsResource(appConfig.appConfigProperties.getDownloadableFolder(), filename));

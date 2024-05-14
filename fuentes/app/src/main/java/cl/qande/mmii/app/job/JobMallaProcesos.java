@@ -20,38 +20,22 @@ public class JobMallaProcesos implements Runnable {
     private CalendarioHelper calendarioHelper;
 
     @Autowired
-    private JobFtpSuraChile jobFtpSuraChile;
-    @Autowired
     private JobGetFromFtpPershing jobGetFromFtpPershing;
     @Autowired
     private JobControlDiario jobControlDiario;
     @Autowired
-    private JobGetFromFtpStonex jobGetFromFtpStonex;
-    @Autowired
-    private JobReportesIngresosEgresos jobReportesIngresosEgresos;
-    @Autowired
     private JobReportesMaestros jobReportesMaestros;
-    @Autowired
-    private JobReporteInversiones jobReporteInversiones;
 
     public boolean mallaProcesosByProcessDate(Date processDateAsDate) throws QandeMmiiException {
         appConfig.customLog.info("Ejecutando Malla Procesos");
         var processDateAsString = calendarioHelper.convierteDateToStringWithFormat(processDateAsDate, "yyyyMMdd");
         if (
-                //Job Stonex
-                jobGetFromFtpStonex.processByProcessDate(processDateAsString) &&
                 //Job Pershing
                 jobGetFromFtpPershing.processByProcessDate(processDateAsString, false) &&
                 //Job Reportes Maestros
                 jobReportesMaestros.generaReportesByProcessDate(processDateAsString) &&
-                //Job Ingresos/Egresos
-                jobReportesIngresosEgresos.reporteIngresosEgresosByProcessDate(processDateAsDate) &&
                 //Job Control Diario
-                jobControlDiario.realizaControlDiarioSegmentado(processDateAsString) &&
-                //Job FTP Chile
-                jobFtpSuraChile.realizaCargaDiaria(processDateAsString, false) &&
-                //Pre calculo rentabilidades diaria
-                jobReporteInversiones.preCalculoDiario(processDateAsString, processDateAsString)
+                jobControlDiario.realizaControlDiarioSegmentado(processDateAsString)
         ) {
                 appConfig.customLog.info("Malla Procesos finalizada OK");
                 return true;

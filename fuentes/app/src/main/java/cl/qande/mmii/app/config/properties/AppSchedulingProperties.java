@@ -12,51 +12,27 @@ import javax.validation.constraints.NotBlank;
 public class AppSchedulingProperties {
 
     @NotBlank
-    private final String cronFtpStonexAll;
-    @NotBlank
     private final String cronReportesMaestros;
     @NotBlank
-    private final String cronReportesIngresosEgresos;
-    @NotBlank
     private final String cronControlDiario;
-    @NotBlank
-    private final String cronCargaMaestrosFtpChile;
     @NotBlank
     private final String cronFtpPershing;
     @NotBlank
     private final String cronMallaDiaria;
-    @NotBlank
-    private final String cronReporteInversiones;
 
-    public AppSchedulingProperties(String cronFtpStonexAll, String cronReportesMaestros, String cronReportesIngresosEgresos, String cronControlDiario, String cronCargaMaestrosFtpChile, String cronFtpPershing, String cronMallaDiaria, String cronReporteInversiones) {
-        this.cronFtpStonexAll = cronFtpStonexAll;
+    public AppSchedulingProperties(String cronReportesMaestros, String cronControlDiario, String cronFtpPershing, String cronMallaDiaria) {
         this.cronReportesMaestros = cronReportesMaestros;
-        this.cronReportesIngresosEgresos = cronReportesIngresosEgresos;
         this.cronControlDiario = cronControlDiario;
-        this.cronCargaMaestrosFtpChile = cronCargaMaestrosFtpChile;
         this.cronFtpPershing = cronFtpPershing;
         this.cronMallaDiaria = cronMallaDiaria;
-        this.cronReporteInversiones = cronReporteInversiones;
-    }
-
-    public String getCronFtpStonexAll() {
-        return cronFtpStonexAll;
     }
 
     public String getCronReportesMaestros() {
         return cronReportesMaestros;
     }
 
-    public String getCronReportesIngresosEgresos() {
-        return cronReportesIngresosEgresos;
-    }
-
     public String getCronControlDiario() {
         return cronControlDiario;
-    }
-
-    public String getCronCargaMaestrosFtpChile() {
-        return cronCargaMaestrosFtpChile;
     }
 
     public String getCronFtpPershing() {
@@ -65,9 +41,5 @@ public class AppSchedulingProperties {
 
     public String getCronMallaDiaria() {
         return cronMallaDiaria;
-    }
-
-    public String getCronReporteInversiones() {
-        return cronReporteInversiones;
     }
 }

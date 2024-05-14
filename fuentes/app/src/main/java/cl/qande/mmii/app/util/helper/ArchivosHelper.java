@@ -118,14 +118,6 @@ public class ArchivosHelper {
             throw new QandeMmiiException(e, "Error creando directorio de Reportes Maestro: "+e.getMessage());
         }
     }
-
-    public void creaDirectorioReportesIngresosEgresos() throws QandeMmiiException {
-        try {
-            Files.createDirectory(Paths.get(appConfig.appConfigProperties.getReportesIngresosegresosFolder()));
-        } catch (IOException e) {
-            throw new QandeMmiiException(e, "Error creando directorio de Reportes Ingresos Egresos: "+e.getMessage());
-        }
-    }
     public void creaDirectorioDownloadable() throws QandeMmiiException {
         try {
             Files.createDirectory(Paths.get(appConfig.appConfigProperties.getDownloadableFolder()));
@@ -169,14 +161,6 @@ public class ArchivosHelper {
             throw new QandeMmiiException(e, "Error  al acceder al archivo URL: "+e.getClass().getName()+"{"+e.getMessage()+"}");
         }
         return recurso;
-    }
-
-    public String[] listadoDeArchivosIngresosEgresos(String processDate) {
-        var mes = processDate.substring(4,6);
-        var anio = processDate.substring(0,4);
-        FilenameFilter filtro = (arch, name) -> ( name.matches(".*"+mes+"[\\d][\\d]"+anio+".*") );
-        var directorio	= new File(appConfig.appConfigProperties.getReportesIngresosegresosFolder());
-        return directorio.list(filtro);
     }
     public String[] listadoDeArchivosMaestros(String processDate) {
         FilenameFilter filtro = (arch, name) -> ( name.matches(processDate+".*") );

@@ -12,17 +12,11 @@ import javax.validation.constraints.NotBlank;
 public class AppDatasourceProperties {
 
     private final DataSourceConfiguration dbcore;
-    private final DataSourceConfiguration dbstonex;
-    private final DataSourceConfiguration dbsura;
     private final DataSourceConfiguration dbpershing;
-    private final DataSourceConfiguration dbrepinv;
 
-    public AppDatasourceProperties(DataSourceConfiguration dbcore, DataSourceConfiguration dbstonex, DataSourceConfiguration dbsura, DataSourceConfiguration dbpershing, DataSourceConfiguration dbrepinv) {
+    public AppDatasourceProperties(DataSourceConfiguration dbcore, DataSourceConfiguration dbpershing) {
         this.dbcore = dbcore;
-        this.dbstonex = dbstonex;
-        this.dbsura = dbsura;
         this.dbpershing = dbpershing;
-        this.dbrepinv = dbrepinv;
     }
 
     public static class DataSourceConfiguration {
@@ -64,19 +58,7 @@ public class AppDatasourceProperties {
         return dbcore;
     }
 
-    public DataSourceConfiguration getDbstonex() {
-        return dbstonex;
-    }
-
-    public DataSourceConfiguration getDbsura() {
-        return dbsura;
-    }
-
     public DataSourceConfiguration getDbpershing() {
         return dbpershing;
-    }
-
-    public DataSourceConfiguration getDbrepinv() {
-        return dbrepinv;
     }
 }

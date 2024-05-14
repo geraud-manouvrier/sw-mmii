@@ -25,33 +25,14 @@ public class SchedulingConfig {
         threadPoolTaskScheduler.setThreadNamePrefix(THREAD_NAME_PREFIX);
         return threadPoolTaskScheduler;
     }
-
-    @Bean
-    public CronTrigger cronFtpStonexAll(AppSchedulingProperties appSchedulingProperties) {
-        return new CronTrigger(appSchedulingProperties.getCronFtpStonexAll());
-    }
-
     @Bean
     public CronTrigger cronReportesMaestros(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronReportesMaestros());
     }
-
-    @Bean
-    public CronTrigger cronReportesIngresosEgresos(AppSchedulingProperties appSchedulingProperties) {
-        return new CronTrigger(appSchedulingProperties.getCronReportesIngresosEgresos());
-    }
-
     @Bean
     public CronTrigger cronControlDiario(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronControlDiario());
     }
-
-    @Bean
-    public CronTrigger cronCargaMaestrosFtpChile(AppSchedulingProperties appSchedulingProperties) {
-        return new CronTrigger(appSchedulingProperties.getCronCargaMaestrosFtpChile());
-    }
-
-
     @Bean
     public CronTrigger cronFtpPershing(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronFtpPershing());
@@ -59,9 +40,5 @@ public class SchedulingConfig {
     @Bean
     public CronTrigger cronMallaDiaria(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronMallaDiaria());
-    }
-    @Bean
-    public CronTrigger cronReporteInversiones(AppSchedulingProperties appSchedulingProperties) {
-        return new CronTrigger(appSchedulingProperties.getCronReporteInversiones());
     }
 }

@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: API Conexión desde PA
+  title: API Conexión SW MMII Q&E
   description: |-
-    Este es un documento que describe la API para conectividad entre Power Automate y el Sistema de MMII (o Hub de Datos).
+    Este es un documento que describe la API para conectividad con el Sistema de MMII.
     
     Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
   contact:

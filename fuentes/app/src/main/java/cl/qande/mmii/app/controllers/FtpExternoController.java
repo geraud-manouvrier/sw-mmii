@@ -4,8 +4,6 @@ import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.FtpPershingService;
-import cl.qande.mmii.app.models.service.FtpStonexService;
-import cl.qande.mmii.app.models.service.FtpSuraAmService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
@@ -35,10 +33,6 @@ public class FtpExternoController {
     @Autowired
     private AppConfig appConfig;
     @Autowired
-    private FtpStonexService ftpStonexService;
-    @Autowired
-    private FtpSuraAmService ftpSuraAmService;
-    @Autowired
     private FtpPershingService ftpPershingService;
     @GetMapping({"/{ftpName}/listar"})
     public String listarFtpStonex(
@@ -49,17 +43,9 @@ public class FtpExternoController {
         try {
             estadoPeticion.setEstadoOk(OK_MSG, OK_DET);
             switch (ftpName) {
-                case "stonex":
-                    sesionWeb.getAppMenu().cambiaNavegacion(Menu.LS_FTP_STONEX, false);
-                    listaArchivos = ftpStonexService.contenidoDirectorio();
-                    break;
                 case "pershing":
                     sesionWeb.getAppMenu().cambiaNavegacion(Menu.LS_FTP_PERSHING, false);
                     listaArchivos = ftpPershingService.contenidoDirectorio();
-                    break;
-                case "sura_chile":
-                    sesionWeb.getAppMenu().cambiaNavegacion(Menu.LS_FTP_SURA, false);
-                    listaArchivos = ftpSuraAmService.contenidoDirectorio();
                     break;
                 default:
                     estadoPeticion.setEstadoWarning("Nombre FTP incorrecto", "El nombre del FTP ["+ftpName+"] es inválido");

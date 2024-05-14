@@ -14,37 +14,25 @@ public class Menu {
     public static final String ADMIN_JOBS ="ADMIN_JOBS";
     //FTP
     public static final String LS_FTP_PERSHING ="LS_FTP_PERSHING";
-    public static final String LS_FTP_STONEX ="LS_FTP_STONEX";
-    public static final String LS_FTP_SURA ="LS_FTP_SURA";
-    //Stonex
-    public static final String STONEX_CONFIGSCHEMA ="STONEX_CONFIGSCHEMA";
-    public static final String STONEX_ETDO_FTP ="STONEX_ETDO_FTP";
     //Pershing
     public static final String PERSHING_CONFIGSFL ="PERSHING_CONFIGSFL";
     public static final String PERSHING_ETDO_FTP ="PERSHING_ETDO_FTP";
     //Parámetros
     public static final String PARAMETROS_GLOBALES ="PARAMETROS_GLOBALES";
-    public static final String PARAMETROS_STONEX ="PARAMETROS_STONEX";
     public static final String PARAMETROS_PERSHING ="PARAMETROS_PERSHING";
     //Usuarios
     public static final String USUARIOS_CUENTAS   ="USUARIOS_CUENTAS";
     public static final String USUARIOS_ROLES   ="USUARIOS_ROLES";
     //Archivos
     public static final String ARCHIVOS_MAESTROS   ="ARCHIVOS_MAESTROS";
-    public static final String ARCHIVOS_INGR_EGR   ="ARCHIVOS_INGR_EGR";
     //Reportes Maestros
     public static final String REP_MAESTRO_CLIENTE   ="REP_MAESTRO_CLIENTE";
     public static final String REP_MAESTRO_SALDOS   ="REP_MAESTRO_SALDOS";
     public static final String REP_MAESTRO_MOVTOS   ="REP_MAESTRO_MOVTOS";
     //Mantenedores Instrumentos
-    public static final String MANT_INSTR_BUCIT   ="MANT_INSTR_BUCIT";
-    public static final String MANT_INSTR_AUXMOVTO   ="MANT_INSTR_AUXMOVTO";
-    public static final String MANT_INSTR_BINSTR   ="MANT_INSTR_BINSTR";
     public static final String MANT_SRC_COD_PER ="MANT_SRC_COD_PER";
-    public static final String MANT_SRC_COD_STNX   ="MANT_SRC_COD_STNX";
     //Control de operaciones
     public static final String CTRL_OPER_DIARIO   ="CTRL_OPER_DIARIO";
-    public static final String DATOS_ENROL ="DATOS_ENROL";
     //Reportes SFL
     public static final String CONT_SFL_ACCT   ="CONT_SFL_ACCT";
     public static final String CONT_SFL_GACT   ="CONT_SFL_GACT";
@@ -52,24 +40,10 @@ public class Menu {
     public static final String CONT_SFL_GMON   ="CONT_SFL_GMON";
     public static final String CONT_SFL_ISCA   ="CONT_SFL_ISCA";
     public static final String CONT_SFL_ISRC   ="CONT_SFL_ISRC";
-    //Mantenedores Enrolamiento
-    public static final String MANT_ENROL_CLIENTE ="MANT_ENROL_CLIENTE";
-    public static final String MANT_ENROL_CONTRATO ="MANT_ENROL_CONTRATO";
-    public static final String MANT_ENROL_CUENTA ="MANT_ENROL_CUENTA";
-    public static final String MANT_ENROL_PERFIL ="MANT_ENROL_PERFIL";
     //Rectificaciones
     public static final String RECT_NO_INF   ="RECT_NO_INF";
     public static final String RECT_NO_INF_APR   ="RECT_NO_INF_APR";
     public static final String RECT_NO_INF_REVER ="RECT_NO_INF_REVER";
-
-    //Reporte de Inversiones
-    public static final String REP_INV_BASE ="REP_INV_BASE";
-    public static final String REP_INV_PRECALC ="REP_INV_PRECALC";
-    public static final String REP_INV_RENT ="REP_INV_RENT";
-    public static final String REP_INV_REP ="REP_INV_REP";
-
-    //Admin User
-    public static final String ADMIN_JOBS_BY_USER ="ADMIN_JOBS_BY_USER";
 
 
     public static final String ROLE_ADMIN  = "ROLE_ADMIN";      //Máximos privilegios, admin del sistema
@@ -110,8 +84,6 @@ public class Menu {
         categoriaAdminQande.setListaRoles(perfilAdminQye);
         var categoriaFtp    = new CategoriaMenu("FTP", "FTP", false, "nav-icon fas fa-envelope-open-text");
         categoriaFtp.setListaRoles(perfilAdminQye);
-        var categoriaStonex    = new CategoriaMenu("STONEX", "Stonex", false, "nav-icon fas fa-sitemap");
-        categoriaStonex.setListaRoles(perfilAdminQye);
         var categoriaPershing    = new CategoriaMenu("PERSHING", "Pershing", false, "nav-icon fas fa-copy");
         categoriaPershing.setListaRoles(perfilAdminQye);
         var categoriaParametros    = new CategoriaMenu("PARAMETROS", "Parámetros", false, "nav-icon fas fa-cog");
@@ -136,8 +108,6 @@ public class Menu {
         categoriaAprobacionRectificaciones.setListaRoles(perfilAdminQye);
         var categoriaProcesosPorUsuario    = new CategoriaMenu("ADMIN_BY_USER", "Procesos", false, "nav-icon fas fa-file-alt");
         categoriaProcesosPorUsuario.setListaRoles(perfilAdminQye);
-        var categoriaReporteInversiones    = new CategoriaMenu("REP_INV", "Reporte Inversiones", false, "nav-icon fas fa-file-alt");
-        categoriaReporteInversiones.setListaRoles(perfilAdminQye);
 
 
         ArrayList<OpcionMenu> opcionesInicio    = new ArrayList<>();
@@ -146,15 +116,8 @@ public class Menu {
         categoriaAdminQande.setListaOpciones(opcionesInicio);
 
         ArrayList<OpcionMenu> opcionesFtp    = new ArrayList<>();
-        opcionesFtp.add(new OpcionMenu(LS_FTP_STONEX, "Listar FTP Stonex", "/ftp_externo/stonex/listar", false));
         opcionesFtp.add(new OpcionMenu(LS_FTP_PERSHING, "Listar FTP Pershing", "/ftp_externo/pershing/listar", false));
-        opcionesFtp.add(new OpcionMenu(LS_FTP_SURA, "Listar FTP SURA AM", "/ftp_externo/sura_chile/listar", false));
         categoriaFtp.setListaOpciones(opcionesFtp);
-
-        ArrayList<OpcionMenu> opcionesStonex    = new ArrayList<>();
-        opcionesStonex.add(new OpcionMenu(STONEX_CONFIGSCHEMA, "Config Schemas", URL_INICIO, false));
-        opcionesStonex.add(new OpcionMenu(STONEX_ETDO_FTP, "Estado Proceso FTP", "/jobs/reportes/proceso_ftp_stonex", false));
-        categoriaStonex.setListaOpciones(opcionesStonex);
 
         ArrayList<OpcionMenu> opcionesPershing    = new ArrayList<>();
         opcionesPershing.add(new OpcionMenu(PERSHING_CONFIGSFL, "Config SFL", URL_INICIO, false));
@@ -163,7 +126,6 @@ public class Menu {
 
         ArrayList<OpcionMenu> opcionesParametros    = new ArrayList<>();
         opcionesParametros.add(new OpcionMenu(PARAMETROS_GLOBALES, "Parámetros Globales", URL_INICIO, false));
-        opcionesParametros.add(new OpcionMenu(PARAMETROS_STONEX, "Parámetros Stonex", URL_INICIO, false));
         opcionesParametros.add(new OpcionMenu(PARAMETROS_PERSHING, "Parámetros Pershing", URL_INICIO, false));
         categoriaParametros.setListaOpciones(opcionesParametros);
 
@@ -174,7 +136,6 @@ public class Menu {
 
         ArrayList<OpcionMenu> opcionesArchivos    = new ArrayList<>();
         opcionesArchivos.add(new OpcionMenu(ARCHIVOS_MAESTROS, "Maestro de Datos", "/archivos/maestro_datos/listar", false));
-        //opcionesArchivos.add(new OpcionMenu(ARCHIVOS_INGR_EGR, "Ingresos Egresos", "/archivos/ingresos_egresos/listar", false));
         categoriaArchivos.setListaOpciones(opcionesArchivos);
 
         ArrayList<OpcionMenu> opcionesReportesMaestros    = new ArrayList<>();
@@ -184,15 +145,11 @@ public class Menu {
         categoriaReportesMaestros.setListaOpciones(opcionesReportesMaestros);
 
         ArrayList<OpcionMenu> opcionesMantenedoresInstrumentos    = new ArrayList<>();
-        opcionesMantenedoresInstrumentos.add(new OpcionMenu(MANT_INSTR_BINSTR, "Base Instrumentos", "/mantenedores/parametros_instrumentos/base_instrumento/crear", false));
-        opcionesMantenedoresInstrumentos.add(new OpcionMenu(MANT_INSTR_BUCIT, "Base UCIT", "/mantenedores/parametros_instrumentos/base_ucit/crear", false));
         opcionesMantenedoresInstrumentos.add(new OpcionMenu(MANT_SRC_COD_PER, "Source Code Pershing", "/mantenedores/parametros_instrumentos/source_code_pershing/crear", false));
-        opcionesMantenedoresInstrumentos.add(new OpcionMenu(MANT_SRC_COD_STNX, "Source Code Stonex", "/mantenedores/parametros_instrumentos/source_code_stonex/crear", false));
         categoriaMantenedoresInstrumentos.setListaOpciones(opcionesMantenedoresInstrumentos);
 
         ArrayList<OpcionMenu> opcionesControlOperaciones    = new ArrayList<>();
         opcionesControlOperaciones.add(new OpcionMenu(CTRL_OPER_DIARIO, "Control diario", "/reportes/controles/control_diario", false));
-        opcionesControlOperaciones.add(new OpcionMenu(DATOS_ENROL, "Datos Enrolamiento", "/reportes/controles/datos_enrolamiento", false));
         categoriaControlOperaciones.setListaOpciones(opcionesControlOperaciones);
 
         ArrayList<OpcionMenu> opcionesReportesSfl    = new ArrayList<>();
@@ -205,15 +162,8 @@ public class Menu {
         categoriaReportesSfl.setListaOpciones(opcionesReportesSfl);
 
         ArrayList<OpcionMenu> opcionesMantenedoresEnrolamiento    = new ArrayList<>();
-        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_CLIENTE, "Clientes", "/mantenedores/enrolamiento/cliente", false));
-        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_CONTRATO, "Contratos", "/mantenedores/enrolamiento/contrato", false));
-        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_CUENTA, "Cuentas", "/mantenedores/enrolamiento/cuenta", false));
-        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_PERFIL, "Perfiles", "/mantenedores/enrolamiento/perfil_cuenta", false));
+        //opcionesMantenedoresEnrolamiento.add(new OpcionMenu(RECT_NO_INF, "Registros No Informados", "/rectificacion/registros_no_informados/nuevo", false));
         categoriaMantenedoresEnrolamiento.setListaOpciones(opcionesMantenedoresEnrolamiento);
-
-        ArrayList<OpcionMenu> opcionesProcesosPorUsuario    = new ArrayList<>();
-        opcionesProcesosPorUsuario.add(new OpcionMenu(ADMIN_JOBS_BY_USER, "Reprocesos", "/jobs/jobs_por_usuario", false));
-        categoriaProcesosPorUsuario.setListaOpciones(opcionesProcesosPorUsuario);
 
         ArrayList<OpcionMenu> opcionesRegistroRectificacion    = new ArrayList<>();
         opcionesRegistroRectificacion.add(new OpcionMenu(RECT_NO_INF, "Registros No Informados", "/rectificacion/registros_no_informados/nuevo", false));
@@ -224,30 +174,19 @@ public class Menu {
         opcionesAprobacionRectificacion.add(new OpcionMenu(RECT_NO_INF_REVER, "Reversa Registros", "/rectificacion/registros_no_informados/reversa", false));
         categoriaAprobacionRectificaciones.setListaOpciones(opcionesAprobacionRectificacion);
 
-        ArrayList<OpcionMenu> opcionesReporteInversiones    = new ArrayList<>();
-        opcionesReporteInversiones.add(new OpcionMenu(REP_INV_BASE, "Base Cálculo", "/reporte-inversiones/base-consolidada", false));
-        opcionesReporteInversiones.add(new OpcionMenu(REP_INV_PRECALC, "Base Agregada", "/reporte-inversiones/base-agregada", false));
-        opcionesReporteInversiones.add(new OpcionMenu(REP_INV_RENT, "Rentabilidad por Cliente", "/reporte-inversiones/detalle-rentabilidad-cliente", false));
-        //opcionesReporteInversiones.add(new OpcionMenu(REP_INV_REP, "Consulta Reporte", "/home", false));
-        categoriaReporteInversiones.setListaOpciones(opcionesReporteInversiones);
-
         opcionesMenu    = new ArrayList<>();
         opcionesMenu.add(categoriaAdminQande);
         opcionesMenu.add(categoriaFtp);
-        opcionesMenu.add(categoriaStonex);
         opcionesMenu.add(categoriaPershing);
         opcionesMenu.add(categoriaParametros);
         opcionesMenu.add(categoriaUsuarios);
         opcionesMenu.add(categoriaArchivos);
         opcionesMenu.add(categoriaReportesMaestros);
-        opcionesMenu.add(categoriaMantenedoresInstrumentos);
         opcionesMenu.add(categoriaControlOperaciones);
         opcionesMenu.add(categoriaReportesSfl);
         opcionesMenu.add(categoriaMantenedoresEnrolamiento);
-        opcionesMenu.add(categoriaProcesosPorUsuario);
         opcionesMenu.add(categoriaRegistroRectificaciones);
         opcionesMenu.add(categoriaAprobacionRectificaciones);
-        opcionesMenu.add(categoriaReporteInversiones);
 
         this.opcionPorDefecto   = ADMINQANDE_LOGS;
         this.opcionElegida      = this.opcionPorDefecto;
