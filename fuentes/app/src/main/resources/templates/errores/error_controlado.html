@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Bienvenido a Q&E Mercados Internacionales</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                            <li class="breadcrumb-item active">Error</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div id="main-card" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title alert-default-danger" th:text="${error_titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body" th:text="${error_mensaje}"></div>
+                <!-- /.card-body -->
+                <div class="card-footer" th:text="${error_pie}"></div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

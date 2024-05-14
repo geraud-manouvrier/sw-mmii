@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Clientes</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_clientes" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Nombre</th>
+                            <th>Cod. Pais Residencia</th>
+                            <th>Mail</th>
+                            <th>Asesor Principal</th>
+                            <th>Asesor Secundario</th>
+                            <th>Mail Asesor Principal</th>
+                            <th>Mail Asesor Secundario</th>
+                            <th>Cod. País Atención</th>
+                            <th>Residente Fiscal USA</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaClientes}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.fechaNacimiento}"></td>
+                            <td th:text="${registro.nombre}"></td>
+                            <td th:text="${registro.codPaisResidencia}"></td>
+                            <td th:text="${registro.mail}"></td>
+                            <td th:text="${registro.asesorPrincipal}"></td>
+                            <td th:text="${registro.asesorSecundario}"></td>
+                            <td th:text="${registro.mailAsesorPrincipal}"></td>
+                            <td th:text="${registro.mailAsesorSecundario}"></td>
+                            <td th:text="${registro.codPaisAtencion}"></td>
+                            <td th:text="${registro.residenteFiscalUsa}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Nombre</th>
+                            <th>Cod. Pais Residencia</th>
+                            <th>Mail</th>
+                            <th>Asesor Principal</th>
+                            <th>Asesor Secundario</th>
+                            <th>Mail Asesor Principal</th>
+                            <th>Mail Asesor Secundario</th>
+                            <th>Cod. País Atención</th>
+                            <th>Residente Fiscal USA</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Contratos</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_contratos" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Tipo Cuenta</th>
+                            <th>Tipo Servicio</th>
+                            <th>Tarifa Negociada</th>
+                            <th>Id Cliente</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaContratos}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.tipoCuenta}"></td>
+                            <td th:text="${registro.tipoServicio}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatNumberDefault(registro.tarifaNegociada)}"></td>
+                            <td th:text="${registro.idCliente}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Tipo Cuenta</th>
+                            <th>Tipo Servicio</th>
+                            <th>Tarifa Negociada</th>
+                            <th>Id Cliente</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Cuentas</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_cuentas" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id Cuenta Sura</th>
+                            <th>Id Cuenta Custodio</th>
+                            <th>Custodio</th>
+                            <th>Modelo Asesoria</th>
+                            <th>Monto Fondeo</th>
+                            <th>Id Contrato</th>
+                            <th>Cod. País Atención</th>
+                            <th>Descripción Objetivo</th>
+                            <th>Beneficiarios</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaCuentas}">
+                            <td th:text="${registro.idCuentaSura}"></td>
+                            <td th:text="${registro.idCuentaCustodio}"></td>
+                            <td th:text="${registro.custodio}"></td>
+                            <td th:text="${registro.modeloAsesoria}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatNumberDefault(registro.montoFondeo)}"></td>
+                            <td th:text="${registro.idContrato}"></td>
+                            <td th:text="${registro.codPaisAtencion}"></td>
+                            <td th:text="${registro.descripcionObjetivo}"></td>
+                            <td th:text="${registro.beneficiarios}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id Cuenta Sura</th>
+                            <th>Id Cuenta Custodio</th>
+                            <th>Custodio</th>
+                            <th>Modelo Asesoria</th>
+                            <th>Monto Fondeo</th>
+                            <th>Id Contrato</th>
+                            <th>Cod. País Atención</th>
+                            <th>Descripción Objetivo</th>
+                            <th>Beneficiarios</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Perfiles Cuenta</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_perfiles" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id Perfil Cuenta</th>
+                            <th>Id Perfil</th>
+                            <th>Id Cuenta Sura</th>
+                            <th>Fecha Vigencia</th>
+                            <th>Portfolio</th>
+                            <th>Monto Comprometido</th>
+                            <th>Horizonte Objetivo</th>
+                            <th>Exención Responsabilidad</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaPerfiles}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idPerfil}"></td>
+                            <td th:text="${registro.idCuentaSura}"></td>
+                            <td th:text="${registro.fechaVigencia}"></td>
+                            <td th:text="${registro.portfolio}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatNumberDefault(registro.montoComprometido)}"></td>
+                            <td th:text="${registro.horizonteObjetivo}"></td>
+                            <td th:text="${registro.exencionResponsabilidad}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id Perfil Cuenta</th>
+                            <th>Id Perfil</th>
+                            <th>Id Cuenta Sura</th>
+                            <th>Fecha Vigencia</th>
+                            <th>Portfolio</th>
+                            <th>Monto Comprometido</th>
+                            <th>Horizonte Objetivo</th>
+                            <th>Exención Responsabilidad</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+<script>
+    $(function () {
+        $("#tabla_clientes").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_clientes_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_contratos").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_contratos_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_cuentas").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_cuentas_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_perfiles").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_perfiles_wrapper .col-md-6:eq(0)');
+    });
+
+    $('#my-card').CardWidget('collapse');
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

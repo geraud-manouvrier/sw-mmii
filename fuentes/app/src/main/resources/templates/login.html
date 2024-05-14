@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a th:href="@{/index}"><b>Q&E</b> Mercados Internacionales</a>
+  </div>
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Ingrese sus credenciales para iniciar sesión</p>
+
+      <form id="loginForm" th:action="@{/login}" method="post">
+        <div class="input-group mb-3">
+          <input type="text" id="username" name="username" class="form-control" placeholder="Usuario" autofocus required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          
+          <!-- /.col -->
+          <div class="col-12">
+            <input type="submit" class="btn btn-outline-secondary btn-block" value="Iniciar sesión"/>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+      <!-- /.social-auth-links -->
+
+      <p class="mb-1">
+        <!-- <a href="#" class="text-muted">Olvidé mi contraseña</a> -->
+      </p>
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+</div>
+<!-- /.login-box -->
+
+<footer th:replace="layout/layout :: 'footerLogin'"></footer>
+
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

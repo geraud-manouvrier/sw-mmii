@@ -1,0 +1,116 @@
+create or replace function stage_pershing.fn_extrae_gcus_reg_a(_id_proceso bigint)
+    returns TABLE(id bigint, id_proceso bigint, process_date character varying, transaction_code character varying, record_indicator_value character varying, record_id_sequence_number character varying, account_number character varying, cusip_number character varying, portfolio_currency character varying, campo_7 character varying, underlying_cusip_number character varying, country_code character varying, campo_10 character varying, ip_record_number character varying, ibd_number character varying, currency_security_indicator character varying, issue_currency character varying, datestamp_trade_date character varying, datestamp_settlement_date character varying, trade_date_quantity character varying, trade_date_quantity_sign character varying, settlement_date_quantity character varying, settlement_date_quantity_sign character varying, seg_quantity character varying, seg_quantity_sign character varying, safekeeping_quantity character varying, safekeeping_sign character varying, transfer_quantity character varying, transfer_quantity_sign character varying, pending_transfer_quantity character varying, pending_transfer_quantity_sign character varying, legal_transfer_quantity character varying, legal_transfer_quantity_sign character varying, tendered_quantity character varying, tendered_quantity_sign character varying, pending_papers character varying, pending_papers_sign character varying, short_against_the_box_quantity character varying, short_against_the_box_quantity_sign character varying, networked_quantity character varying, networked_quantity_sign character varying, pending_split_quantity character varying, pending_split_quantity_sign character varying, quantity_covering_options character varying, quantity_covering_options_sign character varying, trade_date_quantity_bought character varying, trade_date_quantity_bought_sign character varying, trade_date_quantity_sold character varying, trade_date_quantity_sold_sign character varying, fed_rquirement character varying, fed_rquirement_sign character varying, house_margin_requirement character varying, house_margin_requirement_sign character varying, nyse_requirement character varying, nyse_requirement_sign character varying, equity_requirment character varying, equity_requirment_sign character varying, security_symbol character varying, security_type character varying, security_mod character varying, security_calc character varying, minor_product_code character varying, network_eligibility_indicator character varying, strike_price character varying, strike_price_sign character varying, expiration_maturity_date character varying, contract_size character varying, conversion_ratio character varying, account_short_name character varying, state_code character varying, country_code_account character varying, campo_69 character varying, number_security_description_lines character varying, security_description_line_1 character varying, security_description_line_2 character varying, security_description_line_3 character varying, security_description_line_4 character varying, security_description_line_5 character varying, security_description_line_6 character varying, dividend_option character varying, long_term_capital_gains_option character varying, short_term_capital_gains_option character varying, firm_trading_indicator character varying, position_currency_security character varying, trade_date_liquidating_value character varying, trade_date_liquidating_value_sign character varying, pool_factor character varying, pool_factor_sign character varying, exchange_rate character varying, exchange_rate_sign character varying, settlement_date_liquidating_value character varying, settlement_date_liquidating_value_sign character varying, campo_90 character varying, alternate_security_id_type character varying, alternate_security_id character varying, campo_93 character varying, eor character varying)
+    language plpgsql
+as
+$$
+    BEGIN
+
+    RETURN QUERY
+    SELECT sfl_file.id, sfl_file.id_proceso, sfl_file.process_date,
+        substr(sfl_file.linea, 1, 2)::VARCHAR(100) as transaction_code,
+        substr(sfl_file.linea, 3, 1)::VARCHAR(100) as record_indicator_value,
+        substr(sfl_file.linea, 4, 8)::VARCHAR(100) as record_id_sequence_number,
+        substr(sfl_file.linea, 12, 10)::VARCHAR(100) as account_number,
+        substr(sfl_file.linea, 22, 9)::VARCHAR(100) as cusip_number,
+        substr(sfl_file.linea, 31, 3)::VARCHAR(100) as portfolio_currency,
+        substr(sfl_file.linea, 34, 1)::VARCHAR(100) as campo_7,
+        substr(sfl_file.linea, 35, 9)::VARCHAR(100) as underlying_cusip_number,
+        substr(sfl_file.linea, 44, 2)::VARCHAR(100) as country_code,
+        substr(sfl_file.linea, 46, 1)::VARCHAR(100) as campo_10,
+        substr(sfl_file.linea, 47, 4)::VARCHAR(100) as ip_record_number,
+        substr(sfl_file.linea, 51, 3)::VARCHAR(100) as ibd_number,
+        substr(sfl_file.linea, 54, 1)::VARCHAR(100) as currency_security_indicator,
+        substr(sfl_file.linea, 55, 3)::VARCHAR(100) as issue_currency,
+        substr(sfl_file.linea, 58, 8)::VARCHAR(100) as datestamp_trade_date,
+        substr(sfl_file.linea, 66, 8)::VARCHAR(100) as datestamp_settlement_date,
+        substr(sfl_file.linea, 74, 18)::VARCHAR(100) as trade_date_quantity,
+        substr(sfl_file.linea, 92, 1)::VARCHAR(100) as trade_date_quantity_sign,
+        substr(sfl_file.linea, 93, 18)::VARCHAR(100) as settlement_date_quantity,
+        substr(sfl_file.linea, 111, 1)::VARCHAR(100) as settlement_date_quantity_sign,
+        substr(sfl_file.linea, 112, 18)::VARCHAR(100) as seg_quantity,
+        substr(sfl_file.linea, 130, 1)::VARCHAR(100) as seg_quantity_sign,
+        substr(sfl_file.linea, 131, 18)::VARCHAR(100) as safekeeping_quantity,
+        substr(sfl_file.linea, 149, 1)::VARCHAR(100) as safekeeping_sign,
+        substr(sfl_file.linea, 150, 18)::VARCHAR(100) as transfer_quantity,
+        substr(sfl_file.linea, 168, 1)::VARCHAR(100) as transfer_quantity_sign,
+        substr(sfl_file.linea, 169, 18)::VARCHAR(100) as pending_transfer_quantity,
+        substr(sfl_file.linea, 187, 1)::VARCHAR(100) as pending_transfer_quantity_sign,
+        substr(sfl_file.linea, 188, 18)::VARCHAR(100) as legal_transfer_quantity,
+        substr(sfl_file.linea, 206, 1)::VARCHAR(100) as legal_transfer_quantity_sign,
+        substr(sfl_file.linea, 207, 18)::VARCHAR(100) as tendered_quantity,
+        substr(sfl_file.linea, 225, 1)::VARCHAR(100) as tendered_quantity_sign,
+        substr(sfl_file.linea, 226, 18)::VARCHAR(100) as pending_papers,
+        substr(sfl_file.linea, 244, 1)::VARCHAR(100) as pending_papers_sign,
+        substr(sfl_file.linea, 245, 18)::VARCHAR(100) as short_against_the_box_quantity,
+        substr(sfl_file.linea, 263, 1)::VARCHAR(100) as short_against_the_box_quantity_sign,
+        substr(sfl_file.linea, 264, 18)::VARCHAR(100) as networked_quantity,
+        substr(sfl_file.linea, 282, 1)::VARCHAR(100) as networked_quantity_sign,
+        substr(sfl_file.linea, 283, 18)::VARCHAR(100) as pending_split_quantity,
+        substr(sfl_file.linea, 301, 1)::VARCHAR(100) as pending_split_quantity_sign,
+        substr(sfl_file.linea, 302, 18)::VARCHAR(100) as quantity_covering_options,
+        substr(sfl_file.linea, 320, 1)::VARCHAR(100) as quantity_covering_options_sign,
+        substr(sfl_file.linea, 321, 18)::VARCHAR(100) as trade_date_quantity_bought,
+        substr(sfl_file.linea, 339, 1)::VARCHAR(100) as trade_date_quantity_bought_sign,
+        substr(sfl_file.linea, 340, 18)::VARCHAR(100) as trade_date_quantity_sold,
+        substr(sfl_file.linea, 358, 1)::VARCHAR(100) as trade_date_quantity_sold_sign,
+        substr(sfl_file.linea, 359, 18)::VARCHAR(100) as fed_rquirement,
+        substr(sfl_file.linea, 377, 1)::VARCHAR(100) as fed_rquirement_sign,
+        substr(sfl_file.linea, 378, 18)::VARCHAR(100) as house_margin_requirement,
+        substr(sfl_file.linea, 396, 1)::VARCHAR(100) as house_margin_requirement_sign,
+        substr(sfl_file.linea, 397, 18)::VARCHAR(100) as nyse_requirement,
+        substr(sfl_file.linea, 415, 1)::VARCHAR(100) as nyse_requirement_sign,
+        substr(sfl_file.linea, 416, 18)::VARCHAR(100) as equity_requirment,
+        substr(sfl_file.linea, 434, 1)::VARCHAR(100) as equity_requirment_sign,
+        substr(sfl_file.linea, 435, 9)::VARCHAR(100) as security_symbol,
+        substr(sfl_file.linea, 444, 1)::VARCHAR(100) as security_type,
+        substr(sfl_file.linea, 445, 1)::VARCHAR(100) as security_mod,
+        substr(sfl_file.linea, 446, 1)::VARCHAR(100) as security_calc,
+        substr(sfl_file.linea, 447, 3)::VARCHAR(100) as minor_product_code,
+        substr(sfl_file.linea, 450, 1)::VARCHAR(100) as network_eligibility_indicator,
+        substr(sfl_file.linea, 451, 18)::VARCHAR(100) as strike_price,
+        substr(sfl_file.linea, 469, 1)::VARCHAR(100) as strike_price_sign,
+        substr(sfl_file.linea, 470, 8)::VARCHAR(100) as expiration_maturity_date,
+        substr(sfl_file.linea, 478, 18)::VARCHAR(100) as contract_size,
+        substr(sfl_file.linea, 496, 18)::VARCHAR(100) as conversion_ratio,
+        substr(sfl_file.linea, 514, 10)::VARCHAR(100) as account_short_name,
+        substr(sfl_file.linea, 524, 3)::VARCHAR(100) as state_code,
+        substr(sfl_file.linea, 527, 3)::VARCHAR(100) as country_code_account,
+        substr(sfl_file.linea, 530, 4)::VARCHAR(100) as campo_69,
+        substr(sfl_file.linea, 534, 4)::VARCHAR(100) as number_security_description_lines,
+        substr(sfl_file.linea, 538, 20)::VARCHAR(100) as security_description_line_1,
+        substr(sfl_file.linea, 558, 20)::VARCHAR(100) as security_description_line_2,
+        substr(sfl_file.linea, 578, 20)::VARCHAR(100) as security_description_line_3,
+        substr(sfl_file.linea, 598, 20)::VARCHAR(100) as security_description_line_4,
+        substr(sfl_file.linea, 618, 20)::VARCHAR(100) as security_description_line_5,
+        substr(sfl_file.linea, 638, 20)::VARCHAR(100) as security_description_line_6,
+        substr(sfl_file.linea, 658, 1)::VARCHAR(100) as dividend_option,
+        substr(sfl_file.linea, 659, 1)::VARCHAR(100) as long_term_capital_gains_option,
+        substr(sfl_file.linea, 660, 1)::VARCHAR(100) as short_term_capital_gains_option,
+        substr(sfl_file.linea, 661, 1)::VARCHAR(100) as firm_trading_indicator,
+        substr(sfl_file.linea, 662, 3)::VARCHAR(100) as position_currency_security,
+        substr(sfl_file.linea, 665, 18)::VARCHAR(100) as trade_date_liquidating_value,
+        substr(sfl_file.linea, 683, 1)::VARCHAR(100) as trade_date_liquidating_value_sign,
+        substr(sfl_file.linea, 684, 10)::VARCHAR(100) as pool_factor,
+        substr(sfl_file.linea, 694, 1)::VARCHAR(100) as pool_factor_sign,
+        substr(sfl_file.linea, 695, 18)::VARCHAR(100) as exchange_rate,
+        substr(sfl_file.linea, 713, 1)::VARCHAR(100) as exchange_rate_sign,
+        substr(sfl_file.linea, 714, 18)::VARCHAR(100) as settlement_date_liquidating_value,
+        substr(sfl_file.linea, 732, 1)::VARCHAR(100) as settlement_date_liquidating_value_sign,
+        substr(sfl_file.linea, 733, 3)::VARCHAR(100) as campo_90,
+        substr(sfl_file.linea, 736, 1)::VARCHAR(100) as alternate_security_id_type,
+        substr(sfl_file.linea, 737, 12)::VARCHAR(100) as alternate_security_id,
+        substr(sfl_file.linea, 749, 1)::VARCHAR(100) as campo_93,
+        substr(sfl_file.linea, 750, 1)::VARCHAR(100) as eor
+
+    FROM stage_pershing.stage_gcus_file sfl_file WHERE sfl_file.id_proceso = COALESCE(_id_proceso, sfl_file.id_proceso)
+    --AND substr(sfl_file.linea, 1, 18)		= 'BOF      PERSHING '
+    --AND substr(sfl_file.linea, 1, 18)		= 'EOF      PERSHING '
+    AND substr(sfl_file.linea, 1, 3)		= 'GCA'
+    ORDER BY sfl_file.id;
+
+    RETURN;
+    END;
+$$;
+
+alter function stage_pershing.fn_extrae_gcus_reg_a(bigint) owner to postgres;
+

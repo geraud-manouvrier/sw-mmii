@@ -1,0 +1,484 @@
+openapi: 3.0.3
+info:
+  title: API Conexión desde PA
+  description: |-
+    Este es un documento que describe la API para conectividad entre Power Automate y el Sistema de MMII (o Hub de Datos).
+    
+    Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
+  contact:
+    email: contacto@qande.cl
+  version: 5.0.0
+externalDocs:
+  description: Acerca de OAS
+  url: https://swagger.io/specification/
+servers:
+  - url: https://mmii-proteccion-dev.qande.cl/qande-mmii-web/api
+  - url: https://mmii-proteccion.qande.cl/qande-mmii-web/api
+paths:
+  /clientes:
+    post:
+      tags:
+        - clientes
+      summary: Crea clientes en SW MMII
+      description: Crea clientes en SW MMII
+      parameters:
+        - name: x-api_key
+          in: header
+          description: 'Api Key necesario para consumir API'
+          required: true
+          schema:
+            type: string
+        - name: x-client_id
+          in: header
+          description: 'ID único de app cliente que consume API'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Crea un listado de Clientes en el Sistema MMII
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Clientes'
+        required: true
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOk'
+        '4XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseErrorClientes'
+        '5XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseErrorClientes'
+      security:
+        - api_key: []
+  /contratos/contrato:
+    post:
+      tags:
+        - contrato
+      summary: Crea contrato en SW MMII
+      description: Crea contrato en SW MMII
+      parameters:
+        - name: x-api_key
+          in: header
+          description: 'Api Key necesario para consumir API'
+          required: true
+          schema:
+            type: string
+        - name: x-client_id
+          in: header
+          description: 'ID único de app cliente que consume API'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Crea un listado de Clientes en el Sistema MMII
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContratoRequest'
+        required: true
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOk'
+        '4XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseErrorContrato'
+        '5XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseErrorContrato'
+      security:
+        - api_key: [ ]
+  /archivos/reportes-maestros/{process-date}:
+    get:
+      tags:
+        - archivos
+      summary: Obtiene archivos Maestros
+      description: Obtiene archivos Maestros Cuentas, Saldos y Movimientos para una fecha de proceso dada
+      parameters:
+        - name: x-api_key
+          in: header
+          description: 'Api Key necesario para consumir API'
+          required: true
+          schema:
+            type: string
+        - name: x-client_id
+          in: header
+          description: 'ID único de app cliente que consume API'
+          required: true
+          schema:
+            type: string
+        - name: process-date
+          in: path
+          description: 'Fecha de Proceso en formato YYYYMMDD'
+          example: 20230528
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArchivosMaestrosResponseOk'
+        '4XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArchivosMaestrosResponseError'
+        '5XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArchivosMaestrosResponseError'
+      security:
+        - api_key: [ ]
+  /archivos/reportes-ingresos-egresos/{process-date}:
+    get:
+      tags:
+        - archivos
+      summary: Obtiene archivos Ingresos Egresos
+      description: Obtiene archivos Ingresos/Egresos para una fecha de proceso dada
+      parameters:
+        - name: x-api_key
+          in: header
+          description: 'Api Key necesario para consumir API'
+          required: true
+          schema:
+            type: string
+        - name: x-client_id
+          in: header
+          description: 'ID único de app cliente que consume API'
+          required: true
+          schema:
+            type: string
+        - name: process-date
+          in: path
+          description: 'Fecha de Proceso en formato YYYYMMDD'
+          example: 20230528
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArchivosIngresosEgresosResponseOk'
+        '4XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArchivosIngresosEgresosResponseError'
+        '5XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArchivosIngresosEgresosResponseError'
+      security:
+        - api_key: [ ]
+components:
+  schemas:
+    Clientes:
+      type: object
+      properties:
+        clientes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cliente'
+      xml:
+        name: customer
+    Cliente:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Cliente ID único, número de identificación del pais
+          example: RACL670313HDFNCS07
+        fecha-nacimiento:
+          type: string
+          description: Fecha de nacimiento del cliente
+          format: date
+        nombre:
+          type: string
+          description: Nombre completo del cliente
+          example: Nombre Apellido
+        pais-residencia:
+          type: string
+          description: Pais de residencia del Cliente (código de país)
+          example: CL
+        mail:
+          type: string
+          description: Correo electrónico del Cliente
+          example: example@domain.com
+        asesor-principal:
+          type: string
+          description: Nombre del asesor principal que se asociará al cliente y a sus cuentas respectivas
+          example: JUAN IGNACIO MEDINA VILLAR
+        asesor-secundario:
+          type: string
+          description: Nombre del asesor secundario que se asociará al cliente y a sus cuentas respectivas
+          example: JUAN IGNACIO MEDINA VILLAR
+        mail-asesor-principal:
+          type: string
+          description: Email del asesor principal que se asociará al cliente y a sus cuentas respectivas
+          example: JUAN.MEDINA@INVERSIONESSURA.COM
+        mail-asesor-secundario:
+          type: string
+          description: Email del asesor secundario que se asociará al cliente y a sus cuentas respectivas
+          example: JUAN.MEDINA@INVERSIONESSURA.COM
+        cod-pais-atencion:
+          type: integer
+          description: Código del país de atención del Cliente
+          example: 1
+        residente-fiscal-usa:
+          type: string
+          description: Indicador de si el Cliente es (Y) o no (N) residente fiscal en EEUU
+          example: Y
+          enum:
+            - Y
+            - N
+        contratos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contrato'
+    Contrato:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID único alfanumérico del contrato
+          example: ID 1
+        tipo-cuenta:
+          type: string
+          description: Tipo de cuentas del contrato
+          example: Joint
+          enum:
+            - Individual
+            - Joint
+            - Corporate
+        tipo-servicio:
+          type: string
+          description: Código alfanumérico del tipo de servicio elegido
+          example: Asesoria Discrecional
+          enum:
+            - Asesoria Discrecional
+            - Asesoria No Discrecional
+        tarifa-negociada:
+          type: number
+          format: float
+          description: Tarifa negociada en USD (Advisory_Fee_Annual_Pct)
+          example: 0.2
+        cuentas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cuenta'
+    Cuenta:
+      type: object
+      properties:
+        id-cuenta-sura:
+          type: string
+          description: Identificador alfanumérico interno del Cliente
+          example: F132343
+        id-cuenta-custodio:
+          type: string
+          description: Account number (en el custodio respectivo)
+          example: 27887631
+        custodio:
+          type: string
+          description: ID del custodio preferido
+          example: StoneX
+          enum:
+            - StoneX
+            - Pershing
+        modelo-asesoria:
+          type: string
+          description: Identificador alfanumérico único del modelo de relacionamiento y asesoría
+          example: Asesorado Local
+          enum:
+            - Asesorado Local
+            - Asesorado USA
+        monto-fondeo:
+          type: number
+          format: float
+          description: Monto fondeo
+          example: 95400
+        cod-pais-atencion:
+          type: integer
+          description: Código del país de atención del Cliente para esta cuenta. Opcional. Si no se envía, se toma mismo valor del Cliente.
+          example: 1
+        descripcion-objetivo:
+          type: string
+          description: Campo de texto libre para descripción del objetivo
+          example: Campo libre
+        beneficiarios:
+          type: string
+          description: Indicador de designación de beneficiarios
+          example: Y
+          enum:
+            - Y
+            - N
+        perfil:
+          $ref: '#/components/schemas/Perfil'
+      xml:
+        name: category
+    Perfil:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador alfanumérico único del perfil
+          example: Cauteloso
+          enum:
+            - Defensivo
+            - Cauteloso
+            - Moderado
+            - Valiente
+            - Arriesgado
+        portfolio:
+          type: string
+          description: Nombre del portolfio
+          example: PROPUESTA EXCLUSIVA
+        monto-comprometido:
+          type: number
+          format: float
+          description: Monto comprometido
+          example: 150000
+        horizonte-objetivo:
+          type: string
+          description: Campo de texto libre para horizonte del objetivo
+          example: Campo libre
+        exencion-responsabilidad:
+          type: string
+          description: Indicador de excención de responsabilidad
+          example: Y
+          enum:
+            - Y
+            - N
+    ContratoRequest:
+      type: object
+      properties:
+        id-cliente:
+          type: string
+          description: Cliente ID único, número de identificación del pais
+          example: RACL670313HDFNCS07
+        contrato:
+          $ref: '#/components/schemas/Contrato'
+    ArchivosMaestrosResponseOk:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        lista-archivos:
+          $ref: '#/components/schemas/ListaArchivos'
+    ArchivosMaestrosResponseError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    ArchivosIngresosEgresosResponseOk:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        lista-archivos:
+          $ref: '#/components/schemas/ListaArchivos'
+    ArchivosIngresosEgresosResponseError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    ApiResponseOk:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    ApiResponseErrorClientes:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        clientesError:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cliente'
+    ApiResponseErrorContrato:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        contratosError:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contrato'
+    Archivo:
+      type: object
+      properties:
+        nombre-original:
+          description: Nombre original (o referencial) del archivo en el Sistema. No tiene porque ser el mismo nombre con el que se almacena en el Cliente.
+          type: string
+          example: ArchivoPrueba.xlsx
+        extension:
+          description: Extensión del archivo (puede ser vacía).
+          type: string
+          example: xlsx
+        archivo-base64:
+          description: Archivo codificado en base 64. Note que es un string largo, en el ejemplo se ha recortado con ... (3 puntos).
+          type: string
+          example: UEsDBBQACAgIAKmtq1YAAAAAAAAAAAAAAAALAAAAX3JlbHMvLnJl...EPAAAAAA==
+    ListaArchivos:
+      type: array
+      items:
+        $ref: '#/components/schemas/Archivo'
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api_key
+      in: header

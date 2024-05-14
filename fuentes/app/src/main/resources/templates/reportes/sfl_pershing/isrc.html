@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Seleccione fecha</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record A ('+(listaRegA == null ? 'Sin resultados' : #lists.size(listaRegA)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_a" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Secuence_Id</th>
+                            <th>Record_Id_Number</th>
+                            <th>Change_Id</th>
+                            <th>Source_Code</th>
+                            <th>Source_Code_Desc_Line_1</th>
+                            <th>Source_Code_Desc_Line_2</th>
+                            <th>Source_Code_Desc_Line_3</th>
+                            <th>Tax_Status</th>
+                            <th>Campo_10</th>
+                            <th>User_Id</th>
+                            <th>Date_Added</th>
+                            <th>Date_Updated</th>
+                            <th>Ira_Income_Eligible</th>
+                            <th>Retail_Income_Eligible</th>
+                            <th>Customer_Firm</th>
+                            <th>Cerdit_Debit</th>
+                            <th>Statement_Ind</th>
+                            <th>Statement_Act_Sum_Ind</th>
+                            <th>Statement_Act_Sum_Number</th>
+                            <th>Statement_Trx_Sum_Ind</th>
+                            <th>Statement_Trx_Sum_Number</th>
+                            <th>Statement_Distrib_Ind</th>
+                            <th>Statement_Distrib_Number</th>
+                            <th>Statement_Distrib_Tax_Ind</th>
+                            <th>Statement_Div_Ind</th>
+                            <th>Statement_Div_Number</th>
+                            <th>Statement_Div_Tax_Ind</th>
+                            <th>Pershing_Depart</th>
+                            <th>Pershing_Grp</th>
+                            <th>Campo_31</th>
+                            <th>User_Id_Added</th>
+                            <th>User_Id_Updated</th>
+                            <th>Campo_34</th>
+                            <th>Portfolio_Eligible_Ind</th>
+                            <th>Reinvest_Ind</th>
+                            <th>Campo_37</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegA}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordSecuenceId}"></td>
+                            <td th:text="${registro.recordIdNumber}"></td>
+                            <td th:text="${registro.changeId}"></td>
+                            <td th:text="${registro.sourceCode}"></td>
+                            <td th:text="${registro.sourceCodeDescLine1}"></td>
+                            <td th:text="${registro.sourceCodeDescLine2}"></td>
+                            <td th:text="${registro.sourceCodeDescLine3}"></td>
+                            <td th:text="${registro.taxStatus}"></td>
+                            <td th:text="${registro.campo10}"></td>
+                            <td th:text="${registro.userId}"></td>
+                            <td th:text="${registro.dateAdded}"></td>
+                            <td th:text="${registro.dateUpdated}"></td>
+                            <td th:text="${registro.iraIncomeEligible}"></td>
+                            <td th:text="${registro.retailIncomeEligible}"></td>
+                            <td th:text="${registro.customerFirm}"></td>
+                            <td th:text="${registro.cerditDebit}"></td>
+                            <td th:text="${registro.statementInd}"></td>
+                            <td th:text="${registro.statementActSumInd}"></td>
+                            <td th:text="${registro.statementActSumNumber}"></td>
+                            <td th:text="${registro.statementTrxSumInd}"></td>
+                            <td th:text="${registro.statementTrxSumNumber}"></td>
+                            <td th:text="${registro.statementDistribInd}"></td>
+                            <td th:text="${registro.statementDistribNumber}"></td>
+                            <td th:text="${registro.statementDistribTaxInd}"></td>
+                            <td th:text="${registro.statementDivInd}"></td>
+                            <td th:text="${registro.statementDivNumber}"></td>
+                            <td th:text="${registro.statementDivTaxInd}"></td>
+                            <td th:text="${registro.pershingDepart}"></td>
+                            <td th:text="${registro.pershingGrp}"></td>
+                            <td th:text="${registro.campo31}"></td>
+                            <td th:text="${registro.userIdAdded}"></td>
+                            <td th:text="${registro.userIdUpdated}"></td>
+                            <td th:text="${registro.campo34}"></td>
+                            <td th:text="${registro.portfolioEligibleInd}"></td>
+                            <td th:text="${registro.reinvestInd}"></td>
+                            <td th:text="${registro.campo37}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Secuence_Id</th>
+                            <th>Record_Id_Number</th>
+                            <th>Change_Id</th>
+                            <th>Source_Code</th>
+                            <th>Source_Code_Desc_Line_1</th>
+                            <th>Source_Code_Desc_Line_2</th>
+                            <th>Source_Code_Desc_Line_3</th>
+                            <th>Tax_Status</th>
+                            <th>Campo_10</th>
+                            <th>User_Id</th>
+                            <th>Date_Added</th>
+                            <th>Date_Updated</th>
+                            <th>Ira_Income_Eligible</th>
+                            <th>Retail_Income_Eligible</th>
+                            <th>Customer_Firm</th>
+                            <th>Cerdit_Debit</th>
+                            <th>Statement_Ind</th>
+                            <th>Statement_Act_Sum_Ind</th>
+                            <th>Statement_Act_Sum_Number</th>
+                            <th>Statement_Trx_Sum_Ind</th>
+                            <th>Statement_Trx_Sum_Number</th>
+                            <th>Statement_Distrib_Ind</th>
+                            <th>Statement_Distrib_Number</th>
+                            <th>Statement_Distrib_Tax_Ind</th>
+                            <th>Statement_Div_Ind</th>
+                            <th>Statement_Div_Number</th>
+                            <th>Statement_Div_Tax_Ind</th>
+                            <th>Pershing_Depart</th>
+                            <th>Pershing_Grp</th>
+                            <th>Campo_31</th>
+                            <th>User_Id_Added</th>
+                            <th>User_Id_Updated</th>
+                            <th>Campo_34</th>
+                            <th>Portfolio_Eligible_Ind</th>
+                            <th>Reinvest_Ind</th>
+                            <th>Campo_37</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+
+        $('#processDate').daterangepicker(
+            {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "autoApply": true,
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+
+<script>
+    $(function () {
+        $("#tabla_reg_a").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_a_wrapper .col-md-6:eq(0)');
+    });
+
+    function buscar() {
+        var corteUrl = 'isrc';
+        var oldUrl = location.href;
+        var processDate = $('#processDate').val().replaceAll('-','');
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/' + processDate;
+        location.href = newUrl;
+    }
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

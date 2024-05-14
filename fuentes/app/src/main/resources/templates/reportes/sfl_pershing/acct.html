@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Seleccione fecha</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record A ('+(listaRegA == null ? 'Sin resultados' : #lists.size(listaRegA)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_a" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Transaction_Type</th>
+                            <th>Autotitled_Usertitled_Account</th>
+                            <th>Account_Type_Code</th>
+                            <th>Registration_Type</th>
+                            <th>Campo_14</th>
+                            <th>Number_Of_Account_Title_Lines</th>
+                            <th>Account_Registration_Line_1</th>
+                            <th>Account_Registration_Line_2</th>
+                            <th>Account_Registration_Line_3</th>
+                            <th>Account_Registration_Line_4</th>
+                            <th>Account_Registration_Line_5</th>
+                            <th>Account_Registration_Line_6</th>
+                            <th>Registration_Type_Detail</th>
+                            <th>Date_Account_Opened</th>
+                            <th>Date_Account_Information_Updated</th>
+                            <th>Account_Status_Indicator</th>
+                            <th>Pending_Closed_Date</th>
+                            <th>Date_Account_Closed</th>
+                            <th>Closing_Notice_Date</th>
+                            <th>Account_Reactivated_Date</th>
+                            <th>Date_Account_Reopened</th>
+                            <th>Proceeds</th>
+                            <th>Transfer_Instructions</th>
+                            <th>Income_Isntructions</th>
+                            <th>Number_Of_Confirms_For_Thi_Account</th>
+                            <th>Number_Of_Statements_For_This_Account</th>
+                            <th>Investment_Objetive_Trans_Code</th>
+                            <th>Comments_Act</th>
+                            <th>Employer_Shotname</th>
+                            <th>Employers_Cusip</th>
+                            <th>Employers_Symbol</th>
+                            <th>Margin_Privileges_Revoked</th>
+                            <th>Statement_Review_Date</th>
+                            <th>Margin_Papers_On_File</th>
+                            <th>Option_Papers_On_File</th>
+                            <th>Campo_45</th>
+                            <th>Good_Faith_Margin</th>
+                            <th>Ip_Discretion_Granted</th>
+                            <th>Invest_Advisor_Discretion_Granted</th>
+                            <th>Third_Party_Discretion_Granted</th>
+                            <th>Third_Party_Name</th>
+                            <th>Risk_Factor_Code</th>
+                            <th>Investment_Objetive_Code</th>
+                            <th>Option_Equities</th>
+                            <th>Option_Index</th>
+                            <th>Option_Debt</th>
+                            <th>Option_Currency</th>
+                            <th>Option_Level_1</th>
+                            <th>Option_Level_2</th>
+                            <th>Option_Level_3</th>
+                            <th>Option_Level_4</th>
+                            <th>Option_Call_Limits</th>
+                            <th>Option_Put_Limits</th>
+                            <th>Option_Total_Limits_Of_Puts_And_Calls</th>
+                            <th>Non_Us_Dollar_Trading</th>
+                            <th>Campo_65</th>
+                            <th>Non_Customer_Indicator</th>
+                            <th>Third_Party_Fee_Indicator</th>
+                            <th>Third_Party_Fee_Approval_Date</th>
+                            <th>Intermediary_Account_Ind</th>
+                            <th>Commission_Schedule</th>
+                            <th>Group_Index</th>
+                            <th>Money_Manager_Id</th>
+                            <th>Money_Manager_Objective_Id</th>
+                            <th>Dtc_Id_Confirm_Number</th>
+                            <th>Caps_Master_Mnemonic</th>
+                            <th>Employee_Id</th>
+                            <th>Prime_Broker_Free_Fund_Indicator</th>
+                            <th>Fee_Based_Account_Indicator</th>
+                            <th>Campo_79</th>
+                            <th>Fee_Based_Termination_Date</th>
+                            <th>Campo_81</th>
+                            <th>Plan_Name</th>
+                            <th>Self_Directed_401_K_Account_Type</th>
+                            <th>Plan_Type</th>
+                            <th>Plan_Number</th>
+                            <th>Employee_Or_Employee_Relative</th>
+                            <th>Commission_Percent_Discount</th>
+                            <th>Ind_12_B_1_Fee_Blocking</th>
+                            <th>Name_Of_Ip_Signed_New_Account_Form</th>
+                            <th>Date_Of_Ip_Signed_New_Account_Form</th>
+                            <th>Name_Of_Principal_Signed_New_Account_Form</th>
+                            <th>Date_Of_Principal_Signed_New_Account_Form</th>
+                            <th>Politically_Exposed_Person</th>
+                            <th>Private_Banking_Account</th>
+                            <th>Foreign_Bank_Account</th>
+                            <th>Initial_Source_Of_Funds</th>
+                            <th>Usa_Patriot_Act_Exempt_Reason</th>
+                            <th>Primary_Country_Of_Citizenship</th>
+                            <th>Country_Of_Residence</th>
+                            <th>Birth_Date</th>
+                            <th>Age_Based_Fund_Roll_Exempt</th>
+                            <th>Money_Fundreform_Retail</th>
+                            <th>Trusted_Contact_Status</th>
+                            <th>Regulatory_Account_Type_Category</th>
+                            <th>Account_Managed_By_Trust_Comp_Id</th>
+                            <th>Voting_Auth</th>
+                            <th>Campo_107</th>
+                            <th>Campo_108</th>
+                            <th>Campo_109</th>
+                            <th>Campo_110</th>
+                            <th>Customer_Type</th>
+                            <th>Campo_112</th>
+                            <th>Campo_113</th>
+                            <th>Campo_114</th>
+                            <th>Campo_115</th>
+                            <th>Campo_116</th>
+                            <th>Fulfillment_Method</th>
+                            <th>Credit_Interest_Indicator</th>
+                            <th>Ama_Indicator</th>
+                            <th>Campo_120</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegA}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.campo6}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.accountShortName}"></td>
+                            <td th:text="${registro.campo9}"></td>
+                            <td th:text="${registro.transactionType}"></td>
+                            <td th:text="${registro.autotitledUsertitledAccount}"></td>
+                            <td th:text="${registro.accountTypeCode}"></td>
+                            <td th:text="${registro.registrationType}"></td>
+                            <td th:text="${registro.campo14}"></td>
+                            <td th:text="${registro.numberOfAccountTitleLines}"></td>
+                            <td th:text="${registro.accountRegistrationLine1}"></td>
+                            <td th:text="${registro.accountRegistrationLine2}"></td>
+                            <td th:text="${registro.accountRegistrationLine3}"></td>
+                            <td th:text="${registro.accountRegistrationLine4}"></td>
+                            <td th:text="${registro.accountRegistrationLine5}"></td>
+                            <td th:text="${registro.accountRegistrationLine6}"></td>
+                            <td th:text="${registro.registrationTypeDetail}"></td>
+                            <td th:text="${registro.dateAccountOpened}"></td>
+                            <td th:text="${registro.dateAccountInformationUpdated}"></td>
+                            <td th:text="${registro.accountStatusIndicator}"></td>
+                            <td th:text="${registro.pendingClosedDate}"></td>
+                            <td th:text="${registro.dateAccountClosed}"></td>
+                            <td th:text="${registro.closingNoticeDate}"></td>
+                            <td th:text="${registro.accountReactivatedDate}"></td>
+                            <td th:text="${registro.dateAccountReopened}"></td>
+                            <td th:text="${registro.proceeds}"></td>
+                            <td th:text="${registro.transferInstructions}"></td>
+                            <td th:text="${registro.incomeIsntructions}"></td>
+                            <td th:text="${registro.numberOfConfirmsForThiAccount}"></td>
+                            <td th:text="${registro.numberOfStatementsForThisAccount}"></td>
+                            <td th:text="${registro.investmentObjetiveTransCode}"></td>
+                            <td th:text="${registro.commentsAct}"></td>
+                            <td th:text="${registro.employerShotname}"></td>
+                            <td th:text="${registro.employersCusip}"></td>
+                            <td th:text="${registro.employersSymbol}"></td>
+                            <td th:text="${registro.marginPrivilegesRevoked}"></td>
+                            <td th:text="${registro.statementReviewDate}"></td>
+                            <td th:text="${registro.marginPapersOnFile}"></td>
+                            <td th:text="${registro.optionPapersOnFile}"></td>
+                            <td th:text="${registro.campo45}"></td>
+                            <td th:text="${registro.goodFaithMargin}"></td>
+                            <td th:text="${registro.ipDiscretionGranted}"></td>
+                            <td th:text="${registro.investAdvisorDiscretionGranted}"></td>
+                            <td th:text="${registro.thirdPartyDiscretionGranted}"></td>
+                            <td th:text="${registro.thirdPartyName}"></td>
+                            <td th:text="${registro.riskFactorCode}"></td>
+                            <td th:text="${registro.investmentObjetiveCode}"></td>
+                            <td th:text="${registro.optionEquities}"></td>
+                            <td th:text="${registro.optionIndex}"></td>
+                            <td th:text="${registro.optionDebt}"></td>
+                            <td th:text="${registro.optionCurrency}"></td>
+                            <td th:text="${registro.optionLevel1}"></td>
+                            <td th:text="${registro.optionLevel2}"></td>
+                            <td th:text="${registro.optionLevel3}"></td>
+                            <td th:text="${registro.optionLevel4}"></td>
+                            <td th:text="${registro.optionCallLimits}"></td>
+                            <td th:text="${registro.optionPutLimits}"></td>
+                            <td th:text="${registro.optionTotalLimitsOfPutsAndCalls}"></td>
+                            <td th:text="${registro.nonUsDollarTrading}"></td>
+                            <td th:text="${registro.campo65}"></td>
+                            <td th:text="${registro.nonCustomerIndicator}"></td>
+                            <td th:text="${registro.thirdPartyFeeIndicator}"></td>
+                            <td th:text="${registro.thirdPartyFeeApprovalDate}"></td>
+                            <td th:text="${registro.intermediaryAccountInd}"></td>
+                            <td th:text="${registro.commissionSchedule}"></td>
+                            <td th:text="${registro.groupIndex}"></td>
+                            <td th:text="${registro.moneyManagerId}"></td>
+                            <td th:text="${registro.moneyManagerObjectiveId}"></td>
+                            <td th:text="${registro.dtcIdConfirmNumber}"></td>
+                            <td th:text="${registro.capsMasterMnemonic}"></td>
+                            <td th:text="${registro.employeeId}"></td>
+                            <td th:text="${registro.primeBrokerFreeFundIndicator}"></td>
+                            <td th:text="${registro.feeBasedAccountIndicator}"></td>
+                            <td th:text="${registro.campo79}"></td>
+                            <td th:text="${registro.feeBasedTerminationDate}"></td>
+                            <td th:text="${registro.campo81}"></td>
+                            <td th:text="${registro.planName}"></td>
+                            <td th:text="${registro.selfDirected401KAccountType}"></td>
+                            <td th:text="${registro.planType}"></td>
+                            <td th:text="${registro.planNumber}"></td>
+                            <td th:text="${registro.employeeOrEmployeeRelative}"></td>
+                            <td th:text="${registro.commissionPercentDiscount}"></td>
+                            <td th:text="${registro.ind12B1FeeBlocking}"></td>
+                            <td th:text="${registro.nameOfIpSignedNewAccountForm}"></td>
+                            <td th:text="${registro.dateOfIpSignedNewAccountForm}"></td>
+                            <td th:text="${registro.nameOfPrincipalSignedNewAccountForm}"></td>
+                            <td th:text="${registro.dateOfPrincipalSignedNewAccountForm}"></td>
+                            <td th:text="${registro.politicallyExposedPerson}"></td>
+                            <td th:text="${registro.privateBankingAccount}"></td>
+                            <td th:text="${registro.foreignBankAccount}"></td>
+                            <td th:text="${registro.initialSourceOfFunds}"></td>
+                            <td th:text="${registro.usaPatriotActExemptReason}"></td>
+                            <td th:text="${registro.primaryCountryOfCitizenship}"></td>
+                            <td th:text="${registro.countryOfResidence}"></td>
+                            <td th:text="${registro.birthDate}"></td>
+                            <td th:text="${registro.ageBasedFundRollExempt}"></td>
+                            <td th:text="${registro.moneyFundreformRetail}"></td>
+                            <td th:text="${registro.trustedContactStatus}"></td>
+                            <td th:text="${registro.regulatoryAccountTypeCategory}"></td>
+                            <td th:text="${registro.accountManagedByTrustCompId}"></td>
+                            <td th:text="${registro.votingAuth}"></td>
+                            <td th:text="${registro.campo107}"></td>
+                            <td th:text="${registro.campo108}"></td>
+                            <td th:text="${registro.campo109}"></td>
+                            <td th:text="${registro.campo110}"></td>
+                            <td th:text="${registro.customerType}"></td>
+                            <td th:text="${registro.campo112}"></td>
+                            <td th:text="${registro.campo113}"></td>
+                            <td th:text="${registro.campo114}"></td>
+                            <td th:text="${registro.campo115}"></td>
+                            <td th:text="${registro.campo116}"></td>
+                            <td th:text="${registro.fulfillmentMethod}"></td>
+                            <td th:text="${registro.creditInterestIndicator}"></td>
+                            <td th:text="${registro.amaIndicator}"></td>
+                            <td th:text="${registro.campo120}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Transaction_Type</th>
+                            <th>Autotitled_Usertitled_Account</th>
+                            <th>Account_Type_Code</th>
+                            <th>Registration_Type</th>
+                            <th>Campo_14</th>
+                            <th>Number_Of_Account_Title_Lines</th>
+                            <th>Account_Registration_Line_1</th>
+                            <th>Account_Registration_Line_2</th>
+                            <th>Account_Registration_Line_3</th>
+                            <th>Account_Registration_Line_4</th>
+                            <th>Account_Registration_Line_5</th>
+                            <th>Account_Registration_Line_6</th>
+                            <th>Registration_Type_Detail</th>
+                            <th>Date_Account_Opened</th>
+                            <th>Date_Account_Information_Updated</th>
+                            <th>Account_Status_Indicator</th>
+                            <th>Pending_Closed_Date</th>
+                            <th>Date_Account_Closed</th>
+                            <th>Closing_Notice_Date</th>
+                            <th>Account_Reactivated_Date</th>
+                            <th>Date_Account_Reopened</th>
+                            <th>Proceeds</th>
+                            <th>Transfer_Instructions</th>
+                            <th>Income_Isntructions</th>
+                            <th>Number_Of_Confirms_For_Thi_Account</th>
+                            <th>Number_Of_Statements_For_This_Account</th>
+                            <th>Investment_Objetive_Trans_Code</th>
+                            <th>Comments_Act</th>
+                            <th>Employer_Shotname</th>
+                            <th>Employers_Cusip</th>
+                            <th>Employers_Symbol</th>
+                            <th>Margin_Privileges_Revoked</th>
+                            <th>Statement_Review_Date</th>
+                            <th>Margin_Papers_On_File</th>
+                            <th>Option_Papers_On_File</th>
+                            <th>Campo_45</th>
+                            <th>Good_Faith_Margin</th>
+                            <th>Ip_Discretion_Granted</th>
+                            <th>Invest_Advisor_Discretion_Granted</th>
+                            <th>Third_Party_Discretion_Granted</th>
+                            <th>Third_Party_Name</th>
+                            <th>Risk_Factor_Code</th>
+                            <th>Investment_Objetive_Code</th>
+                            <th>Option_Equities</th>
+                            <th>Option_Index</th>
+                            <th>Option_Debt</th>
+                            <th>Option_Currency</th>
+                            <th>Option_Level_1</th>
+                            <th>Option_Level_2</th>
+                            <th>Option_Level_3</th>
+                            <th>Option_Level_4</th>
+                            <th>Option_Call_Limits</th>
+                            <th>Option_Put_Limits</th>
+                            <th>Option_Total_Limits_Of_Puts_And_Calls</th>
+                            <th>Non_Us_Dollar_Trading</th>
+                            <th>Campo_65</th>
+                            <th>Non_Customer_Indicator</th>
+                            <th>Third_Party_Fee_Indicator</th>
+                            <th>Third_Party_Fee_Approval_Date</th>
+                            <th>Intermediary_Account_Ind</th>
+                            <th>Commission_Schedule</th>
+                            <th>Group_Index</th>
+                            <th>Money_Manager_Id</th>
+                            <th>Money_Manager_Objective_Id</th>
+                            <th>Dtc_Id_Confirm_Number</th>
+                            <th>Caps_Master_Mnemonic</th>
+                            <th>Employee_Id</th>
+                            <th>Prime_Broker_Free_Fund_Indicator</th>
+                            <th>Fee_Based_Account_Indicator</th>
+                            <th>Campo_79</th>
+                            <th>Fee_Based_Termination_Date</th>
+                            <th>Campo_81</th>
+                            <th>Plan_Name</th>
+                            <th>Self_Directed_401_K_Account_Type</th>
+                            <th>Plan_Type</th>
+                            <th>Plan_Number</th>
+                            <th>Employee_Or_Employee_Relative</th>
+                            <th>Commission_Percent_Discount</th>
+                            <th>Ind_12_B_1_Fee_Blocking</th>
+                            <th>Name_Of_Ip_Signed_New_Account_Form</th>
+                            <th>Date_Of_Ip_Signed_New_Account_Form</th>
+                            <th>Name_Of_Principal_Signed_New_Account_Form</th>
+                            <th>Date_Of_Principal_Signed_New_Account_Form</th>
+                            <th>Politically_Exposed_Person</th>
+                            <th>Private_Banking_Account</th>
+                            <th>Foreign_Bank_Account</th>
+                            <th>Initial_Source_Of_Funds</th>
+                            <th>Usa_Patriot_Act_Exempt_Reason</th>
+                            <th>Primary_Country_Of_Citizenship</th>
+                            <th>Country_Of_Residence</th>
+                            <th>Birth_Date</th>
+                            <th>Age_Based_Fund_Roll_Exempt</th>
+                            <th>Money_Fundreform_Retail</th>
+                            <th>Trusted_Contact_Status</th>
+                            <th>Regulatory_Account_Type_Category</th>
+                            <th>Account_Managed_By_Trust_Comp_Id</th>
+                            <th>Voting_Auth</th>
+                            <th>Campo_107</th>
+                            <th>Campo_108</th>
+                            <th>Campo_109</th>
+                            <th>Campo_110</th>
+                            <th>Customer_Type</th>
+                            <th>Campo_112</th>
+                            <th>Campo_113</th>
+                            <th>Campo_114</th>
+                            <th>Campo_115</th>
+                            <th>Campo_116</th>
+                            <th>Fulfillment_Method</th>
+                            <th>Credit_Interest_Indicator</th>
+                            <th>Ama_Indicator</th>
+                            <th>Campo_120</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record B ('+(listaRegB == null ? 'Sin resultados' : #lists.size(listaRegB)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_b" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Tax_Id_Type</th>
+                            <th>Tax_Id_Number</th>
+                            <th>Date_Tax_Id_Applied_For</th>
+                            <th>W_8_W_9_Indicator</th>
+                            <th>W_8_W_9_Date_Signed</th>
+                            <th>W_8_W_9_Effective_Date</th>
+                            <th>W_8_W_9_Document_Type</th>
+                            <th>Tax_Status</th>
+                            <th>B_Notice_Reason_Code</th>
+                            <th>First_B_Notice_Status</th>
+                            <th>Date_First_B_Notice_Status_Issued_Enforced</th>
+                            <th>Campo_21</th>
+                            <th>Date_First_Notice_Status_Satisfied</th>
+                            <th>Second_B_Notice_Status</th>
+                            <th>Date_Second_B_Notice_Status_Issued_Enforced</th>
+                            <th>Campo_25</th>
+                            <th>Date_Second_B_Notice_Status_Satisfied</th>
+                            <th>C_Notice_Status</th>
+                            <th>Date_C_Notice_Status_Issued_Enforced</th>
+                            <th>Date_C_Notice_Status_Satisfied</th>
+                            <th>Old_Account_Number</th>
+                            <th>Original_Account_Open_Date</th>
+                            <th>Unidentified_Large_Trader_Id</th>
+                            <th>Campo_33</th>
+                            <th>Large_Trader_Type_Code</th>
+                            <th>Large_Trader_Type_Last_Change_Date</th>
+                            <th>Campo_36</th>
+                            <th>Campo_37</th>
+                            <th>Initial_Source_Of_Funds_Other</th>
+                            <th>Finance_Away</th>
+                            <th>Account_Funding_Date</th>
+                            <th>Campo_41</th>
+                            <th>Statement_Currency_Code</th>
+                            <th>Future_Statement_Currency_Code</th>
+                            <th>Future_Statement_Currency_Code_Effective_Date</th>
+                            <th>Account_Level_Routing_Code_1</th>
+                            <th>Account_Level_Routing_Code_2</th>
+                            <th>Account_Level_Routing_Code_3</th>
+                            <th>Account_Level_Routing_Code_4</th>
+                            <th>Campo_49</th>
+                            <th>Self_Directed_Ind</th>
+                            <th>Digital_Advice_Ind</th>
+                            <th>Pte_Account_Ind</th>
+                            <th>Campo_53</th>
+                            <th>First_Ip</th>
+                            <th>Second_Ip</th>
+                            <th>Third_Ip</th>
+                            <th>Fourth_Ip</th>
+                            <th>Fifth_Ip</th>
+                            <th>Sixth_Ip</th>
+                            <th>Seventh_Ip</th>
+                            <th>Eighth_Ip</th>
+                            <th>Ninth_Ip</th>
+                            <th>Tenth_Ip</th>
+                            <th>Alert_Im_Acornym</th>
+                            <th>Alert_Im_Access_Code</th>
+                            <th>Broker_Acronym</th>
+                            <th>Cross_Reference_Indicator</th>
+                            <th>Bny_Trust_Indicator</th>
+                            <th>Source_Of_Asset_At_Acct_Opening</th>
+                            <th>Commission_Doscount_Code</th>
+                            <th>External_Account_Number</th>
+                            <th>Confirmation_Suppression_Indicator</th>
+                            <th>Date_Last_Mail_Sent</th>
+                            <th>Date_Last_Mail_Sent_Outside</th>
+                            <th>Campo_75</th>
+                            <th>Fully_Paid_Lending_Agreement_Indicator</th>
+                            <th>Fully_Paid_Lending_Agreement_Date</th>
+                            <th>Custodian_Account_Type</th>
+                            <th>Mifid_Customer_Categorization</th>
+                            <th>Cash_Management_Tran_Code</th>
+                            <th>Sweep_Status_Indicator</th>
+                            <th>Date_Sweep_Activated</th>
+                            <th>Date_Sweep_Details_Changed</th>
+                            <th>Cober_Margin_Debit_Indicator</th>
+                            <th>Campo_85</th>
+                            <th>First_Fund_Sweep_Account_Id</th>
+                            <th>Firstfund_Sweep_Account_Percent</th>
+                            <th>First_Fundsweep_Account_Redemption_Priority</th>
+                            <th>Second_Fund_Sweep_Account_Id</th>
+                            <th>Second_Fund_Sweep_Account_Percent</th>
+                            <th>Second_Fundsweep_Account_Redemption_Priority</th>
+                            <th>Type_Of_Bank_Account</th>
+                            <th>Banklink_Aba_Number</th>
+                            <th>Banklink_Dda_Number</th>
+                            <th>Campo_95</th>
+                            <th>Fund_Bank_Indicator</th>
+                            <th>Campo_97</th>
+                            <th>W_9_Corp_Tax_Classification_Code</th>
+                            <th>Campo_99</th>
+                            <th>Combined_Margin_Acct_Indicator</th>
+                            <th>Pledge_Collateral_Account_Indicator</th>
+                            <th>Finra_Institutional_Account_Code</th>
+                            <th>Proposed_Account_Reference_Id</th>
+                            <th>Advisor_Model_Id</th>
+                            <th>Firm_Model_Style_Id</th>
+                            <th>Campo_106</th>
+                            <th>Campo_107</th>
+                            <th>Campo_108</th>
+                            <th>Dvp_Restriction_Code</th>
+                            <th>Dvp_Restriction_Exp_Date</th>
+                            <th>Escheatment_Withholding_Ind</th>
+                            <th>Campo_112</th>
+                            <th>Source_Of_Origination</th>
+                            <th>Source_Of_Persona</th>
+                            <th>Client_Onboarding_Method</th>
+                            <th>Tax_Filing_Code</th>
+                            <th>Campo_117</th>
+                            <th>Campo_118</th>
+                            <th>Nor_Purpose_Collateral_Acct_Ind</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegB}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.campo6}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.accountShortName}"></td>
+                            <td th:text="${registro.campo9}"></td>
+                            <td th:text="${registro.taxIdType}"></td>
+                            <td th:text="${registro.taxIdNumber}"></td>
+                            <td th:text="${registro.dateTaxIdAppliedFor}"></td>
+                            <td th:text="${registro.w8W9Indicator}"></td>
+                            <td th:text="${registro.w8W9DateSigned}"></td>
+                            <td th:text="${registro.w8W9EffectiveDate}"></td>
+                            <td th:text="${registro.w8W9DocumentType}"></td>
+                            <td th:text="${registro.taxStatus}"></td>
+                            <td th:text="${registro.bNoticeReasonCode}"></td>
+                            <td th:text="${registro.firstBNoticeStatus}"></td>
+                            <td th:text="${registro.dateFirstBNoticeStatusIssuedEnforced}"></td>
+                            <td th:text="${registro.campo21}"></td>
+                            <td th:text="${registro.dateFirstNoticeStatusSatisfied}"></td>
+                            <td th:text="${registro.secondBNoticeStatus}"></td>
+                            <td th:text="${registro.dateSecondBNoticeStatusIssuedEnforced}"></td>
+                            <td th:text="${registro.campo25}"></td>
+                            <td th:text="${registro.dateSecondBNoticeStatusSatisfied}"></td>
+                            <td th:text="${registro.cNoticeStatus}"></td>
+                            <td th:text="${registro.dateCNoticeStatusIssuedEnforced}"></td>
+                            <td th:text="${registro.dateCNoticeStatusSatisfied}"></td>
+                            <td th:text="${registro.oldAccountNumber}"></td>
+                            <td th:text="${registro.originalAccountOpenDate}"></td>
+                            <td th:text="${registro.unidentifiedLargeTraderId}"></td>
+                            <td th:text="${registro.campo33}"></td>
+                            <td th:text="${registro.largeTraderTypeCode}"></td>
+                            <td th:text="${registro.largeTraderTypeLastChangeDate}"></td>
+                            <td th:text="${registro.campo36}"></td>
+                            <td th:text="${registro.campo37}"></td>
+                            <td th:text="${registro.initialSourceOfFundsOther}"></td>
+                            <td th:text="${registro.financeAway}"></td>
+                            <td th:text="${registro.accountFundingDate}"></td>
+                            <td th:text="${registro.campo41}"></td>
+                            <td th:text="${registro.statementCurrencyCode}"></td>
+                            <td th:text="${registro.futureStatementCurrencyCode}"></td>
+                            <td th:text="${registro.futureStatementCurrencyCodeEffectiveDate}"></td>
+                            <td th:text="${registro.accountLevelRoutingCode1}"></td>
+                            <td th:text="${registro.accountLevelRoutingCode2}"></td>
+                            <td th:text="${registro.accountLevelRoutingCode3}"></td>
+                            <td th:text="${registro.accountLevelRoutingCode4}"></td>
+                            <td th:text="${registro.campo49}"></td>
+                            <td th:text="${registro.selfDirectedInd}"></td>
+                            <td th:text="${registro.digitalAdviceInd}"></td>
+                            <td th:text="${registro.pteAccountInd}"></td>
+                            <td th:text="${registro.campo53}"></td>
+                            <td th:text="${registro.firstIp}"></td>
+                            <td th:text="${registro.secondIp}"></td>
+                            <td th:text="${registro.thirdIp}"></td>
+                            <td th:text="${registro.fourthIp}"></td>
+                            <td th:text="${registro.fifthIp}"></td>
+                            <td th:text="${registro.sixthIp}"></td>
+                            <td th:text="${registro.seventhIp}"></td>
+                            <td th:text="${registro.eighthIp}"></td>
+                            <td th:text="${registro.ninthIp}"></td>
+                            <td th:text="${registro.tenthIp}"></td>
+                            <td th:text="${registro.alertImAcornym}"></td>
+                            <td th:text="${registro.alertImAccessCode}"></td>
+                            <td th:text="${registro.brokerAcronym}"></td>
+                            <td th:text="${registro.crossReferenceIndicator}"></td>
+                            <td th:text="${registro.bnyTrustIndicator}"></td>
+                            <td th:text="${registro.sourceOfAssetAtAcctOpening}"></td>
+                            <td th:text="${registro.commissionDoscountCode}"></td>
+                            <td th:text="${registro.externalAccountNumber}"></td>
+                            <td th:text="${registro.confirmationSuppressionIndicator}"></td>
+                            <td th:text="${registro.dateLastMailSent}"></td>
+                            <td th:text="${registro.dateLastMailSentOutside}"></td>
+                            <td th:text="${registro.campo75}"></td>
+                            <td th:text="${registro.fullyPaidLendingAgreementIndicator}"></td>
+                            <td th:text="${registro.fullyPaidLendingAgreementDate}"></td>
+                            <td th:text="${registro.custodianAccountType}"></td>
+                            <td th:text="${registro.mifidCustomerCategorization}"></td>
+                            <td th:text="${registro.cashManagementTranCode}"></td>
+                            <td th:text="${registro.sweepStatusIndicator}"></td>
+                            <td th:text="${registro.dateSweepActivated}"></td>
+                            <td th:text="${registro.dateSweepDetailsChanged}"></td>
+                            <td th:text="${registro.coberMarginDebitIndicator}"></td>
+                            <td th:text="${registro.campo85}"></td>
+                            <td th:text="${registro.firstFundSweepAccountId}"></td>
+                            <td th:text="${registro.firstfundSweepAccountPercent}"></td>
+                            <td th:text="${registro.firstFundsweepAccountRedemptionPriority}"></td>
+                            <td th:text="${registro.secondFundSweepAccountId}"></td>
+                            <td th:text="${registro.secondFundSweepAccountPercent}"></td>
+                            <td th:text="${registro.secondFundsweepAccountRedemptionPriority}"></td>
+                            <td th:text="${registro.typeOfBankAccount}"></td>
+                            <td th:text="${registro.banklinkAbaNumber}"></td>
+                            <td th:text="${registro.banklinkDdaNumber}"></td>
+                            <td th:text="${registro.campo95}"></td>
+                            <td th:text="${registro.fundBankIndicator}"></td>
+                            <td th:text="${registro.campo97}"></td>
+                            <td th:text="${registro.w9CorpTaxClassificationCode}"></td>
+                            <td th:text="${registro.campo99}"></td>
+                            <td th:text="${registro.combinedMarginAcctIndicator}"></td>
+                            <td th:text="${registro.pledgeCollateralAccountIndicator}"></td>
+                            <td th:text="${registro.finraInstitutionalAccountCode}"></td>
+                            <td th:text="${registro.proposedAccountReferenceId}"></td>
+                            <td th:text="${registro.advisorModelId}"></td>
+                            <td th:text="${registro.firmModelStyleId}"></td>
+                            <td th:text="${registro.campo106}"></td>
+                            <td th:text="${registro.campo107}"></td>
+                            <td th:text="${registro.campo108}"></td>
+                            <td th:text="${registro.dvpRestrictionCode}"></td>
+                            <td th:text="${registro.dvpRestrictionExpDate}"></td>
+                            <td th:text="${registro.escheatmentWithholdingInd}"></td>
+                            <td th:text="${registro.campo112}"></td>
+                            <td th:text="${registro.sourceOfOrigination}"></td>
+                            <td th:text="${registro.sourceOfPersona}"></td>
+                            <td th:text="${registro.clientOnboardingMethod}"></td>
+                            <td th:text="${registro.taxFilingCode}"></td>
+                            <td th:text="${registro.campo117}"></td>
+                            <td th:text="${registro.campo118}"></td>
+                            <td th:text="${registro.norPurposeCollateralAcctInd}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Tax_Id_Type</th>
+                            <th>Tax_Id_Number</th>
+                            <th>Date_Tax_Id_Applied_For</th>
+                            <th>W_8_W_9_Indicator</th>
+                            <th>W_8_W_9_Date_Signed</th>
+                            <th>W_8_W_9_Effective_Date</th>
+                            <th>W_8_W_9_Document_Type</th>
+                            <th>Tax_Status</th>
+                            <th>B_Notice_Reason_Code</th>
+                            <th>First_B_Notice_Status</th>
+                            <th>Date_First_B_Notice_Status_Issued_Enforced</th>
+                            <th>Campo_21</th>
+                            <th>Date_First_Notice_Status_Satisfied</th>
+                            <th>Second_B_Notice_Status</th>
+                            <th>Date_Second_B_Notice_Status_Issued_Enforced</th>
+                            <th>Campo_25</th>
+                            <th>Date_Second_B_Notice_Status_Satisfied</th>
+                            <th>C_Notice_Status</th>
+                            <th>Date_C_Notice_Status_Issued_Enforced</th>
+                            <th>Date_C_Notice_Status_Satisfied</th>
+                            <th>Old_Account_Number</th>
+                            <th>Original_Account_Open_Date</th>
+                            <th>Unidentified_Large_Trader_Id</th>
+                            <th>Campo_33</th>
+                            <th>Large_Trader_Type_Code</th>
+                            <th>Large_Trader_Type_Last_Change_Date</th>
+                            <th>Campo_36</th>
+                            <th>Campo_37</th>
+                            <th>Initial_Source_Of_Funds_Other</th>
+                            <th>Finance_Away</th>
+                            <th>Account_Funding_Date</th>
+                            <th>Campo_41</th>
+                            <th>Statement_Currency_Code</th>
+                            <th>Future_Statement_Currency_Code</th>
+                            <th>Future_Statement_Currency_Code_Effective_Date</th>
+                            <th>Account_Level_Routing_Code_1</th>
+                            <th>Account_Level_Routing_Code_2</th>
+                            <th>Account_Level_Routing_Code_3</th>
+                            <th>Account_Level_Routing_Code_4</th>
+                            <th>Campo_49</th>
+                            <th>Self_Directed_Ind</th>
+                            <th>Digital_Advice_Ind</th>
+                            <th>Pte_Account_Ind</th>
+                            <th>Campo_53</th>
+                            <th>First_Ip</th>
+                            <th>Second_Ip</th>
+                            <th>Third_Ip</th>
+                            <th>Fourth_Ip</th>
+                            <th>Fifth_Ip</th>
+                            <th>Sixth_Ip</th>
+                            <th>Seventh_Ip</th>
+                            <th>Eighth_Ip</th>
+                            <th>Ninth_Ip</th>
+                            <th>Tenth_Ip</th>
+                            <th>Alert_Im_Acornym</th>
+                            <th>Alert_Im_Access_Code</th>
+                            <th>Broker_Acronym</th>
+                            <th>Cross_Reference_Indicator</th>
+                            <th>Bny_Trust_Indicator</th>
+                            <th>Source_Of_Asset_At_Acct_Opening</th>
+                            <th>Commission_Doscount_Code</th>
+                            <th>External_Account_Number</th>
+                            <th>Confirmation_Suppression_Indicator</th>
+                            <th>Date_Last_Mail_Sent</th>
+                            <th>Date_Last_Mail_Sent_Outside</th>
+                            <th>Campo_75</th>
+                            <th>Fully_Paid_Lending_Agreement_Indicator</th>
+                            <th>Fully_Paid_Lending_Agreement_Date</th>
+                            <th>Custodian_Account_Type</th>
+                            <th>Mifid_Customer_Categorization</th>
+                            <th>Cash_Management_Tran_Code</th>
+                            <th>Sweep_Status_Indicator</th>
+                            <th>Date_Sweep_Activated</th>
+                            <th>Date_Sweep_Details_Changed</th>
+                            <th>Cober_Margin_Debit_Indicator</th>
+                            <th>Campo_85</th>
+                            <th>First_Fund_Sweep_Account_Id</th>
+                            <th>Firstfund_Sweep_Account_Percent</th>
+                            <th>First_Fundsweep_Account_Redemption_Priority</th>
+                            <th>Second_Fund_Sweep_Account_Id</th>
+                            <th>Second_Fund_Sweep_Account_Percent</th>
+                            <th>Second_Fundsweep_Account_Redemption_Priority</th>
+                            <th>Type_Of_Bank_Account</th>
+                            <th>Banklink_Aba_Number</th>
+                            <th>Banklink_Dda_Number</th>
+                            <th>Campo_95</th>
+                            <th>Fund_Bank_Indicator</th>
+                            <th>Campo_97</th>
+                            <th>W_9_Corp_Tax_Classification_Code</th>
+                            <th>Campo_99</th>
+                            <th>Combined_Margin_Acct_Indicator</th>
+                            <th>Pledge_Collateral_Account_Indicator</th>
+                            <th>Finra_Institutional_Account_Code</th>
+                            <th>Proposed_Account_Reference_Id</th>
+                            <th>Advisor_Model_Id</th>
+                            <th>Firm_Model_Style_Id</th>
+                            <th>Campo_106</th>
+                            <th>Campo_107</th>
+                            <th>Campo_108</th>
+                            <th>Dvp_Restriction_Code</th>
+                            <th>Dvp_Restriction_Exp_Date</th>
+                            <th>Escheatment_Withholding_Ind</th>
+                            <th>Campo_112</th>
+                            <th>Source_Of_Origination</th>
+                            <th>Source_Of_Persona</th>
+                            <th>Client_Onboarding_Method</th>
+                            <th>Tax_Filing_Code</th>
+                            <th>Campo_117</th>
+                            <th>Campo_118</th>
+                            <th>Nor_Purpose_Collateral_Acct_Ind</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record C ('+(listaRegC == null ? 'Sin resultados' : #lists.size(listaRegC)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_c" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_1_Trx_Code</th>
+                            <th>Addr_1_Special_Handling_Ind</th>
+                            <th>Addr_1_Delivery_Id</th>
+                            <th>Addr_1_Attention_Line_Prefix</th>
+                            <th>Addr_1_Attention_Line_Detail</th>
+                            <th>Addr_1_Line_1</th>
+                            <th>Addr_1_Line_2</th>
+                            <th>Addr_1_Line_3</th>
+                            <th>Addr_1_Line_4</th>
+                            <th>Addr_1_City_State</th>
+                            <th>Addr_1_Country_Code</th>
+                            <th>Campo_21</th>
+                            <th>Campo_22</th>
+                            <th>Campo_23</th>
+                            <th>Campo_24</th>
+                            <th>Campo_25</th>
+                            <th>Campo_26</th>
+                            <th>Campo_27</th>
+                            <th>Campo_28</th>
+                            <th>Campo_29</th>
+                            <th>Campo_30</th>
+                            <th>Addr_2_Trx_Code</th>
+                            <th>Addr_2_Special_Handling_Ind</th>
+                            <th>Addr_2_Delivery_Id</th>
+                            <th>Addr_2_Attention_Line_Prefix</th>
+                            <th>Addr_2_Attention_Line_Detail</th>
+                            <th>Addr_2_Line_1</th>
+                            <th>Addr_2_Line_2</th>
+                            <th>Addr_2_Line_3</th>
+                            <th>Addr_2_Line_4</th>
+                            <th>Addr_2_City_State</th>
+                            <th>Addr_2_Country_Code</th>
+                            <th>Account_Description</th>
+                            <th>Set_As_Mail_Addr_2_Ind</th>
+                            <th>Campo_44</th>
+                            <th>Principal_Billing_Allocation_Pct</th>
+                            <th>Campo_46</th>
+                            <th>Seasonal_Addr_Id_1</th>
+                            <th>From_Date_1</th>
+                            <th>To_Date_1</th>
+                            <th>Seasonal_Addr_Id_2</th>
+                            <th>From_Date_2</th>
+                            <th>To_Date_2</th>
+                            <th>Seasonal_Addr_Id_3</th>
+                            <th>From_Date_3</th>
+                            <th>To_Date_3</th>
+                            <th>Cost_Basis_Acct_System</th>
+                            <th>Disposition_Method_Mutual_Funds</th>
+                            <th>Disposition_Method_Other</th>
+                            <th>Disposition_Method_Stocks</th>
+                            <th>Campo_60</th>
+                            <th>Amortize_Taxable_Premium_Bonds</th>
+                            <th>Accrue_Market_Disc_Based_On</th>
+                            <th>Accrue_Market_Disc_Income</th>
+                            <th>Campo_64</th>
+                            <th>Campo_65</th>
+                            <th>Campo_66</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegC}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.campo6}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.accountShortName}"></td>
+                            <td th:text="${registro.campo9}"></td>
+                            <td th:text="${registro.addr1TrxCode}"></td>
+                            <td th:text="${registro.addr1SpecialHandlingInd}"></td>
+                            <td th:text="${registro.addr1DeliveryId}"></td>
+                            <td th:text="${registro.addr1AttentionLinePrefix}"></td>
+                            <td th:text="${registro.addr1AttentionLineDetail}"></td>
+                            <td th:text="${registro.addr1Line1}"></td>
+                            <td th:text="${registro.addr1Line2}"></td>
+                            <td th:text="${registro.addr1Line3}"></td>
+                            <td th:text="${registro.addr1Line4}"></td>
+                            <td th:text="${registro.addr1CityState}"></td>
+                            <td th:text="${registro.addr1CountryCode}"></td>
+                            <td th:text="${registro.campo21}"></td>
+                            <td th:text="${registro.campo22}"></td>
+                            <td th:text="${registro.campo23}"></td>
+                            <td th:text="${registro.campo24}"></td>
+                            <td th:text="${registro.campo25}"></td>
+                            <td th:text="${registro.campo26}"></td>
+                            <td th:text="${registro.campo27}"></td>
+                            <td th:text="${registro.campo28}"></td>
+                            <td th:text="${registro.campo29}"></td>
+                            <td th:text="${registro.campo30}"></td>
+                            <td th:text="${registro.addr2TrxCode}"></td>
+                            <td th:text="${registro.addr2SpecialHandlingInd}"></td>
+                            <td th:text="${registro.addr2DeliveryId}"></td>
+                            <td th:text="${registro.addr2AttentionLinePrefix}"></td>
+                            <td th:text="${registro.addr2AttentionLineDetail}"></td>
+                            <td th:text="${registro.addr2Line1}"></td>
+                            <td th:text="${registro.addr2Line2}"></td>
+                            <td th:text="${registro.addr2Line3}"></td>
+                            <td th:text="${registro.addr2Line4}"></td>
+                            <td th:text="${registro.addr2CityState}"></td>
+                            <td th:text="${registro.addr2CountryCode}"></td>
+                            <td th:text="${registro.accountDescription}"></td>
+                            <td th:text="${registro.setAsMailAddr2Ind}"></td>
+                            <td th:text="${registro.campo44}"></td>
+                            <td th:text="${registro.principalBillingAllocationPct}"></td>
+                            <td th:text="${registro.campo46}"></td>
+                            <td th:text="${registro.seasonalAddrId1}"></td>
+                            <td th:text="${registro.fromDate1}"></td>
+                            <td th:text="${registro.toDate1}"></td>
+                            <td th:text="${registro.seasonalAddrId2}"></td>
+                            <td th:text="${registro.fromDate2}"></td>
+                            <td th:text="${registro.toDate2}"></td>
+                            <td th:text="${registro.seasonalAddrId3}"></td>
+                            <td th:text="${registro.fromDate3}"></td>
+                            <td th:text="${registro.toDate3}"></td>
+                            <td th:text="${registro.costBasisAcctSystem}"></td>
+                            <td th:text="${registro.dispositionMethodMutualFunds}"></td>
+                            <td th:text="${registro.dispositionMethodOther}"></td>
+                            <td th:text="${registro.dispositionMethodStocks}"></td>
+                            <td th:text="${registro.campo60}"></td>
+                            <td th:text="${registro.amortizeTaxablePremiumBonds}"></td>
+                            <td th:text="${registro.accrueMarketDiscBasedOn}"></td>
+                            <td th:text="${registro.accrueMarketDiscIncome}"></td>
+                            <td th:text="${registro.campo64}"></td>
+                            <td th:text="${registro.campo65}"></td>
+                            <td th:text="${registro.campo66}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_1_Trx_Code</th>
+                            <th>Addr_1_Special_Handling_Ind</th>
+                            <th>Addr_1_Delivery_Id</th>
+                            <th>Addr_1_Attention_Line_Prefix</th>
+                            <th>Addr_1_Attention_Line_Detail</th>
+                            <th>Addr_1_Line_1</th>
+                            <th>Addr_1_Line_2</th>
+                            <th>Addr_1_Line_3</th>
+                            <th>Addr_1_Line_4</th>
+                            <th>Addr_1_City_State</th>
+                            <th>Addr_1_Country_Code</th>
+                            <th>Campo_21</th>
+                            <th>Campo_22</th>
+                            <th>Campo_23</th>
+                            <th>Campo_24</th>
+                            <th>Campo_25</th>
+                            <th>Campo_26</th>
+                            <th>Campo_27</th>
+                            <th>Campo_28</th>
+                            <th>Campo_29</th>
+                            <th>Campo_30</th>
+                            <th>Addr_2_Trx_Code</th>
+                            <th>Addr_2_Special_Handling_Ind</th>
+                            <th>Addr_2_Delivery_Id</th>
+                            <th>Addr_2_Attention_Line_Prefix</th>
+                            <th>Addr_2_Attention_Line_Detail</th>
+                            <th>Addr_2_Line_1</th>
+                            <th>Addr_2_Line_2</th>
+                            <th>Addr_2_Line_3</th>
+                            <th>Addr_2_Line_4</th>
+                            <th>Addr_2_City_State</th>
+                            <th>Addr_2_Country_Code</th>
+                            <th>Account_Description</th>
+                            <th>Set_As_Mail_Addr_2_Ind</th>
+                            <th>Campo_44</th>
+                            <th>Principal_Billing_Allocation_Pct</th>
+                            <th>Campo_46</th>
+                            <th>Seasonal_Addr_Id_1</th>
+                            <th>From_Date_1</th>
+                            <th>To_Date_1</th>
+                            <th>Seasonal_Addr_Id_2</th>
+                            <th>From_Date_2</th>
+                            <th>To_Date_2</th>
+                            <th>Seasonal_Addr_Id_3</th>
+                            <th>From_Date_3</th>
+                            <th>To_Date_3</th>
+                            <th>Cost_Basis_Acct_System</th>
+                            <th>Disposition_Method_Mutual_Funds</th>
+                            <th>Disposition_Method_Other</th>
+                            <th>Disposition_Method_Stocks</th>
+                            <th>Campo_60</th>
+                            <th>Amortize_Taxable_Premium_Bonds</th>
+                            <th>Accrue_Market_Disc_Based_On</th>
+                            <th>Accrue_Market_Disc_Income</th>
+                            <th>Campo_64</th>
+                            <th>Campo_65</th>
+                            <th>Campo_66</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record D ('+(listaRegD == null ? 'Sin resultados' : #lists.size(listaRegD)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_d" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_3_Trx_Code</th>
+                            <th>Addr_3_Special_Handling_Ind</th>
+                            <th>Addr_3_Delivery_Id</th>
+                            <th>Addr_3_Attention_Line_Prefix</th>
+                            <th>Addr_3_Attention_Line_Detail</th>
+                            <th>Addr_3_Line_1</th>
+                            <th>Addr_3_Line_2</th>
+                            <th>Addr_3_Line_3</th>
+                            <th>Addr_3_Line_4</th>
+                            <th>Addr_3_City_State</th>
+                            <th>Addr_3_Country_Code</th>
+                            <th>Set_As_Mail_Addr_3_Ind</th>
+                            <th>Campo_22</th>
+                            <th>Addr_4_Trx_Code</th>
+                            <th>Addr_4_Special_Handling_Ind</th>
+                            <th>Addr_4_Delivery_Id</th>
+                            <th>Addr_4_Attention_Line_Prefix</th>
+                            <th>Addr_4_Attention_Line_Detail</th>
+                            <th>Addr_4_Line_1</th>
+                            <th>Addr_4_Line_2</th>
+                            <th>Addr_4_Line_3</th>
+                            <th>Addr_4_Line_4</th>
+                            <th>Addr_4_City_State</th>
+                            <th>Addr_4_Country_Code</th>
+                            <th>Set_As_Mail_Addr_4_Ind</th>
+                            <th>Campo_35</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegD}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.campo6}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.accountShortName}"></td>
+                            <td th:text="${registro.campo9}"></td>
+                            <td th:text="${registro.addr3TrxCode}"></td>
+                            <td th:text="${registro.addr3SpecialHandlingInd}"></td>
+                            <td th:text="${registro.addr3DeliveryId}"></td>
+                            <td th:text="${registro.addr3AttentionLinePrefix}"></td>
+                            <td th:text="${registro.addr3AttentionLineDetail}"></td>
+                            <td th:text="${registro.addr3Line1}"></td>
+                            <td th:text="${registro.addr3Line2}"></td>
+                            <td th:text="${registro.addr3Line3}"></td>
+                            <td th:text="${registro.addr3Line4}"></td>
+                            <td th:text="${registro.addr3CityState}"></td>
+                            <td th:text="${registro.addr3CountryCode}"></td>
+                            <td th:text="${registro.setAsMailAddr3Ind}"></td>
+                            <td th:text="${registro.campo22}"></td>
+                            <td th:text="${registro.addr4TrxCode}"></td>
+                            <td th:text="${registro.addr4SpecialHandlingInd}"></td>
+                            <td th:text="${registro.addr4DeliveryId}"></td>
+                            <td th:text="${registro.addr4AttentionLinePrefix}"></td>
+                            <td th:text="${registro.addr4AttentionLineDetail}"></td>
+                            <td th:text="${registro.addr4Line1}"></td>
+                            <td th:text="${registro.addr4Line2}"></td>
+                            <td th:text="${registro.addr4Line3}"></td>
+                            <td th:text="${registro.addr4Line4}"></td>
+                            <td th:text="${registro.addr4CityState}"></td>
+                            <td th:text="${registro.addr4CountryCode}"></td>
+                            <td th:text="${registro.setAsMailAddr4Ind}"></td>
+                            <td th:text="${registro.campo35}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_3_Trx_Code</th>
+                            <th>Addr_3_Special_Handling_Ind</th>
+                            <th>Addr_3_Delivery_Id</th>
+                            <th>Addr_3_Attention_Line_Prefix</th>
+                            <th>Addr_3_Attention_Line_Detail</th>
+                            <th>Addr_3_Line_1</th>
+                            <th>Addr_3_Line_2</th>
+                            <th>Addr_3_Line_3</th>
+                            <th>Addr_3_Line_4</th>
+                            <th>Addr_3_City_State</th>
+                            <th>Addr_3_Country_Code</th>
+                            <th>Set_As_Mail_Addr_3_Ind</th>
+                            <th>Campo_22</th>
+                            <th>Addr_4_Trx_Code</th>
+                            <th>Addr_4_Special_Handling_Ind</th>
+                            <th>Addr_4_Delivery_Id</th>
+                            <th>Addr_4_Attention_Line_Prefix</th>
+                            <th>Addr_4_Attention_Line_Detail</th>
+                            <th>Addr_4_Line_1</th>
+                            <th>Addr_4_Line_2</th>
+                            <th>Addr_4_Line_3</th>
+                            <th>Addr_4_Line_4</th>
+                            <th>Addr_4_City_State</th>
+                            <th>Addr_4_Country_Code</th>
+                            <th>Set_As_Mail_Addr_4_Ind</th>
+                            <th>Campo_35</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record E ('+(listaRegE == null ? 'Sin resultados' : #lists.size(listaRegE)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_e" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_5_Trx_Code</th>
+                            <th>Addr_5_Special_Handling_Ind</th>
+                            <th>Addr_5_Delivery_Id</th>
+                            <th>Addr_5_Attention_Line_Prefix</th>
+                            <th>Addr_5_Attention_Line_Detail</th>
+                            <th>Addr_5_Line_1</th>
+                            <th>Addr_5_Line_2</th>
+                            <th>Addr_5_Line_3</th>
+                            <th>Addr_5_Line_4</th>
+                            <th>Addr_5_City_State</th>
+                            <th>Addr_5_Country_Code</th>
+                            <th>Set_As_Mail_Addr_5_Ind</th>
+                            <th>Campo_22</th>
+                            <th>Addr_6_Trx_Code</th>
+                            <th>Addr_6_Special_Handling_Ind</th>
+                            <th>Addr_6_Delivery_Id</th>
+                            <th>Addr_6_Attention_Line_Prefix</th>
+                            <th>Addr_6_Attention_Line_Detail</th>
+                            <th>Addr_6_Line_1</th>
+                            <th>Addr_6_Line_2</th>
+                            <th>Addr_6_Line_3</th>
+                            <th>Addr_6_Line_4</th>
+                            <th>Addr_6_City_State</th>
+                            <th>Addr_6_Country_Code</th>
+                            <th>Set_As_Mail_Addr_6_Ind</th>
+                            <th>Campo_35</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegE}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.campo6}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.accountShortName}"></td>
+                            <td th:text="${registro.campo9}"></td>
+                            <td th:text="${registro.addr5TrxCode}"></td>
+                            <td th:text="${registro.addr5SpecialHandlingInd}"></td>
+                            <td th:text="${registro.addr5DeliveryId}"></td>
+                            <td th:text="${registro.addr5AttentionLinePrefix}"></td>
+                            <td th:text="${registro.addr5AttentionLineDetail}"></td>
+                            <td th:text="${registro.addr5Line1}"></td>
+                            <td th:text="${registro.addr5Line2}"></td>
+                            <td th:text="${registro.addr5Line3}"></td>
+                            <td th:text="${registro.addr5Line4}"></td>
+                            <td th:text="${registro.addr5CityState}"></td>
+                            <td th:text="${registro.addr5CountryCode}"></td>
+                            <td th:text="${registro.setAsMailAddr5Ind}"></td>
+                            <td th:text="${registro.campo22}"></td>
+                            <td th:text="${registro.addr6TrxCode}"></td>
+                            <td th:text="${registro.addr6SpecialHandlingInd}"></td>
+                            <td th:text="${registro.addr6DeliveryId}"></td>
+                            <td th:text="${registro.addr6AttentionLinePrefix}"></td>
+                            <td th:text="${registro.addr6AttentionLineDetail}"></td>
+                            <td th:text="${registro.addr6Line1}"></td>
+                            <td th:text="${registro.addr6Line2}"></td>
+                            <td th:text="${registro.addr6Line3}"></td>
+                            <td th:text="${registro.addr6Line4}"></td>
+                            <td th:text="${registro.addr6CityState}"></td>
+                            <td th:text="${registro.addr6CountryCode}"></td>
+                            <td th:text="${registro.setAsMailAddr6Ind}"></td>
+                            <td th:text="${registro.campo35}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_5_Trx_Code</th>
+                            <th>Addr_5_Special_Handling_Ind</th>
+                            <th>Addr_5_Delivery_Id</th>
+                            <th>Addr_5_Attention_Line_Prefix</th>
+                            <th>Addr_5_Attention_Line_Detail</th>
+                            <th>Addr_5_Line_1</th>
+                            <th>Addr_5_Line_2</th>
+                            <th>Addr_5_Line_3</th>
+                            <th>Addr_5_Line_4</th>
+                            <th>Addr_5_City_State</th>
+                            <th>Addr_5_Country_Code</th>
+                            <th>Set_As_Mail_Addr_5_Ind</th>
+                            <th>Campo_22</th>
+                            <th>Addr_6_Trx_Code</th>
+                            <th>Addr_6_Special_Handling_Ind</th>
+                            <th>Addr_6_Delivery_Id</th>
+                            <th>Addr_6_Attention_Line_Prefix</th>
+                            <th>Addr_6_Attention_Line_Detail</th>
+                            <th>Addr_6_Line_1</th>
+                            <th>Addr_6_Line_2</th>
+                            <th>Addr_6_Line_3</th>
+                            <th>Addr_6_Line_4</th>
+                            <th>Addr_6_City_State</th>
+                            <th>Addr_6_Country_Code</th>
+                            <th>Set_As_Mail_Addr_6_Ind</th>
+                            <th>Campo_35</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record F ('+(listaRegF == null ? 'Sin resultados' : #lists.size(listaRegF)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_f" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_7_Trx_Code</th>
+                            <th>Addr_7_Special_Handling_Ind</th>
+                            <th>Addr_7_Delivery_Id</th>
+                            <th>Addr_7_Attention_Line_Prefix</th>
+                            <th>Addr_7_Attention_Line_Detail</th>
+                            <th>Addr_7_Line_1</th>
+                            <th>Addr_7_Line_2</th>
+                            <th>Addr_7_Line_3</th>
+                            <th>Addr_7_Line_4</th>
+                            <th>Addr_7_City_State</th>
+                            <th>Addr_7_Country_Code</th>
+                            <th>Set_As_Mail_Addr_7_Ind</th>
+                            <th>Campo_22</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegF}">
+                            <td th:text="${registro.id}">
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}">
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}">
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}">
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.campo6}">
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.accountShortName}">
+                            <td th:text="${registro.campo9}"></td>
+                            <td th:text="${registro.addr7TrxCode}">
+                            <td th:text="${registro.addr7SpecialHandlingInd}"></td>
+                            <td th:text="${registro.addr7DeliveryId}">
+                            <td th:text="${registro.addr7AttentionLinePrefix}"></td>
+                            <td th:text="${registro.addr7AttentionLineDetail}">
+                            <td th:text="${registro.addr7Line1}"></td>
+                            <td th:text="${registro.addr7Line2}">
+                            <td th:text="${registro.addr7Line3}"></td>
+                            <td th:text="${registro.addr7Line4}">
+                            <td th:text="${registro.addr7CityState}"></td>
+                            <td th:text="${registro.addr7CountryCode}">
+                            <td th:text="${registro.setAsMailAddr7Ind}"></td>
+                            <td th:text="${registro.campo22}">
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Addr_7_Trx_Code</th>
+                            <th>Addr_7_Special_Handling_Ind</th>
+                            <th>Addr_7_Delivery_Id</th>
+                            <th>Addr_7_Attention_Line_Prefix</th>
+                            <th>Addr_7_Attention_Line_Detail</th>
+                            <th>Addr_7_Line_1</th>
+                            <th>Addr_7_Line_2</th>
+                            <th>Addr_7_Line_3</th>
+                            <th>Addr_7_Line_4</th>
+                            <th>Addr_7_City_State</th>
+                            <th>Addr_7_Country_Code</th>
+                            <th>Set_As_Mail_Addr_7_Ind</th>
+                            <th>Campo_22</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record W ('+(listaRegW == null ? 'Sin resultados' : #lists.size(listaRegW)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_w" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Record_Transaction_Code</th>
+                            <th>Non_Us_Dollar_Trading</th>
+                            <th>Base_Currency</th>
+                            <th>Income_Currency</th>
+                            <th>Statement_Language</th>
+                            <th>Statement_Format_Code</th>
+                            <th>Msrb_Statement_Ind</th>
+                            <th>Campo_17</th>
+                            <th>Pep</th>
+                            <th>First_Name_Pep</th>
+                            <th>Last_Name_Pep</th>
+                            <th>Suffix_Pep</th>
+                            <th>Political_Office_Held</th>
+                            <th>Country_Of_Office</th>
+                            <th>Foreign_Bank_Account_Ind</th>
+                            <th>Foreign_Bank_Cert_Date</th>
+                            <th>Foreign_Bank_Cert_Exp_Date</th>
+                            <th>Central_Bank_Ind</th>
+                            <th>Acct_Foreign_Financial_Inst</th>
+                            <th>Foreign_Bank_Acct_Oper_1</th>
+                            <th>Foreign_Bank_Acct_Oper_2</th>
+                            <th>Foreign_Bank_Acct_Oper_3</th>
+                            <th>Number_People_Own</th>
+                            <th>Proprietary_Acct_Owned</th>
+                            <th>Campo_34</th>
+                            <th>Tel_1_Transaction_Code</th>
+                            <th>Tel_1_Us_Ind</th>
+                            <th>Tel_1_Type_Id</th>
+                            <th>Tel_1_Number</th>
+                            <th>Tel_1_Extension</th>
+                            <th>Tel_2_Transaction_Code</th>
+                            <th>Tel_2_Us_Ind</th>
+                            <th>Tel_2_Type_Id</th>
+                            <th>Tel_2_Number</th>
+                            <th>Tel_2_Extension</th>
+                            <th>Tel_3_Transaction_Code</th>
+                            <th>Tel_3_Us_Ind</th>
+                            <th>Tel_3_Type_Id</th>
+                            <th>Tel_3_Number</th>
+                            <th>Tel_3_Extension</th>
+                            <th>Tel_4_Transaction_Code</th>
+                            <th>Tel_4_Us_Ind</th>
+                            <th>Tel_4_Type_Id</th>
+                            <th>Tel_4_Number</th>
+                            <th>Tel_4_Extension</th>
+                            <th>Tel_5_Transaction_Code</th>
+                            <th>Tel_5_Us_Ind</th>
+                            <th>Tel_5_Type_Id</th>
+                            <th>Tel_5_Number</th>
+                            <th>Tel_5_Extension</th>
+                            <th>Tel_6_Transaction_Code</th>
+                            <th>Tel_6_Us_Ind</th>
+                            <th>Tel_6_Type_Id</th>
+                            <th>Tel_6_Number</th>
+                            <th>Tel_6_Extension</th>
+                            <th>Tel_7_Transaction_Code</th>
+                            <th>Tel_7_Us_Ind</th>
+                            <th>Tel_7_Type_Id</th>
+                            <th>Tel_7_Number</th>
+                            <th>Tel_7_Extension</th>
+                            <th>Tel_8_Transaction_Code</th>
+                            <th>Tel_8_Us_Ind</th>
+                            <th>Tel_8_Type_Id</th>
+                            <th>Tel_8_Number</th>
+                            <th>Tel_8_Extension</th>
+                            <th>Email_Address</th>
+                            <th>External_Position_Ind</th>
+                            <th>Purge_Eligible_Ind</th>
+                            <th>Advisory_Acct_Ind</th>
+                            <th>Product_Profile_Code</th>
+                            <th>Cents_Per_Share_Discount</th>
+                            <th>Campo_81</th>
+                            <th>Option_Disclosure_Date</th>
+                            <th>Campo_83</th>
+                            <th>Country_Acct_Level_Tax_Residency</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegW}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.campo6}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.accountShortName}"></td>
+                            <td th:text="${registro.campo9}"></td>
+                            <td th:text="${registro.recordTransactionCode}"></td>
+                            <td th:text="${registro.nonUsDollarTrading}"></td>
+                            <td th:text="${registro.baseCurrency}"></td>
+                            <td th:text="${registro.incomeCurrency}"></td>
+                            <td th:text="${registro.statementLanguage}"></td>
+                            <td th:text="${registro.statementFormatCode}"></td>
+                            <td th:text="${registro.msrbStatementInd}"></td>
+                            <td th:text="${registro.campo17}"></td>
+                            <td th:text="${registro.pep}"></td>
+                            <td th:text="${registro.firstNamePep}"></td>
+                            <td th:text="${registro.lastNamePep}"></td>
+                            <td th:text="${registro.suffixPep}"></td>
+                            <td th:text="${registro.politicalOfficeHeld}"></td>
+                            <td th:text="${registro.countryOfOffice}"></td>
+                            <td th:text="${registro.foreignBankAccountInd}"></td>
+                            <td th:text="${registro.foreignBankCertDate}"></td>
+                            <td th:text="${registro.foreignBankCertExpDate}"></td>
+                            <td th:text="${registro.centralBankInd}"></td>
+                            <td th:text="${registro.acctForeignFinancialInst}"></td>
+                            <td th:text="${registro.foreignBankAcctOper1}"></td>
+                            <td th:text="${registro.foreignBankAcctOper2}"></td>
+                            <td th:text="${registro.foreignBankAcctOper3}"></td>
+                            <td th:text="${registro.numberPeopleOwn}"></td>
+                            <td th:text="${registro.proprietaryAcctOwned}"></td>
+                            <td th:text="${registro.campo34}"></td>
+                            <td th:text="${registro.tel1TransactionCode}"></td>
+                            <td th:text="${registro.tel1UsInd}"></td>
+                            <td th:text="${registro.tel1TypeId}"></td>
+                            <td th:text="${registro.tel1Number}"></td>
+                            <td th:text="${registro.tel1Extension}"></td>
+                            <td th:text="${registro.tel2TransactionCode}"></td>
+                            <td th:text="${registro.tel2UsInd}"></td>
+                            <td th:text="${registro.tel2TypeId}"></td>
+                            <td th:text="${registro.tel2Number}"></td>
+                            <td th:text="${registro.tel2Extension}"></td>
+                            <td th:text="${registro.tel3TransactionCode}"></td>
+                            <td th:text="${registro.tel3UsInd}"></td>
+                            <td th:text="${registro.tel3TypeId}"></td>
+                            <td th:text="${registro.tel3Number}"></td>
+                            <td th:text="${registro.tel3Extension}"></td>
+                            <td th:text="${registro.tel4TransactionCode}"></td>
+                            <td th:text="${registro.tel4UsInd}"></td>
+                            <td th:text="${registro.tel4TypeId}"></td>
+                            <td th:text="${registro.tel4Number}"></td>
+                            <td th:text="${registro.tel4Extension}"></td>
+                            <td th:text="${registro.tel5TransactionCode}"></td>
+                            <td th:text="${registro.tel5UsInd}"></td>
+                            <td th:text="${registro.tel5TypeId}"></td>
+                            <td th:text="${registro.tel5Number}"></td>
+                            <td th:text="${registro.tel5Extension}"></td>
+                            <td th:text="${registro.tel6TransactionCode}"></td>
+                            <td th:text="${registro.tel6UsInd}"></td>
+                            <td th:text="${registro.tel6TypeId}"></td>
+                            <td th:text="${registro.tel6Number}"></td>
+                            <td th:text="${registro.tel6Extension}"></td>
+                            <td th:text="${registro.tel7TransactionCode}"></td>
+                            <td th:text="${registro.tel7UsInd}"></td>
+                            <td th:text="${registro.tel7TypeId}"></td>
+                            <td th:text="${registro.tel7Number}"></td>
+                            <td th:text="${registro.tel7Extension}"></td>
+                            <td th:text="${registro.tel8TransactionCode}"></td>
+                            <td th:text="${registro.tel8UsInd}"></td>
+                            <td th:text="${registro.tel8TypeId}"></td>
+                            <td th:text="${registro.tel8Number}"></td>
+                            <td th:text="${registro.tel8Extension}"></td>
+                            <td th:text="${registro.emailAddress}"></td>
+                            <td th:text="${registro.externalPositionInd}"></td>
+                            <td th:text="${registro.purgeEligibleInd}"></td>
+                            <td th:text="${registro.advisoryAcctInd}"></td>
+                            <td th:text="${registro.productProfileCode}"></td>
+                            <td th:text="${registro.centsPerShareDiscount}"></td>
+                            <td th:text="${registro.campo81}"></td>
+                            <td th:text="${registro.optionDisclosureDate}"></td>
+                            <td th:text="${registro.campo83}"></td>
+                            <td th:text="${registro.countryAcctLevelTaxResidency}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Campo_6</th>
+                            <th>Ip_Number</th>
+                            <th>Account_Short_Name</th>
+                            <th>Campo_9</th>
+                            <th>Record_Transaction_Code</th>
+                            <th>Non_Us_Dollar_Trading</th>
+                            <th>Base_Currency</th>
+                            <th>Income_Currency</th>
+                            <th>Statement_Language</th>
+                            <th>Statement_Format_Code</th>
+                            <th>Msrb_Statement_Ind</th>
+                            <th>Campo_17</th>
+                            <th>Pep</th>
+                            <th>First_Name_Pep</th>
+                            <th>Last_Name_Pep</th>
+                            <th>Suffix_Pep</th>
+                            <th>Political_Office_Held</th>
+                            <th>Country_Of_Office</th>
+                            <th>Foreign_Bank_Account_Ind</th>
+                            <th>Foreign_Bank_Cert_Date</th>
+                            <th>Foreign_Bank_Cert_Exp_Date</th>
+                            <th>Central_Bank_Ind</th>
+                            <th>Acct_Foreign_Financial_Inst</th>
+                            <th>Foreign_Bank_Acct_Oper_1</th>
+                            <th>Foreign_Bank_Acct_Oper_2</th>
+                            <th>Foreign_Bank_Acct_Oper_3</th>
+                            <th>Number_People_Own</th>
+                            <th>Proprietary_Acct_Owned</th>
+                            <th>Campo_34</th>
+                            <th>Tel_1_Transaction_Code</th>
+                            <th>Tel_1_Us_Ind</th>
+                            <th>Tel_1_Type_Id</th>
+                            <th>Tel_1_Number</th>
+                            <th>Tel_1_Extension</th>
+                            <th>Tel_2_Transaction_Code</th>
+                            <th>Tel_2_Us_Ind</th>
+                            <th>Tel_2_Type_Id</th>
+                            <th>Tel_2_Number</th>
+                            <th>Tel_2_Extension</th>
+                            <th>Tel_3_Transaction_Code</th>
+                            <th>Tel_3_Us_Ind</th>
+                            <th>Tel_3_Type_Id</th>
+                            <th>Tel_3_Number</th>
+                            <th>Tel_3_Extension</th>
+                            <th>Tel_4_Transaction_Code</th>
+                            <th>Tel_4_Us_Ind</th>
+                            <th>Tel_4_Type_Id</th>
+                            <th>Tel_4_Number</th>
+                            <th>Tel_4_Extension</th>
+                            <th>Tel_5_Transaction_Code</th>
+                            <th>Tel_5_Us_Ind</th>
+                            <th>Tel_5_Type_Id</th>
+                            <th>Tel_5_Number</th>
+                            <th>Tel_5_Extension</th>
+                            <th>Tel_6_Transaction_Code</th>
+                            <th>Tel_6_Us_Ind</th>
+                            <th>Tel_6_Type_Id</th>
+                            <th>Tel_6_Number</th>
+                            <th>Tel_6_Extension</th>
+                            <th>Tel_7_Transaction_Code</th>
+                            <th>Tel_7_Us_Ind</th>
+                            <th>Tel_7_Type_Id</th>
+                            <th>Tel_7_Number</th>
+                            <th>Tel_7_Extension</th>
+                            <th>Tel_8_Transaction_Code</th>
+                            <th>Tel_8_Us_Ind</th>
+                            <th>Tel_8_Type_Id</th>
+                            <th>Tel_8_Number</th>
+                            <th>Tel_8_Extension</th>
+                            <th>Email_Address</th>
+                            <th>External_Position_Ind</th>
+                            <th>Purge_Eligible_Ind</th>
+                            <th>Advisory_Acct_Ind</th>
+                            <th>Product_Profile_Code</th>
+                            <th>Cents_Per_Share_Discount</th>
+                            <th>Campo_81</th>
+                            <th>Option_Disclosure_Date</th>
+                            <th>Campo_83</th>
+                            <th>Country_Acct_Level_Tax_Residency</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+
+        $('#processDate').daterangepicker(
+            {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "autoApply": true,
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+
+<script>
+    $(function () {
+        $("#tabla_reg_a").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_a_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_b").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_b_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_c").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_c_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_d").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_d_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_e").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_e_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_f").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_f_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_w").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_w_wrapper .col-md-6:eq(0)');
+    });
+
+    function buscar() {
+        var corteUrl = 'acct';
+        var oldUrl = location.href;
+        var processDate = $('#processDate').val().replaceAll('-','');
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/' + processDate;
+        location.href = newUrl;
+    }
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

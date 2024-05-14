@@ -1,0 +1,19 @@
+${AnsiColor.CYAN}
+
+   ___         ___        ________                ____    ____   ____    ____   _____   _____
+ .'   `.     .' _ '.     |_   __  |              |_   \  /   _| |_   \  /   _| |_   _| |_   _|
+/  .-.  \    | (_) '___    | |_ \_|    ______      |   \/   |     |   \/   |     | |     | |
+| |   | |    .`___'/ _/    |  _| _    |______|     | |\  /| |     | |\  /| |     | |     | |
+\  `-'  \_  | (___)  \_   _| |__/ |               _| |_\/_| |_   _| |_\/_| |_   _| |_   _| |_
+ `.___.\__| `._____.\__| |________|              |_____||_____| |_____||_____| |_____| |_____|
+
+
+${AnsiColor.DEFAULT}
+${AnsiBackground.DEFAULT}
+
+
+
+Powered by Spring Boot ${spring-boot.version} ${spring-boot.formatted-version}
+
+
+ :: Spring Boot ::        (v${app.properties.config.project-version})        :: Q&E - MMII ::

@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: clavepostgres # Cambia esto por tu contraseña
+      POSTGRES_USER: postgres               # Opcional: Define un usuario predeterminado (default es 'postgres')
+      POSTGRES_DB: qande-mmii             # Opcional: Define un nombre de base de datos predeterminado
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data # Mapea el volumen a un directorio local
+    ports:
+      - "5433:5432" # Expone el puerto 5432 al puerto 5432 de tu máquina host
+

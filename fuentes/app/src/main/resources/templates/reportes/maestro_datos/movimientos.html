@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Maestro Movimientos</h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="rango_fechas" class="col-md-1 col-form-label">Process Dates</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd -> yyyy-MM-dd" id="rango_fechas" name="rango_fechas" th:value="${startProcessDate+ ' -> '+endProcessDate}">
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Listado</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_valores" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <td>Custodian</td>
+                            <td>Client ID</td>
+                            <td>Office ID</td>
+                            <td>Account N°</td>
+                            <td>Name</td>
+                            <td>Process Date</td>
+                            <td>Trade Date</td>
+                            <td>Settl. Date</td>
+                            <td>Activity</td>
+                            <td>Buy/Sell</td>
+                            <td>Quantity</td>
+                            <td>Price</td>
+                            <td>Comission</td>
+                            <td>Fees</td>
+                            <td>Net Amount</td>
+                            <td>USDE Net Amount</td>
+                            <td>Principal</td>
+                            <td>Cusip</td>
+                            <td>Symbol</td>
+                            <td>Isin</td>
+                            <td>Currency</td>
+                            <td>FX Rate</td>
+                            <td>Interest</td>
+                            <td>Currency Base</td>
+                            <td>Cash/Margin</td>
+                            <td>Product Type</td>
+                            <td>Security Description</td>
+                            <td>Activity Description</td>
+                            <td>Activity Code</td>
+                            <td>Source Code</td>
+                            <td>Reporte</td>
+                            <td>Descr. 1</td>
+                            <td>Descr. 2</td>
+                            <td>Descr. 3</td>
+                            <td>Ticker</td>
+                            <td>Id Sub Sub Tipo</td>
+                            <td>Id Sub Tipo</td>
+                            <td>Td Tipo</td>
+                            <td>Nombre Sub Sub Tipo</td>
+                            <td>Sec Id</td>
+                            <td>Aplica Flujo Neto</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="salidaReporte: ${salidaReporte}">
+                            <td th:text="${salidaReporte.custodian}"></td>
+                            <td th:text="${salidaReporte.clientId}"></td>
+                            <td th:text="${salidaReporte.officeId}"></td>
+                            <td th:text="${salidaReporte.accountNo}"></td>
+                            <td th:text="${salidaReporte.name}"></td>
+                            <td th:text="${salidaReporte.processDate}"></td>
+                            <td th:text="${salidaReporte.tradeDate}"></td>
+                            <td th:text="${salidaReporte.settlementDate}"></td>
+                            <td th:text="${salidaReporte.activity}"></td>
+                            <td th:text="${salidaReporte.buySell}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.quantity)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.price)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.comission)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.fees)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.netAmount)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.usdeNetAmount)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.principal)}"></td>
+                            <td th:text="${salidaReporte.cusip}"></td>
+                            <td th:text="${salidaReporte.symbol}"></td>
+                            <td th:text="${salidaReporte.isin}"></td>
+                            <td th:text="${salidaReporte.currency}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.fxRate)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.interest)}"></td>
+                            <td th:text="${salidaReporte.currencyBase}"></td>
+                            <td th:text="${salidaReporte.cashMarginAccount}"></td>
+                            <td th:text="${salidaReporte.productType}"></td>
+                            <td th:text="${salidaReporte.securityDescription}"></td>
+                            <td th:text="${salidaReporte.activityDescription}"></td>
+                            <td th:text="${salidaReporte.activityCode}"></td>
+                            <td th:text="${salidaReporte.sourceCode}"></td>
+                            <td th:text="${salidaReporte.reporte}"></td>
+                            <td th:text="${salidaReporte.description1}"></td>
+                            <td th:text="${salidaReporte.description2}"></td>
+                            <td th:text="${salidaReporte.description3}"></td>
+                            <td th:text="${salidaReporte.ticker}"></td>
+                            <td th:text="${salidaReporte.idSubSubTipoActivo}"></td>
+                            <td th:text="${salidaReporte.idSubTipoActivo}"></td>
+                            <td th:text="${salidaReporte.idTipoActivo}"></td>
+                            <td th:text="${salidaReporte.nombreSubSubTipoActivo}"></td>
+                            <td th:text="${salidaReporte.secId}"></td>
+                            <td th:text="${salidaReporte.aplicaFlujoNeto}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td>Custodian</td>
+                            <td>Client ID</td>
+                            <td>Office ID</td>
+                            <td>Account N°</td>
+                            <td>Name</td>
+                            <td>Process Date</td>
+                            <td>Trade Date</td>
+                            <td>Settl. Date</td>
+                            <td>Activity</td>
+                            <td>Buy/Sell</td>
+                            <td>Quantity</td>
+                            <td>Price</td>
+                            <td>Comission</td>
+                            <td>Fees</td>
+                            <td>Net Amount</td>
+                            <td>USDE Net Amount</td>
+                            <td>Principal</td>
+                            <td>Cusip</td>
+                            <td>Symbol</td>
+                            <td>Isin</td>
+                            <td>Currency</td>
+                            <td>FX Rate</td>
+                            <td>Interest</td>
+                            <td>Currency Base</td>
+                            <td>Cash/Margin</td>
+                            <td>Product Type</td>
+                            <td>Security Description</td>
+                            <td>Activity Description</td>
+                            <td>Activity Code</td>
+                            <td>Source Code</td>
+                            <td>Reporte</td>
+                            <td>Descr. 1</td>
+                            <td>Descr. 2</td>
+                            <td>Descr. 3</td>
+                            <td>Ticker</td>
+                            <td>Id Sub Sub Tipo</td>
+                            <td>Id Sub Tipo</td>
+                            <td>Td Tipo</td>
+                            <td>Nombre Sub Sub Tipo</td>
+                            <td>Sec Id</td>
+                            <td>Aplica Flujo Neto</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+
+        //Date range picker
+        $('#rango_fechas').daterangepicker(
+            {
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')],
+                    'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')],
+                    'Últ. 7 días': [moment().subtract(7, 'days'), moment().subtract(1, 'days')],
+                    'Últ. 10 días': [moment().subtract(10, 'days'), moment().subtract(1, 'days')],
+                    'Mes Actual': [moment().startOf('month'), moment().subtract(1, 'days')],
+                    'Mes Anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " -> ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+<script>
+    $(function () {
+        $("#tabla_valores").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
+    });
+</script>
+
+<script>
+    function buscar() {
+        var formatoHtml = 'YYYYMMDD';
+        var dataCal     = $('#rango_fechas').data('daterangepicker');
+
+        var corteUrl = 'movimientos';
+        var oldUrl = location.href;
+        var startProcessDate    = dataCal.startDate.format(formatoHtml);
+        var endProcessDate    = dataCal.endDate.format(formatoHtml);
+
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/fecha_desde/' + startProcessDate + '/fecha_hasta/' + endProcessDate;
+        location.href = newUrl;
+    }
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

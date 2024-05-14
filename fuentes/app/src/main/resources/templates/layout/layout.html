@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'MMII :: ' + ${titulo}"></title>
+
+    <link rel="icon" th:href="@{/custom/faviconQandE-96x96.png}" type="image/vnd.microsoft.icon" sizes="96x96">
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome
+    https://fontawesome.com/v5/search
+    -->
+    <link rel="stylesheet" th:href="@{/plugins/fontawesome-free/css/all.min.css}">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" th:href="@{/plugins/icheck-bootstrap/icheck-bootstrap.min.css}">
+    <!-- DataTables -->
+    <link rel="stylesheet" th:href="@{/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/datatables-responsive/css/responsive.bootstrap4.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/datatables-buttons/css/buttons.bootstrap4.min.css}">
+    <!-- daterange picker -->
+    <link rel="stylesheet" th:href="@{/plugins/daterangepicker/daterangepicker.css}">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" th:href="@{/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css}">
+    <!-- Select2 -->
+    <link rel="stylesheet" th:href="@{/plugins/select2/css/select2.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css}">
+    <!-- Toastr -->
+    <link rel="stylesheet" th:href="@{/plugins/toastr/toastr.min.css}">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" th:href="@{/dist/css/adminlte.min.css}">
+
+    <!-- Kendo UI v2023.1.314 -->
+    <script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+    <link th:href="@{/kendoui.for.jquery.2023.1.314.trial/styles/default-main.css}" rel="stylesheet" />
+    <script th:src="@{/kendoui.for.jquery.2023.1.314.trial/js/kendo.all.min.js}"></script>
+
+
+</head>
+
+
+<body class="hold-transition login-page">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+    <header th:fragment="header">
+        <!--/*@thymesVar id="notifications" type="java.util.List<java.lang.String>"*/-->
+
+        <!-- Navbar -->
+        <nav
+                class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" data-widget="pushmenu"
+                                        href="#" role="button"><i class="fas fa-bars"></i></a></li>
+                <li class="nav-item d-none d-sm-inline-block"><a
+                        th:href="@{/home}" class="nav-link">Inicio</a></li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/help/ppt}" download><i class="far fa-file-powerpoint" style="color: #FFA500;"></i> PPT ayuda</a>
+                        <a class="dropdown-item" th:href="@{/help/plantilla-carga-manual-clientes}" download><i class="far fa-file-excel" style="color: #00B050;"></i> Plantilla Carga Manual Clientes</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/usuario}" role="button" ><i class="fa fa-user-cog" aria-hidden="true"></i></a></li>
+                <form id="logoutForm" th:action="@{/logout}" method="post">
+                    <li class="nav-item"><a class="nav-link" href="#" role="button" onclick="document.getElementById('logoutForm').submit();"><i class="fa fa-sign-out-alt" style="color: #ed333b;" aria-hidden="true"></i></a></li>
+                </form>
+                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+                        <i class="fas fa-th-large"></i>
+                        <span class="badge badge-light border border-danger text-dark navbar-badge" th:text="${notifications.size()}">99</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+    </header>
+
+
+    <!-- Main Sidebar Container -->
+    <aside th:fragment="lateral" class="main-sidebar sidebar-dark-primary elevation-4">
+        <input type="hidden" id="getContextPath" th:value="${#httpServletRequest.getContextPath()}" />
+        <input type="hidden" id="getRequestURI" th:value="${#request.getRequestURI()}" />
+        <!-- Brand Logo -->
+        <a th:href="@{/home}" class="brand-link"> <img th:src="@{/custom/faviconQandE-96x96.png}"
+                                                       alt="QandE Logo" class="brand-image img-circle elevation-3"
+                                                       style="opacity: .8"> <span
+                class="brand-text font-weight-light">Q&E MMII</span>
+        </a>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar user (optional) -->
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                <div class="image">
+                    <img th:src="@{/custom/img/user.jpg}"
+                         class="img-circle elevation-2" alt="User Image">
+                </div>
+                <div class="info">
+                    <a th:href="@{/usuario}" class="d-block"><span sec:authentication="name"></span></a>
+                </div>
+            </div>
+
+            <!-- SidebarSearch Form -->
+            <div class="form-inline">
+                <div class="input-group" data-widget="sidebar-search">
+                    <input class="form-control form-control-sidebar" type="search"
+                           placeholder="Search" aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-sidebar">
+                            <i class="fas fa-search fa-fw"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    data-accordion="false">
+                    <li th:class="${categoriaMenu.isActivo() ? 'nav-item menu-open': 'nav-item'}" th:if="${categoriaMenu.tieneAcceso(sesionWeb.listaDeRoles())}" th:each="categoriaMenu: ${sesionWeb.getAppMenu().listaOpciones()}">
+                        <a th:href="@{${categoriaMenu.getRutaUrl()}}" th:class="${categoriaMenu.getClaseLink()}">
+                            <i th:class="${categoriaMenu.getClaseIcono()}"></i>
+                            <p><span th:text="${categoriaMenu.getTexto()}" th:remove="tag"></span><i th:class="${categoriaMenu.getClaseIconoExpansion()}"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item" th:each="opcionMenu: ${categoriaMenu.getListaOpciones()}">
+                                <a th:href="@{${opcionMenu.getRutaUrl()}}" th:class="${opcionMenu.getClaseLink()}">
+                                    <i th:class="${opcionMenu.getClaseIcono()}"></i>
+                                    <p th:text="${opcionMenu.getTexto()}"></p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </nav>
+            <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
+    </aside>
+
+
+    <div class="container">
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1>Blank Page</h1>
+                        </div>
+                        <div th:fragment="breadcrumbApp" class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li th:each="breadcrumbItem, breadcrumbStatus: ${sesionWeb.getAppMenu().getBreadcrumb()}"
+                                    th:class="${breadcrumbStatus.last ? 'breadcrumb-item active' : 'breadcrumb-item'}">
+                                    <a href="#" th:if="${breadcrumbStatus.first}" th:text="${breadcrumbItem}"></a>
+                                    <span th:if="${ ! breadcrumbStatus.first}" th:text="${breadcrumbItem}"></span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+
+                <!-- Default box -->
+                <div id="main-card" class="card">
+                    <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                        <h3 class="card-title">Title</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        Start creating your amazing application!
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                        Footer
+                    </div>
+                    <!-- /.card-footer-->
+                </div>
+                <!-- /.card -->
+
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+    </div>
+
+    <footer th:fragment="footerCustom" class="main-footer">
+        <div class="float-right d-none d-sm-block">
+            <b>Version </b><span th:text="${projectVersion}">0.0.0</span>
+        </div>
+        <strong>Copyright &copy; 2019 <a href="#">Q&E :: Quality and Engineering</a>.</strong> All rights reserved.
+
+        <!-- jQuery
+        <script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+        -->
+        <!-- Bootstrap 4 -->
+        <script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <!-- AdminLTE App -->
+        <script th:src="@{/dist/js/adminlte.min.js}"></script>
+        <!-- Custom JS App -->
+        <script th:src="@{/custom/js/funciones_generales.js}"></script>
+    </footer>
+
+    <footer th:fragment="footerLogin" class="main-footer" style="margin-left: 0;">
+        <div class="float-right d-none d-sm-block">
+            <b>Version </b><span th:text="${projectVersion}">0.0.0</span>
+        </div>
+        <strong>Copyright &copy; 2019 <a href="#">Q&E :: Quality and Engineering</a>.</strong> All rights reserved.
+
+        <!-- jQuery
+        <script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+        -->
+        <!-- Bootstrap 4 -->
+        <script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <!-- AdminLTE App -->
+        <script th:src="@{/dist/js/adminlte.min.js}"></script>
+        <!-- Custom JS App -->
+        <script th:src="@{/custom/js/funciones_generales.js}"></script>
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside th:fragment="lateral_control" class="control-sidebar control-sidebar-dark" style="width: 450px;">
+        <div class="p-3 control-sidebar-content">
+            <div class="notifications" th:if="${notifications != null }" >
+                <div class="mb-1" th:each="notification : ${notifications}">
+                    <i class="fas fa-info-circle"></i><span th:text="${' '+notification}"></span>
+                </div>
+                <!--
+                <p th:each="notification : ${notifications}" class="notification-message">
+                    <i class="far fa-bell"></i>
+                    <span th:text="${notification}"></span>
+                </p>
+                -->
+            </div>
+        </div>
+    </aside>
+    <!-- /.control-sidebar -->
+
+    <div th:fragment="customCalendarHtml">
+        <div class="daterangepicker ltr show-calendar opensright"
+             style="top: 1612.93px; left: 1143.5px; right: auto; display: none;">
+            <div class="ranges"></div>
+            <div class="drp-calendar left">
+                <div class="calendar-table">
+                    <table class="table-condensed">
+                        <thead>
+                        <tr>
+                            <th class="prev available"><span></span></th>
+                            <th colspan="5" class="month">Jul 2022</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>Su</th>
+                            <th>Mo</th>
+                            <th>Tu</th>
+                            <th>We</th>
+                            <th>Th</th>
+                            <th>Fr</th>
+                            <th>Sa</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="weekend off ends available" data-title="r0c0">26</td>
+                            <td class="off ends available" data-title="r0c1">27</td>
+                            <td class="off ends available" data-title="r0c2">28</td>
+                            <td class="off ends available" data-title="r0c3">29</td>
+                            <td class="off ends available" data-title="r0c4">30</td>
+                            <td class="available" data-title="r0c5">1</td>
+                            <td class="weekend available" data-title="r0c6">2</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r1c0">3</td>
+                            <td class="available" data-title="r1c1">4</td>
+                            <td class="available" data-title="r1c2">5</td>
+                            <td class="available" data-title="r1c3">6</td>
+                            <td class="available" data-title="r1c4">7</td>
+                            <td class="available" data-title="r1c5">8</td>
+                            <td class="weekend available" data-title="r1c6">9</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r2c0">10</td>
+                            <td class="available" data-title="r2c1">11</td>
+                            <td class="available" data-title="r2c2">12</td>
+                            <td class="available" data-title="r2c3">13</td>
+                            <td class="available" data-title="r2c4">14</td>
+                            <td class="available" data-title="r2c5">15</td>
+                            <td class="weekend available" data-title="r2c6">16</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r3c0">17</td>
+                            <td class="available" data-title="r3c1">18</td>
+                            <td class="available" data-title="r3c2">19</td>
+                            <td class="available" data-title="r3c3">20</td>
+                            <td class="available" data-title="r3c4">21</td>
+                            <td class="available" data-title="r3c5">22</td>
+                            <td class="weekend available" data-title="r3c6">23</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r4c0">24</td>
+                            <td class="available" data-title="r4c1">25</td>
+                            <td class="available" data-title="r4c2">26</td>
+                            <td class="available" data-title="r4c3">27</td>
+                            <td class="today active start-date active end-date available" data-title="r4c4">28</td>
+                            <td class="available" data-title="r4c5">29</td>
+                            <td class="weekend available" data-title="r4c6">30</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r5c0">31</td>
+                            <td class="off ends available" data-title="r5c1">1</td>
+                            <td class="off ends available" data-title="r5c2">2</td>
+                            <td class="off ends available" data-title="r5c3">3</td>
+                            <td class="off ends available" data-title="r5c4">4</td>
+                            <td class="off ends available" data-title="r5c5">5</td>
+                            <td class="weekend off ends available" data-title="r5c6">6</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="calendar-time" style="display: none;"></div>
+            </div>
+            <div class="drp-calendar right">
+                <div class="calendar-table">
+                    <table class="table-condensed">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th colspan="5" class="month">Aug 2022</th>
+                            <th class="next available"><span></span></th>
+                        </tr>
+                        <tr>
+                            <th>Su</th>
+                            <th>Mo</th>
+                            <th>Tu</th>
+                            <th>We</th>
+                            <th>Th</th>
+                            <th>Fr</th>
+                            <th>Sa</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="weekend off ends available" data-title="r0c0">31</td>
+                            <td class="available" data-title="r0c1">1</td>
+                            <td class="available" data-title="r0c2">2</td>
+                            <td class="available" data-title="r0c3">3</td>
+                            <td class="available" data-title="r0c4">4</td>
+                            <td class="available" data-title="r0c5">5</td>
+                            <td class="weekend available" data-title="r0c6">6</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r1c0">7</td>
+                            <td class="available" data-title="r1c1">8</td>
+                            <td class="available" data-title="r1c2">9</td>
+                            <td class="available" data-title="r1c3">10</td>
+                            <td class="available" data-title="r1c4">11</td>
+                            <td class="available" data-title="r1c5">12</td>
+                            <td class="weekend available" data-title="r1c6">13</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r2c0">14</td>
+                            <td class="available" data-title="r2c1">15</td>
+                            <td class="available" data-title="r2c2">16</td>
+                            <td class="available" data-title="r2c3">17</td>
+                            <td class="available" data-title="r2c4">18</td>
+                            <td class="available" data-title="r2c5">19</td>
+                            <td class="weekend available" data-title="r2c6">20</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r3c0">21</td>
+                            <td class="available" data-title="r3c1">22</td>
+                            <td class="available" data-title="r3c2">23</td>
+                            <td class="available" data-title="r3c3">24</td>
+                            <td class="available" data-title="r3c4">25</td>
+                            <td class="available" data-title="r3c5">26</td>
+                            <td class="weekend available" data-title="r3c6">27</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r4c0">28</td>
+                            <td class="available" data-title="r4c1">29</td>
+                            <td class="available" data-title="r4c2">30</td>
+                            <td class="available" data-title="r4c3">31</td>
+                            <td class="off ends available" data-title="r4c4">1</td>
+                            <td class="off ends available" data-title="r4c5">2</td>
+                            <td class="weekend off ends available" data-title="r4c6">3</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend off ends available" data-title="r5c0">4</td>
+                            <td class="off ends available" data-title="r5c1">5</td>
+                            <td class="off ends available" data-title="r5c2">6</td>
+                            <td class="off ends available" data-title="r5c3">7</td>
+                            <td class="off ends available" data-title="r5c4">8</td>
+                            <td class="off ends available" data-title="r5c5">9</td>
+                            <td class="weekend off ends available" data-title="r5c6">10</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="calendar-time" style="display: none;"></div>
+            </div>
+            <div class="drp-buttons"><span class="drp-selected">07/28/2022 - 07/28/2022</span>
+                <button class="cancelBtn btn btn-sm btn-default" type="button">Cancel</button>
+                <button class="applyBtn btn btn-sm btn-primary" type="button">Apply</button>
+            </div>
+        </div>
+        <div class="daterangepicker ltr show-calendar opensright">
+            <div class="ranges"></div>
+            <div class="drp-calendar left">
+                <div class="calendar-table"></div>
+                <div class="calendar-time"></div>
+            </div>
+            <div class="drp-calendar right">
+                <div class="calendar-table"></div>
+                <div class="calendar-time"></div>
+            </div>
+            <div class="drp-buttons"><span class="drp-selected"></span>
+                <button class="cancelBtn btn btn-sm btn-default" type="button">Cancel</button>
+                <button class="applyBtn btn btn-sm btn-primary" disabled="disabled" type="button">Apply</button>
+            </div>
+        </div>
+        <div class="daterangepicker ltr show-ranges opensright"
+             style="display: none; top: 1784.93px; left: 1104.5px; right: auto;">
+            <div class="ranges">
+                <ul>
+                    <li data-range-key="Today">Today</li>
+                    <li data-range-key="Yesterday">Yesterday</li>
+                    <li data-range-key="Last 7 Days" class="active">Last 7 Days</li>
+                    <li data-range-key="Last 30 Days" class="">Last 30 Days</li>
+                    <li data-range-key="This Month">This Month</li>
+                    <li data-range-key="Last Month">Last Month</li>
+                    <li data-range-key="Custom Range">Custom Range</li>
+                </ul>
+            </div>
+            <div class="drp-calendar left">
+                <div class="calendar-table">
+                    <table class="table-condensed">
+                        <thead>
+                        <tr>
+                            <th class="prev available"><span></span></th>
+                            <th colspan="5" class="month">Jun 2022</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>Su</th>
+                            <th>Mo</th>
+                            <th>Tu</th>
+                            <th>We</th>
+                            <th>Th</th>
+                            <th>Fr</th>
+                            <th>Sa</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="weekend off ends available" data-title="r0c0">29</td>
+                            <td class="off ends available" data-title="r0c1">30</td>
+                            <td class="off ends available" data-title="r0c2">31</td>
+                            <td class="available" data-title="r0c3">1</td>
+                            <td class="available" data-title="r0c4">2</td>
+                            <td class="available" data-title="r0c5">3</td>
+                            <td class="weekend available" data-title="r0c6">4</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r1c0">5</td>
+                            <td class="available" data-title="r1c1">6</td>
+                            <td class="available" data-title="r1c2">7</td>
+                            <td class="available" data-title="r1c3">8</td>
+                            <td class="available" data-title="r1c4">9</td>
+                            <td class="available" data-title="r1c5">10</td>
+                            <td class="weekend available" data-title="r1c6">11</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r2c0">12</td>
+                            <td class="available" data-title="r2c1">13</td>
+                            <td class="available" data-title="r2c2">14</td>
+                            <td class="available" data-title="r2c3">15</td>
+                            <td class="available" data-title="r2c4">16</td>
+                            <td class="available" data-title="r2c5">17</td>
+                            <td class="weekend available" data-title="r2c6">18</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r3c0">19</td>
+                            <td class="available" data-title="r3c1">20</td>
+                            <td class="available" data-title="r3c2">21</td>
+                            <td class="available" data-title="r3c3">22</td>
+                            <td class="available" data-title="r3c4">23</td>
+                            <td class="available" data-title="r3c5">24</td>
+                            <td class="weekend available" data-title="r3c6">25</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r4c0">26</td>
+                            <td class="available" data-title="r4c1">27</td>
+                            <td class="available" data-title="r4c2">28</td>
+                            <td class="available" data-title="r4c3">29</td>
+                            <td class="available" data-title="r4c4">30</td>
+                            <td class="off ends available" data-title="r4c5">1</td>
+                            <td class="weekend off ends available" data-title="r4c6">2</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend off ends available" data-title="r5c0">3</td>
+                            <td class="off ends available" data-title="r5c1">4</td>
+                            <td class="off ends available" data-title="r5c2">5</td>
+                            <td class="off ends available" data-title="r5c3">6</td>
+                            <td class="off ends available" data-title="r5c4">7</td>
+                            <td class="off ends available" data-title="r5c5">8</td>
+                            <td class="weekend off ends available" data-title="r5c6">9</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="calendar-time" style="display: none;"></div>
+            </div>
+            <div class="drp-calendar right">
+                <div class="calendar-table">
+                    <table class="table-condensed">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th colspan="5" class="month">Jul 2022</th>
+                            <th class="next available"><span></span></th>
+                        </tr>
+                        <tr>
+                            <th>Su</th>
+                            <th>Mo</th>
+                            <th>Tu</th>
+                            <th>We</th>
+                            <th>Th</th>
+                            <th>Fr</th>
+                            <th>Sa</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="weekend off ends available" data-title="r0c0">26</td>
+                            <td class="off ends available" data-title="r0c1">27</td>
+                            <td class="off ends available" data-title="r0c2">28</td>
+                            <td class="off ends available" data-title="r0c3">29</td>
+                            <td class="off ends available" data-title="r0c4">30</td>
+                            <td class="available" data-title="r0c5">1</td>
+                            <td class="weekend available" data-title="r0c6">2</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r1c0">3</td>
+                            <td class="available" data-title="r1c1">4</td>
+                            <td class="available" data-title="r1c2">5</td>
+                            <td class="available" data-title="r1c3">6</td>
+                            <td class="available" data-title="r1c4">7</td>
+                            <td class="available" data-title="r1c5">8</td>
+                            <td class="weekend available" data-title="r1c6">9</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r2c0">10</td>
+                            <td class="available" data-title="r2c1">11</td>
+                            <td class="available" data-title="r2c2">12</td>
+                            <td class="available" data-title="r2c3">13</td>
+                            <td class="available" data-title="r2c4">14</td>
+                            <td class="available" data-title="r2c5">15</td>
+                            <td class="weekend available" data-title="r2c6">16</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r3c0">17</td>
+                            <td class="available" data-title="r3c1">18</td>
+                            <td class="available" data-title="r3c2">19</td>
+                            <td class="available" data-title="r3c3">20</td>
+                            <td class="available" data-title="r3c4">21</td>
+                            <td class="active start-date available" data-title="r3c5">22</td>
+                            <td class="weekend in-range available" data-title="r3c6">23</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend in-range available" data-title="r4c0">24</td>
+                            <td class="in-range available" data-title="r4c1">25</td>
+                            <td class="in-range available" data-title="r4c2">26</td>
+                            <td class="in-range available" data-title="r4c3">27</td>
+                            <td class="today active end-date in-range available" data-title="r4c4">28</td>
+                            <td class="available" data-title="r4c5">29</td>
+                            <td class="weekend available" data-title="r4c6">30</td>
+                        </tr>
+                        <tr>
+                            <td class="weekend available" data-title="r5c0">31</td>
+                            <td class="off ends available" data-title="r5c1">1</td>
+                            <td class="off ends available" data-title="r5c2">2</td>
+                            <td class="off ends available" data-title="r5c3">3</td>
+                            <td class="off ends available" data-title="r5c4">4</td>
+                            <td class="off ends available" data-title="r5c5">5</td>
+                            <td class="weekend off ends available" data-title="r5c6">6</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="calendar-time" style="display: none;"></div>
+            </div>
+            <div class="drp-buttons"><span class="drp-selected">07/22/2022 - 07/28/2022</span>
+                <button class="cancelBtn btn btn-sm btn-default" type="button">Cancel</button>
+                <button class="applyBtn btn btn-sm btn-primary" type="button">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <div th:fragment="scripting_cierre"  class="card-body" th:if="${status != null}">
+        <!-- Toastr -->
+        <script th:src="@{/plugins/toastr/toastr.min.js}"></script>
+
+        <script th:inline="javascript" th:if="${status != null}">
+            /*<![CDATA[*/
+            customNotification([[${status.tipo}]], [[${status.mensaje}]], [[${status.detalle}]]);
+
+            /*]]>*/
+        </script>
+    </div>
+</div>
+<!-- ./wrapper -->
+
+</body>
+</html>

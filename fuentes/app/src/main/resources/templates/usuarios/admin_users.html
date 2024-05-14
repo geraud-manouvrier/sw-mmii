@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Administración de Usuarios</h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div id="detail-card" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Habilitado</th>
+                            <th>Username</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <span th:each="registroUsuario: ${listaUsuarios}">
+                            <tr data-widget="expandable-table" aria-expanded="false">
+                                <td th:text="${registroUsuario.id}"></td>
+                                <td th:text="${registroUsuario.enabled}"></td>
+                                <td th:text="${registroUsuario.username}"></td>
+                            </tr>
+                            <tr class="expandable-body">
+                                <td colspan="6">
+                                    <ul>
+                                        <li><a th:href="@{/usuarios/admin_users/reset_passwd/{username}(username=${registroUsuario.username})}">Reset Password</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </span>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer"></div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

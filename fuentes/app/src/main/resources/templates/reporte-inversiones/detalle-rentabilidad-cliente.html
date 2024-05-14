@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Detalle Rentabilidad Cliente</h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.rep_inv.entity.RentabilidadCalculada>"*/-->
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="form_consultar_registro" th:action="@{/reporte-inversiones/detalle-rentabilidad-cliente}" method="post">
+                        <div class="form-group row">
+                            <label for="rango_fechas" class="col-md-1 col-form-label">Process Dates</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" placeholder="yyyy-MM-dd -> yyyy-MM-dd" id="rango_fechas" name="rango_fechas" th:value="${startProcessDate+ ' -> '+endProcessDate}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cliente" class="col-md-1 col-form-label">Lista Cliente</label>
+                            <div class="col-md-3">
+                                <input id="cliente" name="cliente" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cuenta" class="col-md-1 col-form-label">Lista Cuenta</label>
+                            <div class="col-md-3">
+                                <input id="cuenta" name="cuenta" disabled="disabled" />
+                            </div>
+                        </div>
+                        <input type="hidden" id="fecha_desde" name="fecha_desde">
+                        <input type="hidden" id="fecha_hasta" name="fecha_hasta">
+                    </form>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Listado Nivel 1 (ID cliente)</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_valoresN1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>rowId</th>
+                            <th>nivel</th>
+                            <th>sub-nivel</th>
+                            <th>processDate</th>
+                            <th>Date</th>
+                            <th>Client Id</th>
+                            <th>Cta. Custodio</th>
+                            <th>agregadorN3</th>
+                            <th>agregadorN4</th>
+                            <th>saldoDia</th>
+                            <th>abonosDia</th>
+                            <th>retirosDia</th>
+                            <th>dividendosDia</th>
+                            <th>saldoDiaAnterior</th>
+                            <th>comisionDevengada</th>
+                            <th>utilidad</th>
+                            <th>rentabilidad</th>
+                            <th>Base Ini. Oper. Desde</th>
+                            <th>Base Ini. Oper. Hasta</th>
+                            <th>Base Ini. Oper. Rentabilidad</th>
+                            <th>Base Apertura Desde</th>
+                            <th>Base Apertura Hasta</th>
+                            <th>Base Apertura Rentabilidad</th>
+                            <th>Base 1M Desde</th>
+                            <th>Base 1M Hasta</th>
+                            <th>Base 1M Rentabilidad</th>
+                            <th>Base 3M Desde</th>
+                            <th>Base 3M Hasta</th>
+                            <th>Base 3M Rentabilidad</th>
+                            <th>Base 12M Desde</th>
+                            <th>Base 12M Hasta</th>
+                            <th>Base 12M Rentabilidad</th>
+                            <th>Base YTD Desde</th>
+                            <th>Base YTD Hasta</th>
+                            <th>Base YTD Rentabilidad</th>
+                            <th>base7FechaDesde</th>
+                            <th>base7FechaHasta</th>
+                            <th>base7Rentabilidad</th>
+                            <th>base8FechaDesde</th>
+                            <th>base8FechaHasta</th>
+                            <th>base8Rentabilidad</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro : ${lista_registros}" th:if="${registro.nivel=='N1'}">
+                            <td th:text="${registro.rowId}"></td>
+                            <td th:text="${registro.nivel}"></td>
+                            <td th:text="${registro.subNivel}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.processDateAsDate}"></td>
+                            <td th:text="${registro.agregadorN1}"></td>
+                            <td th:text="${registro.agregadorN2}"></td>
+                            <td th:text="${registro.agregadorN3}"></td>
+                            <td th:text="${registro.agregadorN4}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.saldoDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.abonosDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.retirosDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.dividendosDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.saldoDiaAnterior)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.comisionDevengadaDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.utilidad)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.rentabilidad)}"></td>
+                            <td th:text="${registro.base1FechaDesde}"></td>
+                            <td th:text="${registro.base1FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base1Rentabilidad)}"></td>
+                            <td th:text="${registro.base2FechaDesde}"></td>
+                            <td th:text="${registro.base2FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base2Rentabilidad)}"></td>
+                            <td th:text="${registro.base3FechaDesde}"></td>
+                            <td th:text="${registro.base3FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base3Rentabilidad)}"></td>
+                            <td th:text="${registro.base4FechaDesde}"></td>
+                            <td th:text="${registro.base4FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base4Rentabilidad)}"></td>
+                            <td th:text="${registro.base5FechaDesde}"></td>
+                            <td th:text="${registro.base5FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base5Rentabilidad)}"></td>
+                            <td th:text="${registro.base6FechaDesde}"></td>
+                            <td th:text="${registro.base6FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base6Rentabilidad)}"></td>
+                            <td th:text="${registro.base7FechaDesde}"></td>
+                            <td th:text="${registro.base7FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base7Rentabilidad)}"></td>
+                            <td th:text="${registro.base8FechaDesde}"></td>
+                            <td th:text="${registro.base8FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base8Rentabilidad)}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>rowId</th>
+                            <th>nivel</th>
+                            <th>sub-nivel</th>
+                            <th>processDate</th>
+                            <th>Date</th>
+                            <th>Client Id</th>
+                            <th>Cta. Custodio</th>
+                            <th>agregadorN3</th>
+                            <th>agregadorN4</th>
+                            <th>saldoDia</th>
+                            <th>abonosDia</th>
+                            <th>retirosDia</th>
+                            <th>dividendosDia</th>
+                            <th>saldoDiaAnterior</th>
+                            <th>comisionDevengada</th>
+                            <th>utilidad</th>
+                            <th>rentabilidad</th>
+                            <th>Base Ini. Oper. Desde</th>
+                            <th>Base Ini. Oper. Hasta</th>
+                            <th>Base Ini. Oper. Rentabilidad</th>
+                            <th>Base Apertura Desde</th>
+                            <th>Base Apertura Hasta</th>
+                            <th>Base Apertura Rentabilidad</th>
+                            <th>Base 1M Desde</th>
+                            <th>Base 1M Hasta</th>
+                            <th>Base 1M Rentabilidad</th>
+                            <th>Base 3M Desde</th>
+                            <th>Base 3M Hasta</th>
+                            <th>Base 3M Rentabilidad</th>
+                            <th>Base 12M Desde</th>
+                            <th>Base 12M Hasta</th>
+                            <th>Base 12M Rentabilidad</th>
+                            <th>Base YTD Desde</th>
+                            <th>Base YTD Hasta</th>
+                            <th>Base YTD Rentabilidad</th>
+                            <th>base7FechaDesde</th>
+                            <th>base7FechaHasta</th>
+                            <th>base7Rentabilidad</th>
+                            <th>base8FechaDesde</th>
+                            <th>base8FechaHasta</th>
+                            <th>base8Rentabilidad</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Listado Nivel 2 (Cuenta-Custodio)</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_valoresN2" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>rowId</th>
+                            <th>nivel</th>
+                            <th>sub-nivel</th>
+                            <th>processDate</th>
+                            <th>Date</th>
+                            <th>Client Id</th>
+                            <th>Cta. Custodio</th>
+                            <th>agregadorN3</th>
+                            <th>agregadorN4</th>
+                            <th>saldoDia</th>
+                            <th>abonosDia</th>
+                            <th>retirosDia</th>
+                            <th>dividendosDia</th>
+                            <th>saldoDiaAnterior</th>
+                            <th>comisionDevengada</th>
+                            <th>utilidad</th>
+                            <th>rentabilidad</th>
+                            <th>Base Ini. Oper. Desde</th>
+                            <th>Base Ini. Oper. Hasta</th>
+                            <th>Base Ini. Oper. Rentabilidad</th>
+                            <th>Base Apertura Desde</th>
+                            <th>Base Apertura Hasta</th>
+                            <th>Base Apertura Rentabilidad</th>
+                            <th>Base 1M Desde</th>
+                            <th>Base 1M Hasta</th>
+                            <th>Base 1M Rentabilidad</th>
+                            <th>Base 3M Desde</th>
+                            <th>Base 3M Hasta</th>
+                            <th>Base 3M Rentabilidad</th>
+                            <th>Base 12M Desde</th>
+                            <th>Base 12M Hasta</th>
+                            <th>Base 12M Rentabilidad</th>
+                            <th>Base YTD Desde</th>
+                            <th>Base YTD Hasta</th>
+                            <th>Base YTD Rentabilidad</th>
+                            <th>base7FechaDesde</th>
+                            <th>base7FechaHasta</th>
+                            <th>base7Rentabilidad</th>
+                            <th>base8FechaDesde</th>
+                            <th>base8FechaHasta</th>
+                            <th>base8Rentabilidad</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro : ${lista_registros}" th:if="${registro.nivel=='N2'}">
+                            <td th:text="${registro.rowId}"></td>
+                            <td th:text="${registro.nivel}"></td>
+                            <td th:text="${registro.subNivel}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.processDateAsDate}"></td>
+                            <td th:text="${registro.agregadorN1}"></td>
+                            <td th:text="${registro.agregadorN2}"></td>
+                            <td th:text="${registro.agregadorN3}"></td>
+                            <td th:text="${registro.agregadorN4}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.saldoDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.abonosDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.retirosDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.dividendosDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.saldoDiaAnterior)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepInvWeb(registro.comisionDevengadaDia)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.utilidad)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.rentabilidad)}"></td>
+                            <td th:text="${registro.base1FechaDesde}"></td>
+                            <td th:text="${registro.base1FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base1Rentabilidad)}"></td>
+                            <td th:text="${registro.base2FechaDesde}"></td>
+                            <td th:text="${registro.base2FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base2Rentabilidad)}"></td>
+                            <td th:text="${registro.base3FechaDesde}"></td>
+                            <td th:text="${registro.base3FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base3Rentabilidad)}"></td>
+                            <td th:text="${registro.base4FechaDesde}"></td>
+                            <td th:text="${registro.base4FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base4Rentabilidad)}"></td>
+                            <td th:text="${registro.base5FechaDesde}"></td>
+                            <td th:text="${registro.base5FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base5Rentabilidad)}"></td>
+                            <td th:text="${registro.base6FechaDesde}"></td>
+                            <td th:text="${registro.base6FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base6Rentabilidad)}"></td>
+                            <td th:text="${registro.base7FechaDesde}"></td>
+                            <td th:text="${registro.base7FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base7Rentabilidad)}"></td>
+                            <td th:text="${registro.base8FechaDesde}"></td>
+                            <td th:text="${registro.base8FechaHasta}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepInvWeb(registro.base8Rentabilidad)}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>rowId</th>
+                            <th>nivel</th>
+                            <th>sub-nivel</th>
+                            <th>processDate</th>
+                            <th>Date</th>
+                            <th>Client Id</th>
+                            <th>Cta. Custodio</th>
+                            <th>agregadorN3</th>
+                            <th>agregadorN4</th>
+                            <th>saldoDia</th>
+                            <th>abonosDia</th>
+                            <th>retirosDia</th>
+                            <th>dividendosDia</th>
+                            <th>saldoDiaAnterior</th>
+                            <th>comisionDevengada</th>
+                            <th>utilidad</th>
+                            <th>rentabilidad</th>
+                            <th>Base Ini. Oper. Desde</th>
+                            <th>Base Ini. Oper. Hasta</th>
+                            <th>Base Ini. Oper. Rentabilidad</th>
+                            <th>Base Apertura Desde</th>
+                            <th>Base Apertura Hasta</th>
+                            <th>Base Apertura Rentabilidad</th>
+                            <th>Base 1M Desde</th>
+                            <th>Base 1M Hasta</th>
+                            <th>Base 1M Rentabilidad</th>
+                            <th>Base 3M Desde</th>
+                            <th>Base 3M Hasta</th>
+                            <th>Base 3M Rentabilidad</th>
+                            <th>Base 12M Desde</th>
+                            <th>Base 12M Hasta</th>
+                            <th>Base 12M Rentabilidad</th>
+                            <th>Base YTD Desde</th>
+                            <th>Base YTD Hasta</th>
+                            <th>Base YTD Rentabilidad</th>
+                            <th>base7FechaDesde</th>
+                            <th>base7FechaHasta</th>
+                            <th>base7Rentabilidad</th>
+                            <th>base8FechaDesde</th>
+                            <th>base8FechaHasta</th>
+                            <th>base8Rentabilidad</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(document).ready(function() {
+        var clienteDefault = [[${clienteDefault}]];
+        var cuentaDefault = [[${cuentaDefault}]];
+
+        var clientDataSource = new kendo.data.DataSource({
+            data: [
+                /*[# th:each="objeto : ${lista_clientes}"]*/
+                {
+                    ClientId: [[${objeto.getId}]],
+                    ClientValue: [[${objeto.getValue}]],
+                    ClientGouperId: [[${objeto.getGrouper}]]
+                },
+                /*[/]*/
+            ],
+            group: { field: "ClientGouperId" }
+        });
+
+        var accountDataSource = new kendo.data.DataSource({
+            data: [
+                /*[# th:each="objeto : ${lista_clientes}"]*/
+                {
+                    AccountId: "", // Puedes asignar un valor especial o null para representar "todos los valores"
+                    AccountValue: "Todas", // Texto que se mostrará en el dropdown para esta opción
+                    AccountGouperId: "", // Puedes asignar null o algún valor especial para identificar esta opción
+                    ClientId: [[${objeto.getId}]], // Asigna null al cliente para que esta opción esté disponible para todos los clientes
+                },
+                /*[/]*/
+
+                /*[# th:each="objeto : ${lista_cuentas}"]*/
+                {
+                    AccountId: [[${objeto.getId}]],
+                    AccountValue: [[${objeto.getValue}]],
+                    AccountGouperId: [[${objeto.getGrouper}]],
+                    ClientId: [[${objeto.getParent}]]
+                },
+                /*[/]*/
+            ],
+            group: { field: "AccountGouperId" }
+        });
+        /*]]>*/
+
+        var cliente = $("#cliente").kendoDropDownList({
+            dataTextField: "ClientValue",
+            dataValueField: "ClientId",
+            height: 300,
+            filter: "contains",
+            dataSource: clientDataSource
+        }).data("kendoDropDownList");
+
+        var cuenta = $("#cuenta").kendoDropDownList({
+            cascadeFrom: "cliente",
+            autoBind: false,
+            dataTextField: "AccountValue",
+            dataValueField: "AccountId",
+            height: 300,
+            dataSource: accountDataSource
+        }).data("kendoDropDownList");
+
+        if (clienteDefault!=null) {
+            cliente.value(clienteDefault);
+            cliente.trigger("change");
+            if (cuentaDefault!=null) {
+                cuenta.value(cuentaDefault);
+                cuenta.trigger("change");
+                cliente.setOptions({ autoBind: true });
+            }
+        }
+
+
+    });
+</script>
+
+<script>
+
+    function createRangeCalendar(calendarName) {
+        var idCalendar         = '#'+calendarName;
+        return $(idCalendar).daterangepicker(
+            {
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Inicio Operaciones': [moment('2022-06-01'), moment().subtract(1, 'days')],
+                    '1 mes': [moment().subtract(1, 'days').subtract(1, 'month'), moment().subtract(1, 'days')],
+                    '3 meses': [moment().subtract(1, 'days').subtract(3, 'months'), moment().subtract(1, 'days')],
+                    '12 meses': [moment().subtract(1, 'days').subtract(12, 'months'), moment().subtract(1, 'days')],
+                    'YTD': [moment().subtract(1, 'days').startOf('year'), moment().subtract(1, 'days')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " -> ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        );
+    }
+
+    function creaDataTable(nombreTabla) {
+        var idTabla         = '#'+nombreTabla;
+        var idWrapperTabla  = '#'+nombreTabla+'_wrapper';
+        return $(idTabla).DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false, "pageLength": 100,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"],
+            "columns": creaColumnasDataTable(),
+            order: [
+                [1, 'asc'],
+                [2, 'asc']
+            ]
+        }).buttons().container().appendTo($(idWrapperTabla).find('.col-md-6:eq(0)'));
+    }
+
+    function creaColumnasDataTable() {
+        var totalColumns = 41;
+        var basedOneIndexesOfColumnsHidden = [2, 3, 4, 6, 7, 8, 9, 15, 36, 37, 38, 39, 40, 41];
+        var columnsVisibility = [];
+        for (var i = 0; i < totalColumns; i++) {
+            if (basedOneIndexesOfColumnsHidden.includes(i+1)) {
+                columnsVisibility.push({"visible": false});
+            } else {
+                columnsVisibility.push(null);
+            }
+        }
+        return columnsVisibility;
+    }
+
+</script>
+
+<script>
+
+    $(function () {
+        creaDataTable("tabla_valoresN1");
+    });
+
+    $(function () {
+        creaDataTable("tabla_valoresN2");
+    });
+
+    $(function () {
+        createRangeCalendar("rango_fechas");
+    });
+
+    $(function () {
+        var tabla_valoresN2 = $('#tabla_valoresN2').DataTable();
+        tabla_valoresN2.column(6).visible(true);
+    });
+
+    function buscar() {
+        var formatoHtml = 'YYYYMMDD';
+        var dataCal     = $('#rango_fechas').data('daterangepicker');
+
+        var startProcessDate    = dataCal.startDate.format(formatoHtml);
+        var endProcessDate    = dataCal.endDate.format(formatoHtml);
+
+        $("#fecha_desde").val( startProcessDate );
+        $("#fecha_hasta").val( endProcessDate );
+        var myForm  = document.getElementById('form_consultar_registro');
+        myForm.submit();
+
+    }
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

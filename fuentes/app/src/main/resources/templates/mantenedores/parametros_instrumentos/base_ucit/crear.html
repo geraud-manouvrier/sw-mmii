@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div id="main-card" class="card" th:classappend="${(baseUcit.id != null or (status != null and status.codigo !=0) ) ? '' : ' collapsed-card'}">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${(baseUcit.id != null or (status != null and status.codigo !=0) ) ? 'Modificar registro' : 'Nuevo registro'}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas" th:classappend="${(baseUcit.id != null or (status != null and status.codigo !=0) ) ? ' fa-minus' : ' fa-plus'}"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="form_guardar_registro" th:action="@{/mantenedores/parametros_instrumentos/base_ucit/guardar}" method="post" th:object="${baseUcit}">
+                        <div class="form-group row">
+                            <label for="id" class="col-md-1 col-form-label">ID</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" id="id" name="id" th:value="${baseUcit.id != null ? baseUcit.id: ''}" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="securityNumber" class="col-md-1 col-form-label">Sec. Number</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{securityNumber}" id="securityNumber" name="securityNumber" th:value="${baseUcit.id != null ? baseUcit.securityNumber: ''}">
+                            </div>
+                            <span th:if="${#fields.hasErrors('securityNumber') and (baseUcit.id != null or (status != null and status.codigo !=0) )}" th:errors="*{securityNumber}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="isin" class="col-md-1 col-form-label">ISIN</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{isin}" id="isin" name="isin" th:value="${baseUcit.id != null ? baseUcit.isin: ''}">
+                            </div>
+                            <span th:if="${#fields.hasErrors('isin') and (baseUcit.id != null or (status != null and status.codigo !=0) )}" th:errors="*{isin}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cusip" class="col-md-1 col-form-label">Cusip</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{cusip}" id="cusip" name="cusip" th:value="${baseUcit.id != null ? baseUcit.cusip: ''}">
+                            </div>
+                            <span th:if="${#fields.hasErrors('cusip') and (baseUcit.id != null or (status != null and status.codigo !=0) )}" th:errors="*{cusip}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="secType" class="col-md-1 col-form-label">Sec. Type</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{secType}" id="secType" name="secType" th:value="${baseUcit.id != null ? baseUcit.secType: ''}">
+                            </div>
+                            <span th:if="${#fields.hasErrors('secType') and (baseUcit.id != null or (status != null and status.codigo !=0) )}" th:errors="*{secType}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="symbol" class="col-md-1 col-form-label">Symbol</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{symbol}" id="symbol" name="symbol" th:value="${baseUcit.id != null ? baseUcit.symbol: ''}">
+                            </div>
+                            <span th:if="${#fields.hasErrors('symbol') and (baseUcit.id != null or (status != null and status.codigo !=0) )}" th:errors="*{symbol}"></span>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="guardar()"><i class="fas fa-save"></i>Guardar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div id="detail-card" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Listado registros existentes</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_valores" class="table table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Security Number</th>
+                            <th>ISIN</th>
+                            <th>Cusip</th>
+                            <th>Sec. Type</th>
+                            <th>Symbol</th>
+                            <th>Modificar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro_actual: ${lista_registros}">
+                            <td th:text="${registro_actual.id}"></td>
+                            <td th:text="${registro_actual.securityNumber}"></td>
+                            <td th:text="${registro_actual.isin}"></td>
+                            <td th:text="${registro_actual.cusip}"></td>
+                            <td th:text="${registro_actual.secType}"></td>
+                            <td th:text="${registro_actual.symbol}"></td>
+                            <td>
+                                <a class="btn bg-info" th:href="@{/mantenedores/parametros_instrumentos/base_ucit/editar/{id}(id=${registro_actual.id})}">Editar</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Security Number</th>
+                            <th>ISIN</th>
+                            <th>Cusip</th>
+                            <th>Sec. Type</th>
+                            <th>Symbol</th>
+                            <th>Modificar</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+<script>
+
+    $(function () {
+        $("#tabla_valores").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": true, "autoWidth": false, "pageLength": 50,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
+    });
+
+    function guardar() {
+        var id = $('#id').val();
+        var myForm  = document.getElementById('form_guardar_registro');
+        if (id!="") {
+            var oldAction   = myForm.action;
+            console.log(oldAction);
+            myForm.action = oldAction + '/'+id;
+        }
+        console.log(myForm.action);
+        myForm.submit();
+    }
+
+    $('#main-card').CardWidget('collapse');
+</script>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

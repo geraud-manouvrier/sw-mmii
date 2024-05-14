@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card" th:classappend="${(cuenta.idCuentaSura != null or (status != null and status.codigo !=0) ) ? '' : ' collapsed-card'}">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${(cuenta.idCuentaSura != null or (status != null and status.codigo !=0) ) ? 'Modificar registro' : 'Nuevo registro'}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas" th:classappend="${(cuenta.idCuentaSura != null or (status != null and status.codigo !=0) ) ? ' fa-minus' : ' fa-plus'}"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="form_guardar_registro" th:action="@{/mantenedores/enrolamiento/cuenta/guardar}" method="post" th:object="${cuenta}">
+                        <div class="form-group row">
+                            <label for="idContrato" class="col-md-2 col-form-label">ID Contrato</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{idContrato}" id="idContrato" name="idContrato" th:value="${cuenta.idCuentaSura != null ? cuenta.idContrato: ''}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('idContrato') and (cuenta.idCuentaSura != null or (status != null and status.codigo !=0) )}" th:errors="*{idContrato}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="idCuentaSura" class="col-md-2 col-form-label">ID Cuenta</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" id="idCuentaSura" name="idCuentaSura" th:value="${cuenta.idCuentaSura != null ? cuenta.idCuentaSura: ''}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="idCuentaCustodio" class="col-md-2 col-form-label">ID Cta. Custodio</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{idCuentaCustodio}" id="idCuentaCustodio" name="idCuentaCustodio" th:value="${cuenta.idCuentaSura != null ? cuenta.idCuentaCustodio: ''}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('idCuentaCustodio') and (cuenta.idCuentaSura != null or (status != null and status.codigo !=0) )}" th:errors="*{idCuentaCustodio}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="custodio" class="col-md-2 col-form-label">Custodio</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{custodio}" id="custodio" name="custodio" th:value="${cuenta.idCuentaSura != null ? cuenta.custodio: ''}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('custodio') and (cuenta.idCuentaSura != null or (status != null and status.codigo !=0) )}" th:errors="*{custodio}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="modeloAsesoria" class="col-md-2 col-form-label">Modelo Asesoria</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{modeloAsesoria}" id="modeloAsesoria" name="modeloAsesoria" th:value="${cuenta.idCuentaSura != null ? cuenta.modeloAsesoria: ''}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('modeloAsesoria') and (cuenta.idCuentaSura != null or (status != null and status.codigo !=0) )}" th:errors="*{modeloAsesoria}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="montoFondeo" class="col-md-2 col-form-label">Monto Fondeo</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{montoFondeo}" id="montoFondeo" name="montoFondeo" th:value="${cuenta.idCuentaSura != null ? #numbers.formatDecimal(cuenta.montoFondeo,1, 4,'POINT'): '0'}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('montoFondeo') and (cuenta.idCuentaSura != null or (status != null and status.codigo !=0) )}" th:errors="*{montoFondeo}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="codPaisAtencion" class="col-md-2 col-form-label">País Atención</label>
+                            <div class="col-md-2">
+                                <select class="form-control" th:field="*{codPaisAtencion}" id="codPaisAtencion" name="codPaisAtencion">
+                                    <option th:each="pais : ${listaPaises}" th:value="${pais.id}" th:text="${pais.glosa}" th:selected="${pais.id==codPaisAtencion}"></option>
+                                </select>
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('codPaisAtencion') and (cliente.id != null or (status != null and status.codigo !=0) )}" th:errors="*{codPaisAtencion}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="descripcionObjetivo" class="col-md-2 col-form-label">Descripción Objetivo</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{descripcionObjetivo}" id="descripcionObjetivo" name="descripcionObjetivo" th:value="${cuenta.idCuentaSura != null ? cuenta.descripcionObjetivo: ''}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('descripcionObjetivo') and (cuenta.idCuentaSura != null or (status != null and status.codigo !=0) )}" th:errors="*{descripcionObjetivo}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="beneficiarios" class="col-md-2 col-form-label">Beneficiarios</label>
+                            <div class="col-md-2">
+                                <select class="form-control" th:field="*{beneficiarios}" id="beneficiarios" name="beneficiarios">
+                                    <option th:value="${null}" th:text="${'No especificado'}" th:selected="${beneficiarios==null}"></option>
+                                    <option th:value="${'Y'}" th:text="${'Si'}" th:selected="${beneficiarios=='Y'}"></option>
+                                    <option th:value="${'N'}" th:text="${'No'}" th:selected="${beneficiarios=='N'}"></option>
+                                </select>
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('beneficiarios') and (cliente.id != null or (status != null and status.codigo !=0) )}" th:errors="*{beneficiarios}"></span>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="guardar()"><i class="fas fa-save"></i>Guardar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Listado registros existentes</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_valores" class="table table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID Contrato</th>
+                            <th>ID</th>
+                            <th>ID Cta. Custodio</th>
+                            <th>Custodio</th>
+                            <th>Modelo Asesoría</th>
+                            <th>Monto Fondeo</th>
+                            <th>Pais Atención</th>
+                            <th>Descripción Objetivo</th>
+                            <th>Beneficiarios</th>
+                            <th>Modificar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro_actual: ${lista_registros}">
+                            <td th:text="${registro_actual.idContrato}"></td>
+                            <td th:text="${registro_actual.idCuentaSura}"></td>
+                            <td th:text="${registro_actual.idCuentaCustodio}"></td>
+                            <td th:text="${registro_actual.custodio}"></td>
+                            <td th:text="${registro_actual.modeloAsesoria}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatNumberDefault(registro_actual.montoFondeo)}"></td>
+                            <td th:text="${registro_actual.codPaisAtencion}"></td>
+                            <td th:text="${registro_actual.descripcionObjetivo}"></td>
+                            <td th:text="${registro_actual.beneficiarios}"></td>
+                            <td>
+                                <a class="btn bg-info" th:href="@{/mantenedores/enrolamiento/cuenta/editar/{idCuentaSura}(idCuentaSura=${registro_actual.idCuentaSura})}">Editar</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>ID Contrato</th>
+                            <th>ID</th>
+                            <th>ID Cta. Custodio</th>
+                            <th>Custodio</th>
+                            <th>Modelo Asesoría</th>
+                            <th>Monto Fondeo</th>
+                            <th>Pais Atención</th>
+                            <th>Descripción Objetivo</th>
+                            <th>Beneficiarios</th>
+                            <th>Modificar</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+<script>
+
+    $(function () {
+        $("#tabla_valores").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": true, "autoWidth": false, "pageLength": 50,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
+    });
+
+    function guardar() {
+        var id = $('#idCuentaSura').val();
+        var myForm  = document.getElementById('form_guardar_registro');
+        if (id!="") {
+            var oldAction   = myForm.action;
+            console.log(oldAction);
+            myForm.action = oldAction + '/'+id;
+        }
+        console.log(myForm.action);
+        myForm.submit();
+    }
+
+    $('#my-card').CardWidget('collapse');
+</script>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

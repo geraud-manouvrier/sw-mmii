@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="73b9fd54-0739-4f97-9d6c-cf9a73eea856" name="Map qande-mmii - DEV to DDL">
+      <data-sources db="6260f1ee-3d93-4b91-b979-0935caaece70" ddl="769c7cdd-1d50-4c0f-836c-fb3c8ac5e2d8" />
+      <scope>
+        <node kind="database" qname="qande-mmii">
+          <node kind="schema">
+            <name qname="clientes" />
+            <name qname="pershing" />
+            <name qname="public" />
+            <name qname="stage_pershing" />
+          </node>
+        </node>
+      </scope>
+    </mapping>
+  </component>
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="769c7cdd-1d50-4c0f-836c-fb3c8ac5e2d8" />
+          <option name="name" value=" DDL - qande-mmii" />
+          <option name="dbmsName" value="POSTGRES" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/DDL Scripts" />
+            </array>
+          </option>
+          <option name="outLayout" value="File per object by schema and type.groovy" />
+          <option name="scriptOptions">
+            <map>
+              <entry key="ConstraintContext" value="CONSTRAINT_IN_TABLE" />
+              <entry key="CreateOrReplace" value="1" />
+              <entry key="QualifyWithSchema" value="ALWAYS" />
+            </map>
+          </option>
+          <option name="scopes">
+            <map>
+              <entry key="$PROJECT_DIR$/DDL Scripts" value="qande-mmii" />
+            </map>
+          </option>
+        </State>
+      </list>
+    </option>
+  </component>
+</project>

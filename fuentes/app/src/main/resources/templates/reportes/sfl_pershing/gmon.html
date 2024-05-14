@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Seleccione fecha</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record A ('+(listaRegA == null ? 'Sin resultados' : #lists.size(listaRegA)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_a" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Campo_5</th>
+                            <th>Ip_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Usde_Td_Balance</th>
+                            <th>Usde_Td_Balance_Sign</th>
+                            <th>Usd_Td_Balance</th>
+                            <th>Usd_Td_Balance_Sign</th>
+                            <th>Long_Td_Market</th>
+                            <th>Long_Td_Market_Sign</th>
+                            <th>Short_Td_Market</th>
+                            <th>Short_Td_Market_Sign</th>
+                            <th>Td_Liquidating_Equity</th>
+                            <th>Td_Liquidating_Equity_Sign</th>
+                            <th>Total_Usde_Td_Balance</th>
+                            <th>Total_Usde_Td_Balance_Sign</th>
+                            <th>Total_Equity</th>
+                            <th>Total_Equity_Sign</th>
+                            <th>Trade_Date_Net_Worth</th>
+                            <th>Trade_Date_Net_Worth_Sign</th>
+                            <th>Mmf_Principal_Balance</th>
+                            <th>Mmf_Principal_Balance_Sign</th>
+                            <th>Mmf_Dividend</th>
+                            <th>Mmf_Dividend_Sign</th>
+                            <th>Cash_Available</th>
+                            <th>Cash_Available_Sign</th>
+                            <th>Campo_30</th>
+                            <th>Date_Of_Data</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegA}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.campo5}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.usdeTdBalance}"></td>
+                            <td th:text="${registro.usdeTdBalanceSign}"></td>
+                            <td th:text="${registro.usdTdBalance}"></td>
+                            <td th:text="${registro.usdTdBalanceSign}"></td>
+                            <td th:text="${registro.longTdMarket}"></td>
+                            <td th:text="${registro.longTdMarketSign}"></td>
+                            <td th:text="${registro.shortTdMarket}"></td>
+                            <td th:text="${registro.shortTdMarketSign}"></td>
+                            <td th:text="${registro.tdLiquidatingEquity}"></td>
+                            <td th:text="${registro.tdLiquidatingEquitySign}"></td>
+                            <td th:text="${registro.totalUsdeTdBalance}"></td>
+                            <td th:text="${registro.totalUsdeTdBalanceSign}"></td>
+                            <td th:text="${registro.totalEquity}"></td>
+                            <td th:text="${registro.totalEquitySign}"></td>
+                            <td th:text="${registro.tradeDateNetWorth}"></td>
+                            <td th:text="${registro.tradeDateNetWorthSign}"></td>
+                            <td th:text="${registro.mmfPrincipalBalance}"></td>
+                            <td th:text="${registro.mmfPrincipalBalanceSign}"></td>
+                            <td th:text="${registro.mmfDividend}"></td>
+                            <td th:text="${registro.mmfDividendSign}"></td>
+                            <td th:text="${registro.cashAvailable}"></td>
+                            <td th:text="${registro.cashAvailableSign}"></td>
+                            <td th:text="${registro.campo30}"></td>
+                            <td th:text="${registro.dateOfData}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Campo_5</th>
+                            <th>Ip_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Usde_Td_Balance</th>
+                            <th>Usde_Td_Balance_Sign</th>
+                            <th>Usd_Td_Balance</th>
+                            <th>Usd_Td_Balance_Sign</th>
+                            <th>Long_Td_Market</th>
+                            <th>Long_Td_Market_Sign</th>
+                            <th>Short_Td_Market</th>
+                            <th>Short_Td_Market_Sign</th>
+                            <th>Td_Liquidating_Equity</th>
+                            <th>Td_Liquidating_Equity_Sign</th>
+                            <th>Total_Usde_Td_Balance</th>
+                            <th>Total_Usde_Td_Balance_Sign</th>
+                            <th>Total_Equity</th>
+                            <th>Total_Equity_Sign</th>
+                            <th>Trade_Date_Net_Worth</th>
+                            <th>Trade_Date_Net_Worth_Sign</th>
+                            <th>Mmf_Principal_Balance</th>
+                            <th>Mmf_Principal_Balance_Sign</th>
+                            <th>Mmf_Dividend</th>
+                            <th>Mmf_Dividend_Sign</th>
+                            <th>Cash_Available</th>
+                            <th>Cash_Available_Sign</th>
+                            <th>Campo_30</th>
+                            <th>Date_Of_Data</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record B ('+(listaRegB == null ? 'Sin resultados' : #lists.size(listaRegB)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_b" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Campo_5</th>
+                            <th>Ip_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Usde_Sd_Balance</th>
+                            <th>Usde_Sd_Balance_Sign</th>
+                            <th>Usd_Sd_Balance</th>
+                            <th>Usd_Sd_Balance_Sign</th>
+                            <th>Long_Sd_Market</th>
+                            <th>Long_Sd_Market_Sign</th>
+                            <th>Short_Sd_Market</th>
+                            <th>Short_Sd_Market_Sign</th>
+                            <th>Sma_Date_Stamp</th>
+                            <th>Sma_Balance</th>
+                            <th>Sma_Balance_Sign</th>
+                            <th>Margin_Buying_Power</th>
+                            <th>Margin_Buying_Power_Sign</th>
+                            <th>Technical_Short_Value</th>
+                            <th>Technical_Short_Value_Sign</th>
+                            <th>Total_Fed_Requirement</th>
+                            <th>Total_Fed_Requirement_Sign</th>
+                            <th>Total_Options_Requirement</th>
+                            <th>Total_Options_Requirement_Sign</th>
+                            <th>Base_Currency</th>
+                            <th>Non_Usd_Currency</th>
+                            <th>Masked_House_Call</th>
+                            <th>Masked_House_Call_Sign</th>
+                            <th>Campo_31</th>
+                            <th>Date_Of_Data</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegB}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.campo5}"></td>
+                            <td th:text="${registro.ipNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.usdeSdBalance}"></td>
+                            <td th:text="${registro.usdeSdBalanceSign}"></td>
+                            <td th:text="${registro.usdSdBalance}"></td>
+                            <td th:text="${registro.usdSdBalanceSign}"></td>
+                            <td th:text="${registro.longSdMarket}"></td>
+                            <td th:text="${registro.longSdMarketSign}"></td>
+                            <td th:text="${registro.shortSdMarket}"></td>
+                            <td th:text="${registro.shortSdMarketSign}"></td>
+                            <td th:text="${registro.smaDateStamp}"></td>
+                            <td th:text="${registro.smaBalance}"></td>
+                            <td th:text="${registro.smaBalanceSign}"></td>
+                            <td th:text="${registro.marginBuyingPower}"></td>
+                            <td th:text="${registro.marginBuyingPowerSign}"></td>
+                            <td th:text="${registro.technicalShortValue}"></td>
+                            <td th:text="${registro.technicalShortValueSign}"></td>
+                            <td th:text="${registro.totalFedRequirement}"></td>
+                            <td th:text="${registro.totalFedRequirementSign}"></td>
+                            <td th:text="${registro.totalOptionsRequirement}"></td>
+                            <td th:text="${registro.totalOptionsRequirementSign}"></td>
+                            <td th:text="${registro.baseCurrency}"></td>
+                            <td th:text="${registro.nonUsdCurrency}"></td>
+                            <td th:text="${registro.maskedHouseCall}"></td>
+                            <td th:text="${registro.maskedHouseCallSign}"></td>
+                            <td th:text="${registro.campo31}"></td>
+                            <td th:text="${registro.dateOfData}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Campo_5</th>
+                            <th>Ip_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Usde_Sd_Balance</th>
+                            <th>Usde_Sd_Balance_Sign</th>
+                            <th>Usd_Sd_Balance</th>
+                            <th>Usd_Sd_Balance_Sign</th>
+                            <th>Long_Sd_Market</th>
+                            <th>Long_Sd_Market_Sign</th>
+                            <th>Short_Sd_Market</th>
+                            <th>Short_Sd_Market_Sign</th>
+                            <th>Sma_Date_Stamp</th>
+                            <th>Sma_Balance</th>
+                            <th>Sma_Balance_Sign</th>
+                            <th>Margin_Buying_Power</th>
+                            <th>Margin_Buying_Power_Sign</th>
+                            <th>Technical_Short_Value</th>
+                            <th>Technical_Short_Value_Sign</th>
+                            <th>Total_Fed_Requirement</th>
+                            <th>Total_Fed_Requirement_Sign</th>
+                            <th>Total_Options_Requirement</th>
+                            <th>Total_Options_Requirement_Sign</th>
+                            <th>Base_Currency</th>
+                            <th>Non_Usd_Currency</th>
+                            <th>Masked_House_Call</th>
+                            <th>Masked_House_Call_Sign</th>
+                            <th>Campo_31</th>
+                            <th>Date_Of_Data</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+
+        $('#processDate').daterangepicker(
+            {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "autoApply": true,
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+
+<script>
+    $(function () {
+        $("#tabla_reg_a").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_a_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_b").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_b_wrapper .col-md-6:eq(0)');
+    });
+
+    function buscar() {
+        var corteUrl = 'gmon';
+        var oldUrl = location.href;
+        var processDate = $('#processDate').val().replaceAll('-','');
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/' + processDate;
+        location.href = newUrl;
+    }
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

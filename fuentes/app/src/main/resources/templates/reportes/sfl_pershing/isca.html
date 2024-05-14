@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Seleccione fecha</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record A ('+(listaRegA == null ? 'Sin resultados' : #lists.size(listaRegA)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_a" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Security_Type</th>
+                            <th>Security_Modifier</th>
+                            <th>Security_Calculation_Code</th>
+                            <th>Primary_Exchange</th>
+                            <th>Coupon_Rate_Fis_Or_Indicated_Dividend_Eq</th>
+                            <th>Maturity_Option_Expire_Date</th>
+                            <th>Underlying_Security_Cusip</th>
+                            <th>First_Call_Price_Fix_Inc_Or_Strike_Price_Option</th>
+                            <th>First_Par_Call_Price_Fix_Inc_Or_Units_Option</th>
+                            <th>Primary_Symbol</th>
+                            <th>Interest_Frequency</th>
+                            <th>Bond_Class</th>
+                            <th>First_Coupon_Day</th>
+                            <th>Call_Indicator</th>
+                            <th>Put_Indicator</th>
+                            <th>Next_Par_Call_Date</th>
+                            <th>Prerefunded_Date</th>
+                            <th>Next_Premium_Call_Date</th>
+                            <th>Dated_Date_For_Fix_Inc_Or_Ex_Dividend_Date_Eq</th>
+                            <th>First_Coupon_Fix_Inc_Or_Payable_Date_Eq</th>
+                            <th>Campo_24</th>
+                            <th>Federal_Marginable_Ind</th>
+                            <th>Cns_Eligible_Code</th>
+                            <th>Dtcc_Eligible_Code</th>
+                            <th>Nscc_Eligible_Code</th>
+                            <th>Foreign_Security</th>
+                            <th>Second_Coupon_Day</th>
+                            <th>Dividend_Interest_Payment_Method</th>
+                            <th>Minor_Product_Code</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegA}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.securityType}"></td>
+                            <td th:text="${registro.securityModifier}"></td>
+                            <td th:text="${registro.securityCalculationCode}"></td>
+                            <td th:text="${registro.primaryExchange}"></td>
+                            <td th:text="${registro.couponRateFisOrIndicatedDividendEq}"></td>
+                            <td th:text="${registro.maturityOptionExpireDate}"></td>
+                            <td th:text="${registro.underlyingSecurityCusip}"></td>
+                            <td th:text="${registro.firstCallPriceFixIncOrStrikePriceOption}"></td>
+                            <td th:text="${registro.firstParCallPriceFixIncOrUnitsOption}"></td>
+                            <td th:text="${registro.primarySymbol}"></td>
+                            <td th:text="${registro.interestFrequency}"></td>
+                            <td th:text="${registro.bondClass}"></td>
+                            <td th:text="${registro.firstCouponDay}"></td>
+                            <td th:text="${registro.callIndicator}"></td>
+                            <td th:text="${registro.putIndicator}"></td>
+                            <td th:text="${registro.nextParCallDate}"></td>
+                            <td th:text="${registro.prerefundedDate}"></td>
+                            <td th:text="${registro.nextPremiumCallDate}"></td>
+                            <td th:text="${registro.datedDateForFixIncOrExDividendDateEq}"></td>
+                            <td th:text="${registro.firstCouponFixIncOrPayableDateEq}"></td>
+                            <td th:text="${registro.campo24}"></td>
+                            <td th:text="${registro.federalMarginableInd}"></td>
+                            <td th:text="${registro.cnsEligibleCode}"></td>
+                            <td th:text="${registro.dtccEligibleCode}"></td>
+                            <td th:text="${registro.nsccEligibleCode}"></td>
+                            <td th:text="${registro.foreignSecurity}"></td>
+                            <td th:text="${registro.secondCouponDay}"></td>
+                            <td th:text="${registro.dividendInterestPaymentMethod}"></td>
+                            <td th:text="${registro.minorProductCode}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Security_Type</th>
+                            <th>Security_Modifier</th>
+                            <th>Security_Calculation_Code</th>
+                            <th>Primary_Exchange</th>
+                            <th>Coupon_Rate_Fis_Or_Indicated_Dividend_Eq</th>
+                            <th>Maturity_Option_Expire_Date</th>
+                            <th>Underlying_Security_Cusip</th>
+                            <th>First_Call_Price_Fix_Inc_Or_Strike_Price_Option</th>
+                            <th>First_Par_Call_Price_Fix_Inc_Or_Units_Option</th>
+                            <th>Primary_Symbol</th>
+                            <th>Interest_Frequency</th>
+                            <th>Bond_Class</th>
+                            <th>First_Coupon_Day</th>
+                            <th>Call_Indicator</th>
+                            <th>Put_Indicator</th>
+                            <th>Next_Par_Call_Date</th>
+                            <th>Prerefunded_Date</th>
+                            <th>Next_Premium_Call_Date</th>
+                            <th>Dated_Date_For_Fix_Inc_Or_Ex_Dividend_Date_Eq</th>
+                            <th>First_Coupon_Fix_Inc_Or_Payable_Date_Eq</th>
+                            <th>Campo_24</th>
+                            <th>Federal_Marginable_Ind</th>
+                            <th>Cns_Eligible_Code</th>
+                            <th>Dtcc_Eligible_Code</th>
+                            <th>Nscc_Eligible_Code</th>
+                            <th>Foreign_Security</th>
+                            <th>Second_Coupon_Day</th>
+                            <th>Dividend_Interest_Payment_Method</th>
+                            <th>Minor_Product_Code</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record B ('+(listaRegB == null ? 'Sin resultados' : #lists.size(listaRegB)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_b" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Etf_Indicator</th>
+                            <th>Bid_Price</th>
+                            <th>Ask_Price</th>
+                            <th>Previous_Day_Price</th>
+                            <th>Latest_Price</th>
+                            <th>End_Of_Month_Price</th>
+                            <th>Round_Lot_Quantity</th>
+                            <th>Dividend_Reinvestment_Eligibility_Indicator</th>
+                            <th>Previous_Price_Date</th>
+                            <th>Latest_Price_Date</th>
+                            <th>End_Of_Month_Price_Date</th>
+                            <th>Record_Date</th>
+                            <th>Fundvest_Ind</th>
+                            <th>Country_Code</th>
+                            <th>Standard_Poor_Rating</th>
+                            <th>Moodys_Rating</th>
+                            <th>Bond_Sub_Class</th>
+                            <th>Restriction_Indicator</th>
+                            <th>Trace_Indicator</th>
+                            <th>New_Interest_Calculation_Code</th>
+                            <th>Sic_Code</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegB}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.etfIndicator}"></td>
+                            <td th:text="${registro.bidPrice}"></td>
+                            <td th:text="${registro.askPrice}"></td>
+                            <td th:text="${registro.previousDayPrice}"></td>
+                            <td th:text="${registro.latestPrice}"></td>
+                            <td th:text="${registro.endOfMonthPrice}"></td>
+                            <td th:text="${registro.roundLotQuantity}"></td>
+                            <td th:text="${registro.dividendReinvestmentEligibilityIndicator}"></td>
+                            <td th:text="${registro.previousPriceDate}"></td>
+                            <td th:text="${registro.latestPriceDate}"></td>
+                            <td th:text="${registro.endOfMonthPriceDate}"></td>
+                            <td th:text="${registro.recordDate}"></td>
+                            <td th:text="${registro.fundvestInd}"></td>
+                            <td th:text="${registro.countryCode}"></td>
+                            <td th:text="${registro.standardPoorRating}"></td>
+                            <td th:text="${registro.moodysRating}"></td>
+                            <td th:text="${registro.bondSubClass}"></td>
+                            <td th:text="${registro.restrictionIndicator}"></td>
+                            <td th:text="${registro.traceIndicator}"></td>
+                            <td th:text="${registro.newInterestCalculationCode}"></td>
+                            <td th:text="${registro.sicCode}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Etf_Indicator</th>
+                            <th>Bid_Price</th>
+                            <th>Ask_Price</th>
+                            <th>Previous_Day_Price</th>
+                            <th>Latest_Price</th>
+                            <th>End_Of_Month_Price</th>
+                            <th>Round_Lot_Quantity</th>
+                            <th>Dividend_Reinvestment_Eligibility_Indicator</th>
+                            <th>Previous_Price_Date</th>
+                            <th>Latest_Price_Date</th>
+                            <th>End_Of_Month_Price_Date</th>
+                            <th>Record_Date</th>
+                            <th>Fundvest_Ind</th>
+                            <th>Country_Code</th>
+                            <th>Standard_Poor_Rating</th>
+                            <th>Moodys_Rating</th>
+                            <th>Bond_Sub_Class</th>
+                            <th>Restriction_Indicator</th>
+                            <th>Trace_Indicator</th>
+                            <th>New_Interest_Calculation_Code</th>
+                            <th>Sic_Code</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record C ('+(listaRegC == null ? 'Sin resultados' : #lists.size(listaRegC)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_c" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>State_Tax_Ind</th>
+                            <th>Fts_Ind</th>
+                            <th>Amt_Ind</th>
+                            <th>Ric_Indicator</th>
+                            <th>Number_Of_Description_Lines</th>
+                            <th>Secutiry_Description_Line_1</th>
+                            <th>Secutiry_Description_Line_2</th>
+                            <th>Secutiry_Description_Line_3</th>
+                            <th>Secutiry_Description_Line_4</th>
+                            <th>Secutiry_Description_Line_5</th>
+                            <th>User_Cusip_Identifier</th>
+                            <th>Price_Purge_Date</th>
+                            <th>Taxable_Indicator</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegC}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.stateTaxInd}"></td>
+                            <td th:text="${registro.ftsInd}"></td>
+                            <td th:text="${registro.amtInd}"></td>
+                            <td th:text="${registro.ricIndicator}"></td>
+                            <td th:text="${registro.numberOfDescriptionLines}"></td>
+                            <td th:text="${registro.secutiryDescriptionLine1}"></td>
+                            <td th:text="${registro.secutiryDescriptionLine2}"></td>
+                            <td th:text="${registro.secutiryDescriptionLine3}"></td>
+                            <td th:text="${registro.secutiryDescriptionLine4}"></td>
+                            <td th:text="${registro.secutiryDescriptionLine5}"></td>
+                            <td th:text="${registro.userCusipIdentifier}"></td>
+                            <td th:text="${registro.pricePurgeDate}"></td>
+                            <td th:text="${registro.taxableIndicator}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>State_Tax_Ind</th>
+                            <th>Fts_Ind</th>
+                            <th>Amt_Ind</th>
+                            <th>Ric_Indicator</th>
+                            <th>Number_Of_Description_Lines</th>
+                            <th>Secutiry_Description_Line_1</th>
+                            <th>Secutiry_Description_Line_2</th>
+                            <th>Secutiry_Description_Line_3</th>
+                            <th>Secutiry_Description_Line_4</th>
+                            <th>Secutiry_Description_Line_5</th>
+                            <th>User_Cusip_Identifier</th>
+                            <th>Price_Purge_Date</th>
+                            <th>Taxable_Indicator</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record D ('+(listaRegD == null ? 'Sin resultados' : #lists.size(listaRegD)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_d" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Secutiry_Description_Line_6</th>
+                            <th>Put_Price</th>
+                            <th>Put_Date</th>
+                            <th>Second_Premium_Call_Price</th>
+                            <th>Second_Premium_Call_Date</th>
+                            <th>Called_Date</th>
+                            <th>Pool_Number</th>
+                            <th>Factor</th>
+                            <th>Factor_Date</th>
+                            <th>Previous_Factor</th>
+                            <th>Previous_Factor_Date</th>
+                            <th>Variable_Rate_Indicator</th>
+                            <th>Next_Last_Coupon_Date</th>
+                            <th>Structured_Product_Ind</th>
+                            <th>Perpetual_Bond_Indicator</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegD}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.secutiryDescriptionLine6}"></td>
+                            <td th:text="${registro.putPrice}"></td>
+                            <td th:text="${registro.putDate}"></td>
+                            <td th:text="${registro.secondPremiumCallPrice}"></td>
+                            <td th:text="${registro.secondPremiumCallDate}"></td>
+                            <td th:text="${registro.calledDate}"></td>
+                            <td th:text="${registro.poolNumber}"></td>
+                            <td th:text="${registro.factor}"></td>
+                            <td th:text="${registro.factorDate}"></td>
+                            <td th:text="${registro.previousFactor}"></td>
+                            <td th:text="${registro.previousFactorDate}"></td>
+                            <td th:text="${registro.variableRateIndicator}"></td>
+                            <td th:text="${registro.nextLastCouponDate}"></td>
+                            <td th:text="${registro.structuredProductInd}"></td>
+                            <td th:text="${registro.perpetualBondIndicator}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Secutiry_Description_Line_6</th>
+                            <th>Put_Price</th>
+                            <th>Put_Date</th>
+                            <th>Second_Premium_Call_Price</th>
+                            <th>Second_Premium_Call_Date</th>
+                            <th>Called_Date</th>
+                            <th>Pool_Number</th>
+                            <th>Factor</th>
+                            <th>Factor_Date</th>
+                            <th>Previous_Factor</th>
+                            <th>Previous_Factor_Date</th>
+                            <th>Variable_Rate_Indicator</th>
+                            <th>Next_Last_Coupon_Date</th>
+                            <th>Structured_Product_Ind</th>
+                            <th>Perpetual_Bond_Indicator</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record E ('+(listaRegE == null ? 'Sin resultados' : #lists.size(listaRegE)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_e" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Exp_First_Call_Price</th>
+                            <th>Exp_First_Par_Call_Price</th>
+                            <th>Exp_Put_Price</th>
+                            <th>Exp_Second_Premium_Call_Price</th>
+                            <th>Name_Issuer_Security</th>
+                            <th>Issuing_Currency</th>
+                            <th>Globally_Locked_Sec_Ind</th>
+                            <th>Globally_Locked_Reason_Code</th>
+                            <th>Spac_Ind</th>
+                            <th>Campo_14</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegE}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.expFirstCallPrice}"></td>
+                            <td th:text="${registro.expFirstParCallPrice}"></td>
+                            <td th:text="${registro.expPutPrice}"></td>
+                            <td th:text="${registro.expSecondPremiumCallPrice}"></td>
+                            <td th:text="${registro.nameIssuerSecurity}"></td>
+                            <td th:text="${registro.issuingCurrency}"></td>
+                            <td th:text="${registro.globallyLockedSecInd}"></td>
+                            <td th:text="${registro.globallyLockedReasonCode}"></td>
+                            <td th:text="${registro.spacInd}"></td>
+                            <td th:text="${registro.campo14}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Exp_First_Call_Price</th>
+                            <th>Exp_First_Par_Call_Price</th>
+                            <th>Exp_Put_Price</th>
+                            <th>Exp_Second_Premium_Call_Price</th>
+                            <th>Name_Issuer_Security</th>
+                            <th>Issuing_Currency</th>
+                            <th>Globally_Locked_Sec_Ind</th>
+                            <th>Globally_Locked_Reason_Code</th>
+                            <th>Spac_Ind</th>
+                            <th>Campo_14</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record F ('+(listaRegF == null ? 'Sin resultados' : #lists.size(listaRegF)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_f" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Expanded_Bid_Price</th>
+                            <th>Expanded_Ask_Price</th>
+                            <th>Expanded_Previous_Day_Price</th>
+                            <th>Expanded_Latest_Price</th>
+                            <th>Expanded_End_Of_Month_Price</th>
+                            <th>Contract_Share_Quantity</th>
+                            <th>Year_Covered_Under_Cost_Basis_Rules</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegF}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.expandedBidPrice}"></td>
+                            <td th:text="${registro.expandedAskPrice}"></td>
+                            <td th:text="${registro.expandedPreviousDayPrice}"></td>
+                            <td th:text="${registro.expandedLatestPrice}"></td>
+                            <td th:text="${registro.expandedEndOfMonthPrice}"></td>
+                            <td th:text="${registro.contractShareQuantity}"></td>
+                            <td th:text="${registro.yearCoveredUnderCostBasisRules}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Expanded_Bid_Price</th>
+                            <th>Expanded_Ask_Price</th>
+                            <th>Expanded_Previous_Day_Price</th>
+                            <th>Expanded_Latest_Price</th>
+                            <th>Expanded_End_Of_Month_Price</th>
+                            <th>Contract_Share_Quantity</th>
+                            <th>Year_Covered_Under_Cost_Basis_Rules</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record G ('+(listaRegG == null ? 'Sin resultados' : #lists.size(listaRegG)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_g" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Delta</th>
+                            <th>Delta_Sign</th>
+                            <th>Delta_Value_Presence_Ind</th>
+                            <th>Campo_8</th>
+                            <th>Isin_Code</th>
+                            <th>Issuer_Identifier</th>
+                            <th>Campo_11</th>
+                            <th>Campo_12</th>
+                            <th>Symbol_Of_The_Underlying_Security</th>
+                            <th>Asset_Type</th>
+                            <th>Asset_Subtype</th>
+                            <th>Asset_Subsubtype</th>
+                            <th>Payment_Day_Delays</th>
+                            <th>Campo_18</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegG}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.delta}"></td>
+                            <td th:text="${registro.deltaSign}"></td>
+                            <td th:text="${registro.deltaValuePresenceInd}"></td>
+                            <td th:text="${registro.campo8}"></td>
+                            <td th:text="${registro.isinCode}"></td>
+                            <td th:text="${registro.issuerIdentifier}"></td>
+                            <td th:text="${registro.campo11}"></td>
+                            <td th:text="${registro.campo12}"></td>
+                            <td th:text="${registro.symbolOfTheUnderlyingSecurity}"></td>
+                            <td th:text="${registro.assetType}"></td>
+                            <td th:text="${registro.assetSubtype}"></td>
+                            <td th:text="${registro.assetSubsubtype}"></td>
+                            <td th:text="${registro.paymentDayDelays}"></td>
+                            <td th:text="${registro.campo18}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Delta</th>
+                            <th>Delta_Sign</th>
+                            <th>Delta_Value_Presence_Ind</th>
+                            <th>Campo_8</th>
+                            <th>Isin_Code</th>
+                            <th>Issuer_Identifier</th>
+                            <th>Campo_11</th>
+                            <th>Campo_12</th>
+                            <th>Symbol_Of_The_Underlying_Security</th>
+                            <th>Asset_Type</th>
+                            <th>Asset_Subtype</th>
+                            <th>Asset_Subsubtype</th>
+                            <th>Payment_Day_Delays</th>
+                            <th>Campo_18</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record H ('+(listaRegH == null ? 'Sin resultados' : #lists.size(listaRegH)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_h" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Exchange_Rate_Denom_Currency_Usd</th>
+                            <th>Underlying_Cusip_1</th>
+                            <th>Campo_7</th>
+                            <th>Deliverable_Unit_Quantity_1</th>
+                            <th>Underlying_Cusip_2</th>
+                            <th>Campo_10</th>
+                            <th>Deliverable_Unit_Quantity_2</th>
+                            <th>Underlying_Cusip_3</th>
+                            <th>Campo_13</th>
+                            <th>Deliverable_Unit_Quantity_3</th>
+                            <th>Underlying_Cusip_4</th>
+                            <th>Campo_16</th>
+                            <th>Deliverable_Unit_Quantity_4</th>
+                            <th>Annual_Dividend_Currency_Code</th>
+                            <th>Outstanding_Shares</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegH}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.exchangeRateDenomCurrencyUsd}"></td>
+                            <td th:text="${registro.underlyingCusip1}"></td>
+                            <td th:text="${registro.campo7}"></td>
+                            <td th:text="${registro.deliverableUnitQuantity1}"></td>
+                            <td th:text="${registro.underlyingCusip2}"></td>
+                            <td th:text="${registro.campo10}"></td>
+                            <td th:text="${registro.deliverableUnitQuantity2}"></td>
+                            <td th:text="${registro.underlyingCusip3}"></td>
+                            <td th:text="${registro.campo13}"></td>
+                            <td th:text="${registro.deliverableUnitQuantity3}"></td>
+                            <td th:text="${registro.underlyingCusip4}"></td>
+                            <td th:text="${registro.campo16}"></td>
+                            <td th:text="${registro.deliverableUnitQuantity4}"></td>
+                            <td th:text="${registro.annualDividendCurrencyCode}"></td>
+                            <td th:text="${registro.outstandingShares}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Exchange_Rate_Denom_Currency_Usd</th>
+                            <th>Underlying_Cusip_1</th>
+                            <th>Campo_7</th>
+                            <th>Deliverable_Unit_Quantity_1</th>
+                            <th>Underlying_Cusip_2</th>
+                            <th>Campo_10</th>
+                            <th>Deliverable_Unit_Quantity_2</th>
+                            <th>Underlying_Cusip_3</th>
+                            <th>Campo_13</th>
+                            <th>Deliverable_Unit_Quantity_3</th>
+                            <th>Underlying_Cusip_4</th>
+                            <th>Campo_16</th>
+                            <th>Deliverable_Unit_Quantity_4</th>
+                            <th>Annual_Dividend_Currency_Code</th>
+                            <th>Outstanding_Shares</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record I ('+(listaRegI == null ? 'Sin resultados' : #lists.size(listaRegI)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_i" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Option_Root_Id</th>
+                            <th>Expiration_Date</th>
+                            <th>Call_Put_Indicator</th>
+                            <th>Strike_Price</th>
+                            <th>Fund_Type</th>
+                            <th>Broad_Narrow_Indicator</th>
+                            <th>Leverage_Factor</th>
+                            <th>Leverage_Factor_Sign</th>
+                            <th>Outstanding_Shares_Update_Date</th>
+                            <th>Expanded_Symbol</th>
+                            <th>State_Of_Issuance</th>
+                            <th>Option_Excercise_Pricing_Model_Code</th>
+                            <th>First_Accrual_Date</th>
+                            <th>Tranche_Code</th>
+                            <th>Campo_19</th>
+                            <th>Worthless_Security_Indicator</th>
+                            <th>Uit_Termination_Code</th>
+                            <th>Fdic_Certification_Number</th>
+                            <th>Revenue_Stream</th>
+                            <th>Restricted_Marijuana_Ind</th>
+                            <th>Campo_25</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegI}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.optionRootId}"></td>
+                            <td th:text="${registro.expirationDate}"></td>
+                            <td th:text="${registro.callPutIndicator}"></td>
+                            <td th:text="${registro.strikePrice}"></td>
+                            <td th:text="${registro.fundType}"></td>
+                            <td th:text="${registro.broadNarrowIndicator}"></td>
+                            <td th:text="${registro.leverageFactor}"></td>
+                            <td th:text="${registro.leverageFactorSign}"></td>
+                            <td th:text="${registro.outstandingSharesUpdateDate}"></td>
+                            <td th:text="${registro.expandedSymbol}"></td>
+                            <td th:text="${registro.stateOfIssuance}"></td>
+                            <td th:text="${registro.optionExcercisePricingModelCode}"></td>
+                            <td th:text="${registro.firstAccrualDate}"></td>
+                            <td th:text="${registro.trancheCode}"></td>
+                            <td th:text="${registro.campo19}"></td>
+                            <td th:text="${registro.worthlessSecurityIndicator}"></td>
+                            <td th:text="${registro.uitTerminationCode}"></td>
+                            <td th:text="${registro.fdicCertificationNumber}"></td>
+                            <td th:text="${registro.revenueStream}"></td>
+                            <td th:text="${registro.restrictedMarijuanaInd}"></td>
+                            <td th:text="${registro.campo25}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Option_Root_Id</th>
+                            <th>Expiration_Date</th>
+                            <th>Call_Put_Indicator</th>
+                            <th>Strike_Price</th>
+                            <th>Fund_Type</th>
+                            <th>Broad_Narrow_Indicator</th>
+                            <th>Leverage_Factor</th>
+                            <th>Leverage_Factor_Sign</th>
+                            <th>Outstanding_Shares_Update_Date</th>
+                            <th>Expanded_Symbol</th>
+                            <th>State_Of_Issuance</th>
+                            <th>Option_Excercise_Pricing_Model_Code</th>
+                            <th>First_Accrual_Date</th>
+                            <th>Tranche_Code</th>
+                            <th>Campo_19</th>
+                            <th>Worthless_Security_Indicator</th>
+                            <th>Uit_Termination_Code</th>
+                            <th>Fdic_Certification_Number</th>
+                            <th>Revenue_Stream</th>
+                            <th>Restricted_Marijuana_Ind</th>
+                            <th>Campo_25</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record J ('+(listaRegJ == null ? 'Sin resultados' : #lists.size(listaRegJ)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_j" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Latest_Price</th>
+                            <th>Latest_Price_Date</th>
+                            <th>Factored_Market_Value_Multiplier</th>
+                            <th>Current_Yield</th>
+                            <th>Yield</th>
+                            <th>Price_Source</th>
+                            <th>Country_Of_Origin</th>
+                            <th>Retricted_Security_Code</th>
+                            <th>International_Non_Dollar_Symbol</th>
+                            <th>International_Exchange</th>
+                            <th>Variable_Rate_Category_Code</th>
+                            <th>Interest_Rate_Completion_Ind</th>
+                            <th>Campo_17</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegJ}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.latestPrice}"></td>
+                            <td th:text="${registro.latestPriceDate}"></td>
+                            <td th:text="${registro.factoredMarketValueMultiplier}"></td>
+                            <td th:text="${registro.currentYield}"></td>
+                            <td th:text="${registro.yield}"></td>
+                            <td th:text="${registro.priceSource}"></td>
+                            <td th:text="${registro.countryOfOrigin}"></td>
+                            <td th:text="${registro.retrictedSecurityCode}"></td>
+                            <td th:text="${registro.internationalNonDollarSymbol}"></td>
+                            <td th:text="${registro.internationalExchange}"></td>
+                            <td th:text="${registro.variableRateCategoryCode}"></td>
+                            <td th:text="${registro.interestRateCompletionInd}"></td>
+                            <td th:text="${registro.campo17}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Latest_Price</th>
+                            <th>Latest_Price_Date</th>
+                            <th>Factored_Market_Value_Multiplier</th>
+                            <th>Current_Yield</th>
+                            <th>Yield</th>
+                            <th>Price_Source</th>
+                            <th>Country_Of_Origin</th>
+                            <th>Retricted_Security_Code</th>
+                            <th>International_Non_Dollar_Symbol</th>
+                            <th>International_Exchange</th>
+                            <th>Variable_Rate_Category_Code</th>
+                            <th>Interest_Rate_Completion_Ind</th>
+                            <th>Campo_17</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record K ('+(listaRegK == null ? 'Sin resultados' : #lists.size(listaRegK)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_k" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Exchange_Code_Sedol_1</th>
+                            <th>Sedol_1</th>
+                            <th>Exchange_Code_Sedol_2</th>
+                            <th>Sedol_2</th>
+                            <th>Exchange_Code_Sedol_3</th>
+                            <th>Sedol_3</th>
+                            <th>Exchange_Code_Sedol_4</th>
+                            <th>Sedol_4</th>
+                            <th>Exchange_Code_Sedol_5</th>
+                            <th>Sedol_5</th>
+                            <th>Exchange_Code_Sedol_6</th>
+                            <th>Sedol_6</th>
+                            <th>Exchange_Code_Sedol_7</th>
+                            <th>Sedol_7</th>
+                            <th>Exchange_Code_Sedol_8</th>
+                            <th>Sedol_8</th>
+                            <th>Exchange_Code_Sedol_9</th>
+                            <th>Sedol_9</th>
+                            <th>Exchange_Code_Sedol_10</th>
+                            <th>Sedol_10</th>
+                            <th>Exchange_Code_Sedol_11</th>
+                            <th>Sedol_11</th>
+                            <th>Campo_26</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegK}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.exchangeCodeSedol1}"></td>
+                            <td th:text="${registro.sedol1}"></td>
+                            <td th:text="${registro.exchangeCodeSedol2}"></td>
+                            <td th:text="${registro.sedol2}"></td>
+                            <td th:text="${registro.exchangeCodeSedol3}"></td>
+                            <td th:text="${registro.sedol3}"></td>
+                            <td th:text="${registro.exchangeCodeSedol4}"></td>
+                            <td th:text="${registro.sedol4}"></td>
+                            <td th:text="${registro.exchangeCodeSedol5}"></td>
+                            <td th:text="${registro.sedol5}"></td>
+                            <td th:text="${registro.exchangeCodeSedol6}"></td>
+                            <td th:text="${registro.sedol6}"></td>
+                            <td th:text="${registro.exchangeCodeSedol7}"></td>
+                            <td th:text="${registro.sedol7}"></td>
+                            <td th:text="${registro.exchangeCodeSedol8}"></td>
+                            <td th:text="${registro.sedol8}"></td>
+                            <td th:text="${registro.exchangeCodeSedol9}"></td>
+                            <td th:text="${registro.sedol9}"></td>
+                            <td th:text="${registro.exchangeCodeSedol10}"></td>
+                            <td th:text="${registro.sedol10}"></td>
+                            <td th:text="${registro.exchangeCodeSedol11}"></td>
+                            <td th:text="${registro.sedol11}"></td>
+                            <td th:text="${registro.campo26}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Exchange_Code_Sedol_1</th>
+                            <th>Sedol_1</th>
+                            <th>Exchange_Code_Sedol_2</th>
+                            <th>Sedol_2</th>
+                            <th>Exchange_Code_Sedol_3</th>
+                            <th>Sedol_3</th>
+                            <th>Exchange_Code_Sedol_4</th>
+                            <th>Sedol_4</th>
+                            <th>Exchange_Code_Sedol_5</th>
+                            <th>Sedol_5</th>
+                            <th>Exchange_Code_Sedol_6</th>
+                            <th>Sedol_6</th>
+                            <th>Exchange_Code_Sedol_7</th>
+                            <th>Sedol_7</th>
+                            <th>Exchange_Code_Sedol_8</th>
+                            <th>Sedol_8</th>
+                            <th>Exchange_Code_Sedol_9</th>
+                            <th>Sedol_9</th>
+                            <th>Exchange_Code_Sedol_10</th>
+                            <th>Sedol_10</th>
+                            <th>Exchange_Code_Sedol_11</th>
+                            <th>Sedol_11</th>
+                            <th>Campo_26</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record L ('+(listaRegL == null ? 'Sin resultados' : #lists.size(listaRegL)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_l" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Primary_Idc_Mkt_Exch</th>
+                            <th>Primary_Mkt_Exch_Trading_Status</th>
+                            <th>Primary_Mkt_Symbol</th>
+                            <th>Primary_Mkt_Exch_Effective_Date</th>
+                            <th>Primary_Mkt_Status_Code</th>
+                            <th>Secondary_Idc_Mkt_Exch</th>
+                            <th>Secondary_Mkt_Exch_Trading_Status</th>
+                            <th>Secondary_Mkt_Symbol</th>
+                            <th>Secondary_Mkt_Exch_Effective_Date</th>
+                            <th>Secondary_Mkt_Status_Code</th>
+                            <th>Tick_Size_Pilot_Group</th>
+                            <th>Tick_Size_Effective_Date</th>
+                            <th>Tick_Size_Change_Date</th>
+                            <th>Update_Date</th>
+                            <th>Oas_Libor_Rate</th>
+                            <th>Oas_Libor_Rate_Sign</th>
+                            <th>Campo_21</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegL}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.primaryIdcMktExch}"></td>
+                            <td th:text="${registro.primaryMktExchTradingStatus}"></td>
+                            <td th:text="${registro.primaryMktSymbol}"></td>
+                            <td th:text="${registro.primaryMktExchEffectiveDate}"></td>
+                            <td th:text="${registro.primaryMktStatusCode}"></td>
+                            <td th:text="${registro.secondaryIdcMktExch}"></td>
+                            <td th:text="${registro.secondaryMktExchTradingStatus}"></td>
+                            <td th:text="${registro.secondaryMktSymbol}"></td>
+                            <td th:text="${registro.secondaryMktExchEffectiveDate}"></td>
+                            <td th:text="${registro.secondaryMktStatusCode}"></td>
+                            <td th:text="${registro.tickSizePilotGroup}"></td>
+                            <td th:text="${registro.tickSizeEffectiveDate}"></td>
+                            <td th:text="${registro.tickSizeChangeDate}"></td>
+                            <td th:text="${registro.updateDate}"></td>
+                            <td th:text="${registro.oasLiborRate}"></td>
+                            <td th:text="${registro.oasLiborRateSign}"></td>
+                            <td th:text="${registro.campo21}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Primary_Idc_Mkt_Exch</th>
+                            <th>Primary_Mkt_Exch_Trading_Status</th>
+                            <th>Primary_Mkt_Symbol</th>
+                            <th>Primary_Mkt_Exch_Effective_Date</th>
+                            <th>Primary_Mkt_Status_Code</th>
+                            <th>Secondary_Idc_Mkt_Exch</th>
+                            <th>Secondary_Mkt_Exch_Trading_Status</th>
+                            <th>Secondary_Mkt_Symbol</th>
+                            <th>Secondary_Mkt_Exch_Effective_Date</th>
+                            <th>Secondary_Mkt_Status_Code</th>
+                            <th>Tick_Size_Pilot_Group</th>
+                            <th>Tick_Size_Effective_Date</th>
+                            <th>Tick_Size_Change_Date</th>
+                            <th>Update_Date</th>
+                            <th>Oas_Libor_Rate</th>
+                            <th>Oas_Libor_Rate_Sign</th>
+                            <th>Campo_21</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record M ('+(listaRegM == null ? 'Sin resultados' : #lists.size(listaRegM)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_m" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Campo_5</th>
+                            <th>First_Call_Date</th>
+                            <th>First_Call_Price</th>
+                            <th>Campo_8</th>
+                            <th>Second_Call_Date</th>
+                            <th>Second_Call_Price</th>
+                            <th>Campo_11</th>
+                            <th>Third_Call_Date</th>
+                            <th>Third_Call_Price</th>
+                            <th>Campo_14</th>
+                            <th>Fourth_Call_Date</th>
+                            <th>Fourth_Call_Price</th>
+                            <th>Campo_17</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegM}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.campo5}"></td>
+                            <td th:text="${registro.firstCallDate}"></td>
+                            <td th:text="${registro.firstCallPrice}"></td>
+                            <td th:text="${registro.campo8}"></td>
+                            <td th:text="${registro.secondCallDate}"></td>
+                            <td th:text="${registro.secondCallPrice}"></td>
+                            <td th:text="${registro.campo11}"></td>
+                            <td th:text="${registro.thirdCallDate}"></td>
+                            <td th:text="${registro.thirdCallPrice}"></td>
+                            <td th:text="${registro.campo14}"></td>
+                            <td th:text="${registro.fourthCallDate}"></td>
+                            <td th:text="${registro.fourthCallPrice}"></td>
+                            <td th:text="${registro.campo17}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Campo_5</th>
+                            <th>First_Call_Date</th>
+                            <th>First_Call_Price</th>
+                            <th>Campo_8</th>
+                            <th>Second_Call_Date</th>
+                            <th>Second_Call_Price</th>
+                            <th>Campo_11</th>
+                            <th>Third_Call_Date</th>
+                            <th>Third_Call_Price</th>
+                            <th>Campo_14</th>
+                            <th>Fourth_Call_Date</th>
+                            <th>Fourth_Call_Price</th>
+                            <th>Campo_17</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record N ('+(listaRegN == null ? 'Sin resultados' : #lists.size(listaRegN)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_n" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Campo_5</th>
+                            <th>Effective_Date_Rate_1</th>
+                            <th>Coupon_Interest_Rate_1</th>
+                            <th>Campo_8</th>
+                            <th>Effective_Date_Rate_2</th>
+                            <th>Coupon_Interest_Rate_2</th>
+                            <th>Campo_11</th>
+                            <th>Effective_Date_Rate_3</th>
+                            <th>Coupon_Interest_Rate_3</th>
+                            <th>Campo_14</th>
+                            <th>Effective_Date_Rate_4</th>
+                            <th>Coupon_Interest_Rate_4</th>
+                            <th>Campo_17</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegN}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.campo5}"></td>
+                            <td th:text="${registro.effectiveDateRate1}"></td>
+                            <td th:text="${registro.couponInterestRate1}"></td>
+                            <td th:text="${registro.campo8}"></td>
+                            <td th:text="${registro.effectiveDateRate2}"></td>
+                            <td th:text="${registro.couponInterestRate2}"></td>
+                            <td th:text="${registro.campo11}"></td>
+                            <td th:text="${registro.effectiveDateRate3}"></td>
+                            <td th:text="${registro.couponInterestRate3}"></td>
+                            <td th:text="${registro.campo14}"></td>
+                            <td th:text="${registro.effectiveDateRate4}"></td>
+                            <td th:text="${registro.couponInterestRate4}"></td>
+                            <td th:text="${registro.campo17}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Campo_5</th>
+                            <th>Effective_Date_Rate_1</th>
+                            <th>Coupon_Interest_Rate_1</th>
+                            <th>Campo_8</th>
+                            <th>Effective_Date_Rate_2</th>
+                            <th>Coupon_Interest_Rate_2</th>
+                            <th>Campo_11</th>
+                            <th>Effective_Date_Rate_3</th>
+                            <th>Coupon_Interest_Rate_3</th>
+                            <th>Campo_14</th>
+                            <th>Effective_Date_Rate_4</th>
+                            <th>Coupon_Interest_Rate_4</th>
+                            <th>Campo_17</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record O ('+(listaRegO == null ? 'Sin resultados' : #lists.size(listaRegO)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_o" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Oas_Treasury_Rate</th>
+                            <th>Oas_Treasury_Rate_Sign</th>
+                            <th>Oas_Treasury_Effective_Date</th>
+                            <th>Minimum_Piece</th>
+                            <th>Minimum_Increment</th>
+                            <th>Issue_Date_Security</th>
+                            <th>Campo_11</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegO}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.recordIndicator}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo4}"></td>
+                            <td th:text="${registro.oasTreasuryRate}"></td>
+                            <td th:text="${registro.oasTreasuryRateSign}"></td>
+                            <td th:text="${registro.oasTreasuryEffectiveDate}"></td>
+                            <td th:text="${registro.minimumPiece}"></td>
+                            <td th:text="${registro.minimumIncrement}"></td>
+                            <td th:text="${registro.issueDateSecurity}"></td>
+                            <td th:text="${registro.campo11}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Record_Indicator</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_4</th>
+                            <th>Oas_Treasury_Rate</th>
+                            <th>Oas_Treasury_Rate_Sign</th>
+                            <th>Oas_Treasury_Effective_Date</th>
+                            <th>Minimum_Piece</th>
+                            <th>Minimum_Increment</th>
+                            <th>Issue_Date_Security</th>
+                            <th>Campo_11</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+
+        $('#processDate').daterangepicker(
+            {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "autoApply": true,
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+
+<script>
+    $(function () {
+        $("#tabla_reg_a").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_a_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_b").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_b_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_c").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_c_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_d").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_d_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_e").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_e_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_f").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_f_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_g").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_g_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_h").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_h_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_i").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_i_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_j").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_j_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_k").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_k_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_l").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_l_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_m").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_m_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_n").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_n_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_o").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_o_wrapper .col-md-6:eq(0)');
+    });
+
+    function buscar() {
+        var corteUrl = 'isca';
+        var oldUrl = location.href;
+        var processDate = $('#processDate').val().replaceAll('-','');
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/' + processDate;
+        location.href = newUrl;
+    }
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

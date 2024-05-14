@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Registros No Informados por Custodio</h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="form_guardar_registro" th:action="@{/rectificacion/registros_no_informados/guardar}" method="post">
+                        <div class="form-group row">
+                            <p class="col-md-2 text-primary">Consideraciones</p>
+                            <div class="col-md text-info">
+                                <p>1. Los registros de cuentas, saldos y movimientos no informados, se deben cargar en la planilla de más abajo, en cada hoja respectiva.</p>
+                                <p>2. Si no hay cuentas por cargar, deje dicha hoja vacía. Lo mismo para saldos y para movimientos. No elimine las hojas de la planilla (ni las renombre)</p>
+                                <p>3. Todos los campos de fechas deben ser ingresados con formato YYYY-MM-DD (ajuste formato en Excel de origen previamente).</p>
+                                <p>4. Todos los campos de montos (cantidad, precio, etc) deben ingresarse sin separador de miles. El separador de decimales debe ser un punto "." (ajuste formato en Excel de origen previamente).</p>
+                                <p>5. Para los campos de montos, ajuste previamente en excel de origen la cantidad de dígitos decimales a usar.</p>
+                                <p>6. Ingrese los registros por cada Process Date por separado. En la sección inferior podrá eliminar registros en caso de error.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="processDate" class="col-md-2 col-form-label">Process Date</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div id="spreadsheet" style="width: 100%;"></div>
+                        </div>
+                        <input type="hidden" id="valor_cuentas" name="valor_cuentas">
+                        <input type="hidden" id="valor_saldos" name="valor_saldos">
+                        <input type="hidden" id="valor_movimientos" name="valor_movimientos">
+                    </form>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="guardar()"><i class="fas fa-save"></i>Guardar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Registros de Cuentas No Informadas, pendientes de aprobación</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_cuentas" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Eliminar</th>
+                            <th>Process Date</th>
+                            <th>Custodian</th>
+                            <th>Client ID</th>
+                            <th>Firm No</th>
+                            <th>Sub No</th>
+                            <th>Rep No</th>
+                            <th>Office ID</th>
+                            <th>Account No</th>
+                            <th>Name</th>
+                            <th>Full Name</th>
+                            <th>Address</th>
+                            <th>Short Name</th>
+                            <th>Date of Birth</th>
+                            <th>Account Status</th>
+                            <th>Email</th>
+                            <th>Country Code</th>
+                            <th>Country</th>
+                            <th>W8 Date</th>
+                            <th>W9 Date</th>
+                            <th>W8 Status</th>
+                            <th>W9 Status</th>
+                            <th>Discr Trading</th>
+                            <th>Account Type</th>
+                            <th>Tipo Cuenta</th>
+                            <th>Cash/Margin Account</th>
+                            <th>Modelo de Relacionamiento</th>
+                            <th>Debit Card Indicator</th>
+                            <th>Open Date</th>
+                            <th>Close Date</th>
+                            <th>Participant Type</th>
+                            <th>Client Investment Profile</th>
+                            <th>Portfolio</th>
+                            <th>Tipo de Servicio</th>
+                            <th>Advisory Fee Annual</th>
+                            <th>Last Statement</th>
+                            <th>Main Advisor</th>
+                            <th>Secondary Advisor</th>
+                            <th>Email Main Advisor</th>
+                            <th>Email Secondary Advisor</th>
+                            <th>Tax ID</th>
+                            <th>Last Activity Month</th>
+                            <th>Institution Code</th>
+                            <th>Restriction Date</th>
+                            <th>Fondeo</th>
+                            <th>Monto Comprometido</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro : ${lista_registros_cuentas}">
+                            <td th:text="${registro.id}"></td>
+                            <td>
+                                <a class="btn bg-danger" th:href="@{/rectificacion/registros_no_informados/cuentas/eliminar/{id}(id=${registro.id})}" onclick="return confirmarEliminar()"><i class="fas fa-trash"></i></a>
+                            </td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.custodian}"></td>
+                            <td th:text="${registro.clientId}"></td>
+                            <td th:text="${registro.firmNo}"></td>
+                            <td th:text="${registro.subNo}"></td>
+                            <td th:text="${registro.repNo}"></td>
+                            <td th:text="${registro.officeId}"></td>
+                            <td th:text="${registro.accountNo}"></td>
+                            <td th:text="${registro.name}"></td>
+                            <td th:text="${registro.fullName}"></td>
+                            <td th:text="${registro.address}"></td>
+                            <td th:text="${registro.shortName}"></td>
+                            <td th:text="${registro.dateOfBirth}"></td>
+                            <td th:text="${registro.acctStatusValue}"></td>
+                            <td th:text="${registro.email}"></td>
+                            <td th:text="${registro.countryCodeValue}"></td>
+                            <td th:text="${registro.country}"></td>
+                            <td th:text="${registro.w8Date}"></td>
+                            <td th:text="${registro.w9Date}"></td>
+                            <td th:text="${registro.w8StatusValue}"></td>
+                            <td th:text="${registro.w9StatusValue}"></td>
+                            <td th:text="${registro.discrTradingCodeValue}"></td>
+                            <td th:text="${registro.accountType}"></td>
+                            <td th:text="${registro.contratosPa}"></td>
+                            <td th:text="${registro.cashMarginAccount}"></td>
+                            <td th:text="${registro.modeloRelacionamiento}"></td>
+                            <td th:text="${registro.debitCardIndicator}"></td>
+                            <td th:text="${registro.openDate}"></td>
+                            <td th:text="${registro.closeDate}"></td>
+                            <td th:text="${registro.participantType}"></td>
+                            <td th:text="${registro.clientInvestmentProfile}"></td>
+                            <td th:text="${registro.portfolio}"></td>
+                            <td th:text="${registro.tipoServicio}"></td>
+                            <td th:text="${registro.advisoryFeeAnnualPct}"></td>
+                            <td th:text="${registro.lastStatementDate}"></td>
+                            <td th:text="${registro.mainAdvisor}"></td>
+                            <td th:text="${registro.secondaryAdvisor}"></td>
+                            <td th:text="${registro.emailMainAdvisor}"></td>
+                            <td th:text="${registro.emailSecondaryAdvisor}"></td>
+                            <td th:text="${registro.taxId}"></td>
+                            <td th:text="${registro.lastActivityMonth}"></td>
+                            <td th:text="${registro.institutionCode}"></td>
+                            <td th:text="${registro.restrictionDate}"></td>
+                            <td th:text="${registro.fondeo}"></td>
+                            <td th:text="${registro.montoComprometido}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Eliminar</th>
+                                <th>Process Date</th>
+                                <th>Custodian</th>
+                                <th>Client ID</th>
+                                <th>Firm No</th>
+                                <th>Sub No</th>
+                                <th>Rep No</th>
+                                <th>Office ID</th>
+                                <th>Account No</th>
+                                <th>Name</th>
+                                <th>Full Name</th>
+                                <th>Address</th>
+                                <th>Short Name</th>
+                                <th>Date of Birth</th>
+                                <th>Account Status</th>
+                                <th>Email</th>
+                                <th>Country Code</th>
+                                <th>Country</th>
+                                <th>W8 Date</th>
+                                <th>W9 Date</th>
+                                <th>W8 Status</th>
+                                <th>W9 Status</th>
+                                <th>Discr Trading</th>
+                                <th>Account Type</th>
+                                <th>Tipo Cuenta</th>
+                                <th>Cash/Margin Account</th>
+                                <th>Modelo de Relacionamiento</th>
+                                <th>Debit Card Indicator</th>
+                                <th>Open Date</th>
+                                <th>Close Date</th>
+                                <th>Participant Type</th>
+                                <th>Client Investment Profile</th>
+                                <th>Portfolio</th>
+                                <th>Tipo de Servicio</th>
+                                <th>Advisory Fee Annual</th>
+                                <th>Last Statement</th>
+                                <th>Main Advisor</th>
+                                <th>Secondary Advisor</th>
+                                <th>Email Main Advisor</th>
+                                <th>Email Secondary Advisor</th>
+                                <th>Tax ID</th>
+                                <th>Last Activity Month</th>
+                                <th>Institution Code</th>
+                                <th>Restriction Date</th>
+                                <th>Fondeo</th>
+                                <th>Monto Comprometido</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Registros de Saldos No Informados, pendientes de aprobación</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_saldos" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Eliminar</th>
+                            <th>Process Date</th>
+                            <th>Custodian</th>
+                            <th>Client ID</th>
+                            <th>Firm No</th>
+                            <th>Sub No</th>
+                            <th>Office ID</th>
+                            <th>Rep No</th>
+                            <th>REP</th>
+                            <th>Account No</th>
+                            <th>Name</th>
+                            <th>Symbol</th>
+                            <th>Cusip</th>
+                            <th>ISIN</th>
+                            <th>Product Type</th>
+                            <th>Security Description</th>
+                            <th>Cash/Margin Account</th>
+                            <th>Quantity</th>
+                            <th>Market Price</th>
+                            <th>Currency</th>
+                            <th>Market Value</th>
+                            <th>FX Rate</th>
+                            <th>USDE Market Value</th>
+                            <th>Advisory Fee (Annual %)</th>
+                            <th>Factor</th>
+                            <th>Comision Devengada Diaria</th>
+                            <th>USDE Market Price</th>
+                            <th>Sec No</th>
+                            <th>Descr. 1</th>
+                            <th>Descr. 2</th>
+                            <th>Descr. 3</th>
+                            <th>Id Sub Sub Tipo</th>
+                            <th>Id SubT ipo</th>
+                            <th>Id Tipo</th>
+                            <th>Nombre Sub Sub Tipo</th>
+                            <th>SecId</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro : ${lista_registros_saldos}">
+                            <td th:text="${registro.id}"></td>
+                            <td>
+                                <a class="btn bg-danger" th:href="@{/rectificacion/registros_no_informados/saldos/eliminar/{id}(id=${registro.id})}" onclick="return confirmarEliminar()"><i class="fas fa-trash"></i></a>
+                            </td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.custodian}"></td>
+                            <td th:text="${registro.clientId}"></td>
+                            <td th:text="${registro.firmNo}"></td>
+                            <td th:text="${registro.subNo}"></td>
+                            <td th:text="${registro.officeId}"></td>
+                            <td th:text="${registro.repNo}"></td>
+                            <td th:text="${registro.rep}"></td>
+                            <td th:text="${registro.accountNo}"></td>
+                            <td th:text="${registro.name}"></td>
+                            <td th:text="${registro.symbol}"></td>
+                            <td th:text="${registro.cusip}"></td>
+                            <td th:text="${registro.isin}"></td>
+                            <td th:text="${registro.productType}"></td>
+                            <td th:text="${registro.securityDescription}"></td>
+                            <td th:text="${registro.cashMarginAccount}"></td>
+                            <td th:text="${registro.quantity}"></td>
+                            <td th:text="${registro.marketPrice}"></td>
+                            <td th:text="${registro.currency}"></td>
+                            <td th:text="${registro.marketValue}"></td>
+                            <td th:text="${registro.fxRate}"></td>
+                            <td th:text="${registro.usdeMarketValue}"></td>
+                            <td th:text="${registro.advisoryFeeAnual}"></td>
+                            <td th:text="${registro.factor}"></td>
+                            <td th:text="${registro.comisionDevengadaDiaria}"></td>
+                            <td th:text="${registro.usdeMarketPrice}"></td>
+                            <td th:text="${registro.secNo}"></td>
+                            <td th:text="${registro.desc1}"></td>
+                            <td th:text="${registro.desc2}"></td>
+                            <td th:text="${registro.desc3}"></td>
+                            <td th:text="${registro.idSubSubTipoActivo}"></td>
+                            <td th:text="${registro.idSubTipoActivo}"></td>
+                            <td th:text="${registro.idTipoActivo}"></td>
+                            <td th:text="${registro.nombreSubSubTipoActivo}"></td>
+                            <td th:text="${registro.secId}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Eliminar</th>
+                            <th>Process Date</th>
+                            <th>Custodian</th>
+                            <th>Client ID</th>
+                            <th>Firm No</th>
+                            <th>Sub No</th>
+                            <th>Office ID</th>
+                            <th>Rep No</th>
+                            <th>REP</th>
+                            <th>Account No</th>
+                            <th>Name</th>
+                            <th>Symbol</th>
+                            <th>Cusip</th>
+                            <th>ISIN</th>
+                            <th>Product Type</th>
+                            <th>Security Description</th>
+                            <th>Cash/Margin Account</th>
+                            <th>Quantity</th>
+                            <th>Market Price</th>
+                            <th>Currency</th>
+                            <th>Market Value</th>
+                            <th>FX Rate</th>
+                            <th>USDE Market Value</th>
+                            <th>Advisory Fee (Annual %)</th>
+                            <th>Factor</th>
+                            <th>Comision Devengada Diaria</th>
+                            <th>USDE Market Price</th>
+                            <th>Sec No</th>
+                            <th>Descr. 1</th>
+                            <th>Descr. 2</th>
+                            <th>Descr. 3</th>
+                            <th>Id Sub Sub Tipo</th>
+                            <th>Id SubT ipo</th>
+                            <th>Id Tipo</th>
+                            <th>Nombre Sub Sub Tipo</th>
+                            <th>SecId</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Registros de Movimientos No Informados, pendientes de aprobación</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_movimientos" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Eliminar</th>
+                            <th>Process Date</th>
+                            <th>Custodian</th>
+                            <th>Client ID</th>
+                            <th>Office ID</th>
+                            <th>Account N°</th>
+                            <th>Name</th>
+                            <th>Trade Date</th>
+                            <th>Settl. Date</th>
+                            <th>Activity</th>
+                            <th>Buy/Sell</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Comission</th>
+                            <th>Fees</th>
+                            <th>Net Amount</th>
+                            <th>USDE Net Amount</th>
+                            <th>Principal</th>
+                            <th>Cusip</th>
+                            <th>Symbol</th>
+                            <th>ISIN</th>
+                            <th>Currency</th>
+                            <th>FX Rate</th>
+                            <th>Interest</th>
+                            <th>Currency Base</th>
+                            <th>Cash/Margin Account</th>
+                            <th>Product Type</th>
+                            <th>Security Description</th>
+                            <th>Activity Description</th>
+                            <th>Activity Code</th>
+                            <th>Source Code</th>
+                            <th>Reporte</th>
+                            <th>Description 1</th>
+                            <th>Description 2</th>
+                            <th>Description 3</th>
+                            <th>Ticker</th>
+                            <th>Id Sub Sub Tipo Activo</th>
+                            <th>Id Sub Tipo Activo</th>
+                            <th>Id Tipo Activo</th>
+                            <th>Nombre Sub Sub Tipo Activo</th>
+                            <th>SecId</th>
+                            <th>Aplica Flujo Neto</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro : ${lista_registros_movtos}">
+                            <td th:text="${registro.id}"></td>
+                            <td>
+                                <a class="btn bg-danger" th:href="@{/rectificacion/registros_no_informados/movimientos/eliminar/{id}(id=${registro.id})}" onclick="return confirmarEliminar()"><i class="fas fa-trash"></i></a>
+                            </td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.custodian}"></td>
+                            <td th:text="${registro.clientId}"></td>
+                            <td th:text="${registro.officeId}"></td>
+                            <td th:text="${registro.accountNo}"></td>
+                            <td th:text="${registro.name}"></td>
+                            <td th:text="${registro.tradeDate}"></td>
+                            <td th:text="${registro.settlementDate}"></td>
+                            <td th:text="${registro.activity}"></td>
+                            <td th:text="${registro.buySell}"></td>
+                            <td th:text="${registro.quantity}"></td>
+                            <td th:text="${registro.price}"></td>
+                            <td th:text="${registro.comission}"></td>
+                            <td th:text="${registro.fees}"></td>
+                            <td th:text="${registro.netAmount}"></td>
+                            <td th:text="${registro.usdeNetAmount}"></td>
+                            <td th:text="${registro.principal}"></td>
+                            <td th:text="${registro.cusip}"></td>
+                            <td th:text="${registro.symbol}"></td>
+                            <td th:text="${registro.isin}"></td>
+                            <td th:text="${registro.currency}"></td>
+                            <td th:text="${registro.fxRate}"></td>
+                            <td th:text="${registro.interest}"></td>
+                            <td th:text="${registro.currencyBase}"></td>
+                            <td th:text="${registro.cashMarginAccount}"></td>
+                            <td th:text="${registro.productType}"></td>
+                            <td th:text="${registro.securityDescription}"></td>
+                            <td th:text="${registro.activityDescription}"></td>
+                            <td th:text="${registro.activityCode}"></td>
+                            <td th:text="${registro.sourceCode}"></td>
+                            <td th:text="${registro.reporte}"></td>
+                            <td th:text="${registro.description1}"></td>
+                            <td th:text="${registro.description2}"></td>
+                            <td th:text="${registro.description3}"></td>
+                            <td th:text="${registro.ticker}"></td>
+                            <td th:text="${registro.idSubSubTipoActivo}"></td>
+                            <td th:text="${registro.idSubTipoActivo}"></td>
+                            <td th:text="${registro.idTipoActivo}"></td>
+                            <td th:text="${registro.nombreSubSubTipoActivo}"></td>
+                            <td th:text="${registro.secId}"></td>
+                            <td th:text="${registro.aplicaFlujoNeto}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Eliminar</th>
+                                <th>Process Date</th>
+                                <th>Custodian</th>
+                                <th>Client ID</th>
+                                <th>Office ID</th>
+                                <th>Account N°</th>
+                                <th>Name</th>
+                                <th>Trade Date</th>
+                                <th>Settl. Date</th>
+                                <th>Activity</th>
+                                <th>Buy/Sell</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Comission</th>
+                                <th>Fees</th>
+                                <th>Net Amount</th>
+                                <th>USDE Net Amount</th>
+                                <th>Principal</th>
+                                <th>Cusip</th>
+                                <th>Symbol</th>
+                                <th>ISIN</th>
+                                <th>Currency</th>
+                                <th>FX Rate</th>
+                                <th>Interest</th>
+                                <th>Currency Base</th>
+                                <th>Cash/Margin Account</th>
+                                <th>Product Type</th>
+                                <th>Security Description</th>
+                                <th>Activity Description</th>
+                                <th>Activity Code</th>
+                                <th>Source Code</th>
+                                <th>Reporte</th>
+                                <th>Description 1</th>
+                                <th>Description 2</th>
+                                <th>Description 3</th>
+                                <th>Ticker</th>
+                                <th>Id Sub Sub Tipo Activo</th>
+                                <th>Id Sub Tipo Activo</th>
+                                <th>Id Tipo Activo</th>
+                                <th>Nombre Sub Sub Tipo Activo</th>
+                                <th>SecId</th>
+                                <th>Aplica Flujo Neto</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+        $("#tabla_cuentas").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_cuentas_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_saldos").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_saldos_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_movimientos").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_movimientos_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+
+        $('#processDate').daterangepicker(
+            {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "autoApply": true,
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+<script>
+    $(function() {
+        $("#spreadsheet").kendoSpreadsheet({
+            toolbar: false,
+            insertSheet: onSheetAdd,
+            removeSheet: onSheetDelete,
+            renameSheet: onSheetRename,
+            paste: onSheetPaste,
+            activeSheet: "Cuentas",
+            rows : 21,
+            useCultureDecimals: false,
+            sheets: [
+                {
+                    name: "Cuentas",
+                    rows: [
+                        {
+                            height: 25, columns: 44,
+                            cells: [
+                                {value: "Custodian", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Client_ID", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Firm No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Sub No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Rep No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Office_ID", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Account_No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Name", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Full Name", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Address", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Short_Name", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Date_of_Birth", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Account_Status", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Email", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Country-StoneX", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Country", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "W8_Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "W9_Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "W8_Status", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "W9_Status", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Discr Trading (Code)", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Account_Type", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Contratos Power Automate.Tipo Cuenta-PA", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Cash/Margin_Account", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Modelo_de_Relacionamiento", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Debit_Card_Indicator", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Open_Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Close_Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Participant_Type", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Client_Investment_Profile", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Portfolio", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Tipo de Servicio", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Advisory_Fee_Annual_Pct", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Last_Statement_Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Main_Advisor", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Secondary_Advisor", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Email_Main_Advisor", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Email_Secondary_Advisor", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Tax ID", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Last Activity Month", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Institution (Code)", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Restriction Type", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Fondeo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Monto Comprometido", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Saldos",
+                    rows: [
+                        {
+                            height: 25, columns: 35,
+                            cells: [
+                                {value: "Custodian", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Client_ID", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Firm No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Sub No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Office_ID", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Rep No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "REP", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Account_No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Name", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                /*{value: "Process_Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},*/
+                                {value: "Symbol", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Cusip", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "ISIN", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Product_Type", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Security_Description", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Cash/Margin_Account", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Quantity", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Market_Price", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Currency", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Market_Value", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "FX_Rate", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "USDE_Market_Value", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Advisory_Fee_(Annual_%)", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Factor", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Comision_Devengada_Diaria", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "USDE_Market_Price", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Sec No", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Description 1", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Description 2", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Description 3", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Builder.IdSubSubTipoActivo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Builder.IdSubTipoActivo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Builder.IdTipoActivo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Builder.NombreSubSubTipoActivo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Builder.SecId.1", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Movimientos",
+                    rows: [
+                        {
+                            height: 25, columns: 41,
+                            cells: [
+                                {value: "Custodian", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Client ID", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Office ID", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Account N°", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Name", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                /*{value: "Process Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},*/
+                                {value: "Trade Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Settl. Date", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Activity", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Buy/Sell", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Quantity", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Price", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Comission", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Fees", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Net Amount", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "USDE Net Amount", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Principal", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Cusip", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Symbol", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Isin", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Currency", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "FX Rate", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Interest", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Currency Base", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Cash/Margin", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Product Type", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Security Description", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Activity Description", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Activity Code", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Source Code", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Reporte", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Descr. 1", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Descr. 2", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Descr. 3", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Ticker", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Id Sub Sub Tipo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Id Sub Tipo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Td Tipo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Nombre Sub Sub Tipo", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Sec Id", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false},
+                                {value: "Aplica Flujo Neto", background: "rgb(167,214,255)", textAlign: "center", color: "rgb(0,62,117)", enable: false}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+    });
+
+
+
+    $(function() {
+        var formatoFecha = 'yyyy-mm-dd';
+        var formatoNumDec = '0.000000';
+        var backColorTotal = "rgb(167,214,255)";
+        var spreadsheet = $("#spreadsheet").data("kendoSpreadsheet");
+        //Hoja Cuentas
+        var sheet = spreadsheet.sheetByName("Cuentas");
+        sheet.range("L2:L100").format(formatoFecha);
+        sheet.range("Q2:Q30").format(formatoFecha);
+        sheet.range("R2:R30").format(formatoFecha);
+        sheet.range("AA2:AA30").format(formatoFecha);
+        sheet.range("AB2:AB30").format(formatoFecha);
+        sheet.range("AH2:AH30").format(formatoFecha);
+        sheet.range("AN2:AN30").format(formatoFecha);
+        sheet.range("AG21").formula("SUM(AG2:AG20)");
+        sheet.range("AQ21").formula("SUM(AQ2:AQ20)");
+        sheet.range("AR21").formula("SUM(AR2:AR20)");
+        sheet.range("A21:AX21").format(formatoNumDec);
+        sheet.range("A21:AX21").background(backColorTotal);
+        sheet.range("A21:AX21").bold(true);
+        sheet.range("A21:AX21").textAlign("center");
+        sheet.range("A21:AX21").enable(false);
+        //Hoja Movimientos
+        sheet = spreadsheet.sheetByName("Movimientos");
+        sheet.range("F2:F30").format(formatoFecha);
+        sheet.range("G2:G30").format(formatoFecha);
+        sheet.range("J21").formula("SUM(J2:J20)");
+        sheet.range("K21").formula("SUM(K2:K20)");
+        sheet.range("L21").formula("SUM(L2:L20)");
+        sheet.range("M21").formula("SUM(M2:M20)");
+        sheet.range("N21").formula("SUM(N2:N20)");
+        sheet.range("O21").formula("SUM(O2:O20)");
+        sheet.range("P21").formula("SUM(P2:P20)");
+        sheet.range("U21").formula("SUM(U2:U20)");
+        sheet.range("V21").formula("SUM(V2:V20)");
+        sheet.range("AN21").formula("SUM(AN2:AN20)");
+        sheet.range("A21:AX21").format(formatoNumDec);
+        sheet.range("A21:AX21").background(backColorTotal);
+        sheet.range("A21:AX21").bold(true);
+        sheet.range("A21:AX21").textAlign("center");
+        sheet.range("A21:AX21").enable(false);
+        //Hoja Saldos
+        sheet = spreadsheet.sheetByName("Saldos");
+        sheet.range("P21").formula("SUM(P2:P20)");
+        sheet.range("Q21").formula("SUM(Q2:Q20)");
+        sheet.range("S21").formula("SUM(S2:S20)");
+        sheet.range("T21").formula("SUM(T2:T20)");
+        sheet.range("U21").formula("SUM(U2:U20)");
+        sheet.range("V21").formula("SUM(V2:V20)");
+        sheet.range("W21").formula("SUM(W2:W20)");
+        sheet.range("X21").formula("SUM(X2:X20)");
+        sheet.range("Y21").formula("SUM(Y2:Y20)");
+        sheet.range("A21:AX21").format(formatoNumDec);
+        sheet.range("A21:AX21").background(backColorTotal);
+        sheet.range("A21:AX21").bold(true);
+        sheet.range("A21:AX21").textAlign("center");
+        sheet.range("A21:AX21").enable(false);
+
+    });
+
+    function onSheetPaste(e) {
+        //console.log(e);
+        var sheet = e.sender.activeSheet();
+        var sheetName = sheet._sheetName;
+        //console.log(sheet._sheetName);
+
+        var hoja = e.sender.activeSheet();
+        var filas = e.range.topLeft().row;
+        var columnas = e.range.topLeft().col;
+        var valores = e.clipboardContent.data;
+        //console.log(valores);
+        for (var i = 0; i < valores.length; i++) {
+            //console.log(valores[i]);
+            for (var j = 0; j < valores[i].length; j++) {
+                //console.log(valores[i][j]);
+                var nuevoValor  = actualizaPegadoValorExcel(hoja._sheetName, valores[i][j].value, filas + i, columnas + j);
+                e.clipboardContent.data[i][j].value = nuevoValor;
+            }
+        }
+
+    }
+
+    function onSheetAdd(e) {
+        e.preventDefault();
+    }
+    function onSheetDelete(e) {
+        e.preventDefault();
+    }
+    function onSheetRename(e) {
+        e.preventDefault();
+    }
+
+    function actualizaPegadoValorExcel(nombreHoja, valorPorPegar, fila, columna) {
+        console.log("Pegando valor ["+valorPorPegar+"] en la hoja ["+nombreHoja+"] en la fila ["+fila+"] y columna ["+columna+"]");
+        var colCuentasNumDec = [32, 42, 43];
+        var colSaldosNumDec = [15, 16, 18, 19, 20, 21, 22, 23, 24];
+        var colMovimientosNumDec = [9, 10, 11, 12, 13, 14, 15, 20, 21, 39];
+
+        switch (nombreHoja) {
+            case "Cuentas":
+                if (colCuentasNumDec.includes(columna)) {
+                    return actualizaValorNumDec(valorPorPegar);
+                }
+                break;
+            case "Saldos":
+                if (colSaldosNumDec.includes(columna)) {
+                    return actualizaValorNumDec(valorPorPegar);
+                }
+                break;
+            case "Movimientos":
+                if (colMovimientosNumDec.includes(columna)) {
+                    return actualizaValorNumDec(valorPorPegar);
+                }
+                break;
+        }
+        return valorPorPegar;
+    }
+
+    function actualizaValorNumDec(valorOriginal) {
+        console.log("Valor original: ["+valorOriginal+"] - Nuevo valor: ["+valorOriginal.replace(/,/g, ".")+"]")
+        return valorOriginal.replace(/,/g, ".");
+    }
+
+
+</script>
+
+<script>
+    function guardar() {
+        var grilla          = $("#spreadsheet").data("kendoSpreadsheet");
+        var jsonCuentas     = grilla.sheetByName("Cuentas").toJSON()["rows"];
+        var jsonSaldos      = grilla.sheetByName("Saldos").toJSON()["rows"];
+        var jsonMovtos      = grilla.sheetByName("Movimientos").toJSON()["rows"];
+
+        console.log(jsonCuentas);
+        console.log(jsonSaldos);
+        console.log(jsonMovtos);
+
+        $("#valor_cuentas").val( JSON.stringify(jsonCuentas) );
+        $("#valor_saldos").val( JSON.stringify(jsonSaldos) );
+        $("#valor_movimientos").val( JSON.stringify(jsonMovtos) );
+        var myForm  = document.getElementById('form_guardar_registro');
+        myForm.submit();
+    }
+
+    function confirmarEliminar() {
+        return confirm('¿Está seguro de eliminar el registro?');
+    }
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

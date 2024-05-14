@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div id="main-card" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Seleccione una fecha y el proceso a ejecutar</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" onclick="procesar('ftp_stonex')"><i class="fas fa-file"></i>FTP Stonex</a>
+                    <a class="btn btn-app" onclick="procesar('ftp_pershing_con_descarga')"><i class="fas fa-file-download"></i>FTP Pershing (con descarga)</a>
+                    <a class="btn btn-app" onclick="procesar('ftp_pershing_sin_descarga')"><i class="fas fa-file-alt"></i>FTP Pershing (sin descarga)</a>
+                    <a class="btn btn-app" onclick="procesar('reporte_maestros')"><i class="fas fa-file-excel"></i>Reportes Maestros</a>
+                    <a class="btn btn-app" onclick="procesar('calculo_reporte_ingresos_egresos')"><i class="fas fa-calculator"></i>Cálculo Ingresos Egresos</a>
+                    <a class="btn btn-app" onclick="procesar('reporte_ingresos_egresos')"><i class="fas fa-file-excel"></i>Reportes Ingresos Egresos</a>
+                    <a class="btn btn-app" onclick="procesar('control_diario_segmentado_sin_mail')"><i class="fas fa-tasks"></i>Control Diario Segmentado (sin mail)</a>
+                    <a class="btn btn-app" onclick="procesar('control_diario_segmentado')"><i class="fas fa-tasks"></i>Control Diario Segmentado (con mail)</a>
+                    <a class="btn btn-app" onclick="procesar('carga_maestros_ftp_chile')"><i class="fas fa-cloud-upload-alt"></i>Carga Maestros FTP</a>
+                    <a class="btn btn-app" onclick="procesar('carga_maestros_ftp_chile_forzada')"><i class="fas fa-cloud-upload-alt"></i>Forzar Carga Maestros FTP</a>
+                    <a class="btn btn-app" onclick="procesar('pre_calculo_rentabilidad')"><i class="fas fa-file-alt"></i>Precalculo Rentabilidad</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+
+        $('#processDate').daterangepicker(
+            {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "autoApply": true,
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+<script>
+    function procesar(urlSuffix) {
+        var corteUrl = 'fecha';
+        var oldUrl = location.href;
+        var processDate = $('#processDate').val().replaceAll('-','');
+        var newUrl  = "";
+        var pos = oldUrl.indexOf(corteUrl);
+        if (pos>0) {
+            newUrl = oldUrl.substring(0, pos) + corteUrl + '/' + processDate + '/'+urlSuffix;
+        } else {
+            newUrl  = oldUrl + '/' + corteUrl + '/' + processDate + '/'+urlSuffix;
+        }
+        location.href = newUrl;
+    }
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

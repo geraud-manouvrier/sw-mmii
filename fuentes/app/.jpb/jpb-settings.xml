@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JpaPluginProjectSettings" repositoryClassNamePostfix="Dao" />
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit name="Default" />
+      <persistence-unit name="stonexDataSource">
+        <packages>
+          <package value="cl.qande.mmii.app.models.db.stonex.entity" />
+        </packages>
+      </persistence-unit>
+      <persistence-unit name="suraDataSource">
+        <packages>
+          <package value="cl.qande.mmii.app.models.db.sura.entity" />
+        </packages>
+      </persistence-unit>
+      <persistence-unit name="coreDataSource">
+        <packages>
+          <package value="cl.qande.mmii.app.models.db.core.entity" />
+        </packages>
+      </persistence-unit>
+      <persistence-unit name="repinvDataSource">
+        <packages>
+          <package value="cl.qande.mmii.app.models.db.rep_inv.entity" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
+</project>

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Seleccione fecha</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record A ('+(listaRegA == null ? 'Sin resultados' : #lists.size(listaRegA)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_a" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_6</th>
+                            <th>Underlying_Cusip</th>
+                            <th>Campo_8</th>
+                            <th>Security_Symbol</th>
+                            <th>Investment_Professional_Of_Record</th>
+                            <th>Executing_Investment_Professional</th>
+                            <th>Transaction_Type</th>
+                            <th>Buy_Sell_Code</th>
+                            <th>Open_Close_Indicator</th>
+                            <th>Par_Key_Code</th>
+                            <th>Source_Code</th>
+                            <th>Maxx_Key_Code</th>
+                            <th>Process_Date_Sfl</th>
+                            <th>Trade_Date</th>
+                            <th>Settlement_Entry_Date</th>
+                            <th>Campo_21</th>
+                            <th>Source_Of_Input</th>
+                            <th>Reference_Number</th>
+                            <th>Batch_Code</th>
+                            <th>Same_Day_Settlement</th>
+                            <th>Contra_Account</th>
+                            <th>Market_Code</th>
+                            <th>Blotter_Code</th>
+                            <th>Cancel_Code</th>
+                            <th>Correction_Code</th>
+                            <th>Merket_Limit_Indicator</th>
+                            <th>Legend_Code_1</th>
+                            <th>Legend_Code_2</th>
+                            <th>Campo_34</th>
+                            <th>Quantity</th>
+                            <th>Quantity_Sign</th>
+                            <th>Price_In_Trade_Currency</th>
+                            <th>Campo_38</th>
+                            <th>Price_In_Trade_Currency_Sign</th>
+                            <th>Currency_Indicator_For_Price</th>
+                            <th>Net_Amount_In_Usd</th>
+                            <th>Net_Amount_In_Usd_Sign</th>
+                            <th>Principal_In_Usd</th>
+                            <th>Principal_In_Usd_Sign</th>
+                            <th>Interest_In_Usd</th>
+                            <th>Interest_In_Usd_Sign</th>
+                            <th>Commision_In_Usd</th>
+                            <th>Commision_In_Usd_Sign</th>
+                            <th>Tax_In_Usd</th>
+                            <th>Tax_In_Usd_Sign</th>
+                            <th>Transaction_Fee_In_Usd</th>
+                            <th>Transaction_Fee_In_Usd_Sign</th>
+                            <th>Misc_Fee_In_Usd</th>
+                            <th>Misc_Fee_In_Usd_Sign</th>
+                            <th>Other_Fee_In_Usd</th>
+                            <th>Other_Fee_In_Usd_Sign</th>
+                            <th>Tefra_Wh_Amount_In_Usd</th>
+                            <th>Tefra_Wh_Amount_In_Usd_Sign</th>
+                            <th>Pershing_Charge_In_Usd</th>
+                            <th>Pershing_Charge_In_Usd_Sign</th>
+                            <th>Brokerage_Charge_In_Usd</th>
+                            <th>Brokerage_Charge_In_Usd_Sign</th>
+                            <th>Sales_Credit_In_Usd</th>
+                            <th>Sales_Credit_In_Usd_Sign</th>
+                            <th>Settlement_Fee_In_Usd</th>
+                            <th>Settlement_Fee_In_Usd_Sign</th>
+                            <th>Service_Charge_In_Usd</th>
+                            <th>Service_Charge_In_Usd_Sign</th>
+                            <th>Markup_Markdown_Amount_In_Usd</th>
+                            <th>Markup_Markdown_Amount_In_Usd_Sign</th>
+                            <th>Campo_71</th>
+                            <th>Dividend_Payable_Date</th>
+                            <th>Campo_73</th>
+                            <th>Dividend_Record_Date</th>
+                            <th>Dividend_Type</th>
+                            <th>Campo_76</th>
+                            <th>Shares_Of_Record_Quantity_For_Dividends</th>
+                            <th>Order_Size_Quantity</th>
+                            <th>Campo_79</th>
+                            <th>Pool_Factor</th>
+                            <th>Parsed_Customer_Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Security_Type_Code</th>
+                            <th>Security_Modifier_Code</th>
+                            <th>Security_Calculation_Code</th>
+                            <th>Minor_Product_Code</th>
+                            <th>Foreign_Product_Indicator</th>
+                            <th>With_Due_Bill_Indicator</th>
+                            <th>Taxable_Municipal_Bond_Indicator</th>
+                            <th>Omnibus_Indicator</th>
+                            <th>External_Order_Id</th>
+                            <th>Campo_92</th>
+                            <th>Market_Value_Of_Transaction</th>
+                            <th>Ip_Number_Parsed</th>
+                            <th>Reported_Price</th>
+                            <th>Reported_Price_Sign</th>
+                            <th>Previous_Day_Market_Value_Of_Transaction</th>
+                            <th>Price_In_Usd</th>
+                            <th>Option_Root_Id</th>
+                            <th>Expiration_Date</th>
+                            <th>Put_Call_Code</th>
+                            <th>Strike_Price</th>
+                            <th>Repo_Identifier</th>
+                            <th>Taxable</th>
+                            <th>Qualified</th>
+                            <th>Expanded_Ip_Number</th>
+                            <th>Expanded_Exec_Ip_Number</th>
+                            <th>Expanded_Legacy_Ip_Number</th>
+                            <th>Campo_109</th>
+                            <th>Campo_110</th>
+                            <th>Campo_111</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegA}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.cusipNumber}"></td>
+                            <td th:text="${registro.campo6}"></td>
+                            <td th:text="${registro.underlyingCusip}"></td>
+                            <td th:text="${registro.campo8}"></td>
+                            <td th:text="${registro.securitySymbol}"></td>
+                            <td th:text="${registro.investmentProfessionalOfRecord}"></td>
+                            <td th:text="${registro.executingInvestmentProfessional}"></td>
+                            <td th:text="${registro.transactionType}"></td>
+                            <td th:text="${registro.buySellCode}"></td>
+                            <td th:text="${registro.openCloseIndicator}"></td>
+                            <td th:text="${registro.parKeyCode}"></td>
+                            <td th:text="${registro.sourceCode}"></td>
+                            <td th:text="${registro.maxxKeyCode}"></td>
+                            <td th:text="${registro.processDateSfl}"></td>
+                            <td th:text="${registro.tradeDate}"></td>
+                            <td th:text="${registro.settlementEntryDate}"></td>
+                            <td th:text="${registro.campo21}"></td>
+                            <td th:text="${registro.sourceOfInput}"></td>
+                            <td th:text="${registro.referenceNumber}"></td>
+                            <td th:text="${registro.batchCode}"></td>
+                            <td th:text="${registro.sameDaySettlement}"></td>
+                            <td th:text="${registro.contraAccount}"></td>
+                            <td th:text="${registro.marketCode}"></td>
+                            <td th:text="${registro.blotterCode}"></td>
+                            <td th:text="${registro.cancelCode}"></td>
+                            <td th:text="${registro.correctionCode}"></td>
+                            <td th:text="${registro.merketLimitIndicator}"></td>
+                            <td th:text="${registro.legendCode1}"></td>
+                            <td th:text="${registro.legendCode2}"></td>
+                            <td th:text="${registro.campo34}"></td>
+                            <td th:text="${registro.quantity}"></td>
+                            <td th:text="${registro.quantitySign}"></td>
+                            <td th:text="${registro.priceInTradeCurrency}"></td>
+                            <td th:text="${registro.campo38}"></td>
+                            <td th:text="${registro.priceInTradeCurrencySign}"></td>
+                            <td th:text="${registro.currencyIndicatorForPrice}"></td>
+                            <td th:text="${registro.netAmountInUsd}"></td>
+                            <td th:text="${registro.netAmountInUsdSign}"></td>
+                            <td th:text="${registro.principalInUsd}"></td>
+                            <td th:text="${registro.principalInUsdSign}"></td>
+                            <td th:text="${registro.interestInUsd}"></td>
+                            <td th:text="${registro.interestInUsdSign}"></td>
+                            <td th:text="${registro.commisionInUsd}"></td>
+                            <td th:text="${registro.commisionInUsdSign}"></td>
+                            <td th:text="${registro.taxInUsd}"></td>
+                            <td th:text="${registro.taxInUsdSign}"></td>
+                            <td th:text="${registro.transactionFeeInUsd}"></td>
+                            <td th:text="${registro.transactionFeeInUsdSign}"></td>
+                            <td th:text="${registro.miscFeeInUsd}"></td>
+                            <td th:text="${registro.miscFeeInUsdSign}"></td>
+                            <td th:text="${registro.otherFeeInUsd}"></td>
+                            <td th:text="${registro.otherFeeInUsdSign}"></td>
+                            <td th:text="${registro.tefraWhAmountInUsd}"></td>
+                            <td th:text="${registro.tefraWhAmountInUsdSign}"></td>
+                            <td th:text="${registro.pershingChargeInUsd}"></td>
+                            <td th:text="${registro.pershingChargeInUsdSign}"></td>
+                            <td th:text="${registro.brokerageChargeInUsd}"></td>
+                            <td th:text="${registro.brokerageChargeInUsdSign}"></td>
+                            <td th:text="${registro.salesCreditInUsd}"></td>
+                            <td th:text="${registro.salesCreditInUsdSign}"></td>
+                            <td th:text="${registro.settlementFeeInUsd}"></td>
+                            <td th:text="${registro.settlementFeeInUsdSign}"></td>
+                            <td th:text="${registro.serviceChargeInUsd}"></td>
+                            <td th:text="${registro.serviceChargeInUsdSign}"></td>
+                            <td th:text="${registro.markupMarkdownAmountInUsd}"></td>
+                            <td th:text="${registro.markupMarkdownAmountInUsdSign}"></td>
+                            <td th:text="${registro.campo71}"></td>
+                            <td th:text="${registro.dividendPayableDate}"></td>
+                            <td th:text="${registro.campo73}"></td>
+                            <td th:text="${registro.dividendRecordDate}"></td>
+                            <td th:text="${registro.dividendType}"></td>
+                            <td th:text="${registro.campo76}"></td>
+                            <td th:text="${registro.sharesOfRecordQuantityForDividends}"></td>
+                            <td th:text="${registro.orderSizeQuantity}"></td>
+                            <td th:text="${registro.campo79}"></td>
+                            <td th:text="${registro.poolFactor}"></td>
+                            <td th:text="${registro.parsedCustomerAccountNumber}"></td>
+                            <td th:text="${registro.ibdNumber}"></td>
+                            <td th:text="${registro.securityTypeCode}"></td>
+                            <td th:text="${registro.securityModifierCode}"></td>
+                            <td th:text="${registro.securityCalculationCode}"></td>
+                            <td th:text="${registro.minorProductCode}"></td>
+                            <td th:text="${registro.foreignProductIndicator}"></td>
+                            <td th:text="${registro.withDueBillIndicator}"></td>
+                            <td th:text="${registro.taxableMunicipalBondIndicator}"></td>
+                            <td th:text="${registro.omnibusIndicator}"></td>
+                            <td th:text="${registro.externalOrderId}"></td>
+                            <td th:text="${registro.campo92}"></td>
+                            <td th:text="${registro.marketValueOfTransaction}"></td>
+                            <td th:text="${registro.ipNumberParsed}"></td>
+                            <td th:text="${registro.reportedPrice}"></td>
+                            <td th:text="${registro.reportedPriceSign}"></td>
+                            <td th:text="${registro.previousDayMarketValueOfTransaction}"></td>
+                            <td th:text="${registro.priceInUsd}"></td>
+                            <td th:text="${registro.optionRootId}"></td>
+                            <td th:text="${registro.expirationDate}"></td>
+                            <td th:text="${registro.putCallCode}"></td>
+                            <td th:text="${registro.strikePrice}"></td>
+                            <td th:text="${registro.repoIdentifier}"></td>
+                            <td th:text="${registro.taxable}"></td>
+                            <td th:text="${registro.qualified}"></td>
+                            <td th:text="${registro.expandedIpNumber}"></td>
+                            <td th:text="${registro.expandedExecIpNumber}"></td>
+                            <td th:text="${registro.expandedLegacyIpNumber}"></td>
+                            <td th:text="${registro.campo109}"></td>
+                            <td th:text="${registro.campo110}"></td>
+                            <td th:text="${registro.campo111}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Cusip_Number</th>
+                            <th>Campo_6</th>
+                            <th>Underlying_Cusip</th>
+                            <th>Campo_8</th>
+                            <th>Security_Symbol</th>
+                            <th>Investment_Professional_Of_Record</th>
+                            <th>Executing_Investment_Professional</th>
+                            <th>Transaction_Type</th>
+                            <th>Buy_Sell_Code</th>
+                            <th>Open_Close_Indicator</th>
+                            <th>Par_Key_Code</th>
+                            <th>Source_Code</th>
+                            <th>Maxx_Key_Code</th>
+                            <th>Process_Date_Sfl</th>
+                            <th>Trade_Date</th>
+                            <th>Settlement_Entry_Date</th>
+                            <th>Campo_21</th>
+                            <th>Source_Of_Input</th>
+                            <th>Reference_Number</th>
+                            <th>Batch_Code</th>
+                            <th>Same_Day_Settlement</th>
+                            <th>Contra_Account</th>
+                            <th>Market_Code</th>
+                            <th>Blotter_Code</th>
+                            <th>Cancel_Code</th>
+                            <th>Correction_Code</th>
+                            <th>Merket_Limit_Indicator</th>
+                            <th>Legend_Code_1</th>
+                            <th>Legend_Code_2</th>
+                            <th>Campo_34</th>
+                            <th>Quantity</th>
+                            <th>Quantity_Sign</th>
+                            <th>Price_In_Trade_Currency</th>
+                            <th>Campo_38</th>
+                            <th>Price_In_Trade_Currency_Sign</th>
+                            <th>Currency_Indicator_For_Price</th>
+                            <th>Net_Amount_In_Usd</th>
+                            <th>Net_Amount_In_Usd_Sign</th>
+                            <th>Principal_In_Usd</th>
+                            <th>Principal_In_Usd_Sign</th>
+                            <th>Interest_In_Usd</th>
+                            <th>Interest_In_Usd_Sign</th>
+                            <th>Commision_In_Usd</th>
+                            <th>Commision_In_Usd_Sign</th>
+                            <th>Tax_In_Usd</th>
+                            <th>Tax_In_Usd_Sign</th>
+                            <th>Transaction_Fee_In_Usd</th>
+                            <th>Transaction_Fee_In_Usd_Sign</th>
+                            <th>Misc_Fee_In_Usd</th>
+                            <th>Misc_Fee_In_Usd_Sign</th>
+                            <th>Other_Fee_In_Usd</th>
+                            <th>Other_Fee_In_Usd_Sign</th>
+                            <th>Tefra_Wh_Amount_In_Usd</th>
+                            <th>Tefra_Wh_Amount_In_Usd_Sign</th>
+                            <th>Pershing_Charge_In_Usd</th>
+                            <th>Pershing_Charge_In_Usd_Sign</th>
+                            <th>Brokerage_Charge_In_Usd</th>
+                            <th>Brokerage_Charge_In_Usd_Sign</th>
+                            <th>Sales_Credit_In_Usd</th>
+                            <th>Sales_Credit_In_Usd_Sign</th>
+                            <th>Settlement_Fee_In_Usd</th>
+                            <th>Settlement_Fee_In_Usd_Sign</th>
+                            <th>Service_Charge_In_Usd</th>
+                            <th>Service_Charge_In_Usd_Sign</th>
+                            <th>Markup_Markdown_Amount_In_Usd</th>
+                            <th>Markup_Markdown_Amount_In_Usd_Sign</th>
+                            <th>Campo_71</th>
+                            <th>Dividend_Payable_Date</th>
+                            <th>Campo_73</th>
+                            <th>Dividend_Record_Date</th>
+                            <th>Dividend_Type</th>
+                            <th>Campo_76</th>
+                            <th>Shares_Of_Record_Quantity_For_Dividends</th>
+                            <th>Order_Size_Quantity</th>
+                            <th>Campo_79</th>
+                            <th>Pool_Factor</th>
+                            <th>Parsed_Customer_Account_Number</th>
+                            <th>Ibd_Number</th>
+                            <th>Security_Type_Code</th>
+                            <th>Security_Modifier_Code</th>
+                            <th>Security_Calculation_Code</th>
+                            <th>Minor_Product_Code</th>
+                            <th>Foreign_Product_Indicator</th>
+                            <th>With_Due_Bill_Indicator</th>
+                            <th>Taxable_Municipal_Bond_Indicator</th>
+                            <th>Omnibus_Indicator</th>
+                            <th>External_Order_Id</th>
+                            <th>Campo_92</th>
+                            <th>Market_Value_Of_Transaction</th>
+                            <th>Ip_Number_Parsed</th>
+                            <th>Reported_Price</th>
+                            <th>Reported_Price_Sign</th>
+                            <th>Previous_Day_Market_Value_Of_Transaction</th>
+                            <th>Price_In_Usd</th>
+                            <th>Option_Root_Id</th>
+                            <th>Expiration_Date</th>
+                            <th>Put_Call_Code</th>
+                            <th>Strike_Price</th>
+                            <th>Repo_Identifier</th>
+                            <th>Taxable</th>
+                            <th>Qualified</th>
+                            <th>Expanded_Ip_Number</th>
+                            <th>Expanded_Exec_Ip_Number</th>
+                            <th>Expanded_Legacy_Ip_Number</th>
+                            <th>Campo_109</th>
+                            <th>Campo_110</th>
+                            <th>Campo_111</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card collapsed-card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${'Record B ('+(listaRegB == null ? 'Sin resultados' : #lists.size(listaRegB)+' registros')+')'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_reg_b" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Security_Currency_Of_Issuance</th>
+                            <th>Trade_Currency_Code</th>
+                            <th>Settlement_Currency_Code</th>
+                            <th>Settlement_Usd_Currency_Fx_Rate</th>
+                            <th>Settlement_Usd_Multiply_Divide_Code</th>
+                            <th>Cross_Currency_Fx_Rate</th>
+                            <th>Currency_Multiply_Divide_Code</th>
+                            <th>Accrued_Interest_In_Settlement_Currency</th>
+                            <th>Accrued_Interest_In_Settlement_Currency_Sign</th>
+                            <th>Market_Code</th>
+                            <th>Internal_Reference_For_Gloss</th>
+                            <th>Ibd_Version</th>
+                            <th>Net_Amount_In_Settlement_Currency</th>
+                            <th>Net_Amount_In_Settlement_Currency_Sign</th>
+                            <th>Principal_Amount_In_Settlement_Currency</th>
+                            <th>Principal_Amount_In_Settlement_Currency_Sign</th>
+                            <th>Interest_In_Settlement_Currency</th>
+                            <th>Interest_In_Settlement_Currency_Sign</th>
+                            <th>Commission_In_Settlement_Currency</th>
+                            <th>Commission_In_Settlement_Currency_Sign</th>
+                            <th>Tax_In_Settlement_Currency</th>
+                            <th>Tax_In_Settlement_Currency_Sign</th>
+                            <th>Transaction_Fee_In_Settlement_Currency</th>
+                            <th>Transaction_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Miscellaneous_Fee_In_Settlement_Currency</th>
+                            <th>Miscellaneous_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Other_Fee_In_Settlement_Currency</th>
+                            <th>Other_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Sales_Credit_In_Settlement_Currency</th>
+                            <th>Sales_Credit_In_Settlement_Currency_Sign</th>
+                            <th>Settlement_Fee_In_Settlement_Currency</th>
+                            <th>Settlement_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Service_Charge_In_Settlement_Currency</th>
+                            <th>Service_Charge_In_Settlement_Currency_Sign</th>
+                            <th>Markup_Markdown_In_Settlement_Currency</th>
+                            <th>Markup_Markdown_In_Settlement_Currency_Sign</th>
+                            <th>Global_Exchange</th>
+                            <th>Number_Of_Description_Lines</th>
+                            <th>Last_Description_Line</th>
+                            <th>Description_Line_1</th>
+                            <th>Description_Line_2</th>
+                            <th>Description_Line_3</th>
+                            <th>Description_Line_4</th>
+                            <th>Description_Line_5</th>
+                            <th>Description_Line_6</th>
+                            <th>Description_Line_7</th>
+                            <th>Description_Line_8</th>
+                            <th>Description_Line_9</th>
+                            <th>Description_Line_10</th>
+                            <th>Description_Line_11</th>
+                            <th>Description_Line_12</th>
+                            <th>Security_Currency_Indicator</th>
+                            <th>Market_Mnemonic_Code</th>
+                            <th>Ccy_Of_Issuance_Usd_Ccy_Fx_Rate</th>
+                            <th>Ccy_Of_Issuance_Usd_Multiply_Divide_Code</th>
+                            <th>Alternate_Security_Id_Type</th>
+                            <th>Alternate_Security_Id</th>
+                            <th>Alternate_Security_Id_Type_2</th>
+                            <th>Alternate_Security_Id_2</th>
+                            <th>International_Non_Dollar_Symbol</th>
+                            <th>Confirmation_Code_1</th>
+                            <th>Confirmation_Code_2</th>
+                            <th>Confirmation_Code_3</th>
+                            <th>Confirmation_Code_4</th>
+                            <th>Pmp</th>
+                            <th>Total_Amount_Mark_Up_Down</th>
+                            <th>Total_Amount_Mark_Up_Down_Sign</th>
+                            <th>Pmp_Percent</th>
+                            <th>Campo_73</th>
+                            <th>Eor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro: ${listaRegB}">
+                            <td th:text="${registro.id}"></td>
+                            <td th:text="${registro.idProceso}"></td>
+                            <td th:text="${registro.processDate}"></td>
+                            <td th:text="${registro.transactionCode}"></td>
+                            <td th:text="${registro.recordIndicatorValue}"></td>
+                            <td th:text="${registro.recordIdSequenceNumber}"></td>
+                            <td th:text="${registro.accountNumber}"></td>
+                            <td th:text="${registro.securityCurrencyOfIssuance}"></td>
+                            <td th:text="${registro.tradeCurrencyCode}"></td>
+                            <td th:text="${registro.settlementCurrencyCode}"></td>
+                            <td th:text="${registro.settlementUsdCurrencyFxRate}"></td>
+                            <td th:text="${registro.settlementUsdMultiplyDivideCode}"></td>
+                            <td th:text="${registro.crossCurrencyFxRate}"></td>
+                            <td th:text="${registro.currencyMultiplyDivideCode}"></td>
+                            <td th:text="${registro.accruedInterestInSettlementCurrency}"></td>
+                            <td th:text="${registro.accruedInterestInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.marketCode}"></td>
+                            <td th:text="${registro.internalReferenceForGloss}"></td>
+                            <td th:text="${registro.ibdVersion}"></td>
+                            <td th:text="${registro.netAmountInSettlementCurrency}"></td>
+                            <td th:text="${registro.netAmountInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.principalAmountInSettlementCurrency}"></td>
+                            <td th:text="${registro.principalAmountInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.interestInSettlementCurrency}"></td>
+                            <td th:text="${registro.interestInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.commissionInSettlementCurrency}"></td>
+                            <td th:text="${registro.commissionInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.taxInSettlementCurrency}"></td>
+                            <td th:text="${registro.taxInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.transactionFeeInSettlementCurrency}"></td>
+                            <td th:text="${registro.transactionFeeInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.miscellaneousFeeInSettlementCurrency}"></td>
+                            <td th:text="${registro.miscellaneousFeeInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.otherFeeInSettlementCurrency}"></td>
+                            <td th:text="${registro.otherFeeInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.salesCreditInSettlementCurrency}"></td>
+                            <td th:text="${registro.salesCreditInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.settlementFeeInSettlementCurrency}"></td>
+                            <td th:text="${registro.settlementFeeInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.serviceChargeInSettlementCurrency}"></td>
+                            <td th:text="${registro.serviceChargeInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.markupMarkdownInSettlementCurrency}"></td>
+                            <td th:text="${registro.markupMarkdownInSettlementCurrencySign}"></td>
+                            <td th:text="${registro.globalExchange}"></td>
+                            <td th:text="${registro.numberOfDescriptionLines}"></td>
+                            <td th:text="${registro.lastDescriptionLine}"></td>
+                            <td th:text="${registro.descriptionLine1}"></td>
+                            <td th:text="${registro.descriptionLine2}"></td>
+                            <td th:text="${registro.descriptionLine3}"></td>
+                            <td th:text="${registro.descriptionLine4}"></td>
+                            <td th:text="${registro.descriptionLine5}"></td>
+                            <td th:text="${registro.descriptionLine6}"></td>
+                            <td th:text="${registro.descriptionLine7}"></td>
+                            <td th:text="${registro.descriptionLine8}"></td>
+                            <td th:text="${registro.descriptionLine9}"></td>
+                            <td th:text="${registro.descriptionLine10}"></td>
+                            <td th:text="${registro.descriptionLine11}"></td>
+                            <td th:text="${registro.descriptionLine12}"></td>
+                            <td th:text="${registro.securityCurrencyIndicator}"></td>
+                            <td th:text="${registro.marketMnemonicCode}"></td>
+                            <td th:text="${registro.ccyOfIssuanceUsdCcyFxRate}"></td>
+                            <td th:text="${registro.ccyOfIssuanceUsdMultiplyDivideCode}"></td>
+                            <td th:text="${registro.alternateSecurityIdType}"></td>
+                            <td th:text="${registro.alternateSecurityId}"></td>
+                            <td th:text="${registro.alternateSecurityIdType2}"></td>
+                            <td th:text="${registro.alternateSecurityId2}"></td>
+                            <td th:text="${registro.internationalNonDollarSymbol}"></td>
+                            <td th:text="${registro.confirmationCode1}"></td>
+                            <td th:text="${registro.confirmationCode2}"></td>
+                            <td th:text="${registro.confirmationCode3}"></td>
+                            <td th:text="${registro.confirmationCode4}"></td>
+                            <td th:text="${registro.pmp}"></td>
+                            <td th:text="${registro.totalAmountMarkUpDown}"></td>
+                            <td th:text="${registro.totalAmountMarkUpDownSign}"></td>
+                            <td th:text="${registro.pmpPercent}"></td>
+                            <td th:text="${registro.campo73}"></td>
+                            <td th:text="${registro.eor}"></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Id_Proceso</th>
+                            <th>Process_Date</th>
+                            <th>Transaction_Code</th>
+                            <th>Record_Indicator_Value</th>
+                            <th>Record_Id_Sequence_Number</th>
+                            <th>Account_Number</th>
+                            <th>Security_Currency_Of_Issuance</th>
+                            <th>Trade_Currency_Code</th>
+                            <th>Settlement_Currency_Code</th>
+                            <th>Settlement_Usd_Currency_Fx_Rate</th>
+                            <th>Settlement_Usd_Multiply_Divide_Code</th>
+                            <th>Cross_Currency_Fx_Rate</th>
+                            <th>Currency_Multiply_Divide_Code</th>
+                            <th>Accrued_Interest_In_Settlement_Currency</th>
+                            <th>Accrued_Interest_In_Settlement_Currency_Sign</th>
+                            <th>Market_Code</th>
+                            <th>Internal_Reference_For_Gloss</th>
+                            <th>Ibd_Version</th>
+                            <th>Net_Amount_In_Settlement_Currency</th>
+                            <th>Net_Amount_In_Settlement_Currency_Sign</th>
+                            <th>Principal_Amount_In_Settlement_Currency</th>
+                            <th>Principal_Amount_In_Settlement_Currency_Sign</th>
+                            <th>Interest_In_Settlement_Currency</th>
+                            <th>Interest_In_Settlement_Currency_Sign</th>
+                            <th>Commission_In_Settlement_Currency</th>
+                            <th>Commission_In_Settlement_Currency_Sign</th>
+                            <th>Tax_In_Settlement_Currency</th>
+                            <th>Tax_In_Settlement_Currency_Sign</th>
+                            <th>Transaction_Fee_In_Settlement_Currency</th>
+                            <th>Transaction_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Miscellaneous_Fee_In_Settlement_Currency</th>
+                            <th>Miscellaneous_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Other_Fee_In_Settlement_Currency</th>
+                            <th>Other_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Sales_Credit_In_Settlement_Currency</th>
+                            <th>Sales_Credit_In_Settlement_Currency_Sign</th>
+                            <th>Settlement_Fee_In_Settlement_Currency</th>
+                            <th>Settlement_Fee_In_Settlement_Currency_Sign</th>
+                            <th>Service_Charge_In_Settlement_Currency</th>
+                            <th>Service_Charge_In_Settlement_Currency_Sign</th>
+                            <th>Markup_Markdown_In_Settlement_Currency</th>
+                            <th>Markup_Markdown_In_Settlement_Currency_Sign</th>
+                            <th>Global_Exchange</th>
+                            <th>Number_Of_Description_Lines</th>
+                            <th>Last_Description_Line</th>
+                            <th>Description_Line_1</th>
+                            <th>Description_Line_2</th>
+                            <th>Description_Line_3</th>
+                            <th>Description_Line_4</th>
+                            <th>Description_Line_5</th>
+                            <th>Description_Line_6</th>
+                            <th>Description_Line_7</th>
+                            <th>Description_Line_8</th>
+                            <th>Description_Line_9</th>
+                            <th>Description_Line_10</th>
+                            <th>Description_Line_11</th>
+                            <th>Description_Line_12</th>
+                            <th>Security_Currency_Indicator</th>
+                            <th>Market_Mnemonic_Code</th>
+                            <th>Ccy_Of_Issuance_Usd_Ccy_Fx_Rate</th>
+                            <th>Ccy_Of_Issuance_Usd_Multiply_Divide_Code</th>
+                            <th>Alternate_Security_Id_Type</th>
+                            <th>Alternate_Security_Id</th>
+                            <th>Alternate_Security_Id_Type_2</th>
+                            <th>Alternate_Security_Id_2</th>
+                            <th>International_Non_Dollar_Symbol</th>
+                            <th>Confirmation_Code_1</th>
+                            <th>Confirmation_Code_2</th>
+                            <th>Confirmation_Code_3</th>
+                            <th>Confirmation_Code_4</th>
+                            <th>Pmp</th>
+                            <th>Total_Amount_Mark_Up_Down</th>
+                            <th>Total_Amount_Mark_Up_Down_Sign</th>
+                            <th>Pmp_Percent</th>
+                            <th>Campo_73</th>
+                            <th>Eor</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script>
+    $(function () {
+
+        $('#processDate').daterangepicker(
+            {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "autoApply": true,
+                "alwaysShowCalendars" : true,
+                "showCustomRangeLabel" : false,
+                ranges: {
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aceptar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                }
+            }
+        )
+
+    })
+
+</script>
+
+
+<script>
+    $(function () {
+        $("#tabla_reg_a").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_a_wrapper .col-md-6:eq(0)');
+    });
+
+    $(function () {
+        $("#tabla_reg_b").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_reg_b_wrapper .col-md-6:eq(0)');
+    });
+
+    function buscar() {
+        var corteUrl = 'gact';
+        var oldUrl = location.href;
+        var processDate = $('#processDate').val().replaceAll('-','');
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/' + processDate;
+        location.href = newUrl;
+    }
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>
