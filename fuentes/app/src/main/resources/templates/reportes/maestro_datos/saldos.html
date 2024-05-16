@@ -21,6 +21,7 @@
                 </div>
             </div><!-- /.container-fluid -->
         </section>
+        <!--/*@thymesVar id="salidaReporte" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo>"*/-->
 
         <!-- Main content -->
         <section class="content">
@@ -73,124 +74,73 @@
                         <thead>
                         <tr>
                             <td>Custodian</td>
-                            <td>Client ID</td>
-                            <td>Firm No</td>
-                            <td>Sub No</td>
                             <td>Office ID</td>
-                            <td>Rep No</td>
-                            <td>REP</td>
+                            <td>Client ID</td>
                             <td>Account N°</td>
                             <td>Name</td>
                             <td>Process Date</td>
-                            <td>Symbol</td>
                             <td>Cusip</td>
-                            <td>Isin</td>
-                            <td>Product Type</td>
                             <td>Sec. Descr.</td>
-                            <td>Cash/Margin</td>
                             <td>Quantity</td>
                             <td>Mkt. Price</td>
                             <td>Currency</td>
                             <td>Mkt. Value</td>
                             <td>FX Rate</td>
                             <td>USDE Mkt. Value</td>
-                            <td>Advisore Fee</td>
-                            <td>Factor</td>
-                            <td>Com. Dev.</td>
                             <td>USDE Mkt. Price</td>
-                            <td>Sec. N°</td>
-                            <td>Desc. 1</td>
-                            <td>Desc. 2</td>
-                            <td>Desc. 3</td>
-                            <td>SEDOL</td>
-                            <td>Ticker</td>
-                            <td>Id Sub Sub Tipo</td>
-                            <td>Id Sub Tipo</td>
-                            <td>Id Tipo</td>
                             <td>Nombre Sub Sub Tipo Activo</td>
-                            <td>Sec. Id</td>
+                            <td>FEE Anual</td>
+                            <td>FEE Protección</td>
+                            <td>FEE Protección Diario</td>
+                            <td>Ingreso Protección</td>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="salidaReporte: ${salidaReporte}">
-                            <td th:text="${salidaReporte.custodian}"></td>
-                            <td th:text="${salidaReporte.clientId}"></td>
-                            <td th:text="${salidaReporte.firmNo}"></td>
-                            <td th:text="${salidaReporte.subNo}"></td>
-                            <td th:text="${salidaReporte.officeId}"></td>
-                            <td th:text="${salidaReporte.repNo}"></td>
-                            <td th:text="${salidaReporte.rep}"></td>
-                            <td th:text="${salidaReporte.accountNo}"></td>
-                            <td th:text="${salidaReporte.name}"></td>
-                            <td th:text="${salidaReporte.processDate}"></td>
-                            <td th:text="${salidaReporte.symbol}"></td>
-                            <td th:text="${salidaReporte.cusip}"></td>
-                            <td th:text="${salidaReporte.isin}"></td>
-                            <td th:text="${salidaReporte.productType}"></td>
-                            <td th:text="${salidaReporte.securityDescription}"></td>
-                            <td th:text="${salidaReporte.cashMarginAccount}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.quantity)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.marketPrice)}"></td>
-                            <td th:text="${salidaReporte.currency}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.marketValue)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.fxRate)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.usdeMarketValue)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.advisoryFeeAnual)}"></td>
-                            <td th:text="${salidaReporte.factor}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.comisionDevengadaDiaria)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.usdeMarketPrice)}"></td>
-                            <td th:text="${salidaReporte.secNo}"></td>
-                            <td th:text="${salidaReporte.desc1}"></td>
-                            <td th:text="${salidaReporte.desc2}"></td>
-                            <td th:text="${salidaReporte.desc3}"></td>
-                            <td th:text="${salidaReporte.sedol}"></td>
-                            <td th:text="${salidaReporte.ticker}"></td>
-                            <td th:text="${salidaReporte.idSubSubTipoActivo}"></td>
-                            <td th:text="${salidaReporte.idSubTipoActivo}"></td>
-                            <td th:text="${salidaReporte.idTipoActivo}"></td>
-                            <td th:text="${salidaReporte.nombreSubSubTipoActivo}"></td>
-                            <td th:text="${salidaReporte.secId}"></td>
+                        <tr th:each="lineaSalidaReporte: ${salidaReporte}">
+                            <td th:text="${lineaSalidaReporte.custodian}"></td>
+                            <td th:text="${lineaSalidaReporte.officeId}"></td>
+                            <td th:text="${lineaSalidaReporte.clientId}"></td>
+                            <td th:text="${lineaSalidaReporte.accountNo}"></td>
+                            <td th:text="${lineaSalidaReporte.name}"></td>
+                            <td th:text="${lineaSalidaReporte.processDate}"></td>
+                            <td th:text="${lineaSalidaReporte.cusip}"></td>
+                            <td th:text="${lineaSalidaReporte.securityDescription}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.quantity)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.marketPrice)}"></td>
+                            <td th:text="${lineaSalidaReporte.currency}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.marketValue)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.fxRate)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.usdeMarketValue)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.usdeMarketPrice)}"></td>
+                            <td th:text="${lineaSalidaReporte.nombreSubSubTipoActivo}"></td>
+                            <td th:text="${''}"></td>
+                            <td th:text="${''}"></td>
+                            <td th:text="${''}"></td>
+                            <td th:text="${''}"></td>
                         </tr>
                         </tbody>
                         <tfoot>
                         <tr>
                             <td>Custodian</td>
-                            <td>Client ID</td>
-                            <td>Firm No</td>
-                            <td>Sub No</td>
                             <td>Office ID</td>
-                            <td>Rep No</td>
-                            <td>REP</td>
+                            <td>Client ID</td>
                             <td>Account N°</td>
                             <td>Name</td>
                             <td>Process Date</td>
-                            <td>Symbol</td>
                             <td>Cusip</td>
-                            <td>Isin</td>
-                            <td>Product Type</td>
                             <td>Sec. Descr.</td>
-                            <td>Cash/Margin</td>
                             <td>Quantity</td>
                             <td>Mkt. Price</td>
                             <td>Currency</td>
                             <td>Mkt. Value</td>
                             <td>FX Rate</td>
                             <td>USDE Mkt. Value</td>
-                            <td>Advisore Fee</td>
-                            <td>Factor</td>
-                            <td>Com. Dev.</td>
                             <td>USDE Mkt. Price</td>
-                            <td>Sec. N°</td>
-                            <td>Desc. 1</td>
-                            <td>Desc. 2</td>
-                            <td>Desc. 3</td>
-                            <td>SEDOL</td>
-                            <td>Ticker</td>
-                            <td>Id Sub Sub Tipo</td>
-                            <td>Id Sub Tipo</td>
-                            <td>Id Tipo</td>
                             <td>Nombre Sub Sub Tipo Activo</td>
-                            <td>Sec. Id</td>
+                            <td>FEE Anual</td>
+                            <td>FEE Protección</td>
+                            <td>FEE Protección Diario</td>
+                            <td>Ingreso Protección</td>
                         </tr>
                         </tfoot>
                     </table>

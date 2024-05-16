@@ -38,26 +38,25 @@ public class MaestroDatosExcel {
 
     private CellStyle usaDateStyle;
 
-    public void generaReportesExcel(String processDate, String varianteReporte) throws QandeMmiiException {
+    public void generaReportesExcel(String processDate) throws QandeMmiiException {
         this.usaDateStyle   = null;
-        appConfig.customLog.info("Iniciando generación de Reporte Excel para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
-        this.generaReporteClientes(processDate, varianteReporte);
-        this.generaReporteMovimientos(processDate, varianteReporte);
-        this.generaReporteSaldos(processDate, varianteReporte);
+        appConfig.customLog.info("Iniciando generación de Reporte Excel para fecha : ["+processDate+"]");
+        this.generaReporteClientes(processDate);
+        this.generaReporteMovimientos(processDate);
+        this.generaReporteSaldos(processDate);
         appConfig.customLog.info("Generación reporte Excel finalizada");
     }
 
-    public void generaReporteClientes(String processDate, String varianteReporte) throws QandeMmiiException {
-        this.guardaExcel(this.reporteClientes(processDate, varianteReporte), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_CLIENTES, varianteReporte, ReportesMaestrosHelper.EXTENSION_EXCEL));
+    public void generaReporteClientes(String processDate) throws QandeMmiiException {
+        this.guardaExcel(this.reporteClientes(processDate), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_CLIENTES, ReportesMaestrosHelper.EXTENSION_EXCEL));
     }
 
-    public void generaReporteMovimientos(String processDate, String varianteReporte) throws QandeMmiiException {
-        this.guardaExcel(this.reporteMovimientos(processDate, 0, varianteReporte), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_MOV_TRADE, varianteReporte, ReportesMaestrosHelper.EXTENSION_EXCEL));
-        this.guardaExcel(this.reporteMovimientos(processDate, 1, varianteReporte), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_MOV_EYS, varianteReporte, ReportesMaestrosHelper.EXTENSION_EXCEL));
+    public void generaReporteMovimientos(String processDate) throws QandeMmiiException {
+        this.guardaExcel(this.reporteMovimientos(processDate), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_MOV, ReportesMaestrosHelper.EXTENSION_EXCEL));
     }
 
-    public void generaReporteSaldos(String processDate, String varianteReporte) throws QandeMmiiException {
-        this.guardaExcel(this.reporteSaldos(processDate, varianteReporte), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_SALDOS, varianteReporte, ReportesMaestrosHelper.EXTENSION_EXCEL));
+    public void generaReporteSaldos(String processDate) throws QandeMmiiException {
+        this.guardaExcel(this.reporteSaldos(processDate), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_SALDOS, ReportesMaestrosHelper.EXTENSION_EXCEL));
     }
 
     private void guardaExcel(XSSFWorkbook reporteExcel, String nombreArchivo) throws QandeMmiiException {
@@ -78,8 +77,8 @@ public class MaestroDatosExcel {
         }
     }
 
-    private XSSFWorkbook reporteClientes(String processDate, String varianteReporte) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Clientes para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
+    private XSSFWorkbook reporteClientes(String processDate) throws QandeMmiiException {
+        appConfig.customLog.info("Iniciando generación de Reporte Clientes para fecha : ["+processDate+"]");
         String[] encabezado = reportesMaestrosHelper.encabezadoClientes(ReportesMaestrosHelper.EXTENSION_EXCEL);
         this.usaDateStyle   = null;
         var reporteExcel = new XSSFWorkbook();
@@ -88,7 +87,7 @@ public class MaestroDatosExcel {
         this.usaDateStyle.setDataFormat(createHelper.createDataFormat().getFormat(ReportesMaestrosHelper.FORMATO_FECHA_EXCEL));
 
         Sheet sheet = reporteExcel.createSheet("Datos Clientes");
-        var reporteClientes = reporteMaestroDatosService.generaReporteClientes(processDate, varianteReporte);
+        var reporteClientes = reporteMaestroDatosService.generaReporteClientes(processDate);
 
         int row = 0;
         Row header = sheet.createRow(row);
@@ -127,39 +126,39 @@ public class MaestroDatosExcel {
 
             this.addCell(dataRow, col++, fila.getDiscrTradingCodeValue(), null);
             this.addCell(dataRow, col++, fila.getAccountType(), null);
-            this.addCell(dataRow, col++, fila.getContratosPa(), null);
+
             this.addCell(dataRow, col++, fila.getCashMarginAccount(), null);
-            this.addCell(dataRow, col++, fila.getModeloRelacionamiento(), null);
+
 
             this.addCell(dataRow, col++, fila.getDebitCardIndicator(), null);
             this.addCell(dataRow, col++, reportesMaestrosHelper.excelValueAsDate(fila.getOpenDate(), ReportesMaestrosHelper.FORMATO_FECHA_BD), this.usaDateStyle);
             this.addCell(dataRow, col++, fila.getCloseDate(), this.usaDateStyle);
             this.addCell(dataRow, col++, fila.getParticipantType(), null);
-            this.addCell(dataRow, col++, fila.getClientInvestmentProfile(), null);
 
-            this.addCell(dataRow, col++, fila.getPortfolio(), null);
-            this.addCell(dataRow, col++, fila.getTipoServicio(), null);
-            this.addCell(dataRow, col++, fila.getAdvisoryFeeAnnualPct(), null);
+
+
+
+
             this.addCell(dataRow, col++, fila.getLastStatementDate(), this.usaDateStyle);
-            this.addCell(dataRow, col++, fila.getMainAdvisor(), null);
 
-            this.addCell(dataRow, col++, fila.getSecondaryAdvisor(), null);
-            this.addCell(dataRow, col++, fila.getEmailMainAdvisor(), null);
-            this.addCell(dataRow, col++, fila.getEmailSecondaryAdvisor(), null);
+
+
+
+
             this.addCell(dataRow, col++, fila.getTaxId(), null);
-            this.addCell(dataRow, col++, fila.getLastActivityMonth(), this.usaDateStyle);
 
-            this.addCell(dataRow, col++, fila.getInstitutionCode(), null);
-            this.addCell(dataRow, col++, fila.getRestrictionCodeValue(), null);
-            this.addCell(dataRow, col++, fila.getFondeo(), null);
-            this.addCell(dataRow, col, fila.getMontoComprometido(), null);
+
+
+
+
+
 
         }
         appConfig.customLog.info("Datos agregados a excel Clientes.");
         return reporteExcel;
     }
-    private XSSFWorkbook reporteMovimientos(String processDate, Integer aplicaFlujoNeto, String varianteReporte) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Movimientos para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
+    private XSSFWorkbook reporteMovimientos(String processDate) throws QandeMmiiException {
+        appConfig.customLog.info("Iniciando generación de Reporte Movimientos para fecha : ["+processDate+"]");
         String[] encabezado = reportesMaestrosHelper.encabezadoMovimientos(ReportesMaestrosHelper.EXTENSION_EXCEL);
         this.usaDateStyle   = null;
         var reporteExcel = new XSSFWorkbook();
@@ -167,16 +166,9 @@ public class MaestroDatosExcel {
         this.usaDateStyle = reporteExcel.createCellStyle();
         this.usaDateStyle.setDataFormat(createHelper.createDataFormat().getFormat(ReportesMaestrosHelper.FORMATO_FECHA_EXCEL));
 
-        String nombreHojaExcel;
-        if (aplicaFlujoNeto == null) {
-            nombreHojaExcel = "Movimientos de Entrada y Salida";
-        } else if (aplicaFlujoNeto.equals(0)) {
-            nombreHojaExcel = "Movimientos Trade";
-        } else {
-            nombreHojaExcel = "Movimientos";
-        }
+        String nombreHojaExcel  = "Movimientos";
         Sheet sheet = reporteExcel.createSheet(nombreHojaExcel);
-        var reporteMovimientos = reporteMaestroDatosService.generaReporteMovimientos(processDate, aplicaFlujoNeto, varianteReporte);
+        var reporteMovimientos = reporteMaestroDatosService.generaReporteMovimientos(processDate);
 
         int row = 0;
         Row header = sheet.createRow(row);
@@ -243,8 +235,8 @@ public class MaestroDatosExcel {
         return reporteExcel;
     }
 
-    private XSSFWorkbook reporteSaldos(String processDate, String varianteReporte) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Saldos para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
+    private XSSFWorkbook reporteSaldos(String processDate) throws QandeMmiiException {
+        appConfig.customLog.info("Iniciando generación de Reporte Saldos para fecha : ["+processDate+"]");
         String[] encabezado = reportesMaestrosHelper.encabezadoSaldos(ReportesMaestrosHelper.EXTENSION_EXCEL);
         this.usaDateStyle   = null;
         var reporteExcel = new XSSFWorkbook();
@@ -253,7 +245,7 @@ public class MaestroDatosExcel {
         this.usaDateStyle.setDataFormat(createHelper.createDataFormat().getFormat(ReportesMaestrosHelper.FORMATO_FECHA_EXCEL));
 
         Sheet sheet = reporteExcel.createSheet("Saldos");
-        var reporteSaldos = reporteMaestroDatosService.generaReporteSaldos(processDate, varianteReporte);
+        var reporteSaldos = reporteMaestroDatosService.generaReporteSaldos(processDate);
 
         int row = 0;
         Row header = sheet.createRow(row);

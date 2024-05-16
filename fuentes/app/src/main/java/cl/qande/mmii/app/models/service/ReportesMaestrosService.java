@@ -34,31 +34,14 @@ public class ReportesMaestrosService {
         appConfig.customLog.info("Archivos existentes borrados");
         this.materializaDatos(processDate);
 
-        var listaVariantesCsv   = reportesMaestrosHelper.generaListaVariantes(true);
-        var listaVariantesExcel = reportesMaestrosHelper.generaListaVariantes(false);
-
-        for(var variante : listaVariantesCsv) {
-            try {
-                appConfig.customLog.info("Iniciando generación reporte CSV con fecha proceso ["+processDate+"] y variante ["+variante+"].");
-                maestroDatosCsv.generaReportesCsv(processDate, variante);
-                appConfig.customLog.info("Reporte CSV con fecha proceso ["+processDate+"] y variante ["+variante+"] generado.");
-            } catch (QandeMmiiException e) {
-                appConfig.customLog.error("Error al generar Reporte CSV con fecha ["+processDate+"] y variante ["+variante+"]: "+e.getMessage());
-                notificacionEmail.notificarErrorReportesMaestros(processDate, "Error generación Maestro CSV variante "+variante);
-                estadoGeneracion    = false;
-            }
-        }
-
-        for(var variante : listaVariantesExcel) {
-            try {
-                appConfig.customLog.info("Iniciando generación reporte Excel con fecha proceso ["+processDate+"] y variante ["+variante+"].");
-                maestroDatosExcel.generaReportesExcel(processDate, variante);
-                appConfig.customLog.info("Reporte Excel con fecha proceso ["+processDate+"] y variante ["+variante+"] generado.");
-            } catch (QandeMmiiException e) {
-                appConfig.customLog.error("Error al generar Reporte Excel con fecha ["+processDate+"] y variante ["+variante+"]: "+e.getMessage());
-                notificacionEmail.notificarErrorReportesMaestros(processDate, "Error generación Maestro Excel variante "+variante);
-                estadoGeneracion    = false;
-            }
+        try {
+            appConfig.customLog.info("Iniciando generación reporte CSV con fecha proceso ["+processDate+"]");
+            maestroDatosCsv.generaReportesCsv(processDate);
+            appConfig.customLog.info("Reporte CSV con fecha proceso ["+processDate+"] generado.");
+        } catch (QandeMmiiException e) {
+            appConfig.customLog.error("Error al generar Reporte CSV con fecha ["+processDate+"]: "+e.getMessage());
+            notificacionEmail.notificarErrorReportesMaestros(processDate, "Error generación Maestro CSV");
+            estadoGeneracion    = false;
         }
         return estadoGeneracion;
     }

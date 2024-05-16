@@ -15,7 +15,7 @@ public interface IControlDiarioReporteDao extends CrudRepository<ControlDiarioRe
     public List<ControlDiarioReporte> reporteListadoDiarioPorSegmento(@Param("_process_date_from") String processDateFrom, @Param("_process_date_to") String processDateTo, @Param("_correlativo") Integer correlativo, @Param("_id_segmentacion") Integer idSegmentacion);
 
 
-    @Query(value = "SELECT * FROM public.fn_control_diario_segmentado(:_process_date, :_username)", nativeQuery = true)
+    @Query(value = "SELECT * FROM public.fn_control_diario(:_process_date, :_username)", nativeQuery = true)
     public List<ControlDiarioReporte> ejecutaControlDiarioSegmentado(@Param("_process_date") String processDate, @Param("_username") String username);
 
 }

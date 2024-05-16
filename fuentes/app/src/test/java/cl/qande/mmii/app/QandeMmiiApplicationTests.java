@@ -7,6 +7,7 @@ import cl.qande.mmii.app.job.JobGetFromFtpPershing;
 import cl.qande.mmii.app.models.db.core.dao.IControlDiarioDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.pershing.dao.IProcesoSflDao;
+import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.*;
 import cl.qande.mmii.app.util.helper.*;
 import cl.qande.mmii.app.util.reportes.MaestroDatosCsv;
@@ -835,5 +836,98 @@ public void reprocesoMaestros() {
 
 	}
 */
+	@Test
+	public void testCargaSflHistorica() throws QandeMmiiException {
+		String startProcessDate = "20240409";
+		String endProcessDate	= "20240514";
+		//haz un ciclo desde startProcessDate hasta endProcessDate y llama al job jobGetFromFtpPershing.processByProcessDate(processDate, true);
+
+		jobGetFromFtpPershing.processByProcessDate("20240409", true);
+		jobGetFromFtpPershing.processByProcessDate("20240410", true);
+		jobGetFromFtpPershing.processByProcessDate("20240411", true);
+		jobGetFromFtpPershing.processByProcessDate("20240412", true);
+		jobGetFromFtpPershing.processByProcessDate("20240413", true);
+		jobGetFromFtpPershing.processByProcessDate("20240414", true);
+		jobGetFromFtpPershing.processByProcessDate("20240415", true);
+		jobGetFromFtpPershing.processByProcessDate("20240416", true);
+		jobGetFromFtpPershing.processByProcessDate("20240417", true);
+		jobGetFromFtpPershing.processByProcessDate("20240418", true);
+		jobGetFromFtpPershing.processByProcessDate("20240419", true);
+		jobGetFromFtpPershing.processByProcessDate("20240420", true);
+		jobGetFromFtpPershing.processByProcessDate("20240421", true);
+		jobGetFromFtpPershing.processByProcessDate("20240422", true);
+		jobGetFromFtpPershing.processByProcessDate("20240423", true);
+		/*
+		jobGetFromFtpPershing.processByProcessDate("20240424", true);
+		jobGetFromFtpPershing.processByProcessDate("20240425", true);
+		jobGetFromFtpPershing.processByProcessDate("20240426", true);
+		jobGetFromFtpPershing.processByProcessDate("20240427", true);
+		jobGetFromFtpPershing.processByProcessDate("20240428", true);
+		jobGetFromFtpPershing.processByProcessDate("20240429", true);
+		jobGetFromFtpPershing.processByProcessDate("20240430", true);
+		jobGetFromFtpPershing.processByProcessDate("20240501", true);
+		jobGetFromFtpPershing.processByProcessDate("20240502", true);
+		jobGetFromFtpPershing.processByProcessDate("20240503", true);
+		jobGetFromFtpPershing.processByProcessDate("20240504", true);
+		jobGetFromFtpPershing.processByProcessDate("20240505", true);
+		jobGetFromFtpPershing.processByProcessDate("20240506", true);
+		jobGetFromFtpPershing.processByProcessDate("20240507", true);
+		jobGetFromFtpPershing.processByProcessDate("20240508", true);
+		jobGetFromFtpPershing.processByProcessDate("20240509", true);
+		jobGetFromFtpPershing.processByProcessDate("20240510", true);
+		jobGetFromFtpPershing.processByProcessDate("20240511", true);
+		jobGetFromFtpPershing.processByProcessDate("20240512", true);
+		jobGetFromFtpPershing.processByProcessDate("20240513", true);
+		jobGetFromFtpPershing.processByProcessDate("20240514", true);
+		*/
+
+
+	}
+	@Test
+	public void testMaterializaData() throws QandeMmiiException {
+		String startProcessDate = "20240409";
+		String endProcessDate	= "20240514";
+
+		reportesMaestrosService.materializaDatos("20240409");
+		reportesMaestrosService.materializaDatos("20240410");
+		reportesMaestrosService.materializaDatos("20240411");
+		reportesMaestrosService.materializaDatos("20240412");
+		reportesMaestrosService.materializaDatos("20240413");
+		reportesMaestrosService.materializaDatos("20240414");
+		reportesMaestrosService.materializaDatos("20240415");
+		reportesMaestrosService.materializaDatos("20240416");
+		reportesMaestrosService.materializaDatos("20240417");
+		reportesMaestrosService.materializaDatos("20240418");
+		reportesMaestrosService.materializaDatos("20240419");
+		reportesMaestrosService.materializaDatos("20240420");
+		reportesMaestrosService.materializaDatos("20240421");
+		reportesMaestrosService.materializaDatos("20240422");
+		reportesMaestrosService.materializaDatos("20240423");
+		/*
+		reportesMaestrosService.materializaDatos("20240424");
+		reportesMaestrosService.materializaDatos("20240425");
+		reportesMaestrosService.materializaDatos("20240426");
+		reportesMaestrosService.materializaDatos("20240427");
+		reportesMaestrosService.materializaDatos("20240428");
+		reportesMaestrosService.materializaDatos("20240429");
+		reportesMaestrosService.materializaDatos("20240430");
+		reportesMaestrosService.materializaDatos("20240501");
+		reportesMaestrosService.materializaDatos("20240502");
+		reportesMaestrosService.materializaDatos("20240503");
+		reportesMaestrosService.materializaDatos("20240504");
+		reportesMaestrosService.materializaDatos("20240505");
+		reportesMaestrosService.materializaDatos("20240506");
+		reportesMaestrosService.materializaDatos("20240507");
+		reportesMaestrosService.materializaDatos("20240508");
+		reportesMaestrosService.materializaDatos("20240509");
+		reportesMaestrosService.materializaDatos("20240510");
+		reportesMaestrosService.materializaDatos("20240511");
+		reportesMaestrosService.materializaDatos("20240512");
+		reportesMaestrosService.materializaDatos("20240513");
+		reportesMaestrosService.materializaDatos("20240514");
+		*/
+
+
+	}
 
 }

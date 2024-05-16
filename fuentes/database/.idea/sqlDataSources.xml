@@ -4,7 +4,7 @@
     <mapping uuid="73b9fd54-0739-4f97-9d6c-cf9a73eea856" name="Map qande-mmii - DEV to DDL">
       <data-sources db="6260f1ee-3d93-4b91-b979-0935caaece70" ddl="769c7cdd-1d50-4c0f-836c-fb3c8ac5e2d8" />
       <scope>
-        <node kind="database" qname="qande-mmii">
+        <node kind="database" qname="qande_mmii">
           <node kind="schema">
             <name qname="clientes" />
             <name qname="pershing" />
@@ -20,7 +20,7 @@
       <list>
         <State>
           <option name="id" value="769c7cdd-1d50-4c0f-836c-fb3c8ac5e2d8" />
-          <option name="name" value=" DDL - qande-mmii" />
+          <option name="name" value=" DDL - qande_mmii" />
           <option name="dbmsName" value="POSTGRES" />
           <option name="urls">
             <array>

@@ -10988,14 +10988,147 @@ SELECT * INTO public.tbvw_maestro_saldos_pershing FROM public.vw_maestro_saldos_
 --========================================================================
 --========================================================================
 --========================================================================
---
+--Control diario
+create or replace view public.control_diario_reporte
+as
+SELECT rep_cd.id AS id_reporte,
+       rep_cd.correlativo_diario,
+       rep_cd.process_date,
+       rep_cd.timestamp_control,
+       rep_cd.timestamp_registro,
+       rep_cd.id_control,
+       rep_cd.glosa_control,
+       rep_cd.descripcion_control,
+       rep_cd.identificador,
+       rep_cd.cant_reg,
+       rep_cd.username,
+       rep_cd.id_segmentacion
+FROM control_diario rep_cd
+;
+
+create function public.fn_control_diario_reporte_listado(_process_date_from character varying, _process_date_to character varying, _correlativo integer) returns SETOF public.control_diario_reporte
+    language plpgsql
+as
+$$
+    BEGIN
+
+    RETURN QUERY
+        SELECT *
+        FROM public.control_diario_reporte REP_CD
+        WHERE REP_CD.process_date       >= _process_date_from
+        AND REP_CD.process_date         <= _process_date_to
+        AND REP_CD.correlativo_diario   = COALESCE(_correlativo, REP_CD.correlativo_diario)
+        ORDER BY REP_CD.process_date ASC, REP_CD.correlativo_diario ASC, REP_CD.id_segmentacion, REP_CD.id_control, REP_CD.identificador ASC, REP_CD.cant_reg ASC
+        ;
+
+    RETURN;
+    END;
+$$;
+
+
+create function public.fn_control_diario(_process_date character varying, _username character varying) returns SETOF public.control_diario
+    language plpgsql
+as
+$$
+DECLARE _timestamp_reg timestamp;
+DECLARE _timestamp_proceso timestamp;
+DECLARE _menor_correlativo int;
+DECLARE _correlativo int;
+DECLARE _id_jobs_log bigint;
+    BEGIN
+        _timestamp_proceso  := clock_timestamp();
+        _timestamp_reg      := _timestamp_proceso;
+        _correlativo        := -1;
+
+        INSERT INTO public.jobs_log (id_job, start_timestamp, end_timestamp, id_proceso, sub_id_proceso, info)
+        VALUES (1, _timestamp_proceso, NULL, _process_date, NULL, NULL);
+        _id_jobs_log  := LASTVAL();
+
+        SELECT min(correlativo_diario) INTO _menor_correlativo
+        FROM public.control_diario TB_CD WHERE TB_CD.process_date=_process_date;
+
+        IF ( COALESCE(_menor_correlativo,0)<0 ) THEN
+            RAISE NOTICE 'Actualizando correlativos para fecha proceso [%], usuario [%]', _process_date, _username;
+            UPDATE public.control_diario  SET correlativo_diario=correlativo_diario+ABS(_menor_correlativo)
+            WHERE process_date=_process_date;
+        END IF;
+
+
+        RAISE NOTICE 'Desplazando correlativos';
+        UPDATE public.control_diario SET correlativo_diario=correlativo_diario+ 1
+        WHERE process_date=_process_date;
+
+        UPDATE public.jobs_log tb_log SET end_timestamp = clock_timestamp() WHERE tb_log.id=_id_jobs_log;
+
+    RETURN QUERY
+        SELECT *
+        FROM public.control_diario TB_CD
+        WHERE TB_CD.process_date=_process_date AND TB_CD.correlativo_diario=0
+        ORDER BY TB_CD.process_date DESC, TB_CD.correlativo_diario ASC,
+            TB_CD.id_control ASC, TB_CD.identificador ASC, TB_CD.cant_reg ASC
+        ;
+
+    RETURN;
+    END;
+$$;
+
 
 
 --========================================================================
 --========================================================================
 --========================================================================
 --
+create function public.fn_reporte_maestro_materializa_data(_process_date character varying, _tipo_maestro character varying, _custodio character varying) returns bigint
+    language plpgsql
+as
+$$
+DECLARE _row_count  BIGINT;
 
+
+    BEGIN
+
+    IF (_tipo_maestro NOT IN ('CTA', 'SLD', 'MOV') ) THEN
+        RAISE NOTICE 'Tipo de maestro no válido [%]', _tipo_maestro;
+        return -1;
+    end if;
+
+    IF (_custodio NOT IN ('PERSHING') ) THEN
+        RAISE NOTICE 'Custodio no válido [%]', _custodio;
+        return -2;
+    end if;
+
+    IF (_tipo_maestro='CTA') THEN
+        IF (_custodio ='PERSHING') THEN
+            DELETE FROM public.tbvw_maestro_cuentas_pershing WHERE process_date=_process_date;
+            INSERT INTO public.tbvw_maestro_cuentas_pershing SELECT * FROM public.vw_maestro_cuentas_pershing where process_date=_process_date;
+            GET DIAGNOSTICS _row_count = ROW_COUNT;
+            RETURN _row_count;
+        END IF;
+    END IF;
+
+
+    IF (_tipo_maestro='SLD') THEN
+        IF (_custodio ='PERSHING') THEN
+            DELETE FROM public.tbvw_maestro_saldos_pershing WHERE process_date=_process_date;
+            INSERT INTO public.tbvw_maestro_saldos_pershing SELECT * FROM public.vw_maestro_saldos_pershing where process_date=_process_date;
+            GET DIAGNOSTICS _row_count = ROW_COUNT;
+            RETURN _row_count;
+        END IF;
+    END IF;
+
+
+    IF (_tipo_maestro='MOV') THEN
+        IF (_custodio ='PERSHING') THEN
+            DELETE FROM public.tbvw_maestro_movimientos_pershing WHERE process_date=_process_date;
+            INSERT INTO public.tbvw_maestro_movimientos_pershing SELECT * FROM public.vw_maestro_movimientos_pershing where process_date=_process_date;
+            GET DIAGNOSTICS _row_count = ROW_COUNT;
+            RETURN _row_count;
+        END IF;
+    END IF;
+
+    return NULL::BIGINT;
+    END;
+$$;
 
 --========================================================================
 --========================================================================

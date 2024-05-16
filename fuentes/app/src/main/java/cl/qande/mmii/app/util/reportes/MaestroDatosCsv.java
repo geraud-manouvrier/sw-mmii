@@ -25,30 +25,29 @@ public class MaestroDatosCsv {
     @Autowired
     private ReportesMaestrosMapper reportesMaestrosMapper;
 
-    public void generaReportesCsv(String processDate, String varianteReporte) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte CSV para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
-        this.generaReporteClientes(processDate, varianteReporte);
-        this.generaReporteMovimientos(processDate, varianteReporte);
-        this.generaReporteSaldos(processDate, varianteReporte);
+    public void generaReportesCsv(String processDate) throws QandeMmiiException {
+        appConfig.customLog.info("Iniciando generación de Reporte CSV para fecha : ["+processDate+"]");
+        this.generaReporteClientes(processDate);
+        this.generaReporteMovimientos(processDate);
+        this.generaReporteSaldos(processDate);
         appConfig.customLog.info("Generación reporte CSV finalizada");
     }
-    public void generaReporteClientes(String processDate, String varianteReporte) throws QandeMmiiException {
-        reportesMaestrosHelper.guardaArchivoCsv(this.contenidoCsvReporteClientes(processDate, varianteReporte), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_CLIENTES, varianteReporte, ReportesMaestrosHelper.EXTENSION_CSV));
+    public void generaReporteClientes(String processDate) throws QandeMmiiException {
+        reportesMaestrosHelper.guardaArchivoCsv(this.contenidoCsvReporteClientes(processDate), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_CLIENTES, ReportesMaestrosHelper.EXTENSION_CSV));
     }
 
-    public void generaReporteMovimientos(String processDate, String varianteReporte) throws QandeMmiiException {
-        reportesMaestrosHelper.guardaArchivoCsv(this.contenidoCsvReporteMovimientos(processDate, varianteReporte, ReportesMaestrosHelper.FLUJO_NETO_TRADE), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_MOV_TRADE, varianteReporte, ReportesMaestrosHelper.EXTENSION_CSV));
-        reportesMaestrosHelper.guardaArchivoCsv(this.contenidoCsvReporteMovimientos(processDate, varianteReporte, ReportesMaestrosHelper.FLUJO_NETO_EYS), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_MOV_EYS, varianteReporte, ReportesMaestrosHelper.EXTENSION_CSV));
+    public void generaReporteMovimientos(String processDate) throws QandeMmiiException {
+        reportesMaestrosHelper.guardaArchivoCsv(this.contenidoCsvReporteMovimientos(processDate), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_MOV, ReportesMaestrosHelper.EXTENSION_CSV));
 
     }
 
-    public void generaReporteSaldos(String processDate, String varianteReporte) throws QandeMmiiException {
-        reportesMaestrosHelper.guardaArchivoCsv(this.contenidoCsvReporteSaldos(processDate, varianteReporte), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_SALDOS, varianteReporte, ReportesMaestrosHelper.EXTENSION_CSV));
+    public void generaReporteSaldos(String processDate) throws QandeMmiiException {
+        reportesMaestrosHelper.guardaArchivoCsv(this.contenidoCsvReporteSaldos(processDate), reportesMaestrosHelper.generaNombreReporte(processDate, ReportesMaestrosHelper.REPORTE_SALDOS, ReportesMaestrosHelper.EXTENSION_CSV));
     }
-    private ArrayList<String[]> contenidoCsvReporteClientes(String processDate, String varianteReporte) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Clientes CSV para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
+    private ArrayList<String[]> contenidoCsvReporteClientes(String processDate) throws QandeMmiiException {
+        appConfig.customLog.info("Iniciando generación de Reporte Clientes CSV para fecha : ["+processDate+"]");
 
-        var dataReporteClientes	= reporteMaestroDatosService.generaReporteClientesPaises(processDate, varianteReporte);
+        var dataReporteClientes	= reporteMaestroDatosService.generaReporteClientes(processDate);
         var reporteCsv          = new ArrayList<String[]>();
         reporteCsv.add(reportesMaestrosHelper.encabezadoClientes(ReportesMaestrosHelper.EXTENSION_CSV));
 
@@ -60,10 +59,10 @@ public class MaestroDatosCsv {
         return reporteCsv;
     }
 
-    private ArrayList<String[]> contenidoCsvReporteSaldos(String processDate, String varianteReporte) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Saldos CSV para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
+    private ArrayList<String[]> contenidoCsvReporteSaldos(String processDate) throws QandeMmiiException {
+        appConfig.customLog.info("Iniciando generación de Reporte Saldos CSV para fecha : ["+processDate+"]");
 
-        var dataReporteSaldos	= reporteMaestroDatosService.generaReporteSaldosPaises(processDate, varianteReporte);
+        var dataReporteSaldos	= reporteMaestroDatosService.generaReporteSaldos(processDate);
         var reporteCsv          = new ArrayList<String[]>();
         reporteCsv.add(reportesMaestrosHelper.encabezadoSaldos(ReportesMaestrosHelper.EXTENSION_CSV));
 
@@ -75,10 +74,10 @@ public class MaestroDatosCsv {
         return reporteCsv;
     }
 
-    private ArrayList<String[]> contenidoCsvReporteMovimientos(String processDate, String varianteReporte, Integer aplicaFlujoNeto) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Movimientos CSV para fecha : ["+processDate+"] variante ["+varianteReporte+"]");
+    private ArrayList<String[]> contenidoCsvReporteMovimientos(String processDate) throws QandeMmiiException {
+        appConfig.customLog.info("Iniciando generación de Reporte Movimientos CSV para fecha : ["+processDate+"]");
 
-        var dataReporteMovimientos	= reporteMaestroDatosService.generaReporteMovimientosPaises(processDate, aplicaFlujoNeto, varianteReporte);
+        var dataReporteMovimientos	= reporteMaestroDatosService.generaReporteMovimientos(processDate);
         var reporteCsv          = new ArrayList<String[]>();
         reporteCsv.add(reportesMaestrosHelper.encabezadoMovimientos(ReportesMaestrosHelper.EXTENSION_CSV));
 

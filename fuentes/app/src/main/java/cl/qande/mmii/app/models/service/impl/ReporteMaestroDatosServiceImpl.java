@@ -24,67 +24,36 @@ public class ReporteMaestroDatosServiceImpl implements IReporteMaestroDatosServi
     private IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao;
     @Override
     @Transactional(readOnly = true)
-    public List<VwReporteMaestroDatosSaldo> generaReporteSaldos(String processDate, String varianteReporte) {
-        return reporteMaestroDatosSaldoDao.generaReporte(processDate, varianteReporte);
-    }
-    @Override
-    @Transactional(readOnly = true)
-    public List<VwReporteMaestroDatosSaldo> generaReporteSaldosPaises(String processDate, String varianteReporte) {
-        return reporteMaestroDatosSaldoDao.generaReportePaises(processDate, varianteReporte);
+    public List<VwReporteMaestroDatosSaldo> generaReporteSaldos(String processDate) {
+        return reporteMaestroDatosSaldoDao.generaReporte(processDate);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<VwReporteMaestroDatosCliente> generaReporteClientes(String processDate, String varianteReporte) {
-        return reporteMaestroDatosClientesDao.generaReporte(processDate, varianteReporte);
+    public List<VwReporteMaestroDatosCliente> generaReporteClientes(String processDate) {
+        return reporteMaestroDatosClientesDao.generaReporte(processDate);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<VwReporteMaestroDatosCliente> generaReporteClientesPaises(String processDate, String varianteReporte) {
-        return reporteMaestroDatosClientesDao.generaReportePaises(processDate, varianteReporte);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<VwReporteMaestroDatosMovimiento> generaReporteMovimientos(String processDate, Integer aplicaFlujoNeto, String varianteReporte) {
-        return reporteMaestroDatosMovimientosDao.generaReporte(processDate, aplicaFlujoNeto, varianteReporte);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<VwReporteMaestroDatosMovimiento> generaReporteMovimientosPaises(String processDate, Integer aplicaFlujoNeto, String varianteReporte) {
-        return reporteMaestroDatosMovimientosDao.generaReportePaises(processDate, aplicaFlujoNeto, varianteReporte);
+    public List<VwReporteMaestroDatosMovimiento> generaReporteMovimientos(String processDate) {
+        return reporteMaestroDatosMovimientosDao.generaReporte(processDate);
     }
 
     @Override
     @Transactional
     public void materializaDatosCliente(String processDate) {
         reporteMaestroDatosClientesDao.materializaDatosClientePershing(processDate);
-        reporteMaestroDatosClientesDao.materializaDatosClienteStonex(processDate);
     }
     @Override
     @Transactional
     public void materializaDatosMovimiento(String processDate) {
         reporteMaestroDatosMovimientosDao.materializaDatosMovimientosPershing(processDate);
-        reporteMaestroDatosMovimientosDao.materializaDatosMovimientosStonex(processDate);
     }
     @Override
     @Transactional
     public void materializaDatosSaldo(String processDate) {
         reporteMaestroDatosSaldoDao.materializaDatosSaldosPershing(processDate);
-        reporteMaestroDatosSaldoDao.materializaDatosSaldosStonex(processDate);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<String> listaVariantes() {
-        return reporteMaestroDatosClientesDao.listaVariantes();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public String sufijoArchivo(String variante) {
-        return reporteMaestroDatosClientesDao.sufijoArchivo(variante);
-    }
 }

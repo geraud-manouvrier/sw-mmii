@@ -21,6 +21,8 @@
                 </div>
             </div><!-- /.container-fluid -->
         </section>
+        <!--/*@thymesVar id="salidaReporte" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente>"*/-->
+
 
         <!-- Main content -->
         <section class="content">
@@ -72,97 +74,19 @@
                             <th>Process Date</th>
                             <th>Custodian</th>
                             <th>Client ID</th>
-                            <th>Firm No</th>
-                            <th>Sub No</th>
-                            <th>Rep No</th>
                             <th>Office Id</th>
                             <th>Account N°</th>
                             <th>Name</th>
-                            <th>Full Name</th>
-                            <th>Address</th>
-                            <th>Short Name</th>
-                            <th>Date of Birth</th>
-                            <th>Status</th>
-                            <th>Email</th>
-                            <th>Country Stonex</th>
-                            <th>Country</th>
-                            <th>W8 Date</th>
-                            <th>W9 Date</th>
-                            <th>W8 Status</th>
-                            <th>W9 Status</th>
-                            <th>Discr. Trading Code</th>
-                            <th>Account Type</th>
-                            <th>Contrato</th>
-                            <th>Cash/Margin</th>
-                            <th>Modelo Relacionamiento</th>
-                            <th>Debit Card Ind.</th>
-                            <th>Open date</th>
-                            <th>Close Date</th>
-                            <th>Participant Type</th>
-                            <th>Profile</th>
-                            <th>Portfolio</th>
-                            <th>Tipo Servicio</th>
-                            <th>Adv. Fee</th>
-                            <th>Last Stmnt.</th>
-                            <th>Main Advisor</th>
-                            <th>Secondary Advisor</th>
-                            <th>Email Main Advisor</th>
-                            <th>Email Secondary Advisor</th>
-                            <th>Tax ID</th>
-                            <th>Last Act. Month</th>
-                            <th>Institution Code</th>
-                            <th>Restriction Date</th>
-                            <th>Fondeo</th>
-                            <th>Monto Comprometido</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="salidaReporte: ${salidaReporte}">
-                            <td th:text="${salidaReporte.processDate}"></td>
-                            <td th:text="${salidaReporte.custodian}"></td>
-                            <td th:text="${salidaReporte.clientId}"></td>
-                            <td th:text="${salidaReporte.firmNo}"></td>
-                            <td th:text="${salidaReporte.subNo}"></td>
-                            <td th:text="${salidaReporte.repNo}"></td>
-                            <td th:text="${salidaReporte.officeId}"></td>
-                            <td th:text="${salidaReporte.accountNo}"></td>
-                            <td th:text="${salidaReporte.name}"></td>
-                            <td th:text="${salidaReporte.fullName}"></td>
-                            <td th:text="${salidaReporte.address}"></td>
-                            <td th:text="${salidaReporte.shortName}"></td>
-                            <td th:text="${salidaReporte.dateOfBirth}"></td>
-                            <td th:text="${salidaReporte.acctStatusValue}"></td>
-                            <td th:text="${salidaReporte.email}"></td>
-                            <td th:text="${salidaReporte.countryCodeValue}"></td>
-                            <td th:text="${salidaReporte.country}"></td>
-                            <td th:text="${salidaReporte.w8Date}"></td>
-                            <td th:text="${salidaReporte.w9Date}"></td>
-                            <td th:text="${salidaReporte.w8StatusValue}"></td>
-                            <td th:text="${salidaReporte.w9StatusValue}"></td>
-                            <td th:text="${salidaReporte.discrTradingCodeValue}"></td>
-                            <td th:text="${salidaReporte.accountType}"></td>
-                            <td th:text="${salidaReporte.contratosPa}"></td>
-                            <td th:text="${salidaReporte.cashMarginAccount}"></td>
-                            <td th:text="${salidaReporte.modeloRelacionamiento}"></td>
-                            <td th:text="${salidaReporte.debitCardIndicator}"></td>
-                            <td th:text="${salidaReporte.openDate}"></td>
-                            <td th:text="${salidaReporte.closeDate}"></td>
-                            <td th:text="${salidaReporte.participantType}"></td>
-                            <td th:text="${salidaReporte.clientInvestmentProfile}"></td>
-                            <td th:text="${salidaReporte.portfolio}"></td>
-                            <td th:text="${salidaReporte.tipoServicio}"></td>
-                            <td th:text="${salidaReporte.advisoryFeeAnnualPct != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(salidaReporte.advisoryFeeAnnualPct): ''}"></td>
-                            <td th:text="${salidaReporte.lastStatementDate}"></td>
-                            <td th:text="${salidaReporte.mainAdvisor}"></td>
-                            <td th:text="${salidaReporte.secondaryAdvisor}"></td>
-                            <td th:text="${salidaReporte.emailMainAdvisor}"></td>
-                            <td th:text="${salidaReporte.emailSecondaryAdvisor}"></td>
-                            <td th:text="${salidaReporte.taxId}"></td>
-                            <td th:text="${salidaReporte.lastActivityMonth}"></td>
-                            <td th:text="${salidaReporte.institutionCode}"></td>
-                            <td th:text="${salidaReporte.restrictionDate}"></td>
-                            <td th:text="${salidaReporte.fondeo}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(salidaReporte.montoComprometido)}"></td>
+                        <tr th:each="lineaSalidaReporte: ${salidaReporte}">
+                            <td th:text="${lineaSalidaReporte.processDate}"></td>
+                            <td th:text="${lineaSalidaReporte.custodian}"></td>
+                            <td th:text="${lineaSalidaReporte.clientId}"></td>
+                            <td th:text="${lineaSalidaReporte.officeId}"></td>
+                            <td th:text="${lineaSalidaReporte.accountNo}"></td>
+                            <td th:text="${lineaSalidaReporte.name}"></td>
                         </tr>
                         </tbody>
                         <tfoot>
@@ -170,48 +94,9 @@
                             <th>Process Date</th>
                             <th>Custodian</th>
                             <th>Client ID</th>
-                            <th>Firm No</th>
-                            <th>Sub No</th>
-                            <th>Rep No</th>
                             <th>Office Id</th>
                             <th>Account N°</th>
                             <th>Name</th>
-                            <th>Full Name</th>
-                            <th>Address</th>
-                            <th>Short Name</th>
-                            <th>Date of Birth</th>
-                            <th>Status</th>
-                            <th>Email</th>
-                            <th>Country Stonex</th>
-                            <th>Country</th>
-                            <th>W8 Date</th>
-                            <th>W9 Date</th>
-                            <th>W8 Status</th>
-                            <th>W9 Status</th>
-                            <th>Discr. Trading Code</th>
-                            <th>Account Type</th>
-                            <th>Contrato</th>
-                            <th>Cash/Margin</th>
-                            <th>Modelo Relacionamiento</th>
-                            <th>Debit Card Ind.</th>
-                            <th>Open date</th>
-                            <th>Close Date</th>
-                            <th>Participant Type</th>
-                            <th>Profile</th>
-                            <th>Portfolio</th>
-                            <th>Tipo Servicio</th>
-                            <th>Adv. Fee</th>
-                            <th>Last Stmnt.</th>
-                            <th>Main Advisor</th>
-                            <th>Secondary Advisor</th>
-                            <th>Email Main Advisor</th>
-                            <th>Email Secondary Advisor</th>
-                            <th>Tax ID</th>
-                            <th>Last Act. Month</th>
-                            <th>Institution Code</th>
-                            <th>Restriction Date</th>
-                            <th>Fondeo</th>
-                            <th>Monto Comprometido</th>
                         </tr>
                         </tfoot>
                     </table>

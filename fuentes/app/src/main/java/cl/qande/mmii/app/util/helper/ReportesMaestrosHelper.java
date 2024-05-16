@@ -2,7 +2,6 @@ package cl.qande.mmii.app.util.helper;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IReporteMaestroDatosService;
 import com.opencsv.CSVWriter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,35 +23,55 @@ import static com.opencsv.ICSVWriter.*;
 @Component
 public class ReportesMaestrosHelper {
 
+    private static final Charset CHARSET_ISO_88591 = StandardCharsets.ISO_8859_1;
     public static final String EXTENSION_EXCEL      = "xlsx";
     public static final String EXTENSION_CSV        = "csv";
-    public static final String REPORTE_CLIENTES     = "Datos_Clientes";
-    public static final String REPORTE_SALDOS       = "Saldos_Clientes";
-    public static final String REPORTE_MOV          = "Movimientos";
-    public static final String REPORTE_MOV_TRADE    = "Trade_Activity";
-    public static final String REPORTE_MOV_EYS      = "Movimientos_de_Entrada_y_Salida";
-    public static final int FLUJO_NETO_TRADE        = 0;
-    public static final int FLUJO_NETO_EYS          = 1;
+    public static final String REPORTE_CLIENTES     = "MaestroCuentas";
+    public static final String REPORTE_SALDOS       = "MaestroSaldos";
+    public static final String REPORTE_MOV          = "MaestroMovimientos";
     public static final String FORMATO_FECHA_BD    = "yyyy-MM-dd";
     public static final String FORMATO_FECHA_EXCEL = "mm/dd/yyyy";
-    public static final String FIELD_CUSTODIAN      = "Custodian";
-    public static final String FIELD_CLIENT_ID      = "Client_ID";
-    public static final String FIELD_OFFICE_ID      = "Office_ID";
-    public static final String FIELD_ACCOUNT_NO      = "Account_No";
-    public static final String FIELD_CASH_MARGIN_ACC      = "Cash/Margin_Account";
-    public static final String FIELD_PROCESS_DATE      = "Process_Date";
-    public static final String FIELD_SYMBOL      = "Symbol";
-    public static final String FIELD_CUSIP      = "Cusip";
-    public static final String FIELD_PRODUCT_TYPE      = "Product_Type";
-    public static final String FIELD_SEC_DESCR      = "Security_Description";
-    public static final String FIELD_QUANTITY      = "Quantity";
-    public static final String FIELD_CURRENCY      = "Currency";
+    private static final String FIELD_CUSTODIAN      = "custodian";
+    private static final String FIELD_CLIENT_ID      = "client-id";
+    private static final String FIELD_CLIENT_NAME      = "client-name";
+    private static final String FIELD_OFFICE_ID      = "office-id";
+    private static final String FIELD_ACCOUNT_NO      = "account-no";
+    private static final String FIELD_CASH_MARGIN_ACC      = "cash-margin-account";
+    private static final String FIELD_PROCESS_DATE      = "process-date";
+    private static final String FIELD_CUSIP      = "Cusip";
+    private static final String FIELD_PRODUCT_TYPE      = "product-type";
+    private static final String FIELD_SEC_DESCR      = "security-description";
+    private static final String FIELD_QUANTITY      = "quantity";
+    private static final String FIELD_CURRENCY      = "currency";
+    private static final String FIELD_MARKET_VALUE = "market-value";
+    private static final String FIELD_MARKET_PRICE = "market-price";
+    private static final String FIELD_FX_RATE = "fx-rate";
+    private static final String FIELD_USDE_MARKET_VALUE = "usde-market-value";
+    private static final String FIELD_USDE_MARKET_PRICE = "usde-market-price";
+    private static final String FIELD_NOMBRE_SUB_SUB_TIPO = "nombre-sub-sub-tipo";
+    private static final String FIELD_FEE_ANUAL = "fee-anual";
+    private static final String FIELD_FEE_PROTECCION = "fee-proteccion";
+    private static final String FIELD_FEE_PROTECCION_DIARIO = "fee-proteccion-diario";
+    private static final String FIELD_INGRESO_PROTECCION = "ingreso-proteccion";
+    private static final String FIELD_TRADE_DATE = "trade-date";
+    private static final String FIELD_SETTLEMENT_DATE = "settlement-date";
+    private static final String FIELD_ACTIVITY = "activity";
+    private static final String FIELD_BUY_SELL = "buy-sell";
+    private static final String FIELD_PRICE = "price";
+    private static final String FIELD_COMMISSION = "commission";
+    private static final String FIELD_FEES = "fees";
+    private static final String FIELD_NET_AMOUNT = "net-amount";
+    private static final String FIELD_USDE_NET_AMOUNT = "usde-net-amount";
+    private static final String FIELD_PRINCIPAL = "principal";
+    private static final String FIELD_ACTIVITY_DESCRIPTION = "activity-description";
+    private static final String FIELD_INGRESO_EGRESO_PRODUCTO = "ingreso-egreso-producto";
+    private static final String FIELD_SOURCE_CODE = "source-code";
+    private static final String FIELD_RETIRO = "retiro";
+    private static final String FIELD_RECAUDO = "recaudo";
     @Autowired
     private AppConfig appConfig;
     @Autowired
     private CalendarioHelper calendarioHelper;
-    @Autowired
-    private IReporteMaestroDatosService reporteMaestroDatosService;
 
     public String csvValue(Object cellValue) {
         String value;
@@ -77,14 +96,6 @@ public class ReportesMaestrosHelper {
         return value;
     }
 
-    public String generaSufijoArchivo(String varianteReporte) {
-        if (varianteReporte == null || varianteReporte.equals("")) {
-            return "";
-        }
-        return reporteMaestroDatosService.sufijoArchivo(varianteReporte);
-    }
-
-
     public Date excelValueAsDate(String originalValue, String formatIn) throws QandeMmiiException {
         if(originalValue == null || originalValue.equals("")) {
             return null;
@@ -96,91 +107,41 @@ public class ReportesMaestrosHelper {
         }
     }
 
-    public List<String> generaListaVariantes(boolean porPaises) {
-        if (porPaises) {
-            return reporteMaestroDatosService.listaVariantes();
-        }
-        var listaVariantes = new ArrayList<String>();
-        listaVariantes.add(null);
-        return listaVariantes;
-    }
-
     public String[] encabezadoClientes(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
-        if (tipoArchivo.equals(ReportesMaestrosHelper.EXTENSION_CSV)) {
-            return new String[]{
-                    FIELD_CUSTODIAN, FIELD_CLIENT_ID,
-                    FIELD_OFFICE_ID, FIELD_ACCOUNT_NO, "Name",
-                    "Date_of_Birth", "Account_Status", "Email",
-                    "Country", "W8_Date", "W9_Date", "W8_Status", "W9_Status",
-                    "Account_Type", FIELD_CASH_MARGIN_ACC, "Modelo_de_Relacionamiento",
-                    "Debit_Card_Indicator", "Open_Date", "Close_Date", "Participant_Type", "Client_Investment_Profile",
-                    "Advisory_Fee_Annual_Pct", "Last_Statement_Date", "Main_Advisor",
-                    "Secondary_Advisor", "Email_Main_Advisor", "Email_Secondary_Advisor"
-            };
-        } else {
-            return new String[]{
-                    FIELD_CUSTODIAN, FIELD_CLIENT_ID, "Firm No", "Sub No", "Rep No",
-                    FIELD_OFFICE_ID, FIELD_ACCOUNT_NO, "Name", "Full Name", "Address",
-                    "Short_Name", "Date_of_Birth", "Account_Status", "Email", "Country-StoneX",
-                    "Country", "W8_Date", "W9_Date", "W8_Status", "W9_Status",
-                    "Discr Trading (Code)", "Account_Type", "Contratos Power Automate.Tipo Cuenta-PA", FIELD_CASH_MARGIN_ACC, "Modelo_de_Relacionamiento",
-                    "Debit_Card_Indicator", "Open_Date", "Close_Date", "Participant_Type", "Client_Investment_Profile",
-                    "Portfolio", "Tipo de Servicio", "Advisory_Fee_Annual_Pct", "Last_Statement_Date", "Main_Advisor",
-                    "Secondary_Advisor", "Email_Main_Advisor", "Email_Secondary_Advisor", "Tax ID", "Last Activity Month",
-                    "Institution (Code)", "Restriction Type", "Fondeo", "Monto Comprometido"
-            };
-        }
+        return new String[]{
+            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_OFFICE_ID,
+            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME
+        };
     }
 
     public String[] encabezadoSaldos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
-        if (tipoArchivo.equals(ReportesMaestrosHelper.EXTENSION_CSV)) {
-            return new String[]{
-                    FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_OFFICE_ID,
-                    "REP", FIELD_ACCOUNT_NO, "Name", FIELD_PROCESS_DATE,
-                    FIELD_SYMBOL, FIELD_CUSIP, "ISIN", FIELD_PRODUCT_TYPE, FIELD_SEC_DESCR,
-                    FIELD_CASH_MARGIN_ACC, FIELD_QUANTITY, "Market_Price", FIELD_CURRENCY, "Market_Value",
-                    "Fx_Rate", "USDE_Market_Value", "Advisory_Fee_Annual_Pct", "Factor", "Comision_Devengada_Diaria",
-                    "USDE_Market_Price"
-            };
-        } else {
-            return new String[]{
-                    FIELD_CUSTODIAN, FIELD_CLIENT_ID, "Firm No", "Sub No", FIELD_OFFICE_ID,
-                    "Rep No", "REP", FIELD_ACCOUNT_NO, "Name", FIELD_PROCESS_DATE,
-                    FIELD_SYMBOL, FIELD_CUSIP, "ISIN", FIELD_PRODUCT_TYPE, FIELD_SEC_DESCR,
-                    FIELD_CASH_MARGIN_ACC, FIELD_QUANTITY, "Market_Price", FIELD_CURRENCY, "Market_Value",
-                    "FX_Rate", "USDE_Market_Value", "Advisory_Fee_(Annual_%)", "Factor", "Comision_Devengada_Diaria",
-                    "USDE_Market_Price", "Sec No", "Description 1", "Description 2", "Description 3",
-                    "SEDOL", "Builder.Ticker", "Builder.IdSubSubTipoActivo", "Builder.IdSubTipoActivo", "Builder.IdTipoActivo",
-                    "Builder.NombreSubSubTipoActivo", "Builder.SecId.1"
-            };
-        }
+        return new String[]{
+            FIELD_CUSTODIAN, FIELD_OFFICE_ID, FIELD_CLIENT_ID,
+            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
+            FIELD_CUSIP, FIELD_SEC_DESCR, FIELD_QUANTITY,
+            FIELD_MARKET_PRICE, FIELD_CURRENCY, FIELD_MARKET_VALUE,
+            FIELD_FX_RATE, FIELD_USDE_MARKET_VALUE, FIELD_USDE_MARKET_PRICE,
+            FIELD_NOMBRE_SUB_SUB_TIPO, FIELD_FEE_ANUAL, FIELD_FEE_PROTECCION,
+            FIELD_FEE_PROTECCION_DIARIO, FIELD_INGRESO_PROTECCION
+        };
     }
 
     public String[] encabezadoMovimientos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
-        if (tipoArchivo.equals(ReportesMaestrosHelper.EXTENSION_CSV)) {
-            return new String[]{
-                    FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_OFFICE_ID, FIELD_ACCOUNT_NO, "Name",
-                    FIELD_PROCESS_DATE, "Trade_Date", "Settlement_Date", "Activity", "Buy/Sell",
-                    FIELD_QUANTITY, "Price", "Commission", "Fees", "Net_Amount",
-                    "USDE_Net_Amount", "Principal", FIELD_CUSIP, FIELD_SYMBOL, "ISIN",
-                    FIELD_CURRENCY, "Fx_Rate", "Interest", "Currency_Base", FIELD_CASH_MARGIN_ACC,
-                    FIELD_PRODUCT_TYPE, FIELD_SEC_DESCR, "Activity_Description", "Activity_Code"
-            };
-        } else {
-            return new String[]{
-                    FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_OFFICE_ID, FIELD_ACCOUNT_NO, "Name",
-                    FIELD_PROCESS_DATE, "Trade_Date", "Settlement_Date", "Activity", "Buy/Sell",
-                    FIELD_QUANTITY, "Price", "Commission", "Fees", "Net_Amount",
-                    "USDE_Net_Amount", "Principal", FIELD_CUSIP, FIELD_SYMBOL, "ISIN",
-                    FIELD_CURRENCY, "Fx_Rate", "Interest", "Currency_Base", FIELD_CASH_MARGIN_ACC,
-                    FIELD_PRODUCT_TYPE, FIELD_SEC_DESCR, "Activity_Description", "Activity_Code", "Source Code",
-                    "Reporte", "Description 1", "Description 2", "Description 3", "Builder.Ticker",
-                    "Builder.IdSubSubTipoActivo", "Builder.IdSubTipoActivo", "Builder.IdTipoActivo", "Builder.NombreSubSubTipoActivo", "Builder.SecId.1",
-                    "Aux Movimientos.Aplica Flujo Neto"};
-        }
+        return new String[]{
+            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_OFFICE_ID,
+            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
+            FIELD_TRADE_DATE, FIELD_SETTLEMENT_DATE, FIELD_ACTIVITY,
+            FIELD_BUY_SELL, FIELD_QUANTITY, FIELD_PRICE,
+            FIELD_COMMISSION, FIELD_FEES, FIELD_NET_AMOUNT,
+            FIELD_USDE_NET_AMOUNT, FIELD_PRINCIPAL, FIELD_CUSIP,
+            FIELD_CURRENCY, FIELD_FX_RATE, FIELD_CASH_MARGIN_ACC,
+            FIELD_PRODUCT_TYPE, FIELD_SEC_DESCR, FIELD_ACTIVITY_DESCRIPTION,
+            FIELD_SOURCE_CODE, FIELD_NOMBRE_SUB_SUB_TIPO, FIELD_INGRESO_EGRESO_PRODUCTO,
+            FIELD_RETIRO, FIELD_RECAUDO
+        };
 
     }
 
@@ -193,7 +154,7 @@ public class ReportesMaestrosHelper {
         CSVWriter writer;
         try {
             appConfig.customLog.info("Creando archivo CSV en directorio...");
-            writer = new CSVWriter(new FileWriter(fileLocation, StandardCharsets.ISO_8859_1), ';', DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END);
+            writer = new CSVWriter(new FileWriter(fileLocation, CHARSET_ISO_88591), ';', DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END);
         } catch (IOException e) {
             throw new QandeMmiiException(e, "Error al crear archivo CSV");
         }
@@ -209,7 +170,7 @@ public class ReportesMaestrosHelper {
         }
     }
 
-    public String generaNombreReporte(String processDate, String tipoReporte, String varianteReporte, String tipoArchivo) throws QandeMmiiException {
+    public String generaNombreReporte(String processDate, String tipoReporte, String tipoArchivo) throws QandeMmiiException {
         String extension;
         String nombreBase;
         String nombreArchivo;
@@ -217,16 +178,15 @@ public class ReportesMaestrosHelper {
         isValidTipoReporte(tipoReporte, true);
         extension   = "."+tipoArchivo;
         nombreBase   = "-"+tipoReporte;
-        nombreArchivo   = processDate+nombreBase+generaSufijoArchivo(varianteReporte)+extension;
+        nombreArchivo   = processDate+nombreBase+extension;
         return nombreArchivo;
     }
 
     private boolean isValidTipoReporte(String tipoReporte, boolean throwException) throws QandeMmiiException {
         if ( (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_CLIENTES)) ||
                 (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_SALDOS)) ||
-                (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_MOV)) ||
-                (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_MOV_TRADE)) ||
-                (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_MOV_EYS))) {
+                (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_MOV))
+        ) {
             return true;
         }
         if (throwException) {
