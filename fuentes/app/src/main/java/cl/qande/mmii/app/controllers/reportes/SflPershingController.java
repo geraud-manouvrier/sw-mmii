@@ -8,6 +8,7 @@ import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 @RequestMapping("/reportes/sfl_pershing")
 public class SflPershingController {
     private static final String TITULO_CTRL_DIARIO = "Contenido SFL";

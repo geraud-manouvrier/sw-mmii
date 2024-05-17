@@ -113,10 +113,10 @@
                             <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.usdeMarketValue)}"></td>
                             <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.usdeMarketPrice)}"></td>
                             <td th:text="${lineaSalidaReporte.nombreSubSubTipoActivo}"></td>
-                            <td th:text="${''}"></td>
-                            <td th:text="${''}"></td>
-                            <td th:text="${''}"></td>
-                            <td th:text="${''}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.annualFee)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.tasaProteccion)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.feeDiarioProteccion)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.ingresoProteccion)}"></td>
                         </tr>
                         </tbody>
                         <tfoot>

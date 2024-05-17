@@ -1,13 +1,14 @@
 create or replace view public.vw_reporte_maestro_datos_movimientos
-            (row_id, id_reg, tipo_reg, custodian, client_id, account_no, name, process_date, trade_date,
+            (row_id, src_vw, id_reg, tipo_reg, custodian, client_id, account_no, name, process_date, trade_date,
              settlement_date, activity, buy_sell, quantity, price, comission, fees, net_amount, usde_net_amount,
              principal, cusip, symbol, isin, currency, fx_rate, interest, currency_base, cash_margin_account,
-             product_type, security_description, activity_description, activity_code, source_code, reporte,
-             description1, description2, description3, ticker, id_sub_sub_tipo_activo, id_sub_tipo_activo,
-             id_tipo_activo, nombre_sub_sub_tipo_activo, sec_id, aplica_flujo_neto, advisory_fee_anual, process_stamp,
-             is_last_info, office_id, id_cuenta_custodio, sec_no, sec_type)
+             product_type, security_description, activity_description, activity_code, source_code, description1,
+             description2, description3, ticker, id_sub_sub_tipo_activo, id_sub_tipo_activo, id_tipo_activo,
+             nombre_sub_sub_tipo_activo, aplica_flujo_neto, office_id, id_cuenta_custodio, ingreso_egreso, retiro,
+             recaudo)
 as
 SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
+       src_vw,
        id_reg,
        tipo_reg,
        custodian,
@@ -39,7 +40,6 @@ SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
        activity_description,
        activity_code,
        source_code,
-       reporte,
        description1,
        description2,
        description3,
@@ -48,15 +48,12 @@ SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
        id_sub_tipo_activo,
        id_tipo_activo,
        nombre_sub_sub_tipo_activo,
-       sec_id,
        aplica_flujo_neto,
-       advisory_fee_anual,
-       process_stamp,
-       is_last_info,
        office_id,
        id_cuenta_custodio,
-       sec_no,
-       sec_type
+       ingreso_egreso,
+       retiro,
+       recaudo
 FROM (SELECT 'B'::text                                                                                                                                                                                                                                                                                                                                                                                  AS src_vw,
              rank()
              OVER (ORDER BY vw_mov.tipo_reg, vw_mov.process_date, vw_mov.custodian, vw_mov.account_no, vw_mov.id_cuenta_custodio, vw_mov.cash_margin, vw_mov.cusip, vw_mov.symbol, vw_mov.isin, vw_mov.source_code, vw_mov.buy_sell_code, vw_mov.description_1, vw_mov.description_2, vw_mov.description_3, vw_mov.quantity, vw_mov.net_amount, vw_mov.principal, vw_mov.price, vw_mov.usde_net_amount) AS row_id,
@@ -94,7 +91,6 @@ FROM (SELECT 'B'::text                                                          
              upper(vw_mov.activity_description::text)::character varying(100)                                                                                                                                                                                                                                                                                                                           AS activity_description,
              upper(vw_mov.activity_code::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                  AS activity_code,
              upper(vw_mov.source_code::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                    AS source_code,
-             upper(vw_mov.reporte::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS reporte,
              upper(vw_mov.description_1)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS description1,
              upper(vw_mov.description_2)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS description2,
              upper(vw_mov.description_3)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS description3,
@@ -103,15 +99,12 @@ FROM (SELECT 'B'::text                                                          
              upper(vw_mov.id_sub_tipo::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                    AS id_sub_tipo_activo,
              upper(vw_mov.id_tipo::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS id_tipo_activo,
              upper(vw_mov.nombre_sub_sub_tipo::text)::character varying(100)                                                                                                                                                                                                                                                                                                                            AS nombre_sub_sub_tipo_activo,
-             upper(vw_mov.sec_id::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                         AS sec_id,
              vw_mov.flujo_neto                                                                                                                                                                                                                                                                                                                                                                          AS aplica_flujo_neto,
-             vw_mov.advisory_fee_anual,
-             NULL::character varying(100)                                                                                                                                                                                                                                                                                                                                                               AS process_stamp,
-             NULL::boolean                                                                                                                                                                                                                                                                                                                                                                              AS is_last_info,
              upper(vw_mov.office_id::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                      AS office_id,
              upper(vw_mov.id_cuenta_custodio::text)::character varying(100)                                                                                                                                                                                                                                                                                                                             AS id_cuenta_custodio,
-             NULL::integer                                                                                                                                                                                                                                                                                                                                                                              AS sec_no,
-             upper(vw_mov.sec_type::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                       AS sec_type
+             vw_mov.ingreso_egreso,
+             vw_mov.retiro,
+             vw_mov.recaudo
       FROM tbvw_maestro_movimientos_pershing vw_mov
       UNION
       SELECT 'C'::text                                                                  AS src_vw,
@@ -147,7 +140,6 @@ FROM (SELECT 'B'::text                                                          
              upper(mov_no_inf.activity_description::text)::character varying(100)       AS activity_description,
              upper(mov_no_inf.activity_code::text)::character varying(100)              AS activity_code,
              upper(mov_no_inf.source_code::text)::character varying                     AS source_code,
-             upper(mov_no_inf.reporte::text)::character varying                         AS reporte,
              upper(mov_no_inf.description1::text)::character varying(100)               AS description1,
              upper(mov_no_inf.description2::text)::character varying(100)               AS description2,
              upper(mov_no_inf.description3::text)::character varying(100)               AS description3,
@@ -156,15 +148,12 @@ FROM (SELECT 'B'::text                                                          
              upper(mov_no_inf.id_sub_tipo_activo::text)::character varying(100)         AS id_sub_tipo_activo,
              upper(mov_no_inf.id_tipo_activo::text)::character varying(100)             AS id_tipo_activo,
              upper(mov_no_inf.nombre_sub_sub_tipo_activo::text)::character varying(100) AS nombre_sub_sub_tipo_activo,
-             upper(mov_no_inf.sec_id::text)::character varying(100)                     AS sec_id,
              mov_no_inf.aplica_flujo_neto,
-             mov_no_inf.advisory_fee_anual,
-             upper(mov_no_inf.process_stamp::text)::character varying(100)              AS process_stamp,
-             mov_no_inf.is_last_info,
              upper(mov_no_inf.office_id::text)::character varying(100)                  AS office_id,
              upper(mov_no_inf.id_cuenta_custodio::text)::character varying(100)         AS id_cuenta_custodio,
-             mov_no_inf.sec_no,
-             upper(mov_no_inf.sec_type::text)::character varying                        AS sec_type
+             NULL::boolean                                                              AS ingreso_egreso,
+             NULL::numeric(45, 20)                                                      AS retiro,
+             NULL::numeric(45, 20)                                                      AS recaudo
       FROM rectificacion_movimientos_no_informados mov_no_inf
       WHERE mov_no_inf.id_estado_rectificacion = 0) vw_union
 ORDER BY process_date, client_id, account_no, product_type, cusip;

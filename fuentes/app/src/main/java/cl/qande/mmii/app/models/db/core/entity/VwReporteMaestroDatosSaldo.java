@@ -28,23 +28,9 @@ public class VwReporteMaestroDatosSaldo {
     @Column(name = "client_id", length = 100)
     private String clientId;
 
-    @Column(name = "firm_no")
-    private String firmNo;
-
-    @Column(name = "sub_no")
-    private String subNo;
-
     @Size(max = 100)
     @Column(name = "office_id", length = 100)
     private String officeId;
-
-    @Size(max = 100)
-    @Column(name = "rep_no", length = 100)
-    private String repNo;
-
-    @Size(max = 100)
-    @Column(name = "rep", length = 100)
-    private String rep;
 
     @Size(max = 100)
     @Column(name = "account_no", length = 100)
@@ -96,37 +82,11 @@ public class VwReporteMaestroDatosSaldo {
     @Column(name = "usde_market_value")
     private BigDecimal usdeMarketValue;
 
-    @Column(name = "factor")
-    private Integer factor;
-
     @Column(name = "comision_devengada_diaria", precision = 45, scale = 20)
     private BigDecimal comisionDevengadaDiaria;
 
     @Column(name = "usde_market_price", precision = 45, scale = 20)
     private BigDecimal usdeMarketPrice;
-
-    @Column(name = "sec_no")
-    private Integer secNo;
-
-    @Size(max = 100)
-    @Column(name = "desc_1", length = 100)
-    private String desc1;
-
-    @Size(max = 100)
-    @Column(name = "desc_2", length = 100)
-    private String desc2;
-
-    @Size(max = 100)
-    @Column(name = "desc_3", length = 100)
-    private String desc3;
-
-    @Size(max = 100)
-    @Column(name = "sedol", length = 100)
-    private String sedol;
-
-    @Size(max = 100)
-    @Column(name = "ticker", length = 100)
-    private String ticker;
 
     @Size(max = 100)
     @Column(name = "id_sub_sub_tipo_activo", length = 100)
@@ -145,28 +105,66 @@ public class VwReporteMaestroDatosSaldo {
     private String nombreSubSubTipoActivo;
 
     @Size(max = 100)
-    @Column(name = "sec_id", length = 100)
-    private String secId;
-
-    @Column(name = "advisory_fee_anual", precision = 45, scale = 20)
-    private BigDecimal advisoryFeeAnual;
-
-    @Size(max = 100)
-    @Column(name = "process_stamp", length = 100)
-    private String processStamp;
-
-    @Size(max = 100)
     @Column(name = "tipo_reg", length = 100)
     private String tipoReg;
 
-    @Column(name = "acct_type")
-    private Integer acctType;
-
-    @Column(name = "currency_sequence")
-    private Integer currencySequence;
-
     @Column(name = "id_reg")
     private Long idReg;
+    @Column(name = "total_usde_market_value", precision = 45, scale = 20)
+    private BigDecimal totalUsdeMarketValue;
+
+    @Column(name = "ingreso_proteccion", precision = 45, scale = 20)
+    private BigDecimal ingresoProteccion;
+
+    @Column(name = "annual_fee", precision = 45, scale = 20)
+    private BigDecimal annualFee;
+
+    @Column(name = "tasa_proteccion", precision = 45, scale = 20)
+    private BigDecimal tasaProteccion;
+
+    @Column(name = "tasa_suracorp", precision = 45, scale = 20)
+    private BigDecimal tasaSuracorp;
+
+    @Column(name = "fee_diario", precision = 45, scale = 20)
+    private BigDecimal feeDiario;
+
+    @Column(name = "fee_diario_proteccion", precision = 45, scale = 20)
+    private BigDecimal feeDiarioProteccion;
+
+    @Column(name = "fee_diario_sura_corp", precision = 45, scale = 20)
+    private BigDecimal feeDiarioSuraCorp;
+
+    public BigDecimal getTotalUsdeMarketValue() {
+        return totalUsdeMarketValue;
+    }
+
+    public BigDecimal getIngresoProteccion() {
+        return ingresoProteccion;
+    }
+
+    public BigDecimal getAnnualFee() {
+        return annualFee;
+    }
+
+    public BigDecimal getTasaProteccion() {
+        return tasaProteccion;
+    }
+
+    public BigDecimal getTasaSuracorp() {
+        return tasaSuracorp;
+    }
+
+    public BigDecimal getFeeDiario() {
+        return feeDiario;
+    }
+
+    public BigDecimal getFeeDiarioProteccion() {
+        return feeDiarioProteccion;
+    }
+
+    public BigDecimal getFeeDiarioSuraCorp() {
+        return feeDiarioSuraCorp;
+    }
 
     public Long getIdReg() {
         return idReg;
@@ -184,24 +182,8 @@ public class VwReporteMaestroDatosSaldo {
         return clientId;
     }
 
-    public String getFirmNo() {
-        return firmNo;
-    }
-
-    public String getSubNo() {
-        return subNo;
-    }
-
     public String getOfficeId() {
         return officeId;
-    }
-
-    public String getRepNo() {
-        return repNo;
-    }
-
-    public String getRep() {
-        return rep;
     }
 
     public String getAccountNo() {
@@ -264,40 +246,12 @@ public class VwReporteMaestroDatosSaldo {
         return usdeMarketValue;
     }
 
-    public Integer getFactor() {
-        return factor;
-    }
-
     public BigDecimal getComisionDevengadaDiaria() {
         return comisionDevengadaDiaria;
     }
 
     public BigDecimal getUsdeMarketPrice() {
         return usdeMarketPrice;
-    }
-
-    public Integer getSecNo() {
-        return secNo;
-    }
-
-    public String getDesc1() {
-        return desc1;
-    }
-
-    public String getDesc2() {
-        return desc2;
-    }
-
-    public String getDesc3() {
-        return desc3;
-    }
-
-    public String getSedol() {
-        return sedol;
-    }
-
-    public String getTicker() {
-        return ticker;
     }
 
     public String getIdSubSubTipoActivo() {
@@ -316,28 +270,9 @@ public class VwReporteMaestroDatosSaldo {
         return nombreSubSubTipoActivo;
     }
 
-    public String getSecId() {
-        return secId;
-    }
-
-    public BigDecimal getAdvisoryFeeAnual() {
-        return advisoryFeeAnual;
-    }
-
-    public String getProcessStamp() {
-        return processStamp;
-    }
-
     public String getTipoReg() {
         return tipoReg;
     }
 
-    public Integer getAcctType() {
-        return acctType;
-    }
-
-    public Integer getCurrencySequence() {
-        return currencySequence;
-    }
 
 }

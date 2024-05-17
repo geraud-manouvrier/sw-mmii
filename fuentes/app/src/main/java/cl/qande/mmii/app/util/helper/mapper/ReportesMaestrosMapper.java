@@ -7,7 +7,6 @@ import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,10 +65,10 @@ public class ReportesMaestrosMapper {
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getSourceCode()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getNombreSubSubTipoActivo()));
-        dataRow.add(reportesMaestrosHelper.csvValue(BigDecimal.valueOf(0)));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getIngresoEgreso()));
 
-        dataRow.add(reportesMaestrosHelper.csvValue(BigDecimal.valueOf(0)));
-        dataRow.add(reportesMaestrosHelper.csvValue(BigDecimal.valueOf(0)));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getRetiro()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getRecaudo()));
 
         return dataRow;
     }
@@ -98,11 +97,11 @@ public class ReportesMaestrosMapper {
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getUsdeMarketPrice()));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getNombreSubSubTipoActivo()));
-        dataRow.add(reportesMaestrosHelper.csvValue(BigDecimal.valueOf(0)));
-        dataRow.add(reportesMaestrosHelper.csvValue(BigDecimal.valueOf(0)));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getAnnualFee()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTasaProteccion()));
 
-        dataRow.add(reportesMaestrosHelper.csvValue(BigDecimal.valueOf(0)));
-        dataRow.add(reportesMaestrosHelper.csvValue(BigDecimal.valueOf(0)));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getFeeDiarioProteccion()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getIngresoProteccion()));
 
         return dataRow;
     }

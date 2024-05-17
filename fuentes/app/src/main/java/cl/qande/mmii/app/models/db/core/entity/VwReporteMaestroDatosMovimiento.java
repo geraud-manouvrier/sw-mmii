@@ -1,6 +1,7 @@
 package cl.qande.mmii.app.models.db.core.entity;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -121,9 +122,6 @@ public class VwReporteMaestroDatosMovimiento {
     @Column(name = "source_code")
     private String sourceCode;
 
-    @Column(name = "reporte")
-    private String reporte;
-
     @Size(max = 100)
     @Column(name = "description1", length = 100)
     private String description1;
@@ -156,22 +154,8 @@ public class VwReporteMaestroDatosMovimiento {
     @Column(name = "nombre_sub_sub_tipo_activo", length = 100)
     private String nombreSubSubTipoActivo;
 
-    @Size(max = 100)
-    @Column(name = "sec_id", length = 100)
-    private String secId;
-
     @Column(name = "aplica_flujo_neto")
     private Integer aplicaFlujoNeto;
-
-    @Column(name = "advisory_fee_anual", precision = 45, scale = 20)
-    private BigDecimal advisoryFeeAnual;
-
-    @Size(max = 100)
-    @Column(name = "process_stamp", length = 100)
-    private String processStamp;
-
-    @Column(name = "is_last_info")
-    private Boolean isLastInfo;
 
     @Size(max = 100)
     @Column(name = "tipo_reg", length = 100)
@@ -185,14 +169,36 @@ public class VwReporteMaestroDatosMovimiento {
     @Column(name = "id_cuenta_custodio", length = 100)
     private String idCuentaCustodio;
 
-    @Column(name = "sec_no")
-    private Integer secNo;
-
-    @Column(name = "sec_type")
-    private String secType;
-
     @Column(name = "id_reg")
     private Long idReg;
+    @Column(name = "src_vw")
+    @Type(type = "org.hibernate.type.TextType")
+    private String srcVw;
+
+    @Column(name = "ingreso_egreso")
+    private Boolean ingresoEgreso;
+
+    @Column(name = "retiro", precision = 45, scale = 20)
+    private BigDecimal retiro;
+
+    @Column(name = "recaudo", precision = 45, scale = 20)
+    private BigDecimal recaudo;
+
+    public String getSrcVw() {
+        return srcVw;
+    }
+
+    public Boolean getIngresoEgreso() {
+        return ingresoEgreso;
+    }
+
+    public BigDecimal getRetiro() {
+        return retiro;
+    }
+
+    public BigDecimal getRecaudo() {
+        return recaudo;
+    }
 
     public Long getIdReg() {
         return idReg;
@@ -318,10 +324,6 @@ public class VwReporteMaestroDatosMovimiento {
         return sourceCode;
     }
 
-    public String getReporte() {
-        return reporte;
-    }
-
     public String getDescription1() {
         return description1;
     }
@@ -354,24 +356,8 @@ public class VwReporteMaestroDatosMovimiento {
         return nombreSubSubTipoActivo;
     }
 
-    public String getSecId() {
-        return secId;
-    }
-
     public Integer getAplicaFlujoNeto() {
         return aplicaFlujoNeto;
-    }
-
-    public BigDecimal getAdvisoryFeeAnual() {
-        return advisoryFeeAnual;
-    }
-
-    public String getProcessStamp() {
-        return processStamp;
-    }
-
-    public Boolean getIsLastInfo() {
-        return isLastInfo;
     }
 
     public String getTipoReg() {
@@ -384,14 +370,6 @@ public class VwReporteMaestroDatosMovimiento {
 
     public String getIdCuentaCustodio() {
         return idCuentaCustodio;
-    }
-
-    public Integer getSecNo() {
-        return secNo;
-    }
-
-    public String getSecType() {
-        return secType;
     }
 
 }

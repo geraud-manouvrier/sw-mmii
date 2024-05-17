@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+  <header th:replace="layout/layout :: header"></header>
+
+  <aside th:replace="layout/layout :: lateral"></aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 th:text="${titulo}"></h1>
+          </div>
+          <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <!--/*@thymesVar id="clienteDto" type="cl.qande.mmii.app.models.dto.ClienteDto"*/-->
+    <!--/*@thymesVar id="cuentaDto" type="cl.qande.mmii.app.models.dto.CuentaDto"*/-->
+    <!--/*@thymesVar id="listaTiposId" type="java.util.List<cl.qande.mmii.app.models.dto.TipoIdentificadorDto>"*/-->
+    <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.dto.ClienteDto>"*/-->
+
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card" th:classappend="${(clienteDto.id != null or (status != null and status.codigo !=0) ) ? '' : ' collapsed-card'}">
+        <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+          <h3 class="card-title" th:text="${(clienteDto.id != null or (status != null and status.codigo !=0) ) ? 'Modificar registro' : 'Nuevo registro'}"></h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas" th:classappend="${(clienteDto.id != null or (status != null and status.codigo !=0) ) ? ' fa-minus' : ' fa-plus'}"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body login-card-body">
+          <form id="form_guardar_registro" th:action="@{/mantenedores/enrolamiento/cliente/guardar}" method="post" th:object="${clienteDto}">
+
+            <div class="form-group row">
+              <label for="id" class="col-md-2 col-form-label">ID Interno</label>
+              <div class="col-md-2">
+                <input class="form-control" type="text" id="id" name="id" th:value="${clienteDto.id != null ? clienteDto.id: '0'}" disabled>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="identificador" class="col-md-2 col-form-label">ID Cliente</label>
+              <div class="col-md-2">
+                <input class="form-control" type="text" id="identificador" name="identificador" th:value="${clienteDto.id != null ? clienteDto.identificador: ''}">
+              </div>
+              <span class="text-danger" th:if="${#fields.hasErrors('identificador') and (clienteDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{identificador}"></span>
+            </div>
+
+            <div class="form-group row">
+              <label for="nombre" class="col-md-2 col-form-label">Nombre</label>
+              <div class="col-md-2">
+                <input class="form-control" type="text" th:field="*{nombre}" id="nombre" name="nombre" th:value="${clienteDto.id != null ? clienteDto.nombre: ''}">
+              </div>
+              <span class="text-danger" th:if="${#fields.hasErrors('nombre') and (clienteDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{nombre}"></span>
+            </div>
+
+            <div class="form-group row">
+              <label for="idTipoIdentificador" class="col-md-2 col-form-label">Tipo Identificador</label>
+              <div class="col-md-2">
+                <select class="form-control" th:field="*{idTipoIdentificador}" id="idTipoIdentificador" name="idTipoIdentificador">
+                  <option th:each="tipoIdentificador : ${listaTiposId}" th:value="${tipoIdentificador.id}" th:text="${tipoIdentificador.tipoIdentificador + ' - ' + tipoIdentificador.glosaIdentificador}" th:selected="${tipoIdentificador.id==idTipoIdentificador}"></option>
+                </select>
+              </div>
+              <span class="text-danger" th:if="${#fields.hasErrors('idTipoIdentificador') and (clienteDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{idTipoIdentificador}"></span>
+            </div>
+
+            <div class="form-group row">
+              <label for="cuenta" class="col-md-2 col-form-label">Cuenta</label>
+              <div class="col-md-2">
+                <input class="form-control" type="text" id="cuenta" name="cuenta" th:value="${(cuentaDto!=null and cuentaDto.id != null) ? cuentaDto.idCuentaCustodio: ''}">
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+          <a class="btn btn-app" th:onclick="guardar()"><i class="fas fa-save"></i>Guardar</a>
+        </div>
+        <!-- /.card-footer-->
+      </div>
+      <!-- /.card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Listado registros existentes</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body login-card-body">
+          <table id="tabla_valores" class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+              <th>ID Interno</th>
+              <th>ID Cliente</th>
+              <th>Tipo ID.</th>
+              <th>Nombre</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="registro_actual: ${lista_registros}">
+              <td th:text="${registro_actual.id}"></td>
+              <td th:text="${registro_actual.identificador}"></td>
+              <td th:text="${registro_actual.idTipoIdentificador}"></td>
+              <td th:text="${registro_actual.nombre}"></td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+              <th>ID Interno</th>
+              <th>ID Cliente</th>
+              <th>Tipo ID.</th>
+              <th>Nombre</th>
+            </tr>
+            </tfoot>
+          </table>
+
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+  <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+<script>
+
+  $(function () {
+    $("#tabla_valores").DataTable({
+      dom: 'Bfrtip',"responsive": true, "lengthChange": true, "autoWidth": false, "pageLength": 50,
+      "buttons": ["copy", "csv", "excel", "print", "colvis"]
+    }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
+  });
+
+  function guardar() {
+    var id = $('#id').val();
+    var myForm  = document.getElementById('form_guardar_registro');
+    if (id!="") {
+      var oldAction   = myForm.action;
+      console.log(oldAction);
+      myForm.action = oldAction + '/'+id;
+    }
+    console.log(myForm.action);
+    myForm.submit();
+  }
+
+  $('#my-card').CardWidget('collapse');
+</script>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

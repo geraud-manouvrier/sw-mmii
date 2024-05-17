@@ -6,7 +6,6 @@ import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.IReporteMaestroDatosService;
-import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -31,8 +30,6 @@ public class MaestroDatosExcel {
     private AppConfig appConfig;
     @Autowired
     private IReporteMaestroDatosService reporteMaestroDatosService;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
     @Autowired
     private ReportesMaestrosHelper reportesMaestrosHelper;
 
@@ -216,7 +213,6 @@ public class MaestroDatosExcel {
             this.addCell(dataRow, col++, fila.getActivityCode(), null);
             this.addCell(dataRow, col++, fila.getSourceCode(), null);
 
-            this.addCell(dataRow, col++, fila.getReporte(), null);
             this.addCell(dataRow, col++, fila.getDescription1(), null);
             this.addCell(dataRow, col++, fila.getDescription2(), null);
             this.addCell(dataRow, col++, fila.getDescription3(), null);
@@ -226,7 +222,6 @@ public class MaestroDatosExcel {
             this.addCell(dataRow, col++, fila.getIdSubTipoActivo(), null);
             this.addCell(dataRow, col++, fila.getIdTipoActivo(), null);
             this.addCell(dataRow, col++, fila.getNombreSubSubTipoActivo(), null);
-            this.addCell(dataRow, col++, fila.getSecId(), null);
 
             this.addCell(dataRow, col, fila.getAplicaFlujoNeto(), null);
 
@@ -259,12 +254,8 @@ public class MaestroDatosExcel {
             Row dataRow = sheet.createRow(row);
             this.addCell(dataRow, col++, fila.getCustodian(), null);
             this.addCell(dataRow, col++, fila.getClientId(), null);
-            this.addCell(dataRow, col++, fila.getFirmNo(), null);
-            this.addCell(dataRow, col++, fila.getSubNo(), null);
             this.addCell(dataRow, col++, fila.getOfficeId(), null);
 
-            this.addCell(dataRow, col++, fila.getRepNo(), null);
-            this.addCell(dataRow, col++, fila.getRep(), null);
             this.addCell(dataRow, col++, fila.getAccountNo(), null);
             this.addCell(dataRow, col++, fila.getName(), null);
             this.addCell(dataRow, col++, reportesMaestrosHelper.excelValueAsDate(fila.getProcessDate(), "yyyyMMdd"), this.usaDateStyle);
@@ -283,24 +274,15 @@ public class MaestroDatosExcel {
 
             this.addCell(dataRow, col++, fila.getFxRate(), null);
             this.addCell(dataRow, col++, fila.getUsdeMarketValue(), null);
-            this.addCell(dataRow, col++, fila.getAdvisoryFeeAnual(), null);
-            this.addCell(dataRow, col++, fila.getFactor(), null);
             this.addCell(dataRow, col++, fila.getComisionDevengadaDiaria(), null);
 
             this.addCell(dataRow, col++, fila.getUsdeMarketPrice(), null);
-            this.addCell(dataRow, col++, fila.getSecNo(), null);
-            this.addCell(dataRow, col++, fila.getDesc1(), null);
-            this.addCell(dataRow, col++, fila.getDesc2(), null);
-            this.addCell(dataRow, col++, fila.getDesc3(), null);
 
-            this.addCell(dataRow, col++, fila.getSedol(), null);
-            this.addCell(dataRow, col++, fila.getTicker(), null);
             this.addCell(dataRow, col++, fila.getIdSubSubTipoActivo(), null);
             this.addCell(dataRow, col++, fila.getIdSubTipoActivo(), null);
             this.addCell(dataRow, col++, fila.getIdTipoActivo(), null);
 
             this.addCell(dataRow, col++, fila.getNombreSubSubTipoActivo(), null);
-            this.addCell(dataRow, col, fila.getSecId(), null);
 
         }
         appConfig.customLog.info("Datos agregados a excel Saldos.");

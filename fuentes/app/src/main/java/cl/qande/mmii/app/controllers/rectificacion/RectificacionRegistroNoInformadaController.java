@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
+@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 @RequestMapping("/rectificacion/registros_no_informados")
 public class RectificacionRegistroNoInformadaController {
     private static final String TITULO_REG_NO_INF = "Ingreso de Cuentas, Saldos y Movimientos";

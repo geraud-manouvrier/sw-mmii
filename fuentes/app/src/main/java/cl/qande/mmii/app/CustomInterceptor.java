@@ -31,12 +31,11 @@ public class CustomInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler,
             ModelAndView modelAndView) throws Exception {
-
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
             Class<?> controllerClass = method.getDeclaringClass();
-            if (controllerClass.isAnnotationPresent(RequestMapping.class)) {
+            if (modelAndView!=null && controllerClass.isAnnotationPresent(RequestMapping.class)) {
                 this.auxSetStatus(modelAndView.getModelMap());
             }
         }

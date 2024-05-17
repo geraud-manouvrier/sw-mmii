@@ -277,4 +277,11 @@ public class VwReporteMaestroDatosCliente {
         return isLastSchemaByAccountNo;
     }
 
+    public Boolean getLastInfo() {
+        return isLastInfo;
+    }
+
+    public Boolean getLastSchemaByAccountNo() {
+        return isLastSchemaByAccountNo;
+    }
 }

@@ -14,6 +14,11 @@
           <package value="cl.qande.mmii.app.models.db.pershing.entity" />
         </packages>
       </persistence-unit>
+      <persistence-unit name="clientesDataSource">
+        <packages>
+          <package value="cl.qande.mmii.app.models.db.clientes.entity" />
+        </packages>
+      </persistence-unit>
     </persistence-units>
   </component>
 </project>

@@ -132,9 +132,9 @@
                             <td th:text="${lineaSalidaReporte.activityDescription}"></td>
                             <td th:text="${lineaSalidaReporte.sourceCode}"></td>
                             <td th:text="${lineaSalidaReporte.nombreSubSubTipoActivo}"></td>
-                            <td th:text="${''}"></td>
-                            <td th:text="${''}"></td>
-                            <td th:text="${''}"></td>
+                            <td th:text="${lineaSalidaReporte.ingresoEgreso ? 'VERDADERO' : 'FALSO'}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.retiro)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.recaudo)}"></td>
                         </tr>
                         </tbody>
                         <tfoot>

@@ -32,7 +32,6 @@ create table public.tbvw_maestro_movimientos_pershing
     activity_description varchar(100),
     activity_code        varchar(100),
     source_code          varchar(100),
-    reporte              varchar(100),
     description_1        text,
     description_2        text,
     description_3        text,
@@ -41,11 +40,11 @@ create table public.tbvw_maestro_movimientos_pershing
     id_sub_tipo          varchar(100),
     id_tipo              varchar(100),
     nombre_sub_sub_tipo  varchar(100),
-    sec_id               varchar(100),
     flujo_neto           integer,
-    advisory_fee_anual   numeric(45, 20),
-    id_cuenta_custodio   varchar(100),
-    sec_type             varchar(100)
+    ingreso_egreso       boolean,
+    retiro               numeric(45, 20),
+    recaudo              numeric(45, 20),
+    id_cuenta_custodio   varchar(100)
 );
 
 alter table public.tbvw_maestro_movimientos_pershing

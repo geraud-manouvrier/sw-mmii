@@ -44,6 +44,8 @@ public class Menu {
     public static final String RECT_NO_INF   ="RECT_NO_INF";
     public static final String RECT_NO_INF_APR   ="RECT_NO_INF_APR";
     public static final String RECT_NO_INF_REVER ="RECT_NO_INF_REVER";
+    //Enrolamiento
+    public static final String MANT_ENROL_CLIENTE ="MANT_ENROL_CLIENTE";
 
 
     public static final String ROLE_ADMIN  = "ROLE_ADMIN";      //Máximos privilegios, admin del sistema
@@ -101,7 +103,7 @@ public class Menu {
         var categoriaReportesSfl    = new CategoriaMenu("CONTENIDO_SFL", "Data SFL", false, "nav-icon fas fa-file-alt");
         categoriaReportesSfl.setListaRoles(perfilAdminQye);
         var categoriaMantenedoresEnrolamiento    = new CategoriaMenu("MANTENEDORES_ENROL", "Mantenedores Enrolamiento", false, "nav-icon fas fa-cog");
-        categoriaMantenedoresEnrolamiento.setListaRoles(perfilAdminQye);
+        categoriaMantenedoresEnrolamiento.setListaRoles(perfilTodos);
         var categoriaRegistroRectificaciones    = new CategoriaMenu("REGISTRO_RECT", "Registro Rectificaciones", false, "nav-icon fas fa-edit");
         categoriaRegistroRectificaciones.setListaRoles(perfilAdminQye);
         var categoriaAprobacionRectificaciones    = new CategoriaMenu("APRUEBA_RECT", "Aprobación Rectificaciones", false, "nav-icon fas fa-pen-alt");
@@ -162,7 +164,7 @@ public class Menu {
         categoriaReportesSfl.setListaOpciones(opcionesReportesSfl);
 
         ArrayList<OpcionMenu> opcionesMantenedoresEnrolamiento    = new ArrayList<>();
-        //opcionesMantenedoresEnrolamiento.add(new OpcionMenu(RECT_NO_INF, "Registros No Informados", "/rectificacion/registros_no_informados/nuevo", false));
+        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_CLIENTE, "Clientes", "/mantenedores/enrolamiento/cliente", false));
         categoriaMantenedoresEnrolamiento.setListaOpciones(opcionesMantenedoresEnrolamiento);
 
         ArrayList<OpcionMenu> opcionesRegistroRectificacion    = new ArrayList<>();

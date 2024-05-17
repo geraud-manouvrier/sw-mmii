@@ -75,7 +75,7 @@ public class ReportesMaestrosHelper {
 
     public String csvValue(Object cellValue) {
         String value;
-        int scale  = 6;
+        int scale  = 4;
         if (cellValue==null) {
             value="";
         } else {
@@ -88,7 +88,9 @@ public class ReportesMaestrosHelper {
             } else if (cellValue instanceof Date) {
                 value   = String.valueOf((int) DateUtil.getExcelDate((Date)cellValue));
             } else if (cellValue instanceof BigDecimal) {
-                value   = String.valueOf(((BigDecimal)cellValue).setScale(scale, RoundingMode.UP)).replace('.', ',');
+                value = String.valueOf(((BigDecimal) cellValue).setScale(scale, RoundingMode.UP)).replace('.', ',');
+            } else if (cellValue instanceof Boolean) {
+                value   = ((Boolean)cellValue) ? "VERDADERO" : "FALSO";
             } else {
                 value   = cellValue.toString();
             }
