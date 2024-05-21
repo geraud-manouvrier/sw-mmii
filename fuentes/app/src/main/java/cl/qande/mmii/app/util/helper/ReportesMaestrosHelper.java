@@ -33,6 +33,7 @@ public class ReportesMaestrosHelper {
     public static final String FORMATO_FECHA_EXCEL = "mm/dd/yyyy";
     private static final String FIELD_CUSTODIAN      = "custodian";
     private static final String FIELD_CLIENT_ID      = "client-id";
+    private static final String FIELD_TIPO_CLIENT_ID      = "tipo-id";
     private static final String FIELD_CLIENT_NAME      = "client-name";
     private static final String FIELD_OFFICE_ID      = "office-id";
     private static final String FIELD_ACCOUNT_NO      = "account-no";
@@ -112,7 +113,7 @@ public class ReportesMaestrosHelper {
     public String[] encabezadoClientes(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
-            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_OFFICE_ID,
+            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID, FIELD_OFFICE_ID,
             FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME
         };
     }
@@ -120,8 +121,8 @@ public class ReportesMaestrosHelper {
     public String[] encabezadoSaldos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
-            FIELD_CUSTODIAN, FIELD_OFFICE_ID, FIELD_CLIENT_ID,
-            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
+            FIELD_CUSTODIAN, FIELD_OFFICE_ID, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID,
+                FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
             FIELD_CUSIP, FIELD_SEC_DESCR, FIELD_QUANTITY,
             FIELD_MARKET_PRICE, FIELD_CURRENCY, FIELD_MARKET_VALUE,
             FIELD_FX_RATE, FIELD_USDE_MARKET_VALUE, FIELD_USDE_MARKET_PRICE,
@@ -133,7 +134,7 @@ public class ReportesMaestrosHelper {
     public String[] encabezadoMovimientos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
-            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_OFFICE_ID,
+            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID, FIELD_OFFICE_ID,
             FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
             FIELD_TRADE_DATE, FIELD_SETTLEMENT_DATE, FIELD_ACTIVITY,
             FIELD_BUY_SELL, FIELD_QUANTITY, FIELD_PRICE,

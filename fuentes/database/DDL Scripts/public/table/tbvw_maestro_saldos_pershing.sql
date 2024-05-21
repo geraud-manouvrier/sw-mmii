@@ -34,7 +34,8 @@ create table public.tbvw_maestro_saldos_pershing
     id_sub_sub_tipo_activo     varchar(100),
     id_sub_tipo_activo         varchar(100),
     id_tipo_activo             varchar(100),
-    nombre_sub_sub_tipo_activo varchar(1000)
+    nombre_sub_sub_tipo_activo varchar(1000),
+    tipo_identificador_cliente varchar(100)
 );
 
 alter table public.tbvw_maestro_saldos_pershing

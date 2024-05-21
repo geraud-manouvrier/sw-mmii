@@ -1,13 +1,14 @@
 create or replace view public.vw_maestro_movimientos_pershing
-            (custodian, client_id, office_id, account_no, name, process_date, tipo_reg, trade_date, settlement_date,
-             activity, buy_sell_code, buy_sell_value, quantity, price, commission, fees, net_amount, usde_net_amount,
-             principal, cusip, symbol, isin, currency, fx_rate, interest, currency_base, cash_margin, product_type,
-             security_description, activity_description, activity_code, source_code, description_1, description_2,
-             description_3, ticker, id_sub_sub_tipo, id_sub_tipo, id_tipo, nombre_sub_sub_tipo, flujo_neto,
-             ingreso_egreso, retiro, recaudo, id_cuenta_custodio)
+            (custodian, client_id, tipo_identificador_cliente, office_id, account_no, name, process_date, tipo_reg,
+             trade_date, settlement_date, activity, buy_sell_code, buy_sell_value, quantity, price, commission, fees,
+             net_amount, usde_net_amount, principal, cusip, symbol, isin, currency, fx_rate, interest, currency_base,
+             cash_margin, product_type, security_description, activity_description, activity_code, source_code,
+             description_1, description_2, description_3, ticker, id_sub_sub_tipo, id_sub_tipo, id_tipo,
+             nombre_sub_sub_tipo, flujo_neto, ingreso_egreso, retiro, recaudo, id_cuenta_custodio)
 as
 SELECT custodian,
        client_id,
+       tipo_identificador_cliente,
        office_id,
        account_no,
        name,
@@ -59,6 +60,7 @@ SELECT custodian,
        id_cuenta_custodio
 FROM (SELECT vw_mov_persh.custodian,
              maestro_crm.identificador_cliente                                                                      AS client_id,
+             maestro_crm.tipo_identificador_cliente,
              vw_mov_persh.office_id,
              vw_mov_persh.account_no,
              maestro_crm.nombre_cliente                                                                             AS name,

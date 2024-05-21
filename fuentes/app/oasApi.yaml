@@ -7,14 +7,39 @@ info:
     Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
   contact:
     email: contacto@qande.cl
-  version: 6.0.0
+  version: 7.0.0
 externalDocs:
   description: Acerca de OAS
   url: https://swagger.io/specification/
 servers:
-  - url: https://mmii-proteccion-dev.qande.cl/qande-mmii-web/api
-  - url: https://mmii-proteccion.qande.cl/qande-mmii-web/api
+  - url: https://mmii-proteccion-dev.qande.cl/core-web-col-web/api
+  - url: https://mmii-proteccion.qande.cl/core-web-col-web/api
 paths:
+  /status:
+    get:
+      tags:
+        - status
+      summary: Obtiene el estado de la API
+      description: Obtiene el estado de la API
+      responses:
+        '200':
+          description: Mensaje recibido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOk'
+        '400':
+          description: Error en API Key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '500':
+          description: Error en la oepración en el servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
   /reportes-maestros/{process-date}:
     get:
       tags:
@@ -157,6 +182,14 @@ components:
           format: int32
         message:
           type: string
+    ApiResponseError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
     SaldoCustodio:
       type: object
       properties:
@@ -165,6 +198,8 @@ components:
         office-id:
           type: string
         client-id:
+          type: string
+        tipo-id:
           type: string
         account-no:
           type: string
@@ -220,6 +255,8 @@ components:
         custodian:
           type: string
         client-id:
+          type: string
+        tipo-id:
           type: string
         office-id:
           type: string

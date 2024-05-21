@@ -72,42 +72,44 @@
                 <div class="card-body login-card-body">
                     <table id="tabla_valores" class="table table-bordered table-striped">
                         <thead>
-                        <tr>
-                            <td>Custodian</td>
-                            <td>Client ID</td>
-                            <td>Office ID</td>
-                            <td>Account N°</td>
-                            <td>Name</td>
-                            <td>Process Date</td>
-                            <td>Trade Date</td>
-                            <td>Settl. Date</td>
-                            <td>Activity</td>
-                            <td>Buy/Sell</td>
-                            <td>Quantity</td>
-                            <td>Price</td>
-                            <td>Comission</td>
-                            <td>Fees</td>
-                            <td>Net Amount</td>
-                            <td>USDE Net Amount</td>
-                            <td>Principal</td>
-                            <td>Cusip</td>
-                            <td>Currency</td>
-                            <td>FX Rate</td>
-                            <td>Cash/Margin</td>
-                            <td>Product Type</td>
-                            <td>Security Description</td>
-                            <td>Activity Description</td>
-                            <td>Source Code</td>
-                            <td>Nombre Sub Sub Tipo</td>
-                            <td>Ingr./Egr. producto</td>
-                            <td>Retiro</td>
-                            <td>Recaudo</td>
-                        </tr>
+                            <tr>
+                                <th>Custodian</th>
+                                <th>Client ID</th>
+                                <th>Tipo ID</th>
+                                <th>Office ID</th>
+                                <th>Account N°</th>
+                                <th>Name</th>
+                                <th>Process Date</th>
+                                <th>Trade Date</th>
+                                <th>Settl. Date</th>
+                                <th>Activity</th>
+                                <th>Buy/Sell</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Comission</th>
+                                <th>Fees</th>
+                                <th>Net Amount</th>
+                                <th>USDE Net Amount</th>
+                                <th>Principal</th>
+                                <th>Cusip</th>
+                                <th>Currency</th>
+                                <th>FX Rate</th>
+                                <th>Cash/Margin</th>
+                                <th>Product Type</th>
+                                <th>Security Description</th>
+                                <th>Activity Description</th>
+                                <th>Source Code</th>
+                                <th>Nombre Sub Sub Tipo</th>
+                                <th>Ingr./Egr. producto</th>
+                                <th>Retiro</th>
+                                <th>Recaudo</th>
+                            </tr>
                         </thead>
                         <tbody>
                         <tr th:each="lineaSalidaReporte: ${salidaReporte}">
                             <td th:text="${lineaSalidaReporte.custodian}"></td>
                             <td th:text="${lineaSalidaReporte.clientId}"></td>
+                            <td th:text="${lineaSalidaReporte.tipoIdentificadorCliente}"></td>
                             <td th:text="${lineaSalidaReporte.officeId}"></td>
                             <td th:text="${lineaSalidaReporte.accountNo}"></td>
                             <td th:text="${lineaSalidaReporte.name}"></td>
@@ -132,42 +134,43 @@
                             <td th:text="${lineaSalidaReporte.activityDescription}"></td>
                             <td th:text="${lineaSalidaReporte.sourceCode}"></td>
                             <td th:text="${lineaSalidaReporte.nombreSubSubTipoActivo}"></td>
-                            <td th:text="${lineaSalidaReporte.ingresoEgreso ? 'VERDADERO' : 'FALSO'}"></td>
+                            <td th:text="${lineaSalidaReporte.ingresoEgreso}"></td>
                             <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.retiro)}"></td>
                             <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.recaudo)}"></td>
                         </tr>
                         </tbody>
                         <tfoot>
                         <tr>
-                            <td>Custodian</td>
-                            <td>Client ID</td>
-                            <td>Office ID</td>
-                            <td>Account N°</td>
-                            <td>Name</td>
-                            <td>Process Date</td>
-                            <td>Trade Date</td>
-                            <td>Settl. Date</td>
-                            <td>Activity</td>
-                            <td>Buy/Sell</td>
-                            <td>Quantity</td>
-                            <td>Price</td>
-                            <td>Comission</td>
-                            <td>Fees</td>
-                            <td>Net Amount</td>
-                            <td>USDE Net Amount</td>
-                            <td>Principal</td>
-                            <td>Cusip</td>
-                            <td>Currency</td>
-                            <td>FX Rate</td>
-                            <td>Cash/Margin</td>
-                            <td>Product Type</td>
-                            <td>Security Description</td>
-                            <td>Activity Description</td>
-                            <td>Source Code</td>
-                            <td>Nombre Sub Sub Tipo</td>
-                            <td>Ingr./Egr. producto</td>
-                            <td>Retiro</td>
-                            <td>Recaudo</td>
+                            <th>Custodian</th>
+                            <th>Client ID</th>
+                            <th>Tipo ID</th>
+                            <th>Office ID</th>
+                            <th>Account N°</th>
+                            <th>Name</th>
+                            <th>Process Date</th>
+                            <th>Trade Date</th>
+                            <th>Settl. Date</th>
+                            <th>Activity</th>
+                            <th>Buy/Sell</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Comission</th>
+                            <th>Fees</th>
+                            <th>Net Amount</th>
+                            <th>USDE Net Amount</th>
+                            <th>Principal</th>
+                            <th>Cusip</th>
+                            <th>Currency</th>
+                            <th>FX Rate</th>
+                            <th>Cash/Margin</th>
+                            <th>Product Type</th>
+                            <th>Security Description</th>
+                            <th>Activity Description</th>
+                            <th>Source Code</th>
+                            <th>Nombre Sub Sub Tipo</th>
+                            <th>Ingr./Egr. producto</th>
+                            <th>Retiro</th>
+                            <th>Recaudo</th>
                         </tr>
                         </tfoot>
                     </table>

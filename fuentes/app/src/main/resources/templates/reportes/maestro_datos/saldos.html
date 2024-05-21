@@ -73,26 +73,27 @@
                     <table id="tabla_valores" class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                            <td>Custodian</td>
-                            <td>Office ID</td>
-                            <td>Client ID</td>
-                            <td>Account N°</td>
-                            <td>Name</td>
-                            <td>Process Date</td>
-                            <td>Cusip</td>
-                            <td>Sec. Descr.</td>
-                            <td>Quantity</td>
-                            <td>Mkt. Price</td>
-                            <td>Currency</td>
-                            <td>Mkt. Value</td>
-                            <td>FX Rate</td>
-                            <td>USDE Mkt. Value</td>
-                            <td>USDE Mkt. Price</td>
-                            <td>Nombre Sub Sub Tipo Activo</td>
-                            <td>FEE Anual</td>
-                            <td>FEE Protección</td>
-                            <td>FEE Protección Diario</td>
-                            <td>Ingreso Protección</td>
+                            <th>Custodian</th>
+                            <th>Office ID</th>
+                            <th>Client ID</th>
+                            <th>Tipo ID</th>
+                            <th>Account N°</th>
+                            <th>Name</th>
+                            <th>Process Date</th>
+                            <th>Cusip</th>
+                            <th>Sec. Descr.</th>
+                            <th>Quantity</th>
+                            <th>Mkt. Price</th>
+                            <th>Currency</th>
+                            <th>Mkt. Value</th>
+                            <th>FX Rate</th>
+                            <th>USDE Mkt. Value</th>
+                            <th>USDE Mkt. Price</th>
+                            <th>Nombre Sub Sub Tipo Activo</th>
+                            <th>FEE Anual</th>
+                            <th>FEE Protección</th>
+                            <th>FEE Protección Diario</th>
+                            <th>Ingreso Protección</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -100,6 +101,7 @@
                             <td th:text="${lineaSalidaReporte.custodian}"></td>
                             <td th:text="${lineaSalidaReporte.officeId}"></td>
                             <td th:text="${lineaSalidaReporte.clientId}"></td>
+                            <td th:text="${lineaSalidaReporte.tipoIdentificadorCliente}"></td>
                             <td th:text="${lineaSalidaReporte.accountNo}"></td>
                             <td th:text="${lineaSalidaReporte.name}"></td>
                             <td th:text="${lineaSalidaReporte.processDate}"></td>
@@ -121,26 +123,27 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <td>Custodian</td>
-                            <td>Office ID</td>
-                            <td>Client ID</td>
-                            <td>Account N°</td>
-                            <td>Name</td>
-                            <td>Process Date</td>
-                            <td>Cusip</td>
-                            <td>Sec. Descr.</td>
-                            <td>Quantity</td>
-                            <td>Mkt. Price</td>
-                            <td>Currency</td>
-                            <td>Mkt. Value</td>
-                            <td>FX Rate</td>
-                            <td>USDE Mkt. Value</td>
-                            <td>USDE Mkt. Price</td>
-                            <td>Nombre Sub Sub Tipo Activo</td>
-                            <td>FEE Anual</td>
-                            <td>FEE Protección</td>
-                            <td>FEE Protección Diario</td>
-                            <td>Ingreso Protección</td>
+                            <th>Custodian</th>
+                            <th>Office ID</th>
+                            <th>Client ID</th>
+                            <th>Tipo ID</th>
+                            <th>Account N°</th>
+                            <th>Name</th>
+                            <th>Process Date</th>
+                            <th>Cusip</th>
+                            <th>Sec. Descr.</th>
+                            <th>Quantity</th>
+                            <th>Mkt. Price</th>
+                            <th>Currency</th>
+                            <th>Mkt. Value</th>
+                            <th>FX Rate</th>
+                            <th>USDE Mkt. Value</th>
+                            <th>USDE Mkt. Price</th>
+                            <th>Nombre Sub Sub Tipo Activo</th>
+                            <th>FEE Anual</th>
+                            <th>FEE Protección</th>
+                            <th>FEE Protección Diario</th>
+                            <th>Ingreso Protección</th>
                         </tr>
                         </tfoot>
                     </table>

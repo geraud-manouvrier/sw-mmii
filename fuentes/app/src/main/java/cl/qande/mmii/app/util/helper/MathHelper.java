@@ -22,6 +22,12 @@ public class MathHelper {
         }
         return tempValue;
     }
+    public static Double redondeaDecimal(Double originalValue, int decimales) {
+        if (originalValue==null) {
+            return null;
+        }
+        return redondeaDecimal(BigDecimal.valueOf(originalValue), decimales).doubleValue();
+    }
 
     public static BigDecimal max(BigDecimal[] values) {
         BigDecimal maxValue = values[0];

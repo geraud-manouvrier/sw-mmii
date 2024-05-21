@@ -15,10 +15,13 @@ public class AppApiProperties {
     private final boolean enabledGlobal;
     @NotNull
     private final boolean enabledArchivos;
+    @NotNull
+    private final boolean enabledReportesMaestros;
 
-    public AppApiProperties(boolean enabledGlobal, boolean enabledArchivos) {
+    public AppApiProperties(boolean enabledGlobal, boolean enabledArchivos, boolean enabledReportesMaestros) {
         this.enabledGlobal = enabledGlobal;
         this.enabledArchivos = enabledArchivos;
+        this.enabledReportesMaestros = enabledReportesMaestros;
     }
 
     public boolean isEnabledGlobal() {
@@ -27,5 +30,9 @@ public class AppApiProperties {
 
     public boolean isEnabledArchivos() {
         return enabledArchivos;
+    }
+
+    public boolean isEnabledReportesMaestros() {
+        return enabledReportesMaestros;
     }
 }

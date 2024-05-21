@@ -1,0 +1,468 @@
+{
+	"info": {
+		"_postman_id": "7c3aafe7-c798-4ad9-834e-24fe0310e2dd",
+		"name": "API SW MMII Colombia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22896781",
+		"_collection_link": "https://solar-equinox-830738.postman.co/workspace/SURA-MMII~a28da110-21ea-4255-a879-1445c6cdafba/collection/22896781-7c3aafe7-c798-4ad9-834e-24fe0310e2dd?action=share&creator=22896781&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Status",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api_key",
+						"value": "{{appToken}}",
+						"type": "text"
+					},
+					{
+						"key": "x-client_id",
+						"value": "{{appUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{server}}/{{basePath}}/api/status",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"{{basePath}}",
+						"api",
+						"status"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Example Status",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api_key",
+								"value": "{{appToken}}",
+								"type": "text"
+							},
+							{
+								"key": "x-client_id",
+								"value": "{{appUser}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/{{basePath}}/api/status",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"{{basePath}}",
+								"api",
+								"status"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 20 May 2024 12:59:04 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 0,\n    \"message\": \"Mensaje recibido correctamente\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Lista Archivo Maestros",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api_key",
+						"value": "{{appToken}}",
+						"type": "text"
+					},
+					{
+						"key": "x-client_id",
+						"value": "{{appUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{server}}/{{basePath}}/api/archivos/reportes-maestros/20240510",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"{{basePath}}",
+						"api",
+						"archivos",
+						"reportes-maestros",
+						"20240510"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Example Lista Archivo Maestros",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api_key",
+								"value": "{{appToken}}",
+								"type": "text"
+							},
+							{
+								"key": "x-client_id",
+								"value": "{{appUser}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/{{basePath}}/api/archivos/reportes-maestros/20240510",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"{{basePath}}",
+								"api",
+								"archivos",
+								"reportes-maestros",
+								"20240510"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 20 May 2024 12:59:24 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 0,\n    \"message\": \"Mensaje recibido correctamente\",\n    \"listaArchivos\": [\n        {\n            \"nombreOriginal\": \"20240510-MaestroCuentas.csv\",\n            \"extension\": \"csv\",\n            \"archivoBase64\": \"Y3VzdG9kaWFuO2NsaWVudC1pZDtvZmZpY2UtaWQ7YWNjb3VudC1ubztjbGllbnQtbmFtZQpQRVJTSElORzs4MDQyMTU2NTtUOU87VDlPMDAxMjY3O01BTlVFTCBJR05BQ0lPIE5BVkFTClBFUlNISU5HOzk4NTY4NDIwO1Q5TztUOU8wMDEyNzU7QUxFSkFORFJPIEUgTE9ORE9OTyBUT0QK\"\n        },\n        {\n            \"nombreOriginal\": \"20240510-MaestroMovimientos.csv\",\n            \"extension\": \"csv\",\n            \"archivoBase64\": \"Y3VzdG9kaWFuO2NsaWVudC1pZDtvZmZpY2UtaWQ7YWNjb3VudC1ubztjbGllbnQtbmFtZTtwcm9jZXNzLWRhdGU7dHJhZGUtZGF0ZTtzZXR0bGVtZW50LWRhdGU7YWN0aXZpdHk7YnV5LXNlbGw7cXVhbnRpdHk7cHJpY2U7Y29tbWlzc2lvbjtmZWVzO25ldC1hbW91bnQ7dXNkZS1uZXQtYW1vdW50O3ByaW5jaXBhbDtDdXNpcDtjdXJyZW5jeTtmeC1yYXRlO2Nhc2gtbWFyZ2luLWFjY291bnQ7cHJvZHVjdC10eXBlO3NlY3VyaXR5LWRlc2NyaXB0aW9uO2FjdGl2aXR5LWRlc2NyaXB0aW9uO3NvdXJjZS1jb2RlO25vbWJyZS1zdWItc3ViLXRpcG87aW5ncmVzby1lZ3Jlc28tcHJvZHVjdG87cmV0aXJvO3JlY2F1ZG8KUEVSU0hJTkc7ODA0MjE1NjU7VDlPO1Q5TzAwMTI2NztNQU5VRUwgSUdOQUNJTyBOQVZBUzsyMDI0MDUxMDsyMDI0LTA1LTEwOzIwMjQtMDUtMTA7TU9ORVkgRlVORCBQVVJDSEFTRTs7LTcwMDAwLDAwMDA7MSwwMDAwOzAsMDAwMDswLDAwMDA7LTcwMDAwLDAwMDA7LTcwMDAwLDAwMDA7LTcwMDAwLDAwMDA7VVNEOTk5OTk3O1VTRDsxLDAwMDA7Q0FTSDtDVVJSRU5DWTtVLlMuRE9MTEFSUyBDVVJSRU5DWTtNT05FWSBGVU5EIFBVUkNIQVNFO1NXUDtNT05FREFTO0ZBTFNPOzAsMDAwMDswLDAwMDAK\"\n        },\n        {\n            \"nombreOriginal\": \"20240510-MaestroSaldos.csv\",\n            \"extension\": \"csv\",\n            \"archivoBase64\": \"Y3VzdG9kaWFuO29mZmljZS1pZDtjbGllbnQtaWQ7YWNjb3VudC1ubztjbGllbnQtbmFtZTtwcm9jZXNzLWRhdGU7Q3VzaXA7c2VjdXJpdHktZGVzY3JpcHRpb247cXVhbnRpdHk7bWFya2V0LXByaWNlO2N1cnJlbmN5O21hcmtldC12YWx1ZTtmeC1yYXRlO3VzZGUtbWFya2V0LXZhbHVlO3VzZGUtbWFya2V0LXByaWNlO25vbWJyZS1zdWItc3ViLXRpcG87ZmVlLWFudWFsO2ZlZS1wcm90ZWNjaW9uO2ZlZS1wcm90ZWNjaW9uLWRpYXJpbztpbmdyZXNvLXByb3RlY2Npb24KUGVyc2hpbmc7ODA0MjE1NjU7VDlPO1Q5TzAwMTI2NztNQU5VRUwgSUdOQUNJTyBOQVZBUzsyMDI0MDUxMDs5OTk5MjQ2O01PTkVZIE1BUktFVDs3NDM5NiwxMzAwOzEsMDAwMDtVU0Q7NzQzOTYsMTMwMDsxLDAwMDA7NzQzOTYsMTMwMDsxLDAwMDA7TU9ORVkgTUFSS0VUIFkgQ0FKQTswLDAxNTA7MCwwMTEwOzAsMDAwMTsyLDIyOTkKUGVyc2hpbmc7ODA0MjE1NjU7VDlPO1Q5TzAwMTI2NztNQU5VRUwgSUdOQUNJTyBOQVZBUzsyMDI0MDUxMDtMNTc4MVQ2NTE7SlBNT1JHQU4gR0xPQkFMIFNFTEVDVCBFUVVJVFkgRlVORCBDTEFTUyBDIChBQ0MpKFVTRCk7MjYsMDQ1MDs2MDEsMDUwMDtVU0Q7MTU2NTQsMzQ3MzsxLDAwMDA7MTU2NTQsMzQ3Mzs2MDEsMDUwMDtGT05ET1MgTVVUVU9TOzAsMDE1MDswLDAxMTA7MCwwMDAxOzAsNDY5MwpQZXJzaGluZzs4MDQyMTU2NTtUOU87VDlPMDAxMjY3O01BTlVFTCBJR05BQ0lPIE5BVkFTOzIwMjQwNTEwO0w1NzgyODU5OTtKUE1PUkdBTiBHTE9CQUwgQ09SUE9SQVRFIEJPTkQgRlVORCBDTEFTUyBDIChBQ0MpKFVTRCk7MjI1LDk2NzA7MTUwLDM3MDA7VVNEOzMzOTc4LDY1Nzg7MSwwMDAwOzMzOTc4LDY1Nzg7MTUwLDM3MDA7Rk9ORE9TIE1VVFVPUzswLDAxNTA7MCwwMTEwOzAsMDAwMTsxLDAxODUKUGVyc2hpbmc7ODA0MjE1NjU7VDlPO1Q5TzAwMTI2NztNQU5VRUwgSUdOQUNJTyBOQVZBUzsyMDI0MDUxMDtMMDIxOVczNzY7QU1VTkRJIFUuUy4gU0hPUlQtVEVSTSBCT05EIEZVTkQgQ0xBU1MgSTIgKFVTRCk7MTksMDg2MDsyMjgzLDkxNzc7VVNEOzQzNTkwLDg1MzM7MSwwMDAwOzQzNTkwLDg1MzM7MjI4Myw5MTc3O0ZPTkRPUyBNVVRVT1M7MCwwMTUwOzAsMDExMDswLDAwMDE7MSwzMDY2ClBlcnNoaW5nOzgwNDIxNTY1O1Q5TztUOU8wMDEyNjc7TUFOVUVMIElHTkFDSU8gTkFWQVM7MjAyNDA1MTA7TDY1MjM1NjQ3O01PUkdBTiBTVEFOTEVZIElOVkVTVE1FTlQgR0xPQkFMIEJSQU5EUyBGVU5EIENMQVNTIEkgKFVTRCk7NDEsMzc0MDsyNDgsNzk3NTtVU0Q7MTAyOTMsNzQ3ODsxLDAwMDA7MTAyOTMsNzQ3ODsyNDgsNzk3NTtGT05ET1MgTVVUVU9TOzAsMDE1MDswLDAxMTA7MCwwMDAxOzAsMzA4NgpQZXJzaGluZzs4MDQyMTU2NTtUOU87VDlPMDAxMjY3O01BTlVFTCBJR05BQ0lPIE5BVkFTOzIwMjQwNTEwO0w3NTk3SDQ0MjtQSUNURVQgU0hPUlQtVEVSTSBNT05FWSBNQVJLRVQgRlVORCBDTEFTUyBJIChVU0QpOzExNiw2ODQwOzE2MCwxMjIxO1VTRDsxODY4Myw2ODcyOzEsMDAwMDsxODY4Myw2ODcyOzE2MCwxMjIxO0ZPTkRPUyBNVVRVT1M7MCwwMTUwOzAsMDExMDswLDAwMDE7MCw1NjAxCg==\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Reportes Maestros",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-api_key",
+						"value": "{{appToken}}",
+						"type": "text"
+					},
+					{
+						"key": "x-client_id",
+						"value": "{{appUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{server}}/{{basePath}}/api/reportes-maestros/20240510",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"{{basePath}}",
+						"api",
+						"reportes-maestros",
+						"20240510"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Example Reportes Maestros",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-api_key",
+								"value": "{{appToken}}",
+								"type": "text"
+							},
+							{
+								"key": "x-client_id",
+								"value": "{{appUser}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/{{basePath}}/api/reportes-maestros/20240510",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"{{basePath}}",
+								"api",
+								"reportes-maestros",
+								"20240510"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Set-Cookie",
+							"value": "JSESSIONID=35AC239DF336616A42ED18C959F9A4D9; Path=/core-web-col-web; HttpOnly"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 20 May 2024 13:57:16 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 0,\n    \"message\": \"Mensaje recibido correctamente\",\n    \"maestroMovimientos\": [\n        {\n            \"custodian\": \"PERSHING\",\n            \"client-id\": \"80421565\",\n            \"office-id\": \"T9O\",\n            \"account-no\": \"T9O001267\",\n            \"name\": \"MANUEL IGNACIO NAVAS\",\n            \"process-date\": \"20240510\",\n            \"trade-date\": \"2024-05-10\",\n            \"settl-date\": \"2024-05-10\",\n            \"activity\": \"MONEY FUND PURCHASE\",\n            \"buy-sell\": null,\n            \"quantity\": -70000,\n            \"price\": 1,\n            \"comission\": 0,\n            \"fees\": 0,\n            \"net-amount\": -70000,\n            \"usde-net-amount\": -70000,\n            \"principal\": -70000,\n            \"cusip\": \"USD999997\",\n            \"currency\": \"USD\",\n            \"fx-rate\": 1,\n            \"cash-margin\": \"CASH\",\n            \"product-type\": \"CURRENCY\",\n            \"security-description\": \"U.S.DOLLARS CURRENCY\",\n            \"activity-description\": \"MONEY FUND PURCHASE\",\n            \"source-code\": \"SWP\",\n            \"nombre-sub-sub-tipo\": \"MONEDAS\",\n            \"ingreso-egreso-producto\": false,\n            \"retiro\": 0,\n            \"recaudo\": 0\n        }\n    ],\n    \"maestroSaldos\": [\n        {\n            \"custodian\": \"Pershing\",\n            \"office-id\": \"T9O\",\n            \"client-id\": \"80421565\",\n            \"account-no\": \"T9O001267\",\n            \"name\": \"MANUEL IGNACIO NAVAS\",\n            \"process-date\": \"20240510\",\n            \"cusip\": \"9999246\",\n            \"security-description\": \"MONEY MARKET\",\n            \"quantity\": 74396.13,\n            \"mkt-price\": 1,\n            \"currency\": \"USD\",\n            \"mkt-value\": 74396.13,\n            \"fx-rate\": 1,\n            \"usde-mkt-value\": 74396.13,\n            \"usde-mkt-price\": 1,\n            \"nombre-sub-sub-tipo\": \"MONEY MARKET Y CAJA\",\n            \"fee-anual\": 0.015,\n            \"fee-proteccion\": 0.011,\n            \"fee-proteccion-diario\": 0,\n            \"ingreso-proteccion\": 2.2299\n        },\n        {\n            \"custodian\": \"Pershing\",\n            \"office-id\": \"T9O\",\n            \"client-id\": \"80421565\",\n            \"account-no\": \"T9O001267\",\n            \"name\": \"MANUEL IGNACIO NAVAS\",\n            \"process-date\": \"20240510\",\n            \"cusip\": \"L5781T651\",\n            \"security-description\": \"JPMORGAN GLOBAL SELECT EQUITY FUND CLASS C (ACC)(USD)\",\n            \"quantity\": 26.045,\n            \"mkt-price\": 601.05,\n            \"currency\": \"USD\",\n            \"mkt-value\": 15654.3473,\n            \"fx-rate\": 1,\n            \"usde-mkt-value\": 15654.3473,\n            \"usde-mkt-price\": 601.05,\n            \"nombre-sub-sub-tipo\": \"FONDOS MUTUOS\",\n            \"fee-anual\": 0.015,\n            \"fee-proteccion\": 0.011,\n            \"fee-proteccion-diario\": 0,\n            \"ingreso-proteccion\": 0.4692\n        },\n        {\n            \"custodian\": \"Pershing\",\n            \"office-id\": \"T9O\",\n            \"client-id\": \"80421565\",\n            \"account-no\": \"T9O001267\",\n            \"name\": \"MANUEL IGNACIO NAVAS\",\n            \"process-date\": \"20240510\",\n            \"cusip\": \"L57828599\",\n            \"security-description\": \"JPMORGAN GLOBAL CORPORATE BOND FUND CLASS C (ACC)(USD)\",\n            \"quantity\": 225.967,\n            \"mkt-price\": 150.37,\n            \"currency\": \"USD\",\n            \"mkt-value\": 33978.6578,\n            \"fx-rate\": 1,\n            \"usde-mkt-value\": 33978.6578,\n            \"usde-mkt-price\": 150.37,\n            \"nombre-sub-sub-tipo\": \"FONDOS MUTUOS\",\n            \"fee-anual\": 0.015,\n            \"fee-proteccion\": 0.011,\n            \"fee-proteccion-diario\": 0,\n            \"ingreso-proteccion\": 1.0184\n        },\n        {\n            \"custodian\": \"Pershing\",\n            \"office-id\": \"T9O\",\n            \"client-id\": \"80421565\",\n            \"account-no\": \"T9O001267\",\n            \"name\": \"MANUEL IGNACIO NAVAS\",\n            \"process-date\": \"20240510\",\n            \"cusip\": \"L0219W376\",\n            \"security-description\": \"AMUNDI U.S. SHORT-TERM BOND FUND CLASS I2 (USD)\",\n            \"quantity\": 19.086,\n            \"mkt-price\": 2283.9177,\n            \"currency\": \"USD\",\n            \"mkt-value\": 43590.8532,\n            \"fx-rate\": 1,\n            \"usde-mkt-value\": 43590.8532,\n            \"usde-mkt-price\": 2283.9177,\n            \"nombre-sub-sub-tipo\": \"FONDOS MUTUOS\",\n            \"fee-anual\": 0.015,\n            \"fee-proteccion\": 0.011,\n            \"fee-proteccion-diario\": 0,\n            \"ingreso-proteccion\": 1.3065\n        },\n        {\n            \"custodian\": \"Pershing\",\n            \"office-id\": \"T9O\",\n            \"client-id\": \"80421565\",\n            \"account-no\": \"T9O001267\",\n            \"name\": \"MANUEL IGNACIO NAVAS\",\n            \"process-date\": \"20240510\",\n            \"cusip\": \"L65235647\",\n            \"security-description\": \"MORGAN STANLEY INVESTMENT GLOBAL BRANDS FUND CLASS I (USD)\",\n            \"quantity\": 41.374,\n            \"mkt-price\": 248.7975,\n            \"currency\": \"USD\",\n            \"mkt-value\": 10293.7478,\n            \"fx-rate\": 1,\n            \"usde-mkt-value\": 10293.7478,\n            \"usde-mkt-price\": 248.7975,\n            \"nombre-sub-sub-tipo\": \"FONDOS MUTUOS\",\n            \"fee-anual\": 0.015,\n            \"fee-proteccion\": 0.011,\n            \"fee-proteccion-diario\": 0,\n            \"ingreso-proteccion\": 0.3085\n        },\n        {\n            \"custodian\": \"Pershing\",\n            \"office-id\": \"T9O\",\n            \"client-id\": \"80421565\",\n            \"account-no\": \"T9O001267\",\n            \"name\": \"MANUEL IGNACIO NAVAS\",\n            \"process-date\": \"20240510\",\n            \"cusip\": \"L7597H442\",\n            \"security-description\": \"PICTET SHORT-TERM MONEY MARKET FUND CLASS I (USD)\",\n            \"quantity\": 116.684,\n            \"mkt-price\": 160.1221,\n            \"currency\": \"USD\",\n            \"mkt-value\": 18683.6871,\n            \"fx-rate\": 1,\n            \"usde-mkt-value\": 18683.6871,\n            \"usde-mkt-price\": 160.1221,\n            \"nombre-sub-sub-tipo\": \"FONDOS MUTUOS\",\n            \"fee-anual\": 0.015,\n            \"fee-proteccion\": 0.011,\n            \"fee-proteccion-diario\": 0,\n            \"ingreso-proteccion\": 0.56\n        }\n    ]\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server",
+			"value": "https://mmii-proteccion-dev.qande.cl",
+			"type": "string"
+		},
+		{
+			"key": "appUser",
+			"value": "proteccion.datos",
+			"type": "string"
+		},
+		{
+			"key": "appToken",
+			"value": "d6cf8b12-73fb-4bb1-b071-344b1e2936e5",
+			"type": "string"
+		},
+		{
+			"key": "basePath",
+			"value": "core-web-col-web",
+			"type": "string"
+		}
+	]
+}

@@ -141,6 +141,14 @@ public class VwReporteMaestroDatosCliente {
     @Column(name = "id_reg")
     private Long idReg;
 
+    @Size(max = 100)
+    @Column(name = "tipo_identificador_cliente", length = 100)
+    private String tipoIdentificadorCliente;
+
+    public String getTipoIdentificadorCliente() {
+        return tipoIdentificadorCliente;
+    }
+
     public Long getIdReg() {
         return idReg;
     }

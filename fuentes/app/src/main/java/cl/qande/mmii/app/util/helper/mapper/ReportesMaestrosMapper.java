@@ -21,6 +21,7 @@ public class ReportesMaestrosMapper {
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCustodian()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getOfficeId()));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountNo()));
@@ -33,6 +34,7 @@ public class ReportesMaestrosMapper {
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCustodian()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getOfficeId()));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountNo()));
@@ -78,6 +80,7 @@ public class ReportesMaestrosMapper {
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCustodian()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getOfficeId()));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountNo()));

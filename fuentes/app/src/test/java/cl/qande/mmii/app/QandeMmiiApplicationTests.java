@@ -889,10 +889,10 @@ public void reprocesoMaestros() {
 
 
 	}
-	/*
+
 	@Test
 	public void testProcesoHistorico() throws QandeMmiiException, ParseException {
-		
+		/*
 		jobGetFromFtpPershing.processByProcessDate("20240409", true);
 		jobGetFromFtpPershing.processByProcessDate("20240410", true);
 		jobGetFromFtpPershing.processByProcessDate("20240411", true);
@@ -930,9 +930,9 @@ public void reprocesoMaestros() {
 		jobGetFromFtpPershing.processByProcessDate("20240513", true);
 		jobGetFromFtpPershing.processByProcessDate("20240514", true);
 		jobGetFromFtpPershing.processByProcessDate("20240515", true);
+		*/
 
-
-
+		/*
 		jobReportesMaestros.generaReportesByProcessDate("20240409");
 		jobReportesMaestros.generaReportesByProcessDate("20240410");
 		jobReportesMaestros.generaReportesByProcessDate("20240411");
@@ -970,8 +970,12 @@ public void reprocesoMaestros() {
 		jobReportesMaestros.generaReportesByProcessDate("20240513");
 		jobReportesMaestros.generaReportesByProcessDate("20240514");
 		jobReportesMaestros.generaReportesByProcessDate("20240515");
+		jobReportesMaestros.generaReportesByProcessDate("20240516");
+		jobReportesMaestros.generaReportesByProcessDate("20240517");
+		jobReportesMaestros.generaReportesByProcessDate("20240518");
+		jobReportesMaestros.generaReportesByProcessDate("20240519");
+		*/
 
 	}
-	*/
 
 }

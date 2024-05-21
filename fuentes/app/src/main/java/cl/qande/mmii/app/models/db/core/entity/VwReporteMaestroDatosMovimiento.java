@@ -184,6 +184,14 @@ public class VwReporteMaestroDatosMovimiento {
     @Column(name = "recaudo", precision = 45, scale = 20)
     private BigDecimal recaudo;
 
+    @Size(max = 100)
+    @Column(name = "tipo_identificador_cliente", length = 100)
+    private String tipoIdentificadorCliente;
+
+    public String getTipoIdentificadorCliente() {
+        return tipoIdentificadorCliente;
+    }
+
     public String getSrcVw() {
         return srcVw;
     }

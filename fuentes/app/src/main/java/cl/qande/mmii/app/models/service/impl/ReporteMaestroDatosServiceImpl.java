@@ -1,5 +1,8 @@
 package cl.qande.mmii.app.models.service.impl;
 
+import cl.qande.mmii.app.models.api.MaestroCuentasApiDto;
+import cl.qande.mmii.app.models.api.MaestroMovimientosApiDto;
+import cl.qande.mmii.app.models.api.MaestroSaldosApiDto;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosClientesDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
@@ -7,6 +10,9 @@ import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import cl.qande.mmii.app.models.service.IReporteMaestroDatosService;
+import cl.qande.mmii.app.util.helper.mapper.VwReporteMaestroDatosClienteMapper;
+import cl.qande.mmii.app.util.helper.mapper.VwReporteMaestroDatosMovimientoMapper;
+import cl.qande.mmii.app.util.helper.mapper.VwReporteMaestroDatosSaldoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +28,33 @@ public class ReporteMaestroDatosServiceImpl implements IReporteMaestroDatosServi
     private IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao;
     @Autowired
     private IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao;
+    @Autowired
+    private VwReporteMaestroDatosSaldoMapper vwReporteMaestroDatosSaldoMapper;
+    @Autowired
+    private VwReporteMaestroDatosMovimientoMapper vwReporteMaestroDatosMovimientoMapper;
+    @Autowired
+    private VwReporteMaestroDatosClienteMapper vwReporteMaestroDatosClienteMapper;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MaestroCuentasApiDto> reporteMaestroCuentasApi(String processDate) {
+        return vwReporteMaestroDatosClienteMapper.toDto(this.generaReporteClientes(processDate));
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MaestroSaldosApiDto> reporteMaestroSaldosApi(String processDate) {
+        return vwReporteMaestroDatosSaldoMapper.toDto(this.generaReporteSaldos(processDate));
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MaestroMovimientosApiDto> reporteMaestroMovimientosApi(String processDate) {
+        return vwReporteMaestroDatosMovimientoMapper.toDto(this.generaReporteMovimientos(processDate));
+
+    }
     @Override
     @Transactional(readOnly = true)
     public List<VwReporteMaestroDatosSaldo> generaReporteSaldos(String processDate) {

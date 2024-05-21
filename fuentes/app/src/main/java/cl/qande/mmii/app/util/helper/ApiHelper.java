@@ -22,10 +22,13 @@ public class ApiHelper {
         var paramApiKey = parametroCoreService.valorParametroCore("api.api_key",idAppCliente);
         if (paramApiKey==null || ! paramApiKey.equals(apiKey)) {
             appConfig.customLog.error("Error Api Key Cliente ["+idAppCliente+"]: ["+apiKey+"]");
-            throw new QandeMmiiException("Api Key inválido");
+            throw new QandeMmiiException("Api Key o Client ID inválido");
         }
     }
     public boolean isEnabledApiArchivos() {
         return ( appApiProperties.isEnabledGlobal() && appApiProperties.isEnabledArchivos() );
+    }
+    public boolean isEnabledApiReportesMaestros() {
+        return ( appApiProperties.isEnabledGlobal() && appApiProperties.isEnabledReportesMaestros() );
     }
 }

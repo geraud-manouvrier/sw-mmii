@@ -1,14 +1,15 @@
 create or replace view public.vw_reporte_maestro_datos_clientes
-            (row_id, id_reg, custodian, client_id, firm_no, sub_no, rep_no, office_id, account_no, name, full_name,
-             address, short_name, date_of_birth, acct_status_value, email, country_code_value, country, w8_date,
-             w9_date, w8_status_value, w9_status_value, discr_trading_code_value, account_type, cash_margin_account,
-             debit_card_indicator, open_date, close_date, participant_type, last_statement_date, tax_id, process_date,
-             is_last_info, is_last_schema_by_account_no)
+            (row_id, id_reg, custodian, client_id, tipo_identificador_cliente, firm_no, sub_no, rep_no, office_id,
+             account_no, name, full_name, address, short_name, date_of_birth, acct_status_value, email,
+             country_code_value, country, w8_date, w9_date, w8_status_value, w9_status_value, discr_trading_code_value,
+             account_type, cash_margin_account, debit_card_indicator, open_date, close_date, participant_type,
+             last_statement_date, tax_id, process_date, is_last_info, is_last_schema_by_account_no)
 as
 SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
        id_reg,
        custodian,
        client_id,
+       tipo_identificador_cliente,
        firm_no,
        sub_no,
        rep_no,
@@ -45,6 +46,7 @@ FROM (SELECT 'B'::text                                                          
              vw_acct.id                                                                                                 AS id_reg,
              upper(vw_acct.custodian::text)::character varying(100)                                                     AS custodian,
              upper(vw_acct.client_id::text)::character varying(100)                                                     AS client_id,
+             vw_acct.tipo_identificador_cliente,
              vw_acct.ibd_number                                                                                         AS firm_no,
              vw_acct.id_office::character varying(100)                                                                  AS sub_no,
              upper(vw_acct.ip_number::text)::character varying(100)                                                     AS rep_no,
@@ -102,6 +104,7 @@ FROM (SELECT 'B'::text                                                          
              cta_no_inf.id                                        AS id_reg,
              cta_no_inf.custodian,
              cta_no_inf.client_id,
+             NULL::character varying(100)                         AS tipo_identificador_cliente,
              cta_no_inf.firm_no,
              cta_no_inf.sub_no,
              cta_no_inf.rep_no,

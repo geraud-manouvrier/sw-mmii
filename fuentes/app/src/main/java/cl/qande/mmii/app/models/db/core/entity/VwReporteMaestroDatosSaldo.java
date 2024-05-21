@@ -134,6 +134,14 @@ public class VwReporteMaestroDatosSaldo {
     @Column(name = "fee_diario_sura_corp", precision = 45, scale = 20)
     private BigDecimal feeDiarioSuraCorp;
 
+    @Size(max = 100)
+    @Column(name = "tipo_identificador_cliente", length = 100)
+    private String tipoIdentificadorCliente;
+
+    public String getTipoIdentificadorCliente() {
+        return tipoIdentificadorCliente;
+    }
+
     public BigDecimal getTotalUsdeMarketValue() {
         return totalUsdeMarketValue;
     }
