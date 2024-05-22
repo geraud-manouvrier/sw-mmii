@@ -932,7 +932,7 @@ public void reprocesoMaestros() {
 		jobGetFromFtpPershing.processByProcessDate("20240515", true);
 		*/
 
-		/*
+/*
 		jobReportesMaestros.generaReportesByProcessDate("20240409");
 		jobReportesMaestros.generaReportesByProcessDate("20240410");
 		jobReportesMaestros.generaReportesByProcessDate("20240411");
@@ -974,7 +974,8 @@ public void reprocesoMaestros() {
 		jobReportesMaestros.generaReportesByProcessDate("20240517");
 		jobReportesMaestros.generaReportesByProcessDate("20240518");
 		jobReportesMaestros.generaReportesByProcessDate("20240519");
-		*/
+		jobReportesMaestros.generaReportesByProcessDate("20240520");
+*/
 
 	}
 

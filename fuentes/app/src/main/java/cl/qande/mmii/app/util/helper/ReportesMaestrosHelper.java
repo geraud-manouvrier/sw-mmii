@@ -121,7 +121,7 @@ public class ReportesMaestrosHelper {
     public String[] encabezadoSaldos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
-            FIELD_CUSTODIAN, FIELD_OFFICE_ID, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID,
+            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID, FIELD_OFFICE_ID,
                 FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
             FIELD_CUSIP, FIELD_SEC_DESCR, FIELD_QUANTITY,
             FIELD_MARKET_PRICE, FIELD_CURRENCY, FIELD_MARKET_VALUE,
