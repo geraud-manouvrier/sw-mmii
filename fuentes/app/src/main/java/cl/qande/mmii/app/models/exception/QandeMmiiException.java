@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 
 public class QandeMmiiException extends Exception {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
     private static final String HEADER_ERROR_MSG   = "ERROR [QandeMmiiException]: ";
 
     public QandeMmiiException(Exception exception, String customErrorMsg) {

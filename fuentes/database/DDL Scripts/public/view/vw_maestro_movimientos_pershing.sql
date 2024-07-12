@@ -63,7 +63,7 @@ FROM (SELECT vw_mov_persh.custodian,
              maestro_crm.tipo_identificador_cliente,
              vw_mov_persh.office_id,
              vw_mov_persh.account_no,
-             maestro_crm.nombre_cliente                                                                             AS name,
+             COALESCE(maestro_crm.nombre_cliente, vw_act.full_name)                                                 AS name,
              vw_mov_persh.process_date,
              vw_mov_persh.tipo_reg,
              COALESCE(vw_mov_persh.trade_date, fn_fecha_string_to_date(vw_mov_persh.process_date,
@@ -219,6 +219,9 @@ FROM (SELECT vw_mov_persh.custodian,
                LEFT JOIN clientes.vw_maestro_clientes_cuentas maestro_crm
                          ON vw_mov_persh.id_custodian::text = maestro_crm.id_custodio::text AND
                             vw_mov_persh.account_no::text = maestro_crm.id_cuenta_custodio::text
+               LEFT JOIN pershing.vw_maestro_cuenta vw_act
+                         ON vw_mov_persh.account_no::text = vw_act.account_number::text AND
+                            vw_mov_persh.process_date::text = vw_act.process_date::text
                LEFT JOIN par_source_code par_src_cod
                          ON TRIM(BOTH FROM vw_mov_persh.source_code) = par_src_cod.source_code_pershing::text AND
                             (par_src_cod.signo_movimiento IS NULL OR

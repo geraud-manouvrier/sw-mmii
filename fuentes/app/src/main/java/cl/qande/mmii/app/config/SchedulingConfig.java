@@ -11,7 +11,6 @@ import org.springframework.scheduling.support.CronTrigger;
 
 @Configuration
 @ComponentScan(basePackages = "cl.qande.mmii.app.job", basePackageClasses = { CustomScheduler.class })
-
 public class SchedulingConfig {
 
     private static final String THREAD_NAME_PREFIX  = "CustomThreadPoolTaskScheduler";
@@ -40,5 +39,9 @@ public class SchedulingConfig {
     @Bean
     public CronTrigger cronMallaDiaria(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronMallaDiaria());
+    }
+    @Bean
+    public CronTrigger cronCuentasNoMapeadas(AppSchedulingProperties appSchedulingProperties) {
+        return new CronTrigger(appSchedulingProperties.getCronCuentasNoMapeadas());
     }
 }

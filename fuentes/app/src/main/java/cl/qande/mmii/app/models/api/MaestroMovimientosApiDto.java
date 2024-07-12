@@ -119,6 +119,7 @@ public class MaestroMovimientosApiDto implements Serializable {
     public MaestroMovimientosApiDto() {
     }
 
+    @SuppressWarnings("squid:S00107")
     public MaestroMovimientosApiDto(String custodian, String clientId, String accountNo, String name, String processDate, String tradeDate, String settlementDate, String activity, String buySell, BigDecimal quantity, BigDecimal price, BigDecimal comission, BigDecimal fees, BigDecimal netAmount, BigDecimal usdeNetAmount, BigDecimal principal, String cusip, String currency, BigDecimal fxRate, String cashMarginAccount, String productType, String securityDescription, String activityDescription, String sourceCode, String nombreSubSubTipoActivo,
                                     String tipoIdentificadorCliente, String officeId, Boolean ingresoEgreso, BigDecimal retiro, BigDecimal recaudo) {
         this.custodian = custodian;

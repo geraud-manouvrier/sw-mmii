@@ -3,6 +3,8 @@ package cl.qande.mmii.app.models.service;
 import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiarioReporte;
+import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
+import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.mail.EmailDetails;
 import cl.qande.mmii.app.util.helper.mapper.EntityToHtml;
@@ -97,6 +99,45 @@ public class NotificacionEmail {
                 appNotificacionMailProperties.getSflPershing().getRecipientCc(),
                 appNotificacionMailProperties.getSflPershing().getRecipientBcc()};
         this.enviaMail(mensaje, asunto, appNotificacionMailProperties.getSflPershing(), recipients);
+    }
+
+    public void notificarJobCuentasNoMapeadas(String processDate, boolean flagOk, List<VwCuentasNoMapeadasPershingProjection> detalle) throws MailException {
+        var mailConfiguration = appNotificacionMailProperties.getCuentasNoMapeadas();
+        var mensaje = this.generaTituloHtml("Listado Cuentas No Mapeadas para fecha proceso ["+processDate+"]") + EntityToHtml.resultadoCuentaNoMapeadasToHtml(detalle);
+        var asunto  = generaAsunto(mailConfiguration.getDefaultSubject(), flagOk, processDate);
+        this.enviaMail(mensaje, asunto, mailConfiguration, flagOk);
+    }
+
+    private String generaAsunto(String defaultSubject, boolean flagOk, String complemento) {
+        return defaultSubject + (flagOk ? SUBJECT_OK : SUBJECT_ERROR) + complemento;
+
+    }
+
+    private void enviaMail(String mensaje, String asunto, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration, boolean flagOk) throws MailException {
+        String[] recipients;
+        if (flagOk) {
+            recipients = new String[]{mailConfiguration.getRecipientTo(),
+                    mailConfiguration.getRecipientCc(),
+                    mailConfiguration.getRecipientBcc()};
+        } else {
+            recipients = new String[]{mailConfiguration.getRecipientErrorTo(),
+                    mailConfiguration.getRecipientErrorCc(),
+                    mailConfiguration.getRecipientErrorBcc()};
+        }
+        var mailDetail = new EmailDetails();
+        mailDetail.setSenderName(mailConfiguration.getSenderName());
+        mailDetail.setRecipientsTo(recipients[0]);
+        mailDetail.setRecipientsCc(recipients[1]);
+        mailDetail.setRecipientsBcc(recipients[2]);
+
+        mailDetail.setMsgBody(mensaje);
+        mailDetail.setSubject(asunto.isEmpty() ? mailConfiguration.getDefaultSubject() : asunto);
+
+        try {
+            emailService.sendHtmlMail(mailDetail);
+        } catch (QandeMmiiException e) {
+            throw new MailException(e, "Error al enviar mail : ["+e.getMessage()+"]");
+        }
     }
 
     private void enviaMail(String mensaje, String asunto, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration, String[] recipients) throws QandeMmiiException {

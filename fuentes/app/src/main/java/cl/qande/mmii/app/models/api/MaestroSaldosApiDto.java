@@ -86,6 +86,7 @@ public class MaestroSaldosApiDto implements Serializable {
     public MaestroSaldosApiDto() {
     }
 
+    @SuppressWarnings("squid:S00107")
     public MaestroSaldosApiDto(String custodian, String clientId, String officeId,
                                String tipoIdentificadorCliente, String accountNo, String name, String processDate, String cusip, String securityDescription, BigDecimal quantity, BigDecimal marketPrice, String currency, BigDecimal marketValue, BigDecimal fxRate, BigDecimal usdeMarketValue, BigDecimal usdeMarketPrice, String nombreSubSubTipoActivo, BigDecimal ingresoProteccion, BigDecimal annualFee, BigDecimal tasaProteccion, BigDecimal feeDiarioProteccion) {
         this.custodian = custodian;

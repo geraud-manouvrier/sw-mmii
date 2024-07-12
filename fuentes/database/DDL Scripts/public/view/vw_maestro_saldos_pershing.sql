@@ -48,7 +48,7 @@ FROM (SELECT vw_pos_val.custodian,
              maestro_crm.tipo_identificador_cliente,
              vw_pos_val.office_id,
              vw_pos_val.account_number                                                                                AS account_no,
-             maestro_crm.nombre_cliente                                                                               AS name,
+             COALESCE(maestro_crm.nombre_cliente, vw_act.full_name)                                                   AS name,
              vw_pos_val.process_date,
              vw_pos_val.symbol,
              vw_pos_val.cusip,
@@ -73,7 +73,10 @@ FROM (SELECT vw_pos_val.custodian,
       FROM pershing.vw_maestro_posicion_valorizada vw_pos_val
                LEFT JOIN clientes.vw_maestro_clientes_cuentas maestro_crm
                          ON vw_pos_val.id_custodian::text = maestro_crm.id_custodio::text AND
-                            vw_pos_val.account_number = maestro_crm.id_cuenta_custodio::text) pos
+                            vw_pos_val.account_number = maestro_crm.id_cuenta_custodio::text
+               LEFT JOIN pershing.vw_maestro_cuenta vw_act
+                         ON vw_pos_val.account_number = vw_act.account_number::text AND
+                            vw_pos_val.process_date::text = vw_act.process_date::text) pos
          LEFT JOIN clientes.par_fee_segmento tb_fee ON pos.total_usde_market_value >= tb_fee.monto_min AND
                                                        pos.total_usde_market_value < tb_fee.monto_max;
 

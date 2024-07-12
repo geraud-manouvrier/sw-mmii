@@ -46,6 +46,7 @@ public class Menu {
     public static final String RECT_NO_INF_REVER ="RECT_NO_INF_REVER";
     //Enrolamiento
     public static final String MANT_ENROL_CLIENTE ="MANT_ENROL_CLIENTE";
+    public static final String MANT_FEE_SEGMENTO ="MANT_FEE_SEGMENTO";
 
 
     public static final String ROLE_ADMIN  = "ROLE_ADMIN";      //Máximos privilegios, admin del sistema
@@ -53,6 +54,9 @@ public class Menu {
     public static final String ROLE_USER  = "ROLE_USER";        //Usuario básico
     public static final String ROLE_BASIC  = "ROLE_BASIC";        //Usuario básico
     public static final String ROLE_READER  = "ROLE_READER";    //Usuario que sólo lee/ve info
+
+    private static final String ICON_CLASS_FILE = "nav-icon fas fa-file-alt";
+    private static final String ICON_CLASS_ENGRANAJE = "nav-icon fas fa-cog";
 
     private String opcionElegida;
     private String opcionPorDefecto;
@@ -88,7 +92,7 @@ public class Menu {
         categoriaFtp.setListaRoles(perfilAdminQye);
         var categoriaPershing    = new CategoriaMenu("PERSHING", "Pershing", false, "nav-icon fas fa-copy");
         categoriaPershing.setListaRoles(perfilAdminQye);
-        var categoriaParametros    = new CategoriaMenu("PARAMETROS", "Parámetros", false, "nav-icon fas fa-cog");
+        var categoriaParametros    = new CategoriaMenu("PARAMETROS", "Parámetros", false, ICON_CLASS_ENGRANAJE);
         categoriaParametros.setListaRoles(perfilAdminQye);
         var categoriaUsuarios    = new CategoriaMenu("USUARIOS", "Usuarios", false, "nav-icon fas fa-users");
         categoriaUsuarios.setListaRoles(perfilAdminQye);
@@ -96,20 +100,22 @@ public class Menu {
         categoriaArchivos.setListaRoles(perfilTodos);
         var categoriaReportesMaestros    = new CategoriaMenu("REPORTES_MAESTROS", "Reportes Maestro Datos", false, "nav-icon fab fa-searchengin");
         categoriaReportesMaestros.setListaRoles(perfilTodos);
-        var categoriaMantenedoresInstrumentos    = new CategoriaMenu("MANTENEDORES_INSTRUMENTOS", "Mantenedores", false, "nav-icon fas fa-cog");
+        var categoriaMantenedoresInstrumentos    = new CategoriaMenu("MANTENEDORES_INSTRUMENTOS", "Mantenedores", false, ICON_CLASS_ENGRANAJE);
         categoriaMantenedoresInstrumentos.setListaRoles(perfilAdminQye);
         var categoriaControlOperaciones    = new CategoriaMenu("CONTROL_OPERACIONES", "Control Operaciones", false, "nav-icon fas fa-tasks");
         categoriaControlOperaciones.setListaRoles(perfilAdminQye);
-        var categoriaReportesSfl    = new CategoriaMenu("CONTENIDO_SFL", "Data SFL", false, "nav-icon fas fa-file-alt");
+        var categoriaReportesSfl    = new CategoriaMenu("CONTENIDO_SFL", "Data SFL", false, ICON_CLASS_FILE);
         categoriaReportesSfl.setListaRoles(perfilAdminQye);
-        var categoriaMantenedoresEnrolamiento    = new CategoriaMenu("MANTENEDORES_ENROL", "Mantenedores Enrolamiento", false, "nav-icon fas fa-cog");
+        var categoriaMantenedoresEnrolamiento    = new CategoriaMenu("MANTENEDORES_ENROL", "Mantenedores Enrolamiento", false, ICON_CLASS_ENGRANAJE);
         categoriaMantenedoresEnrolamiento.setListaRoles(perfilTodos);
         var categoriaRegistroRectificaciones    = new CategoriaMenu("REGISTRO_RECT", "Registro Rectificaciones", false, "nav-icon fas fa-edit");
         categoriaRegistroRectificaciones.setListaRoles(perfilAdminQye);
         var categoriaAprobacionRectificaciones    = new CategoriaMenu("APRUEBA_RECT", "Aprobación Rectificaciones", false, "nav-icon fas fa-pen-alt");
         categoriaAprobacionRectificaciones.setListaRoles(perfilAdminQye);
-        var categoriaProcesosPorUsuario    = new CategoriaMenu("ADMIN_BY_USER", "Procesos", false, "nav-icon fas fa-file-alt");
+        var categoriaProcesosPorUsuario    = new CategoriaMenu("ADMIN_BY_USER", "Procesos", false, ICON_CLASS_FILE);
         categoriaProcesosPorUsuario.setListaRoles(perfilAdminQye);
+        var categoriaMantenedoresParametros    = new CategoriaMenu("MANTENEDORES_PARAM", "Mantenedores Parámetros", false, ICON_CLASS_ENGRANAJE);
+        categoriaMantenedoresParametros.setListaRoles(perfilAdminQye);
 
 
         ArrayList<OpcionMenu> opcionesInicio    = new ArrayList<>();
@@ -176,6 +182,10 @@ public class Menu {
         opcionesAprobacionRectificacion.add(new OpcionMenu(RECT_NO_INF_REVER, "Reversa Registros", "/rectificacion/registros_no_informados/reversa", false));
         categoriaAprobacionRectificaciones.setListaOpciones(opcionesAprobacionRectificacion);
 
+        ArrayList<OpcionMenu> opcionesMantenedoresParametros    = new ArrayList<>();
+        opcionesMantenedoresParametros.add(new OpcionMenu(MANT_FEE_SEGMENTO, "Fee Segmentos", "/mantenedores/parametros/fee_segmento", false));
+        categoriaMantenedoresParametros.setListaOpciones(opcionesMantenedoresParametros);
+
         opcionesMenu    = new ArrayList<>();
         opcionesMenu.add(categoriaAdminQande);
         opcionesMenu.add(categoriaFtp);
@@ -189,6 +199,7 @@ public class Menu {
         opcionesMenu.add(categoriaMantenedoresEnrolamiento);
         opcionesMenu.add(categoriaRegistroRectificaciones);
         opcionesMenu.add(categoriaAprobacionRectificaciones);
+        opcionesMenu.add(categoriaMantenedoresParametros);
 
         this.opcionPorDefecto   = ADMINQANDE_LOGS;
         this.opcionElegida      = this.opcionPorDefecto;
@@ -246,5 +257,8 @@ public class Menu {
         } else {
             return "";
         }
+    }
+    public static String roleOp(String clave){
+        return "ROLE_OP_"+clave.toUpperCase();
     }
 }

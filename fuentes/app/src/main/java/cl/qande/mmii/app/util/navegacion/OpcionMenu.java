@@ -2,10 +2,13 @@ package cl.qande.mmii.app.util.navegacion;
 
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OpcionMenu {
 
+    private static final String DEFAULT_CLASS_ICON = "far fa-circle nav-icon";
+    private static final String DEFAULT_CLASS_LINK = "nav-link";
     private String clave;
     private String texto;
     private String rutaUrl;
@@ -27,8 +30,8 @@ public class OpcionMenu {
     public OpcionMenu(String clave, String texto) {
         this.clave      = clave;
         this.texto = texto;
-        this.claseIcono = "far fa-circle nav-icon";
-        this.claseLink  = "nav-link";
+        this.claseIcono = DEFAULT_CLASS_ICON;
+        this.claseLink  = DEFAULT_CLASS_LINK;
         this.activo     = false;
     }
 
@@ -37,8 +40,32 @@ public class OpcionMenu {
         this.texto = texto;
         this.rutaUrl = rutaUrl;
         this.activo = activo;
-        this.claseIcono = "far fa-circle nav-icon";
-        this.claseLink  = "nav-link";
+        this.claseIcono = DEFAULT_CLASS_ICON;
+        this.claseLink  = DEFAULT_CLASS_LINK;
+        this.listaRoles = new ArrayList<>();
+        this.listaRoles.add(Menu.roleOp(clave));
+    }
+
+    public OpcionMenu(String clave, String texto, String rutaUrl, boolean activo, List<String> listaRoles) {
+        this.clave = clave;
+        this.texto = texto;
+        this.rutaUrl = rutaUrl;
+        this.activo = activo;
+        this.claseIcono = DEFAULT_CLASS_ICON;
+        this.claseLink  = DEFAULT_CLASS_LINK;
+        this.listaRoles = listaRoles;
+    }
+
+    public OpcionMenu(String clave, String texto, String rutaUrl, boolean activo, String role) {
+        this.clave = clave;
+        this.texto = texto;
+        this.rutaUrl = rutaUrl;
+        this.activo = activo;
+        this.claseIcono = DEFAULT_CLASS_ICON;
+        this.claseLink  = DEFAULT_CLASS_LINK;
+        this.listaRoles = new ArrayList<>();
+        this.listaRoles.add(role);
+
     }
 
 
@@ -119,5 +146,14 @@ public class OpcionMenu {
                 .replace("]", "'")
                 .replace(",", "','");
         return commaseparatedlist;
+    }
+    public boolean tieneAcceso(List<String> listaDeRoles) {
+
+        for (String rolActual : listaDeRoles) {
+            if (this.listaRoles.contains(rolActual)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

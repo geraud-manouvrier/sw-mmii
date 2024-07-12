@@ -81,6 +81,16 @@ public class CategoriaMenu {
         }
         return false;
     }
+
+    public List<OpcionMenu> getListaOpcionesPorListaRoles(List<String> listaDeRoles) {
+        List<OpcionMenu> opcionesRetorno = new ArrayList<>();
+        for (OpcionMenu opcionActual : listaOpciones) {
+            if (opcionActual.tieneAcceso(listaDeRoles)) {
+                opcionesRetorno.add(opcionActual);
+            }
+        }
+        return opcionesRetorno;
+    }
     public String getClave() {
         return clave;
     }

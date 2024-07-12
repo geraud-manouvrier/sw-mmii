@@ -7,6 +7,7 @@ import cl.qande.mmii.app.job.JobGetFromFtpPershing;
 import cl.qande.mmii.app.job.JobMallaProcesos;
 import cl.qande.mmii.app.job.JobReportesMaestros;
 import cl.qande.mmii.app.models.db.core.dao.IControlDiarioDao;
+import cl.qande.mmii.app.models.db.core.dao.ICuentasNoMapeadasPershingDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.pershing.dao.IProcesoSflDao;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static cl.qande.mmii.app.MvcConfig.passwordEncoder;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest

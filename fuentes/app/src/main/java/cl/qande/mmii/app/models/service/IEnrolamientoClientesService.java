@@ -21,7 +21,7 @@ public interface IEnrolamientoClientesService {
     //Cuenta
     List<CuentaDto> listarCuentas();
 
-    List<CuentaDto> listarCuentasPorIdCuentaCustodio(Integer idCuentaCustodio);
+    List<CuentaDto> listarCuentasPorIdCuentaCustodio(String idCuentaCustodio);
 
     List<CuentaDto> listarCuentasPorIdCliente(Integer idCliente);
 

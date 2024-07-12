@@ -100,6 +100,7 @@ public class RectificacionMovimientosNoInformadoDto implements Serializable {
     public RectificacionMovimientosNoInformadoDto() {
     }
 
+    @SuppressWarnings("squid:S00107")
     public RectificacionMovimientosNoInformadoDto(Long id, String custodian, String clientId, String name, BigDecimal advisoryFeeAnual, String idCuentaCustodio, String processStamp, String processDate, Boolean isLastInfo, String tipoReg, String officeId, Integer accountNo, String tradeDate, String settlementDate, Integer secNo, String activity, String buySell, BigDecimal quantity, BigDecimal price, BigDecimal comission, BigDecimal fees, BigDecimal netAmount, BigDecimal usdeNetAmount, BigDecimal principal, String cusip, String symbol, String isin, String currency, BigDecimal fxRate, BigDecimal interest, String currencyBase, String cashMarginAccount, String productType, String securityDescription, String activityDescription, String activityCode, String sourceCode, String reporte, String description1, String description2, String description3, String secType, String ticker, String idSubSubTipoActivo, String idSubTipoActivo, String idTipoActivo, String nombreSubSubTipoActivo, String secId, Integer aplicaFlujoNeto, String registradorUser, Instant registradorTimestamp, String modificadorUser, Instant modificadorTimestamp, Integer idEstadoRectificacion) {
         this.id = id;
         this.custodian = custodian;

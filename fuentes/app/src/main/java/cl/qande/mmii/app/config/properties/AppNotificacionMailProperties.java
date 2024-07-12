@@ -15,11 +15,13 @@ public class AppNotificacionMailProperties {
     private final NotificacionMailConfiguration reportesMaestros;
     private final NotificacionMailConfiguration controlDiario;
     private final NotificacionMailConfiguration sflPershing;
+    private final NotificacionMailConfiguration cuentasNoMapeadas;
 
-    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing) {
+    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas) {
         this.reportesMaestros = reportesMaestros;
         this.controlDiario = controlDiario;
         this.sflPershing = sflPershing;
+        this.cuentasNoMapeadas = cuentasNoMapeadas;
     }
 
     public NotificacionMailConfiguration getReportesMaestros() {
@@ -34,6 +36,10 @@ public class AppNotificacionMailProperties {
 
     public NotificacionMailConfiguration getSflPershing() {
         return sflPershing;
+    }
+
+    public NotificacionMailConfiguration getCuentasNoMapeadas() {
+        return cuentasNoMapeadas;
     }
 
     public static class NotificacionMailConfiguration {
@@ -54,6 +60,7 @@ public class AppNotificacionMailProperties {
         @NotBlank
         private final String defaultSubject;
 
+        @SuppressWarnings("squid:S00107")
         public NotificacionMailConfiguration(String senderName, String recipientTo, String recipientCc, String recipientBcc, String recipientErrorTo, String recipientErrorCc, String recipientErrorBcc, String defaultSubject) {
             this.senderName = senderName;
             this.recipientTo = recipientTo;

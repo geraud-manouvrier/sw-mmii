@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <!--/*@thymesVar id="parFeeSegmentoDto" type="cl.qande.mmii.app.models.dto.ParFeeSegmentoDto"*/-->
+
+            <!-- Default box -->
+            <div class="card" th:classappend="${(parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) ) ? '' : ' collapsed-card'}">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${(parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) ) ? 'Modificar registro' : 'Nuevo registro'}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas" th:classappend="${(parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) ) ? ' fa-minus' : ' fa-plus'}"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="form_guardar_registro" th:action="@{/mantenedores/parametros/fee_segmento/guardar}" method="post" th:object="${parFeeSegmentoDto}">
+                        <div class="form-group row">
+                            <label for="glosa" class="col-md-2 col-form-label">Descripción segmento</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{glosa}" id="glosa" name="glosa" th:value="${parFeeSegmentoDto.id != null ? parFeeSegmentoDto.glosa: ''}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('glosa') and (parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{glosa}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="montoMin" class="col-md-2 col-form-label">Monto Mínimo</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{montoMin}" id="montoMin" name="montoMin" th:value="${parFeeSegmentoDto.id != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(parFeeSegmentoDto.montoMin): '0'}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('montoMin') and (parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{montoMin}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="montoMax" class="col-md-2 col-form-label">Monto Máximo</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{montoMax}" id="montoMax" name="montoMax" th:value="${parFeeSegmentoDto.id != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(parFeeSegmentoDto.montoMax): '0'}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('montoMax') and (parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{montoMax}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="annualFee" class="col-md-2 col-form-label">Annual Fee</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{annualFee}" id="annualFee" name="annualFee" th:value="${parFeeSegmentoDto.id != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(parFeeSegmentoDto.annualFee): '0'}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('annualFee') and (parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{annualFee}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="tasaProteccion" class="col-md-2 col-form-label">Tasa Protección</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{tasaProteccion}" id="tasaProteccion" name="tasaProteccion" th:value="${parFeeSegmentoDto.id != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(parFeeSegmentoDto.tasaProteccion): '0'}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('tasaProteccion') and (parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{tasaProteccion}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label for="tasaSuracorp" class="col-md-2 col-form-label">Tasa SURA Corp</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" th:field="*{tasaSuracorp}" id="tasaSuracorp" name="tasaSuracorp" th:value="${parFeeSegmentoDto.id != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(parFeeSegmentoDto.tasaSuracorp): '0'}">
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('tasaSuracorp') and (parFeeSegmentoDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{tasaSuracorp}"></span>
+                        </div>
+                        <div class="form-group row">
+                            <input class="form-control" type="hidden" id="id" name="id" th:value="${parFeeSegmentoDto.id != null ? parFeeSegmentoDto.id: ''}" disabled>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="guardar()"><i class="fas fa-save"></i>Guardar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Listado registros existentes</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <table id="tabla_valores" class="table table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Descripción Segmento</th>
+                            <th>Monto mínimo</th>
+                            <th>Monto máximo</th>
+                            <th>Annual Fee</th>
+                            <th>Tasa Protección</th>
+                            <th>Tasa SURA Corp</th>
+                            <th>Modificar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="registro_actual: ${lista_registros}">
+                            <td th:text="${registro_actual.glosa}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(registro_actual.montoMin)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(registro_actual.montoMax)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(registro_actual.annualFee)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(registro_actual.tasaProteccion)}"></td>
+                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(registro_actual.tasaSuracorp)}"></td>
+                            <td>
+                                <a class="btn bg-info" th:href="@{/mantenedores/parametros/fee_segmento/editar/{id}(id=${registro_actual.id})}">Editar</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Descripción Segmento</th>
+                            <th>Monto mínimo</th>
+                            <th>Monto máximo</th>
+                            <th>Annual Fee</th>
+                            <th>Tasa Protección</th>
+                            <th>Tasa SURA Corp</th>
+                            <th>Modificar</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+<script>
+
+    $(function () {
+        $("#tabla_valores").DataTable({
+            dom: 'Bfrtip',"responsive": true, "lengthChange": true, "autoWidth": false, "pageLength": 50,
+            "buttons": ["copy", "csv", "excel", "print", "colvis"]
+        }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
+    });
+
+    function guardar() {
+        var id = $('#id').val();
+        var myForm  = document.getElementById('form_guardar_registro');
+        if (id!="") {
+            var oldAction   = myForm.action;
+            console.log(oldAction);
+            myForm.action = oldAction + '/'+id;
+        }
+        console.log(myForm.action);
+        myForm.submit();
+    }
+
+    $('#my-card').CardWidget('collapse');
+</script>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

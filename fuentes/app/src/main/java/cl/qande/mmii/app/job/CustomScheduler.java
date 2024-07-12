@@ -2,6 +2,7 @@ package cl.qande.mmii.app.job;
 
 import cl.qande.mmii.app.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ public class CustomScheduler {
 
     public static final int DESFASE_DIAS = -1;
     public static final String USUARIO_JOB = "jobAppUser";
+    public static final String CRON_NEVER_EXEC = "0 44 21 1 5 *";
 
     @Autowired
     private AppConfig appConfig;
@@ -27,6 +29,8 @@ public class CustomScheduler {
     @Autowired
     private CronTrigger cronMallaDiaria;
     @Autowired
+    private CronTrigger cronCuentasNoMapeadas;
+    @Autowired
     private JobReportesMaestros jobReportesMaestros;
     @Autowired
     private JobControlDiario jobControlDiario;
@@ -34,28 +38,31 @@ public class CustomScheduler {
     private JobGetFromFtpPershing jobGetFromFtpPershing;
     @Autowired
     private JobMallaProcesos jobMallaProcesos;
+    @Autowired
+    private JobCuentasNoMapeadas jobCuentasNoMapeadas;
 
     @PostConstruct
     public void scheduleRunnableWithCronTrigger() {
 
-        appConfig.customLog.info("Registrando tarea Reportes Maestros");
-        taskScheduler.schedule(jobReportesMaestros, cronReportesMaestros);
-        appConfig.customLog.info("Tarea Reportes Maestros registrada");
+        this.registraTarea(jobReportesMaestros, cronReportesMaestros, "Reportes Maestros");
 
+        this.registraTarea(jobControlDiario, cronControlDiario, "Control Diario");
 
-        appConfig.customLog.info("Registrando tarea Control Diario");
-        taskScheduler.schedule(jobControlDiario, cronControlDiario);
-        appConfig.customLog.info("Tarea Control Diario registrada");
+        this.registraTarea(jobGetFromFtpPershing, cronFtpPershing, "Descarga FTP Pershing");
 
+        this.registraTarea(jobMallaProcesos, cronMallaDiaria, "Malla Procesos");
 
-        appConfig.customLog.info("Registrando tarea Descarga FTP Pershing");
-        taskScheduler.schedule(jobGetFromFtpPershing, cronFtpPershing);
-        appConfig.customLog.info("Tarea Descarga FTP Pershing registrada");
+        this.registraTarea(jobCuentasNoMapeadas, cronCuentasNoMapeadas, "Cuentas No Mapeadas");
 
+    }
 
-        appConfig.customLog.info("Registrando tarea Malla Procesos");
-        taskScheduler.schedule(jobMallaProcesos, cronMallaDiaria);
-        appConfig.customLog.info("Tarea Malla Procesos registrada");
+    private void registraTarea(Runnable taskOrJob, Trigger triggerOrCron, String nombreTarea) {
+        if (triggerOrCron.toString().equals(CRON_NEVER_EXEC)) {
+            appConfig.customLog.info("Tarea " + nombreTarea+" no registrada (ejecución desactivada)");
+        } else {
+            taskScheduler.schedule(taskOrJob, triggerOrCron);
+            appConfig.customLog.info("Tarea " + nombreTarea + " registrada");
+        }
 
     }
 }

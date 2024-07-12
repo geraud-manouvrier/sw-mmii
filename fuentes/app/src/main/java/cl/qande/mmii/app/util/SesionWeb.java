@@ -4,9 +4,12 @@ import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.FieldError;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,11 +19,13 @@ import java.util.UUID;
 @SessionScope
 public class SesionWeb {
 
+    private static final int MAX_CANT_NOTIF    = 100;
     private UUID uuid = UUID.randomUUID();
     private String appUsuario;
     private Collection<? extends GrantedAuthority> appRoles;
 
     private Menu appMenu;
+    private List<String> notifications = new ArrayList<>();
 
 
     @PostConstruct
@@ -73,6 +78,30 @@ public class SesionWeb {
         return false;
 
     }
+    public List<String> getNotifications() {
+        return notifications;
+    }
+    public void clearNotifications() {
+        getNotifications().clear();
+    }
+    public void addNotification(String message) {
+        if (getNotifications().size() >= MAX_CANT_NOTIF) {
+            getNotifications().remove(0);
+        }
+        LocalTime horaActual = LocalTime.now();
+        DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String horaFormateada = horaActual.format(formatoHora);
+        getNotifications().add(horaFormateada+" - "+message);
+    }
 
+    public void addNotification(List<FieldError> listOfErrors) {
+        for ( var error : listOfErrors ) {
+            var rejectedVal = error.getRejectedValue();
+            if (rejectedVal!=null)
+                addNotification("Campo "+error.getField()+" no admite valor ["+rejectedVal+"]");
+            else
+                addNotification("Campo "+error.getField()+" es obligatorio]");
+        }
+    }
 
 }

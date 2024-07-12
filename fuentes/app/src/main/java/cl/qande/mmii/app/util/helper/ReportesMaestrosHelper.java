@@ -32,41 +32,41 @@ public class ReportesMaestrosHelper {
     public static final String FORMATO_FECHA_BD    = "yyyy-MM-dd";
     public static final String FORMATO_FECHA_EXCEL = "mm/dd/yyyy";
     private static final String FIELD_CUSTODIAN      = "custodian";
-    private static final String FIELD_CLIENT_ID      = "client-id";
-    private static final String FIELD_TIPO_CLIENT_ID      = "tipo-id";
-    private static final String FIELD_CLIENT_NAME      = "client-name";
-    private static final String FIELD_OFFICE_ID      = "office-id";
-    private static final String FIELD_ACCOUNT_NO      = "account-no";
-    private static final String FIELD_CASH_MARGIN_ACC      = "cash-margin-account";
-    private static final String FIELD_PROCESS_DATE      = "process-date";
-    private static final String FIELD_CUSIP      = "Cusip";
-    private static final String FIELD_PRODUCT_TYPE      = "product-type";
-    private static final String FIELD_SEC_DESCR      = "security-description";
+    private static final String FIELD_CLIENT_ID      = "client_id";
+    private static final String FIELD_TIPO_CLIENT_ID      = "tipo_id";
+    private static final String FIELD_CLIENT_NAME      = "name";
+    private static final String FIELD_OFFICE_ID      = "office_id";
+    private static final String FIELD_ACCOUNT_NO      = "account_no";
+    private static final String FIELD_CASH_MARGIN_ACC      = "cash_margin_account";
+    private static final String FIELD_PROCESS_DATE      = "process_date";
+    private static final String FIELD_CUSIP      = "cusip";
+    private static final String FIELD_PRODUCT_TYPE      = "product_type";
+    private static final String FIELD_SEC_DESCR      = "security_description";
     private static final String FIELD_QUANTITY      = "quantity";
     private static final String FIELD_CURRENCY      = "currency";
-    private static final String FIELD_MARKET_VALUE = "market-value";
-    private static final String FIELD_MARKET_PRICE = "market-price";
-    private static final String FIELD_FX_RATE = "fx-rate";
-    private static final String FIELD_USDE_MARKET_VALUE = "usde-market-value";
-    private static final String FIELD_USDE_MARKET_PRICE = "usde-market-price";
-    private static final String FIELD_NOMBRE_SUB_SUB_TIPO = "nombre-sub-sub-tipo";
-    private static final String FIELD_FEE_ANUAL = "fee-anual";
-    private static final String FIELD_FEE_PROTECCION = "fee-proteccion";
-    private static final String FIELD_FEE_PROTECCION_DIARIO = "fee-proteccion-diario";
-    private static final String FIELD_INGRESO_PROTECCION = "ingreso-proteccion";
-    private static final String FIELD_TRADE_DATE = "trade-date";
-    private static final String FIELD_SETTLEMENT_DATE = "settlement-date";
+    private static final String FIELD_MARKET_VALUE = "market_value";
+    private static final String FIELD_MARKET_PRICE = "market_price";
+    private static final String FIELD_FX_RATE = "fx_rate";
+    private static final String FIELD_USDE_MARKET_VALUE = "usde_market_value";
+    private static final String FIELD_USDE_MARKET_PRICE = "usde_market_price";
+    private static final String FIELD_NOMBRE_SUB_SUB_TIPO = "nombre_sub_sub_tipo";
+    private static final String FIELD_FEE_ANUAL = "fee_anual";
+    private static final String FIELD_FEE_PROTECCION = "fee_proteccion";
+    private static final String FIELD_FEE_PROTECCION_DIARIO = "fee_proteccion_diario";
+    private static final String FIELD_INGRESO_PROTECCION = "ingreso_proteccion";
+    private static final String FIELD_TRADE_DATE = "trade_date";
+    private static final String FIELD_SETTLEMENT_DATE = "settlement_date";
     private static final String FIELD_ACTIVITY = "activity";
-    private static final String FIELD_BUY_SELL = "buy-sell";
+    private static final String FIELD_BUY_SELL = "buy_sell";
     private static final String FIELD_PRICE = "price";
     private static final String FIELD_COMMISSION = "commission";
     private static final String FIELD_FEES = "fees";
-    private static final String FIELD_NET_AMOUNT = "net-amount";
-    private static final String FIELD_USDE_NET_AMOUNT = "usde-net-amount";
+    private static final String FIELD_NET_AMOUNT = "net_amount";
+    private static final String FIELD_USDE_NET_AMOUNT = "usde_net_amount";
     private static final String FIELD_PRINCIPAL = "principal";
-    private static final String FIELD_ACTIVITY_DESCRIPTION = "activity-description";
-    private static final String FIELD_INGRESO_EGRESO_PRODUCTO = "ingreso-egreso-producto";
-    private static final String FIELD_SOURCE_CODE = "source-code";
+    private static final String FIELD_ACTIVITY_DESCRIPTION = "activity_description";
+    private static final String FIELD_INGRESO_EGRESO_PRODUCTO = "ingreso_egreso_producto";
+    private static final String FIELD_SOURCE_CODE = "source_code";
     private static final String FIELD_RETIRO = "retiro";
     private static final String FIELD_RECAUDO = "recaudo";
     @Autowired
@@ -121,28 +121,25 @@ public class ReportesMaestrosHelper {
     public String[] encabezadoSaldos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
-            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID, FIELD_OFFICE_ID,
-                FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
-            FIELD_CUSIP, FIELD_SEC_DESCR, FIELD_QUANTITY,
-            FIELD_MARKET_PRICE, FIELD_CURRENCY, FIELD_MARKET_VALUE,
-            FIELD_FX_RATE, FIELD_USDE_MARKET_VALUE, FIELD_USDE_MARKET_PRICE,
-            FIELD_NOMBRE_SUB_SUB_TIPO, FIELD_FEE_ANUAL, FIELD_FEE_PROTECCION,
-            FIELD_FEE_PROTECCION_DIARIO, FIELD_INGRESO_PROTECCION
+            FIELD_CUSTODIAN, FIELD_OFFICE_ID, FIELD_TIPO_CLIENT_ID, FIELD_CLIENT_ID,
+            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE, FIELD_CUSIP,
+            FIELD_SEC_DESCR, FIELD_QUANTITY, FIELD_MARKET_PRICE, FIELD_CURRENCY,
+            FIELD_MARKET_VALUE, FIELD_FX_RATE, FIELD_USDE_MARKET_VALUE, FIELD_USDE_MARKET_PRICE,
+            FIELD_NOMBRE_SUB_SUB_TIPO, FIELD_FEE_ANUAL, FIELD_FEE_PROTECCION, FIELD_FEE_PROTECCION_DIARIO,
+            FIELD_INGRESO_PROTECCION
         };
     }
 
     public String[] encabezadoMovimientos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
-            FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID, FIELD_OFFICE_ID,
-            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE,
-            FIELD_TRADE_DATE, FIELD_SETTLEMENT_DATE, FIELD_ACTIVITY,
-            FIELD_BUY_SELL, FIELD_QUANTITY, FIELD_PRICE,
-            FIELD_COMMISSION, FIELD_FEES, FIELD_NET_AMOUNT,
-            FIELD_USDE_NET_AMOUNT, FIELD_PRINCIPAL, FIELD_CUSIP,
-            FIELD_CURRENCY, FIELD_FX_RATE, FIELD_CASH_MARGIN_ACC,
-            FIELD_PRODUCT_TYPE, FIELD_SEC_DESCR, FIELD_ACTIVITY_DESCRIPTION,
-            FIELD_SOURCE_CODE, FIELD_NOMBRE_SUB_SUB_TIPO, FIELD_INGRESO_EGRESO_PRODUCTO,
+            FIELD_CUSTODIAN, FIELD_TIPO_CLIENT_ID, FIELD_CLIENT_ID, FIELD_OFFICE_ID,
+            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_PROCESS_DATE, FIELD_TRADE_DATE,
+            FIELD_SETTLEMENT_DATE, FIELD_ACTIVITY, FIELD_BUY_SELL, FIELD_QUANTITY,
+            FIELD_PRICE, FIELD_COMMISSION, FIELD_FEES, FIELD_NET_AMOUNT,
+            FIELD_USDE_NET_AMOUNT, FIELD_PRINCIPAL, FIELD_CUSIP, FIELD_CURRENCY,
+            FIELD_FX_RATE, FIELD_CASH_MARGIN_ACC, FIELD_PRODUCT_TYPE, FIELD_SEC_DESCR,
+            FIELD_ACTIVITY_DESCRIPTION, FIELD_SOURCE_CODE, FIELD_NOMBRE_SUB_SUB_TIPO, FIELD_INGRESO_EGRESO_PRODUCTO,
             FIELD_RETIRO, FIELD_RECAUDO
         };
 

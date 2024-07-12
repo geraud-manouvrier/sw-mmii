@@ -86,19 +86,19 @@ public class MantenedorEnrolamientoController {
             result.rejectValue("identificador", "error.clienteDto", "ID Cliente es obligatorio.");
         } else if (enrolamientoClientesService.listarClientePorIdentificador(clienteDto.getIdentificador()) != null) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Ya existe el Identificador.");
-            appConfig.customLog.error(PREFIX_ERROR_VALID +": Identificador de Cliente ya existe ["+clienteDto.getIdentificador()+"] ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ", estadoPeticion.getDetalle());
+            appConfig.customLog.error(PREFIX_ERROR_VALID +": Identificador de Cliente ya existe ["+clienteDto.getIdentificador()+"] ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
         if (cuenta==null || cuenta.isBlank()) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Cuenta obligatoria.");
-            appConfig.customLog.error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ", estadoPeticion.getDetalle());
+            appConfig.customLog.error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
         if (result.hasErrors()) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID);
-            appConfig.customLog.error(PREFIX_ERROR_VALID +" ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ", estadoPeticion.getDetalle());
+            appConfig.customLog.error(PREFIX_ERROR_VALID +" ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             this.addNotificationsOfErrors(result.getFieldErrors());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
@@ -122,7 +122,7 @@ public class MantenedorEnrolamientoController {
             } else {
                 estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
             }
-            appConfig.customLog.error(PREFIX_ERROR_SAVE+" ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ", estadoPeticion.getDetalle());
+            appConfig.customLog.error(PREFIX_ERROR_SAVE+" ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
@@ -132,9 +132,9 @@ public class MantenedorEnrolamientoController {
         for ( var error : listOfErrors ) {
             var rejectedVal = error.getRejectedValue();
             if (rejectedVal!=null)
-                appConfig.customLog.addNotification("Campo "+error.getField()+" no admite valor ["+rejectedVal.toString()+"]");
+                sesionWeb.addNotification("Campo "+error.getField()+" no admite valor ["+rejectedVal.toString()+"]");
             else
-                appConfig.customLog.addNotification("Campo "+error.getField()+" es obligatorio]");
+                sesionWeb.addNotification("Campo "+error.getField()+" es obligatorio]");
         }
     }
 

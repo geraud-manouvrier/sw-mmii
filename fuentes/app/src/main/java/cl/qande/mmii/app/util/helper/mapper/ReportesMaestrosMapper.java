@@ -33,22 +33,21 @@ public class ReportesMaestrosMapper {
         ArrayList<String> dataRow = new ArrayList<>();
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCustodian()));
-        dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getOfficeId()));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountNo()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getName()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getProcessDate()));
-
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getTradeDate()));
+
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getSettlementDate()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getActivity()));
-
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getBuySell()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getQuantity()));
-        dataRow.add(reportesMaestrosHelper.csvValue(fila.getPrice()));
 
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getPrice()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getComission()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getFees()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getNetAmount()));
@@ -56,15 +55,14 @@ public class ReportesMaestrosMapper {
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getUsdeNetAmount()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getPrincipal()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCusip()));
-
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCurrency()));
+
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getFxRate()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCashMarginAccount()));
-
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getProductType()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getSecurityDescription()));
-        dataRow.add(reportesMaestrosHelper.csvValue(fila.getActivityDescription()));
 
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getActivityDescription()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getSourceCode()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getNombreSubSubTipoActivo()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getIngresoEgreso()));
@@ -79,22 +77,21 @@ public class ReportesMaestrosMapper {
         ArrayList<String> dataRow = new ArrayList<>();
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCustodian()));
-        dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
-        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getOfficeId()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountNo()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getName()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getProcessDate()));
-
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCusip()));
+
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getSecurityDescription()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getQuantity()));
-
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getMarketPrice()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCurrency()));
-        dataRow.add(reportesMaestrosHelper.csvValue(fila.getMarketValue()));
 
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getMarketValue()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getFxRate()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getUsdeMarketValue()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getUsdeMarketPrice()));
@@ -102,8 +99,8 @@ public class ReportesMaestrosMapper {
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getNombreSubSubTipoActivo()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAnnualFee()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getTasaProteccion()));
-
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getFeeDiarioProteccion()));
+
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getIngresoProteccion()));
 
         return dataRow;

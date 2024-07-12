@@ -55,7 +55,7 @@ public class EnrolamientoClientesServiceImpl implements IEnrolamientoClientesSer
         return cuentaMapper.toDto(cuentaDao.findAll());
     }
     @Override
-    public List<CuentaDto> listarCuentasPorIdCuentaCustodio(Integer idCuentaCustodio) {
+    public List<CuentaDto> listarCuentasPorIdCuentaCustodio(String idCuentaCustodio) {
         return cuentaMapper.toDto(cuentaDao.findByIdCuentaCustodio(idCuentaCustodio));
     }
     @Override

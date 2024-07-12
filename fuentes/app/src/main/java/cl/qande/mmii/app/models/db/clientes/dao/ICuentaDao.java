@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICuentaDao extends CrudRepository<Cuenta, Integer> {
-    public List<Cuenta> findAll();
+    List<Cuenta> findAll();
 
-    public Optional<Cuenta> findById(Integer integer);
+    Optional<Cuenta> findById(Integer integer);
 
-    public List<Cuenta> findByIdCliente(Integer idCliente);
-    public List<Cuenta> findByIdCuentaCustodio(Integer idCuentaCustodio);
+    List<Cuenta> findByIdCliente(Integer idCliente);
+    List<Cuenta> findByIdCuentaCustodio(String idCuentaCustodio);
 
-    public Cuenta save(Cuenta cliente);
+    Cuenta save(Cuenta cliente);
 }

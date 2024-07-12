@@ -41,6 +41,7 @@ public class FtpPershingProperties {
     @NotNull
     private final String sshPrivateKey;
 
+    @SuppressWarnings("squid:S00107")
     public FtpPershingProperties(String username, String password, String protocol, String server, Integer port, String serverPath, String downloadPath, String workPath, Integer useProxyPort, boolean useSshKey, String sshPrivateKey) {
         this.username = username;
         this.password = password;

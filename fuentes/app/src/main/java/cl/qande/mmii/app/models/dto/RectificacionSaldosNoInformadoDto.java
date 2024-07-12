@@ -95,6 +95,7 @@ public class RectificacionSaldosNoInformadoDto implements Serializable {
     public RectificacionSaldosNoInformadoDto() {
     }
 
+    @SuppressWarnings("squid:S00107")
     public RectificacionSaldosNoInformadoDto(Long id, String tipoReg, String custodian, String clientId, String firmNo, String subNo, String officeId, String repNo, String rep, String accountNo, String name, String processDate, String symbol, String cusip, String isin, String productType, String securityDescription, String cashMarginAccount, BigDecimal quantity, BigDecimal marketPrice, String currency, BigDecimal marketValue, BigDecimal fxRate, BigDecimal usdeMarketValue, Integer factor, BigDecimal comisionDevengadaDiaria, BigDecimal usdeMarketPrice, Integer secNo, String desc1, String desc2, String desc3, String sedol, String ticker, String idSubSubTipoActivo, String idSubTipoActivo, String idTipoActivo, String nombreSubSubTipoActivo, String secId, BigDecimal advisoryFeeAnual, String processStamp, Integer acctType, Integer currencySequence, String registradorUser, Instant registradorTimestamp, String modificadorUser, Instant modificadorTimestamp, Integer idEstadoRectificacion) {
         this.id = id;
         this.tipoReg = tipoReg;

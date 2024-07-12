@@ -4,9 +4,11 @@ import cl.qande.mmii.app.models.api.MaestroMovimientosApiDto;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
 import cl.qande.mmii.app.util.helper.MathHelper;
 import org.mapstruct.*;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
+@Component
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface VwReporteMaestroDatosMovimientoMapper extends EntityMapper<MaestroMovimientosApiDto, VwReporteMaestroDatosMovimiento> {
 

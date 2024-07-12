@@ -34,6 +34,7 @@ public class AppConfigProperties {
     @NotBlank
     private final String pptHelp;
 
+    @SuppressWarnings("squid:S00107")
     public AppConfigProperties(String rootFolder, String projectVersion, String contextPath, String logFolder, String uploadFolder, String reportesMaestrosFolder, String downloadableFolder, String propertiesEnvironment, String propertiesSecrets, String defaultPwd, String pptHelp) {
         this.rootFolder = rootFolder;
         this.projectVersion = projectVersion;

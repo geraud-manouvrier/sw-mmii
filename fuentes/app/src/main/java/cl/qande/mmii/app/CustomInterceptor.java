@@ -48,8 +48,8 @@ public class CustomInterceptor implements HandlerInterceptor {
                     if (tituloPagina==null) {
                         tituloPagina="";
                     }
-                    appConfig.customLog.addNotification("Página "+tituloPagina+" cargada correctamente");
-                    modelAndView.getModelMap().addAttribute("notifications", appConfig.customLog.getNotifications());
+                    sesionWeb.addNotification("Página "+tituloPagina+" cargada correctamente");
+                    modelAndView.getModelMap().addAttribute("notifications", sesionWeb.getNotifications());
                 }
                 this.auxSetOnError(modelAndView.getModelMap(), viewName);
             }
@@ -82,7 +82,7 @@ public class CustomInterceptor implements HandlerInterceptor {
 
             if (controllerClass.isAnnotationPresent(RequestMapping.class)) {
                 appConfig.customLog.info("Intercepted request to controller for user: ["+sesionWeb.getUsuario()+"] to RequestURI: ["+request.getRequestURI()+"]-["+request.getMethod()+"]");
-                appConfig.customLog.clearNotifications();
+                sesionWeb.clearNotifications();
             }
         }
         return true;

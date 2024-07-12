@@ -75,7 +75,7 @@
                 <form id="logoutForm" th:action="@{/logout}" method="post">
                     <li class="nav-item"><a class="nav-link" href="#" role="button" onclick="document.getElementById('logoutForm').submit();"><i class="fa fa-sign-out-alt" style="color: #ed333b;" aria-hidden="true"></i></a></li>
                 </form>
-                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                <li class="nav-item" sec:authorize="hasRole('ROLE_NOTIF')">
                     <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
                         <i class="fas fa-th-large"></i>
                         <span class="badge badge-light border border-danger text-dark navbar-badge" th:text="${notifications.size()}">99</span>
@@ -89,6 +89,8 @@
 
     <!-- Main Sidebar Container -->
     <aside th:fragment="lateral" class="main-sidebar sidebar-dark-primary elevation-4">
+        <!--/*@thymesVar id="categoriaMenu" type="cl.qande.mmii.app.util.navegacion.CategoriaMenu"*/-->
+
         <input type="hidden" id="getContextPath" th:value="${#httpServletRequest.getContextPath()}" />
         <input type="hidden" id="getRequestURI" th:value="${#request.getRequestURI()}" />
         <!-- Brand Logo -->
@@ -128,13 +130,13 @@
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                     data-accordion="false">
-                    <li th:class="${categoriaMenu.isActivo() ? 'nav-item menu-open': 'nav-item'}" th:if="${categoriaMenu.tieneAcceso(sesionWeb.listaDeRoles())}" th:each="categoriaMenu: ${sesionWeb.getAppMenu().listaOpciones()}">
+                    <li th:class="${categoriaMenu.isActivo() ? 'nav-item menu-open': 'nav-item'}" th:if="${ (categoriaMenu.getListaOpcionesPorListaRoles(sesionWeb.listaDeRoles()).size()>0)}" th:each="categoriaMenu: ${sesionWeb.getAppMenu().listaOpciones()}">
                         <a th:href="@{${categoriaMenu.getRutaUrl()}}" th:class="${categoriaMenu.getClaseLink()}">
                             <i th:class="${categoriaMenu.getClaseIcono()}"></i>
                             <p><span th:text="${categoriaMenu.getTexto()}" th:remove="tag"></span><i th:class="${categoriaMenu.getClaseIconoExpansion()}"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
-                            <li class="nav-item" th:each="opcionMenu: ${categoriaMenu.getListaOpciones()}">
+                            <li class="nav-item" th:each="opcionMenu: ${categoriaMenu.getListaOpcionesPorListaRoles(sesionWeb.listaDeRoles())}">
                                 <a th:href="@{${opcionMenu.getRutaUrl()}}" th:class="${opcionMenu.getClaseLink()}">
                                     <i th:class="${opcionMenu.getClaseIcono()}"></i>
                                     <p th:text="${opcionMenu.getTexto()}"></p>
@@ -247,6 +249,7 @@
     <aside th:fragment="lateral_control" class="control-sidebar control-sidebar-dark" style="width: 450px;">
         <div class="p-3 control-sidebar-content">
             <div class="notifications" th:if="${notifications != null }" >
+                <a href="#" class="clear-notifications" th:href="@{/clear}">Clear</a>
                 <div class="mb-1" th:each="notification : ${notifications}">
                     <i class="fas fa-info-circle"></i><span th:text="${' '+notification}"></span>
                 </div>
