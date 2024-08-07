@@ -99,13 +99,19 @@
          Either JSSE or OpenSSL style configuration may be used. OpenSSL style
          configuration is used below.
     -->
+    <!-- 
+     ¡¡¡¡¡¡¡¡¡REQUIERE CREAR EL ENLACE SIMBOLICO PRIMERO!!!!!!
+     sudo su
+     cd /etc/letsencrypt/live
+     ln -s DIR_DOMAIN sw-mmii
+    -->
    <Connector port="8443" protocol="org.apache.coyote.http11.Http11AprProtocol"
               maxThreads="150" SSLEnabled="true" >
 	   <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
 		 <SSLHostConfig>
-       <Certificate certificateKeyFile="/etc/letsencrypt/live/mmii-proteccion.qande.cl/privkey.pem"
-                    certificateFile="/etc/letsencrypt/live/mmii-proteccion.qande.cl/cert.pem"
-                    certificateChainFile="/etc/letsencrypt/live/mmii-proteccion.qande.cl/chain.pem"
+       <Certificate certificateKeyFile="/etc/letsencrypt/live/sw-mmii/privkey.pem"
+                    certificateFile="/etc/letsencrypt/live/sw-mmii/cert.pem"
+                    certificateChainFile="/etc/letsencrypt/live/sw-mmii/chain.pem"
                     type="RSA" />
 			</SSLHostConfig>
 	</Connector>

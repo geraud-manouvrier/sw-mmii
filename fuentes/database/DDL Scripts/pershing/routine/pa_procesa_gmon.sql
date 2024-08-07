@@ -10,7 +10,7 @@ begin
     FROM pershing.proceso_sfl tb_proc WHERE tb_proc.id=_id_proceso;
 
     DELETE FROM pershing.sfl_gmon tb_sfl WHERE tb_sfl.process_date= _process_date;
---public.fn_convierte_signo_factor(
+
     INSERT INTO pershing.sfl_gmon (id_proceso, process_date, record_id_sequence_number, account_number, ip_number, ibd_number, usde_td_balance, usd_td_balance, long_td_market, short_td_market, td_liquidating_equity, total_usde_td_balance, total_equity, trade_date_net_worth, mmf_principal_balance, mmf_dividend, cash_available, date_of_data, usde_sd_balance, usd_sd_balance, long_sd_market, short_sd_market, sma_date_stamp, sma_balance, margin_buying_power, technical_short_value, total_fed_requirement, total_options_requirement, base_currency, non_usd_currency, masked_house_call)
     SELECT
         reg_header.id_proceso, reg_header.process_date, reg_a.record_id_sequence_number, reg_a.account_number, reg_a.ip_number, reg_a.ibd_number,
@@ -43,15 +43,16 @@ begin
     LEFT JOIN stage_pershing.stage_gmon_reg_b reg_b
     ON reg_header.id_proceso=reg_b.id_proceso AND reg_a.account_number=reg_b.account_number
     WHERE reg_header.id_proceso=_id_proceso
+    AND NOT pershing.fn_excluye_cuenta('CARGA_SFL', reg_a.account_number)
     ;
 
 
     DELETE FROM pershing.sfl_gmon_historica WHERE process_date=_process_date;
 
     --Si no se cargaron datos y no existe SFL
-    IF ( (SELECT count(*) FROM pershing.sfl_gmon where process_date=_process_date)=0
+    IF ( (SELECT count(*) FROM pershing.sfl_gmon where process_date=_process_date)=0    --No se cargaron datos en INSERT anterior
         AND
-         (SELECT count(*) FROM stage_pershing.stage_gmon_reg_header where process_date=_process_date)=0 ) THEN
+         (SELECT count(*) FROM stage_pershing.stage_gmon_reg_header where process_date=_process_date)=0 ) THEN  --No venían datos en SFL
         --Replicar data ultimo process date disponible
         SELECT max(process_date) INTO _last_process_date
         FROM pershing.sfl_gmon where process_date<=_process_date;
