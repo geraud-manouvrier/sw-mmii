@@ -27,7 +27,7 @@ DUMP_FILE="${BACKUP_BD_DIR}/DatabaseBackup_${TIMESTAMP}.dump"
 DUMP_FILE_ZIP="${BACKUP_BD_DIR}/DatabaseBackup_${TIMESTAMP}.xz"
 
 # Otras variables y parámetros
-REQUIRED_PG_VERSION="14"
+REQUIRED_PG_VERSION="16"
 START_TIME=$(date +%s)
 
 
