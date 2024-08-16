@@ -26,14 +26,14 @@ echo ""  # Añadir una nueva línea después de la entrada del usuario
 
 # Solicitar al usuario actualizar el nombre de usuario
 echo "El usuario actual es: $USER"
-read -p "Ingrese nuevo usuario (presione Enter para mantener [$USER]): " new_user
+read -r -p "Ingrese nuevo usuario (presione Enter para mantener [$USER]): " new_user
 if [ -n "$new_user" ]; then
   USER="$new_user"
 fi
 
 # Solicitar al usuario actualizar la contraseña
 echo "La contraseña actual está configurada. No se mostrará por razones de seguridad."
-read -sp "Ingrese nueva contraseña (presione Enter para mantener la actual): " new_passwd
+read -r -sp "Ingrese nueva contraseña (presione Enter para mantener la actual): " new_passwd
 echo ""  # Añadir una nueva línea después de la entrada
 if [ -n "$new_passwd" ]; then
   PASSWD="$new_passwd"
@@ -41,14 +41,14 @@ fi
 
 # Solicitar al usuario actualizar el servidor host
 echo "El servidor host actual es: $AZ_SERVER_HOST"
-read -p "Ingrese nuevo servidor host (presione Enter para mantener [$AZ_SERVER_HOST]): " new_host
+read -r -p "Ingrese nuevo servidor host (presione Enter para mantener [$AZ_SERVER_HOST]): " new_host
 if [ -n "$new_host" ]; then
   AZ_SERVER_HOST="$new_host"
 fi
 
 # Solicitar al usuario actualizar el directorio del servidor
 echo "El directorio del servidor actual es: $AZ_SERVER_DIR"
-read -p "Ingrese nuevo directorio del servidor (presione Enter para mantener [$AZ_SERVER_DIR]): " new_dir
+read -r -p "Ingrese nuevo directorio del servidor (presione Enter para mantener [$AZ_SERVER_DIR]): " new_dir
 if [ -n "$new_dir" ]; then
   AZ_SERVER_DIR="$new_dir"
 fi
@@ -82,7 +82,7 @@ FSTAB_ENTRY="${FSTAB_KEY} cifs credentials=${CRED_FILE},dir_mode=0777,file_mode=
 
 # Crear un backup del archivo fstab con marca de tiempo
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-cp /etc/fstab /etc/fstab_BACKUP_${TIMESTAMP}
+cp /etc/fstab /etc/fstab_BACKUP_"${TIMESTAMP}"
 echo "Backup de fstab realizado: /etc/fstab_BACKUP_${TIMESTAMP}"
 
 # Buscar la entrada actual en fstab

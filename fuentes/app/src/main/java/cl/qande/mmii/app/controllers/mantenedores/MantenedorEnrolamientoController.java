@@ -10,6 +10,7 @@ import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +36,8 @@ public class MantenedorEnrolamientoController {
     private static final String PREFIX_ERROR_SAVE = "Error al guardar registro";
     private static final String REDIRECT = "redirect:";
     private static final String URL_CLIENTE = "/mantenedores/enrolamiento/cliente";
+    public static final String CONCAT_MSG_USER = "] por usuario [";
+    public static final String CONCAT_MSG_VALOR = "]: Valor [";
     @Autowired
     private SesionWeb sesionWeb;
     @Autowired
@@ -48,6 +51,7 @@ public class MantenedorEnrolamientoController {
     //Clientes
     //-----------------------------------------------------------------------------------------------------
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CLIENTE))")
     @GetMapping({"/cliente"})
     public String listaCliente(
             @Valid ClienteDto clienteDto,
@@ -56,11 +60,12 @@ public class MantenedorEnrolamientoController {
         model.addAttribute(CAMPO_TITULO, TITULO_CLIENTE);
         model.addAttribute(CAMPO_SESION, sesionWeb);
 
-        model.addAttribute(CAMPO_LISTA_REGISTROS, enrolamientoClientesService.listarClientes());
+        model.addAttribute(CAMPO_LISTA_REGISTROS, enrolamientoClientesService.listaClienteMaestro());
         model.addAttribute(CAMPO_LISTA_TIPOS_ID, enrolamientoClientesService.listarTiposIdentificador());
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.MANT_ENROL_CLIENTE, false);
     }
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CLIENTE))")
     @GetMapping({"/cliente/editar/{id}"})
     public String formularioEditarCliente(
             @PathVariable("id") Integer id,
@@ -70,10 +75,14 @@ public class MantenedorEnrolamientoController {
         if(model.getAttribute(CAMPO_STATUS)==null) {
             clienteDto    = enrolamientoClientesService.listarClientePorId(id);
             model.addAttribute(CAMPO_MODIFICAR_CLIENTE, clienteDto);
+            var listaCuentasCliente  = enrolamientoClientesService.listarCuentasPorIdCliente(id, ",");
+
+            model.addAttribute("listaCuentasCliente", listaCuentasCliente);
         }
         return listaCliente(clienteDto, result, model);
     }
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CLIENTE))")
     @PostMapping({"/cliente/guardar", "/cliente/guardar/{id}"})
     public String modificaCliente(
             @PathVariable(value = "id", required = false) Integer id,
@@ -81,53 +90,52 @@ public class MantenedorEnrolamientoController {
             BindingResult result,
             Model model,
             @RequestParam(value= "cuenta") String cuenta) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
+        var estadoPeticion  = new EstadoPeticion();
+        var esClienteNuevo  = (id==null || id==0);
         if (clienteDto.getIdentificador()==null || clienteDto.getIdentificador().isBlank()) {
             result.rejectValue("identificador", "error.clienteDto", "ID Cliente es obligatorio.");
-        } else if (enrolamientoClientesService.listarClientePorIdentificador(clienteDto.getIdentificador()) != null) {
-            estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Ya existe el Identificador.");
-            appConfig.customLog.error(PREFIX_ERROR_VALID +": Identificador de Cliente ya existe ["+clienteDto.getIdentificador()+"] ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
-            model.addAttribute(CAMPO_STATUS, estadoPeticion);
-            return formularioEditarCliente(id, clienteDto, result, model);
-        }
-        if (cuenta==null || cuenta.isBlank()) {
-            estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Cuenta obligatoria.");
-            appConfig.customLog.error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
-            model.addAttribute(CAMPO_STATUS, estadoPeticion);
-            return formularioEditarCliente(id, clienteDto, result, model);
         }
         if (result.hasErrors()) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID);
-            appConfig.customLog.error(PREFIX_ERROR_VALID +" ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
+            appConfig.customLog.error(PREFIX_ERROR_VALID +" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             this.addNotificationsOfErrors(result.getFieldErrors());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
+        if ( (cuenta==null || cuenta.isBlank()) && (esClienteNuevo) ) {
+            estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Cuenta obligatoria.");
+            appConfig.customLog.error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
+            model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            return formularioEditarCliente(id, clienteDto, result, model);
+        }
 
-        appConfig.customLog.info("Actualizando registro ID Cliente  ["+id+"] cliente por usuario ["+sesionWeb.getUsuario()+"]: Valor ["+clienteDto.toString()+"] ");
+        appConfig.customLog.info("Actualizando registro ID Cliente  ["+id+"] cliente por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
         try {
             var clienteGuardado = enrolamientoClientesService.guardarCliente(clienteDto);
-            appConfig.customLog.info("Guardado Cliente ID  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: Valor ["+clienteDto.toString()+"] ");
-            var cuentaDto = new CuentaDto();
-            cuentaDto.setIdCliente(clienteGuardado.getId());
-            cuentaDto.setIdCuentaCustodio(cuenta);
-            cuentaDto.setIdCustodio("pershing");
-            cuentaDto.setHabilitado(true);
-            appConfig.customLog.info("Guardando Cuenta Cliente ID  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: Valor ["+cuentaDto.toString()+"] ");
-            enrolamientoClientesService.guardarCuenta(cuentaDto);
-
+            appConfig.customLog.info("Guardado Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
+            if (esClienteNuevo) {
+                var cuentaDto = new CuentaDto();
+                cuentaDto.setIdCliente(clienteGuardado.getId());
+                cuentaDto.setIdCuentaCustodio(cuenta);
+                cuentaDto.setIdCustodio("pershing");
+                cuentaDto.setHabilitado(true);
+                appConfig.customLog.info("Guardando Cuenta Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +cuentaDto+"] ");
+                enrolamientoClientesService.guardarCuenta(cuentaDto);
+            }
         } catch (Exception e) {
             if (e instanceof IllegalArgumentException) {
                 estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE+": "+e.getMessage());
             } else {
                 estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
             }
-            appConfig.customLog.error(PREFIX_ERROR_SAVE+" ID Cliente  ["+id+"] por usuario ["+sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
+            appConfig.customLog.error(PREFIX_ERROR_SAVE+" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
         return REDIRECT+ URL_CLIENTE;
     }
+
+
     private void addNotificationsOfErrors(List<FieldError> listOfErrors) {
         for ( var error : listOfErrors ) {
             var rejectedVal = error.getRejectedValue();

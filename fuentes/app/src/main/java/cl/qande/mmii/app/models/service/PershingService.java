@@ -16,6 +16,9 @@ import java.util.List;
 public class PershingService {
     private static final int ID_ETDO_CIERRE_OK = 0;
     private static final String TIMESTAMP_SUFFIX = "_yyyy.MM.dd.HH.mm.ss.SSS.Z";
+    public static final String CONCAT_MSG_SFL = "SFL [";
+    public static final String SUFFIX_REPLIC = "] replicado";
+    public static final String ERROR_PROCESS = "Error al procesar lista de archivos: [";
     @Autowired
     private AppConfig appConfig;
     @Autowired
@@ -61,8 +64,8 @@ public class PershingService {
             procesoFtpPershingService.procesaFtp(processDate, processStamp, message);
             this.processFileList(archivosDescargados, processDate, processStamp, idProceso);
         } catch (Exception e) {
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, "Error al procesar lista de archivos: ["+e.getMessage()+"]");
-            throw new QandeMmiiException(e, "Error al procesar lista de archivos: ["+e.getMessage()+"]");
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, ERROR_PROCESS +e.getMessage()+"]");
+            throw new QandeMmiiException(e, ERROR_PROCESS +e.getMessage()+"]");
         }
         message = "Procesado lista de archivos finalizado";
         procesoFtpPershingService.cierraProcesoFtp(processDate, processStamp, message, ID_ETDO_CIERRE_OK);
@@ -81,8 +84,8 @@ public class PershingService {
             procesoFtpPershingService.procesaFtp(processDate, processStamp, message);
             this.processFileList(List.of(archivosDescargados), processDate, processStamp, idProceso);
         } catch (Exception e) {
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, "Error al procesar lista de archivos: ["+e.getMessage()+"]");
-            throw new QandeMmiiException(e, "Error al procesar lista de archivos: ["+e.getMessage()+"]");
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, ERROR_PROCESS +e.getMessage()+"]");
+            throw new QandeMmiiException(e, ERROR_PROCESS +e.getMessage()+"]");
         }
         message = "Procesado lista de archivos finalizado";
         procesoFtpPershingService.cierraProcesoFtp(processDate, processStamp, message, ID_ETDO_CIERRE_OK);
@@ -124,9 +127,9 @@ public class PershingService {
 
                 try {
                     sflService.procesaSfl(idProceso, processDate, processStamp, archivo, idSfl);
-                    procesoFtpPershingService.procesaFtp(processDate, processStamp, "SFL ["+archivo+"] procesado OK");
+                    procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +archivo+"] procesado OK");
                 } catch (Exception e) {
-                    procesoFtpPershingService.procesaFtp(processDate, processStamp, "SFL ["+archivo+"] procesado con errores: ["+e.getMessage()+"]");
+                    procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +archivo+"] procesado con errores: ["+e.getMessage()+"]");
                 }
             }
         }
@@ -139,13 +142,13 @@ public class PershingService {
             var fullPathFile    = "DummyFilePath";
             procesoFtpPershingService.procesaFtp(processDate, processStamp, "Iniciando replicación de datos con id ["+idProceso+"] y fecha ["+processDate+"]");
             sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.ACCT_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, "SFL ["+SflImpl.ACCT_SFL_EXT+"] replicado");
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.ACCT_SFL_EXT+ SUFFIX_REPLIC);
             sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.ISCA_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, "SFL ["+SflImpl.ISCA_SFL_EXT+"] replicado");
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.ISCA_SFL_EXT+ SUFFIX_REPLIC);
             sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.GCUS_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, "SFL ["+SflImpl.GCUS_SFL_EXT+"] replicado");
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.GCUS_SFL_EXT+ SUFFIX_REPLIC);
             sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.GMON_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, "SFL ["+SflImpl.GMON_SFL_EXT+"] replicado");
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.GMON_SFL_EXT+ SUFFIX_REPLIC);
         } catch (QandeMmiiException e) {
             throw new RuntimeException(e);
         }

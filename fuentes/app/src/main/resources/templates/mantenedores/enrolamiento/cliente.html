@@ -22,9 +22,8 @@
       </div><!-- /.container-fluid -->
     </section>
     <!--/*@thymesVar id="clienteDto" type="cl.qande.mmii.app.models.dto.ClienteDto"*/-->
-    <!--/*@thymesVar id="cuentaDto" type="cl.qande.mmii.app.models.dto.CuentaDto"*/-->
     <!--/*@thymesVar id="listaTiposId" type="java.util.List<cl.qande.mmii.app.models.dto.TipoIdentificadorDto>"*/-->
-    <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.dto.ClienteDto>"*/-->
+    <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.dto.ClienteMaestroDto>"*/-->
 
 
     <!-- Main content -->
@@ -80,7 +79,7 @@
             <div class="form-group row">
               <label for="cuenta" class="col-md-2 col-form-label">Cuenta</label>
               <div class="col-md-2">
-                <input class="form-control" type="text" id="cuenta" name="cuenta" th:value="${(cuentaDto!=null and cuentaDto.id != null) ? cuentaDto.idCuentaCustodio: ''}">
+                <input class="form-control" type="text" id="cuenta" name="cuenta" th:value="${(listaCuentasCliente!=null) ? listaCuentasCliente: ''}" th:readonly="${(clienteDto.id!=null && clienteDto.id!=0)}">
               </div>
             </div>
           </form>
@@ -111,14 +110,20 @@
               <th>ID Cliente</th>
               <th>Tipo ID.</th>
               <th>Nombre</th>
+              <th>Cuentas</th>
+              <th>Modificar</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="registro_actual: ${lista_registros}">
               <td th:text="${registro_actual.id}"></td>
               <td th:text="${registro_actual.identificador}"></td>
-              <td th:text="${registro_actual.idTipoIdentificador}"></td>
+              <td th:text="${registro_actual.tipoIdentificador+' - '+registro_actual.glosaIdentificador}"></td>
               <td th:text="${registro_actual.nombre}"></td>
+              <td th:text="${registro_actual.listaCuentas}"></td>
+              <td>
+                <a class="btn bg-info" th:href="@{/mantenedores/enrolamiento/cliente/editar/{id}(id=${registro_actual.id})}">Editar</a>
+              </td>
             </tr>
             </tbody>
             <tfoot>
@@ -127,6 +132,8 @@
               <th>ID Cliente</th>
               <th>Tipo ID.</th>
               <th>Nombre</th>
+              <th>Cuentas</th>
+              <th>Modificar</th>
             </tr>
             </tfoot>
           </table>

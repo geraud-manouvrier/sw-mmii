@@ -22,8 +22,8 @@ BD_PASSWORD=""
 LOG_DIR="/var/log"
 TIMESTAMP="$(date '+%Y-%m-%d')"
 LOG_FILE_BACKUP="${LOG_DIR}/qye-app-backup_${TIMESTAMP}.log"
-LOG_FILE_BD="${LOG_DIR}/qye-app-bd_${TIMESTAMP}.log"
-DUMP_FILE="${BACKUP_BD_DIR}/DatabaseBackup_${TIMESTAMP}.dump"
+#LOG_FILE_BD="${LOG_DIR}/qye-app-bd_${TIMESTAMP}.log"
+#DUMP_FILE="${BACKUP_BD_DIR}/DatabaseBackup_${TIMESTAMP}.dump"
 DUMP_FILE_ZIP="${BACKUP_BD_DIR}/DatabaseBackup_${TIMESTAMP}.xz"
 
 # Otras variables y parámetros
@@ -85,7 +85,7 @@ _fn_check_env() {
     # Verificar versión de pg_dump (debe ser la misma del servidor de BD)
     # Obtiene la versión de pg_dump y verifica que sea la requerida
     PG_DUMP_MAJOR_VERSION=$(pg_dump --version | grep -oP '\d+' | head -1)
-    if [[ $PG_DUMP_MAJOR_VERSION != $REQUIRED_PG_VERSION ]]; then
+    if [[ $PG_DUMP_MAJOR_VERSION != "$REQUIRED_PG_VERSION" ]]; then
         _fn_error_exit "pg_dump versión $(pg_dump --version) no es compatible. Se requiere la versión $REQUIRED_PG_VERSION."
     fi
 
@@ -120,8 +120,8 @@ _fn_backup_bd() {
     _fn_echo_log "Iniciando respaldo BD..."
     BD_START_TIME=$(date +%s)
     export PGPASSWORD=$BD_PASSWORD
-    #pg_dump -h $BD_HOST -p $BD_PORT -U $BD_USER -d $BD_DB -F c -b -v --data-only -f $DUMP_FILE
-    pg_dump -h $BD_HOST -p $BD_PORT -U $BD_USER -d $BD_DB -F c -b -v --data-only | xz > $DUMP_FILE_ZIP
+    #pg_dump -h "$BD_HOST" -p "$BD_PORT" -U "$BD_USER" -d "$BD_DB" -F c -b -v --data-only -f "$DUMP_FILE"
+    pg_dump -h "$BD_HOST" -p "$BD_PORT" -U "$BD_USER" -d "$BD_DB" -F c -b -v --data-only | xz > "$DUMP_FILE_ZIP"
 
     # Verificar código de salida de pg_dump
     PGDUMP_EXIT_CODE=$?

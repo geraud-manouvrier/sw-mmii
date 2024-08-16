@@ -8,6 +8,7 @@ import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,7 @@ public class FtpExternoController {
     private AppConfig appConfig;
     @Autowired
     private FtpPershingService ftpPershingService;
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/{ftpName}/listar"})
     public String listarFtpStonex(
             @PathVariable String ftpName,

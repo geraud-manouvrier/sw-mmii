@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 @RequestMapping("/usuarios/admin_users")
 public class AdminUsersController {
 
@@ -34,6 +33,7 @@ public class AdminUsersController {
     @Autowired
     private UsuariosHelper usuariosHelper;
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({""})
     public String listaUsuarios(
             Model model) throws QandeMmiiException {
@@ -49,6 +49,7 @@ public class AdminUsersController {
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.USUARIOS_CUENTAS, false);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/reset_passwd/{username}"})
     public String cambioClave(
             @PathVariable(value= "username") String username,

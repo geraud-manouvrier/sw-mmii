@@ -29,23 +29,11 @@ public class ParametrosInstrumentosController {
     private static final String CAMPO_STATUS    = "status";
     private static final String CAMPO_SESION    = "sesionWeb";
     private static final String CAMPO_LISTA_REGISTROS    = "lista_registros";
-    private static final String CAMPO_MODIFICAR_AUXMOVTO = "auxiliarMovimiento";
     private static final String CAMPO_MODIFICAR_SRCCOD_PER = "parSourceCodeDto";
-    private static final String CAMPO_MODIFICAR_SRCCOD_STNX = "parHomologacionSourceCodeStonexDto";
-    private static final String CAMPO_MODIFICAR_BUCIT = "baseUcit";
-    private static final String CAMPO_MODIFICAR_BINSTR = "baseInstrumento";
-    private static final String TITULO_AUXMOVTO = "Mantenedor Auxiliar Movimientos";
     private static final String TITULO_SRCCOD_PER = "Mantenedor Source Code Pershing";
-    private static final String TITULO_SRCCOD_STNX = "Mantenedor Source Code Stonex";
-    private static final String TITULO_BUCIT = "Mantenedor Base UCIT";
-    private static final String TITULO_BINSTR = "Mantenedor Base Instrumentos";
-    private static final String URL_BASE_AUXMOVTO = "/mantenedores/parametros_instrumentos/auxiliar_movimiento/crear";
-    private static final String URL_BASE_BUCIT = "/mantenedores/parametros_instrumentos/base_ucit/crear";
-    private static final String URL_BASE_BINSTR = "/mantenedores/parametros_instrumentos/base_instrumento/crear";
     private static final String URL_BASE_SRCCOD_PER = "/mantenedores/parametros_instrumentos/source_code_pershing/crear";
-    private static final String URL_BASE_SRCCOD_STNX = "/mantenedores/parametros_instrumentos/source_code_stonex/crear";
     private static final String ERROR_AGREGAR = "Error al agregar registro.";
-    private static final String ERROR_MODIFICAR = "Error al modificar registro.";
+    public static final String CONCAT_MSG_VALUE = "]: Valor registro [";
     @Autowired
     private SesionWeb sesionWeb;
     @Autowired
@@ -94,16 +82,16 @@ public class ParametrosInstrumentosController {
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listaSourceCode(parSourceCodeDto, result, model);
         }
-        appConfig.customLog.info("Agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+"]: Valor registro ["+parSourceCodeDto+"] ");
+        appConfig.customLog.info("Agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"] ");
         try {
             mantenedoresInstrumentosService.save(parSourceCodeDto);
         } catch (DaoException daoException) {
-            appConfig.customLog.error("Error agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+"]: Valor registro ["+parSourceCodeDto+"]; Error: "+daoException.getMessage());
+            appConfig.customLog.error("Error agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"]; Error: "+daoException.getMessage());
             estadoPeticion.setEstadoError(ERROR_AGREGAR, daoException.getMessage());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listaSourceCode(parSourceCodeDto, result, model);
         } catch (Exception e) {
-            appConfig.customLog.error("Error no controlado agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+"]: Valor registro ["+parSourceCodeDto+"]; Error: "+e);
+            appConfig.customLog.error("Error no controlado agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"]; Error: "+e);
             estadoPeticion.setEstadoError(ERROR_AGREGAR, ERROR_AGREGAR);
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listaSourceCode(parSourceCodeDto, result, model);

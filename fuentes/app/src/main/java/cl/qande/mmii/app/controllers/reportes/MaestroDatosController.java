@@ -37,6 +37,7 @@ public class MaestroDatosController {
     @Autowired
     private IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao;
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_CLIENTE))")
     @GetMapping({"/clientes"})
     public String clientes(
             Model model) {
@@ -44,6 +45,7 @@ public class MaestroDatosController {
         return "redirect:/reportes/maestro_datos/clientes/fecha/"+calendarioHelper.defaultProcessDate();
     }
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_CLIENTE))")
     @GetMapping({"/clientes/fecha/{processDate}"})
     public String clientesPorFecha(
             @PathVariable String processDate,
@@ -65,7 +67,7 @@ public class MaestroDatosController {
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.REP_MAESTRO_CLIENTE, false);
     }
 
-    @PreAuthorize("!hasAnyRole('ROLE_READER')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_SALDOS))")
     @GetMapping({"/saldos"})
     public String saldos(
             Model model) {
@@ -73,7 +75,7 @@ public class MaestroDatosController {
         return "redirect:/reportes/maestro_datos/saldos/fecha_desde/"+calendarioHelper.defaultProcessDate()+"/fecha_hasta/"+calendarioHelper.defaultProcessDate();
     }
 
-    @PreAuthorize("!hasAnyRole('ROLE_READER')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_SALDOS))")
     @GetMapping({"/saldos/fecha_desde/{startProcessDate}/fecha_hasta/{endProcessDate}"})
     public String saldosPorRangoDeFechas(
             @PathVariable String startProcessDate,
@@ -99,7 +101,7 @@ public class MaestroDatosController {
 
 
 
-    @PreAuthorize("!hasAnyRole('ROLE_READER')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_MOVTOS))")
     @GetMapping({"/movimientos"})
     public String movimientos(
             Model model) {
@@ -108,7 +110,7 @@ public class MaestroDatosController {
     }
 
 
-    @PreAuthorize("!hasAnyRole('ROLE_READER')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_MOVTOS))")
     @GetMapping({"/movimientos/fecha_desde/{startProcessDate}/fecha_hasta/{endProcessDate}"})
     public String movimientosPorRangoDeFechas(
             @PathVariable String startProcessDate,

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 @RequestMapping("/reportes/sfl_pershing")
 public class SflPershingController {
     private static final String TITULO_CTRL_DIARIO = "Contenido SFL";
@@ -90,6 +89,7 @@ public class SflPershingController {
     @Autowired
     private IStageIsrcRegADao stageIsrcRegADao;
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/{idSflLower}"})
     public String gcus(
             @PathVariable String idSflLower,
@@ -97,6 +97,7 @@ public class SflPershingController {
 
         return "redirect:/reportes/sfl_pershing/"+idSflLower+"/"+calendarioHelper.defaultProcessDate();
     }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/acct/{processDate}"})
     public String acctPorFecha(
             @PathVariable String processDate,
@@ -122,6 +123,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_ACCT, false);
     }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/gact/{processDate}"})
     public String gactPorFecha(
             @PathVariable String processDate,
@@ -142,6 +144,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_GACT, false);
     }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/gcus/{processDate}"})
     public String gcusPorFecha(
             @PathVariable String processDate,
@@ -162,6 +165,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_GCUS, false);
     }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/gmon/{processDate}"})
     public String gmonPorFecha(
             @PathVariable String processDate,
@@ -182,6 +186,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_GMON, false);
     }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/isca/{processDate}"})
     public String iscaPorFecha(
             @PathVariable String processDate,
@@ -215,6 +220,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_ISCA, false);
     }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"/isrc/{processDate}"})
     public String isrcPorFecha(
             @PathVariable String processDate,

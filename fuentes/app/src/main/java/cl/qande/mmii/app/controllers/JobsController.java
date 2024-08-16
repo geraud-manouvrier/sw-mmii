@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/jobs")
 public class JobsController {
-    private static final int DESFASE_DIAS = -1;
     private static final String CAMPO_TITULO    = "titulo";
     private static final String CAMPO_STATUS    = "status";
     private static final String CAMPO_SESION    = "sesionWeb";

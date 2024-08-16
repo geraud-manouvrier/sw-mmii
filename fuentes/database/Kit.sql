@@ -1,7 +1,7 @@
 /*
-2024-08-09
-Actual: 8.1.2-COL
-Last:   8.1.1-COL
+2024-08-15
+Actual: 8.2.0-COL
+Last:   8.1.2-COL
 */
 
 --========================================================================
@@ -22,10 +22,20 @@ GRANT CONNECT ON DATABASE qande_mmii TO mmii_appuserdb;
 --========================================================================
 --========================================================================
 --========================================================================
--- Corrección Cliente
-UPDATE clientes.cliente
-SET nombre = 'MAURICIO DE JESUS POSADA MAYA LILIANA MARIA MARTINEZ ARANGO JT TEN'
-WHERE id = 46;
+-- Vista Clientes Maestro
+
+CREATE VIEW clientes.vw_maestro_clientes AS
+    SELECT
+        cte.id,
+        cte.identificador,
+        cte.nombre,
+        cte.id_tipo_identificador,
+        tid.tipo_identificador, tid.glosa_identificador, tid.habilitado,
+        CAST((SELECT string_agg(cta.id_cuenta_custodio, ',') FROM clientes.cuenta cta WHERE cta.id_cliente=cte.id) as VARCHAR(100) ) as lista_cuentas
+    FROM clientes.cliente cte
+    LEFT JOIN clientes.tipo_identificador tid
+        ON cte.id_tipo_identificador=tid.id
+;
 
 
 --========================================================================
