@@ -35,23 +35,24 @@ public class InicioController {
 	private static final String CAMPO_TITULO    = "titulo";
 	private static final String CAMPO_SESION    = "sesionWeb";
 
-	@Autowired
-	private SesionWeb sesionWeb;
-	@Autowired
-	private CalendarioHelper calendarioHelper;
-	@Autowired
-	private CronHelper cronHelper;
-	@Autowired
-	private AppSchedulingProperties appSchedulingProperties;
-	@Autowired
-	private AppConfig appConfig;
-	@Autowired
-	private ArchivosHelper archivosHelper;
+	private final SesionWeb sesionWeb;
+	private final CalendarioHelper calendarioHelper;
+	private final CronHelper cronHelper;
+	private final AppSchedulingProperties appSchedulingProperties;
+	private final AppConfig appConfig;
+	private final ArchivosHelper archivosHelper;
 
-	//Puede ser a niveld e controlador y aplica a todos los métodos
-	//@Secured({"ROLE_USER", "ROLE_USER"})	//Requiere habilitar anotaciones en SpringSecurityConfig
-	//@PreAuthorize("hasRole('ROLE_USER')")	//hasAnyRole()
-	@PreAuthorize("isAuthenticated()")
+	@Autowired
+	public InicioController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, CronHelper cronHelper, AppSchedulingProperties appSchedulingProperties, AppConfig appConfig, ArchivosHelper archivosHelper) {
+        this.sesionWeb = sesionWeb;
+        this.calendarioHelper = calendarioHelper;
+        this.cronHelper = cronHelper;
+        this.appSchedulingProperties = appSchedulingProperties;
+        this.appConfig = appConfig;
+        this.archivosHelper = archivosHelper;
+    }
+
+    @PreAuthorize("isAuthenticated()")
 	@GetMapping({"/", "/index", "/home"})
 	public String sesionIniciada(Model model,
                                  Authentication authentication,
@@ -73,6 +74,9 @@ public class InicioController {
         if(request.isUserInRole("ROLE_ADMIN")) {
             logger.info("(Usando request) Hola usuario autenticado, tu usuario es: "+request.getUserPrincipal().getName());
         }
+		if (sesionWeb==null || sesionWeb.getUsuario() == null) {
+			return "login";
+		}
 		List<String> listaDescripcionesCron = new ArrayList<>();
 		listaDescripcionesCron.add("SFL FTP Pershing: "+descriptionCron(appSchedulingProperties.getCronFtpPershing()));
 		listaDescripcionesCron.add("Generación Reportes Maestros: "+descriptionCron(appSchedulingProperties.getCronReportesMaestros()));

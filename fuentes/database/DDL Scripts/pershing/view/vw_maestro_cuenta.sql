@@ -106,53 +106,53 @@ SELECT 'pershing'::character varying(100)                                       
            WHEN vw_act.number_of_account_title_lines::text = '1'::text
                THEN TRIM(BOTH FROM vw_act.account_registration_line_1)
            WHEN vw_act.number_of_account_title_lines::text = '2'::text THEN
-                   (TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_2)
+               (TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_2)
            WHEN vw_act.number_of_account_title_lines::text = '3'::text THEN
-                   (((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
-                     TRIM(BOTH FROM vw_act.account_registration_line_2)) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_3)
+               (((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
+                 TRIM(BOTH FROM vw_act.account_registration_line_2)) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_3)
            WHEN vw_act.number_of_account_title_lines::text = '4'::text THEN
-                   (((((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
+               (((((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
+                   TRIM(BOTH FROM vw_act.account_registration_line_2)) || ' '::text) ||
+                 TRIM(BOTH FROM vw_act.account_registration_line_3)) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_4)
+           WHEN vw_act.number_of_account_title_lines::text = '5'::text THEN
+               (((((((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
+                     TRIM(BOTH FROM vw_act.account_registration_line_2)) || ' '::text) ||
+                   TRIM(BOTH FROM vw_act.account_registration_line_3)) || ' '::text) ||
+                 TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_5)
+           WHEN vw_act.number_of_account_title_lines::text = '6'::text THEN
+               (((((((((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
                        TRIM(BOTH FROM vw_act.account_registration_line_2)) || ' '::text) ||
                      TRIM(BOTH FROM vw_act.account_registration_line_3)) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_4)
-           WHEN vw_act.number_of_account_title_lines::text = '5'::text THEN
-                   (((((((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
-                         TRIM(BOTH FROM vw_act.account_registration_line_2)) || ' '::text) ||
-                       TRIM(BOTH FROM vw_act.account_registration_line_3)) || ' '::text) ||
-                     TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_5)
-           WHEN vw_act.number_of_account_title_lines::text = '6'::text THEN
-                   (((((((((TRIM(BOTH FROM vw_act.account_registration_line_1) || ' '::text) ||
-                           TRIM(BOTH FROM vw_act.account_registration_line_2)) || ' '::text) ||
-                         TRIM(BOTH FROM vw_act.account_registration_line_3)) || ' '::text) ||
-                       TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
-                     TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_6)
+                   TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
+                 TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_6)
            ELSE NULL::text
            END::character varying(100)                                                            AS full_name,
        CASE
            WHEN vw_act.number_of_account_title_lines::text = '5'::text
                THEN TRIM(BOTH FROM vw_act.account_registration_line_6)
            WHEN vw_act.number_of_account_title_lines::text = '4'::text THEN
-                   (TRIM(BOTH FROM vw_act.account_registration_line_5) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_6)
+               (TRIM(BOTH FROM vw_act.account_registration_line_5) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_6)
            WHEN vw_act.number_of_account_title_lines::text = '3'::text THEN
-                   (((TRIM(BOTH FROM vw_act.account_registration_line_4) || ' '::text) ||
-                     TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_6)
+               (((TRIM(BOTH FROM vw_act.account_registration_line_4) || ' '::text) ||
+                 TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_6)
            WHEN vw_act.number_of_account_title_lines::text = '2'::text THEN
-                   (((((TRIM(BOTH FROM vw_act.account_registration_line_3) || ' '::text) ||
-                       TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
-                     TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_6)
+               (((((TRIM(BOTH FROM vw_act.account_registration_line_3) || ' '::text) ||
+                   TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
+                 TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_6)
            WHEN vw_act.number_of_account_title_lines::text = '1'::text THEN
-                   (((((((TRIM(BOTH FROM vw_act.account_registration_line_2) || ' '::text) ||
-                         TRIM(BOTH FROM vw_act.account_registration_line_3)) || ' '::text) ||
-                       TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
-                     TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
-                   TRIM(BOTH FROM vw_act.account_registration_line_6)
+               (((((((TRIM(BOTH FROM vw_act.account_registration_line_2) || ' '::text) ||
+                     TRIM(BOTH FROM vw_act.account_registration_line_3)) || ' '::text) ||
+                   TRIM(BOTH FROM vw_act.account_registration_line_4)) || ' '::text) ||
+                 TRIM(BOTH FROM vw_act.account_registration_line_5)) || ' '::text) ||
+               TRIM(BOTH FROM vw_act.account_registration_line_6)
            ELSE NULL::text
            END::character varying(100)                                                            AS full_address,
        vw_act.transaction_type,

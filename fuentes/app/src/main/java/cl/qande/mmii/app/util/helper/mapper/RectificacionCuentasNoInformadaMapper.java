@@ -2,7 +2,10 @@ package cl.qande.mmii.app.util.helper.mapper;
 
 import cl.qande.mmii.app.models.db.core.entity.RectificacionCuentasNoInformada;
 import cl.qande.mmii.app.models.dto.RectificacionCuentasNoInformadaDto;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,11 +46,4 @@ public interface RectificacionCuentasNoInformadaMapper extends EntityMapper<Rect
     @Mapping(source = "restrictionCodeValue", target = "restrictionCodeValue", qualifiedByName = "blankIsNull")
     @Mapping(source = "accountRestriction", target = "accountRestriction", qualifiedByName = "blankIsNull")
     public RectificacionCuentasNoInformada toEntity(RectificacionCuentasNoInformadaDto dto);
-
-    @Named("blankIsNull")
-    public static String blankIsNull(String dtoStringValue) {
-        if (dtoStringValue==null || dtoStringValue.isEmpty())
-            return null;
-        return dtoStringValue;
-    }
 }

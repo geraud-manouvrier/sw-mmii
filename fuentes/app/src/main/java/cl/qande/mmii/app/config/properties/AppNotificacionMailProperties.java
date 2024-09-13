@@ -16,12 +16,14 @@ public class AppNotificacionMailProperties {
     private final NotificacionMailConfiguration controlDiario;
     private final NotificacionMailConfiguration sflPershing;
     private final NotificacionMailConfiguration cuentasNoMapeadas;
+    private final NotificacionMailConfiguration parametrosSuracorp;
 
-    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas) {
+    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp) {
         this.reportesMaestros = reportesMaestros;
         this.controlDiario = controlDiario;
         this.sflPershing = sflPershing;
         this.cuentasNoMapeadas = cuentasNoMapeadas;
+        this.parametrosSuracorp = parametrosSuracorp;
     }
 
     public NotificacionMailConfiguration getReportesMaestros() {
@@ -40,6 +42,10 @@ public class AppNotificacionMailProperties {
 
     public NotificacionMailConfiguration getCuentasNoMapeadas() {
         return cuentasNoMapeadas;
+    }
+
+    public NotificacionMailConfiguration getParametrosSuracorp() {
+        return parametrosSuracorp;
     }
 
     public static class NotificacionMailConfiguration {
@@ -103,6 +109,7 @@ public class AppNotificacionMailProperties {
         public String getDefaultSubject() {
             return defaultSubject;
         }
+
     }
 
 }

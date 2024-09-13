@@ -21,17 +21,21 @@ import java.nio.file.Files;
 		AppSchedulingProperties.class,
 		AppNotificacionMailProperties.class,
 		AppApiProperties.class,
-		FtpPershingProperties.class
+		FtpPershingProperties.class,
+		AppApiClientSuraCorpProperties.class
 })
 public class QandeMmiiApplication implements CommandLineRunner {
 
-	@Autowired
-	private ArchivosHelper archivosHelper;
+	private final ArchivosHelper archivosHelper;
+	private final AppConfig appConfig;
 
 	@Autowired
-	private AppConfig appConfig;
+	public QandeMmiiApplication(ArchivosHelper archivosHelper, AppConfig appConfig) {
+        this.archivosHelper = archivosHelper;
+        this.appConfig = appConfig;
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		SpringApplication.run(QandeMmiiApplication.class, args);
 	}
 

@@ -15,14 +15,18 @@ public class JobCuentasNoMapeadas implements Runnable {
     private static final int DESFASE_DIAS = -1;
     private static final String USUARIO_JOB = "jobAppUser";
     private static final String JOB_NAME = "Tarea Cuentas No Mapeadas";
+    private final AppConfig appConfig;
+    private final CalendarioHelper calendarioHelper;
+    private final NotificacionEmail notificacionEmail;
+    private final ControlDatosService controlDatosService;
+
     @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
-    @Autowired
-    private NotificacionEmail notificacionEmail;
-    @Autowired
-    private ControlDatosService controlDatosService;
+    public JobCuentasNoMapeadas(AppConfig appConfig, CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, ControlDatosService controlDatosService) {
+        this.appConfig = appConfig;
+        this.calendarioHelper = calendarioHelper;
+        this.notificacionEmail = notificacionEmail;
+        this.controlDatosService = controlDatosService;
+    }
 
     private void ejecutaJob() throws MailException {
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");

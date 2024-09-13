@@ -1,6 +1,7 @@
 package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiarioReporte;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
@@ -18,10 +19,15 @@ public class NotificacionEmail {
 
     private static final String SUBJECT_OK = " - OK ";
     private static final String SUBJECT_ERROR = " - ERROR ";
+    private final IEmailService emailService;
+    private final AppNotificacionMailProperties appNotificacionMailProperties;
+
     @Autowired
-    private IEmailService emailService;
-    @Autowired
-    private AppNotificacionMailProperties appNotificacionMailProperties;
+    public NotificacionEmail(IEmailService emailService, AppNotificacionMailProperties appNotificacionMailProperties) {
+        this.emailService = emailService;
+        this.appNotificacionMailProperties = appNotificacionMailProperties;
+    }
+
 
     private String generaDetalle(String detalle) {
         return detalle.isEmpty() ? "" : " Detalle: ["+detalle+"]";
@@ -106,6 +112,43 @@ public class NotificacionEmail {
         var mensaje = this.generaTituloHtml("Listado Cuentas No Mapeadas para fecha proceso ["+processDate+"]") + EntityToHtml.resultadoCuentaNoMapeadasToHtml(detalle);
         var asunto  = generaAsunto(mailConfiguration.getDefaultSubject(), flagOk, processDate);
         this.enviaMail(mensaje, asunto, mailConfiguration, flagOk);
+    }
+
+    public void notificarJobParametrosFromSuracorp(boolean isOk, String startProcessDate, String endProcessDate, String jobName, ParSourceCode[][] resultado, String msg) throws QandeMmiiException {
+        var mailConfiguration   = appNotificacionMailProperties.getParametrosSuracorp();
+        notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoParametrosSuracorpToHtml(resultado, msg), mailConfiguration);
+
+    }
+
+
+    /********************************
+     * Funciones auxiliares
+     ********************************/
+
+    private void notificacionGenerica(boolean isOk, String startProcessDate, String endProcessDate, String jobName, String detalle, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration) throws QandeMmiiException {
+        var recipients          = getRecipients(isOk, mailConfiguration);
+        var mensaje             = generaBodyHtml(isOk, startProcessDate, endProcessDate, jobName, detalle);
+        var asunto              = mailConfiguration.getDefaultSubject()+(isOk ? SUBJECT_OK : SUBJECT_ERROR)+"["+startProcessDate+" - "+endProcessDate+"]";
+        this.enviaMail(mensaje, asunto, mailConfiguration, recipients);
+
+    }
+
+    private String generaBodyHtml(boolean isOk, String startProcessDate, String endProcessDate, String jobName, String resultadoHtml) {
+        var mensaje = "Job "+jobName+" finalizado "+(isOk ? "OK" : "con errores")+" para fecha proceso ["+startProcessDate+" - "+endProcessDate+"]";
+        mensaje     = mensaje+"<br>"+resultadoHtml;
+        return mensaje;
+    }
+
+    private String[] getRecipients(boolean isOk, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration) {
+        if (isOk) {
+            return new String[]{mailConfiguration.getRecipientTo(),
+                    mailConfiguration.getRecipientCc(),
+                    mailConfiguration.getRecipientBcc()};
+        } else {
+            return new String[]{mailConfiguration.getRecipientErrorTo(),
+                    mailConfiguration.getRecipientErrorCc(),
+                    mailConfiguration.getRecipientErrorBcc()};
+        }
     }
 
     private String generaAsunto(String defaultSubject, boolean flagOk, String complemento) {

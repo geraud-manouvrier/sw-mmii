@@ -19,17 +19,21 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String API_PATH = "/api/**";
     private static final String LOG_PATH = "/logs/**";
-    private static final String KENDO_PATH = "/kendoui.for.jquery.2023.1.314.trial/**";
+    private static final String SYNCFUSION_PATH = "/syncfusion.v26.1.35/**";
     private static final String ROL_ADMIN = "ADMIN";
     private static final String ROL_USER = "USER";
-    @Autowired
-    private JpaUserDetailsService userDetailsService;
+    private final JpaUserDetailsService userDetailsService;
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    private final LoginSuccessHandler successHandler;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    private LoginSuccessHandler successHandler;
+    public SpringSecurityConfig(JpaUserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder, LoginSuccessHandler successHandler) {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+        this.successHandler = successHandler;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -38,7 +42,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().ignoringAntMatchers(API_PATH,LOG_PATH)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/test/**","/build/**", "/custom/**", "/dist/**", "/plugins/**",API_PATH, KENDO_PATH).permitAll()
+                .antMatchers("/test/**","/build/**", "/custom/**", "/dist/**", "/plugins/**",API_PATH, SYNCFUSION_PATH).permitAll()
                 .antMatchers(HttpMethod.GET,API_PATH).permitAll()
                 .antMatchers(HttpMethod.POST,API_PATH).permitAll()
                 .antMatchers(HttpMethod.DELETE,API_PATH).permitAll()

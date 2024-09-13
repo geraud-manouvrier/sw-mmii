@@ -2,11 +2,11 @@ package cl.qande.mmii.app.util.helper.mapper;
 
 import cl.qande.mmii.app.models.api.MaestroMovimientosApiDto;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
-import cl.qande.mmii.app.util.helper.MathHelper;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 @Component
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
@@ -23,9 +23,4 @@ public interface VwReporteMaestroDatosMovimientoMapper extends EntityMapper<Maes
     @Mapping(source = "retiro", target = "retiro", qualifiedByName = "redondea")
     @Mapping(source = "recaudo", target = "recaudo", qualifiedByName = "redondea")
     public MaestroMovimientosApiDto toDto(VwReporteMaestroDatosMovimiento entity);
-
-    @Named("redondea")
-    public static BigDecimal redondea(BigDecimal dtoValue) {
-        return MathHelper.redondeaDecimal(dtoValue, 4);
-    }
 }

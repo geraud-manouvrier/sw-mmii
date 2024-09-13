@@ -116,33 +116,33 @@ FROM (SELECT vw_mov_persh.custodian,
                          ELSE par_src_cod.descripcion_movimiento::text
                          END
                  WHEN vw_mov_persh.isin::text = '9999246'::text THEN
-                         (((((((COALESCE(vw_mov_persh.buy_sell_value, ''::character varying)::character varying(100)::text ||
-                                ' $'::text) ||
-                               COALESCE(abs(vw_mov_persh.net_amount::numeric(45, 2))::character varying(100),
-                                        ''::character varying)::character varying(100)::text) || ' ISIN #'::text) ||
-                             COALESCE(vw_mov_persh.isin, ''::character varying)::character varying(100)::text) ||
-                            ' TD:'::text) || COALESCE((((substr(vw_mov_persh.trade_date::text, 6, 2) || '/'::text) ||
-                                                        substr(vw_mov_persh.trade_date::text, 9, 2)) || '/'::text) ||
-                                                      substr(vw_mov_persh.trade_date::text, 1, 4),
-                                                      ''::text)::character varying(100)::text) || ' SD:'::text) ||
-                         COALESCE((((substr(vw_mov_persh.settlement_date::text, 6, 2) || '/'::text) ||
-                                    substr(vw_mov_persh.settlement_date::text, 9, 2)) || '/'::text) ||
-                                  substr(vw_mov_persh.settlement_date::text, 1, 4), ''::text)::character varying(100)::text
-                 ELSE (((((((((COALESCE(vw_mov_persh.buy_sell_value, ''::character varying)::character varying(100)::text ||
-                               ' '::text) ||
-                              COALESCE(abs(vw_mov_persh.quantity::numeric(45, 2))::character varying(100),
-                                       ''::character varying)::character varying(100)::text) ||
-                             ' SHRS OF ISIN #'::text) ||
-                            COALESCE(vw_mov_persh.isin, ''::character varying)::character varying(100)::text) ||
-                           ' PRICE: $'::text) || COALESCE(vw_mov_persh.price::numeric(45, 4)::character varying(100),
-                                                          ''::character varying)::character varying(100)::text) ||
-                         ' TD:'::text) || COALESCE((((substr(vw_mov_persh.trade_date::text, 6, 2) || '/'::text) ||
-                                                     substr(vw_mov_persh.trade_date::text, 9, 2)) || '/'::text) ||
-                                                   substr(vw_mov_persh.trade_date::text, 1, 4),
-                                                   ''::text)::character varying(100)::text) || ' SD:'::text) ||
-                      COALESCE((((substr(vw_mov_persh.settlement_date::text, 6, 2) || '/'::text) ||
-                                 substr(vw_mov_persh.settlement_date::text, 9, 2)) || '/'::text) ||
-                               substr(vw_mov_persh.settlement_date::text, 1, 4), ''::text)::character varying(100)::text
+                     (((((((COALESCE(vw_mov_persh.buy_sell_value, ''::character varying)::character varying(100)::text ||
+                            ' $'::text) ||
+                           COALESCE(abs(vw_mov_persh.net_amount::numeric(45, 2))::character varying(100),
+                                    ''::character varying)::character varying(100)::text) || ' ISIN #'::text) ||
+                         COALESCE(vw_mov_persh.isin, ''::character varying)::character varying(100)::text) ||
+                        ' TD:'::text) || COALESCE((((substr(vw_mov_persh.trade_date::text, 6, 2) || '/'::text) ||
+                                                    substr(vw_mov_persh.trade_date::text, 9, 2)) || '/'::text) ||
+                                                  substr(vw_mov_persh.trade_date::text, 1, 4),
+                                                  ''::text)::character varying(100)::text) || ' SD:'::text) || COALESCE(
+                             (((substr(vw_mov_persh.settlement_date::text, 6, 2) || '/'::text) ||
+                               substr(vw_mov_persh.settlement_date::text, 9, 2)) || '/'::text) ||
+                             substr(vw_mov_persh.settlement_date::text, 1, 4), ''::text)::character varying(100)::text
+                 ELSE
+                     (((((((((COALESCE(vw_mov_persh.buy_sell_value, ''::character varying)::character varying(100)::text ||
+                              ' '::text) || COALESCE(abs(vw_mov_persh.quantity::numeric(45, 2))::character varying(100),
+                                                     ''::character varying)::character varying(100)::text) ||
+                            ' SHRS OF ISIN #'::text) ||
+                           COALESCE(vw_mov_persh.isin, ''::character varying)::character varying(100)::text) ||
+                          ' PRICE: $'::text) || COALESCE(vw_mov_persh.price::numeric(45, 4)::character varying(100),
+                                                         ''::character varying)::character varying(100)::text) ||
+                        ' TD:'::text) || COALESCE((((substr(vw_mov_persh.trade_date::text, 6, 2) || '/'::text) ||
+                                                    substr(vw_mov_persh.trade_date::text, 9, 2)) || '/'::text) ||
+                                                  substr(vw_mov_persh.trade_date::text, 1, 4),
+                                                  ''::text)::character varying(100)::text) || ' SD:'::text) || COALESCE(
+                             (((substr(vw_mov_persh.settlement_date::text, 6, 2) || '/'::text) ||
+                               substr(vw_mov_persh.settlement_date::text, 9, 2)) || '/'::text) ||
+                             substr(vw_mov_persh.settlement_date::text, 1, 4), ''::text)::character varying(100)::text
                  END::character varying(100)                                                                        AS activity_description,
              vw_mov_persh.source_code                                                                               AS activity_code,
              vw_mov_persh.source_code,
@@ -214,8 +214,8 @@ FROM (SELECT vw_mov_persh.custodian,
             FROM pershing.sfl_gact tb_mov
                      LEFT JOIN pershing.sfl_isca tb_det ON tb_mov.process_date::text = tb_det.process_date::text AND
                                                            tb_mov.cusip_number::text = tb_det.cusip_number::text
-            WHERE TRIM(BOTH FROM tb_mov.source_code) <> ALL
-                  (ARRAY ['ITS'::text, 'SGR'::text, 'NET'::text])) vw_mov_persh
+            WHERE
+                TRIM(BOTH FROM tb_mov.source_code) <> ALL (ARRAY ['ITS'::text, 'SGR'::text, 'NET'::text])) vw_mov_persh
                LEFT JOIN clientes.vw_maestro_clientes_cuentas maestro_crm
                          ON vw_mov_persh.id_custodian::text = maestro_crm.id_custodio::text AND
                             vw_mov_persh.account_no::text = maestro_crm.id_cuenta_custodio::text

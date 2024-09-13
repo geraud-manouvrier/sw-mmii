@@ -2,10 +2,11 @@ package cl.qande.mmii.app.util.helper.mapper;
 
 import cl.qande.mmii.app.models.db.clientes.entity.ParFeeSegmento;
 import cl.qande.mmii.app.models.dto.ParFeeSegmentoDto;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 @Component
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
@@ -24,17 +25,4 @@ public interface ParFeeSegmentoMapper extends EntityMapper<ParFeeSegmentoDto, Pa
     @Mapping(source = "tasaProteccion", target = "tasaProteccion", qualifiedByName = "zeroIsNull")
     @Mapping(source = "tasaSuracorp", target = "tasaSuracorp", qualifiedByName = "zeroIsNull")
     public ParFeeSegmentoDto toDto(ParFeeSegmento dto);
-
-    @Named("zeroIsNull")
-    public static BigDecimal zeroIsNull(BigDecimal value) {
-        if( value.compareTo(BigDecimal.ZERO)==0 )
-            return null;
-        return value;
-    }
-    @Named("nullIsZero")
-    public static BigDecimal nullIsZero(BigDecimal value) {
-        if (value==null)
-            return BigDecimal.ZERO;
-        return value;
-    }
 }

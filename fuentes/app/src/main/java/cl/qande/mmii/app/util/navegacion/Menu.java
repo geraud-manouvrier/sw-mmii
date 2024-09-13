@@ -47,6 +47,7 @@ public class Menu {
     //Enrolamiento
     public static final String MANT_ENROL_CLIENTE ="MANT_ENROL_CLIENTE";
     public static final String MANT_FEE_SEGMENTO ="MANT_FEE_SEGMENTO";
+    public static final String MANT_COMIS_CTA ="MANT_COMIS_CTA";
 
 
     public static final String ROLE_ADMIN  = "ROLE_ADMIN";      //Máximos privilegios, admin del sistema
@@ -171,6 +172,7 @@ public class Menu {
 
         ArrayList<OpcionMenu> opcionesMantenedoresEnrolamiento    = new ArrayList<>();
         opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_CLIENTE, "Clientes", "/mantenedores/enrolamiento/cliente", false));
+        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_COMIS_CTA, "Excepciones Comisiones", "/mantenedores/enrolamiento/comision_cuenta", false));
         categoriaMantenedoresEnrolamiento.setListaOpciones(opcionesMantenedoresEnrolamiento);
 
         ArrayList<OpcionMenu> opcionesRegistroRectificacion    = new ArrayList<>();

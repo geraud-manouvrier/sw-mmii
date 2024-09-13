@@ -2,12 +2,10 @@ package cl.qande.mmii.app.controllers.mantenedores;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
-import cl.qande.mmii.app.models.dto.ClienteDto;
-import cl.qande.mmii.app.models.dto.CuentaDto;
+import cl.qande.mmii.app.models.dto.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.IEnrolamientoClientesService;
 import cl.qande.mmii.app.util.SesionWeb;
-import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +16,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -32,20 +32,25 @@ public class MantenedorEnrolamientoController {
     private static final String CAMPO_MODIFICAR_CLIENTE = "clienteDto";
     private static final String CAMPO_LISTA_TIPOS_ID = "listaTiposId";
     private static final String TITULO_CLIENTE = "Mantenedor Clientes";
+    private static final String TITULO_COMIS_CTA = "Excepciones Comerciales a comisión";
     private static final String PREFIX_ERROR_VALID = "Error al modificar registro";
     private static final String PREFIX_ERROR_SAVE = "Error al guardar registro";
     private static final String REDIRECT = "redirect:";
     private static final String URL_CLIENTE = "/mantenedores/enrolamiento/cliente";
+    private static final String URL_COMIS_CTA = "/mantenedores/enrolamiento/comision_cuenta";
     public static final String CONCAT_MSG_USER = "] por usuario [";
     public static final String CONCAT_MSG_VALOR = "]: Valor [";
+
+    private final SesionWeb sesionWeb;
+    private final AppConfig appConfig;
+    private final IEnrolamientoClientesService enrolamientoClientesService;
+
     @Autowired
-    private SesionWeb sesionWeb;
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
-    @Autowired
-    private IEnrolamientoClientesService enrolamientoClientesService;
+    public MantenedorEnrolamientoController(SesionWeb sesionWeb, AppConfig appConfig, IEnrolamientoClientesService enrolamientoClientesService) {
+        this.sesionWeb = sesionWeb;
+        this.appConfig = appConfig;
+        this.enrolamientoClientesService = enrolamientoClientesService;
+    }
 
     //-----------------------------------------------------------------------------------------------------
     //Clientes
@@ -135,6 +140,64 @@ public class MantenedorEnrolamientoController {
         return REDIRECT+ URL_CLIENTE;
     }
 
+    //-----------------------------------------------------------------------------------------------------
+    //Comision Cuenta
+    //-----------------------------------------------------------------------------------------------------
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_COMIS_CTA))")
+    @GetMapping({"/comision_cuenta"})
+    public String listarComisionCuenta(@Valid ComisionCuentaDto comisionCuentaDto,
+                                       BindingResult result,
+                                       Model model) throws QandeMmiiException {
+        model.addAttribute(CAMPO_TITULO, TITULO_COMIS_CTA);
+        model.addAttribute(CAMPO_SESION, sesionWeb);
+
+        var listaClientes   = enrolamientoClientesService.listarClienteCuentaMaestro();
+        listaClientes.sort(Comparator.comparing(ClienteCuentaMaestroDto::getNombreCliente));
+
+        model.addAttribute("lista_clientes", listaClientes);
+        var listaComisiones = enrolamientoClientesService.listarComisionCuenta();
+        listaComisiones.sort(Comparator.comparing(ComisionMaestroDto::getNombreCliente)
+                               .thenComparing(Comparator.comparing(ComisionMaestroDto::getFechaInicioVigencia).reversed()));
+        model.addAttribute(CAMPO_LISTA_REGISTROS, listaComisiones);
+
+        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.MANT_COMIS_CTA, false);
+    }
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_COMIS_CTA))")
+    @PostMapping({"/comision_cuenta"})
+    public String guardarComisionCuenta(@Valid ComisionCuentaDto comisionCuentaDto,
+                                       BindingResult result,
+                                       Model model) throws QandeMmiiException {
+        var estadoPeticion  = new EstadoPeticion();
+        if (result.hasErrors()) {
+            estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
+            appConfig.customLog.error(PREFIX_ERROR_SAVE +" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
+            this.addNotificationsOfErrors(result.getFieldErrors());
+            model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            return listarComisionCuenta(comisionCuentaDto, result, model);
+        }
+        //Siempre es nuevo registro
+        comisionCuentaDto.setId(null);
+        comisionCuentaDto.setLogUsuarioCreacion(sesionWeb.getUsuario());
+        comisionCuentaDto.setLogFechaCreacion(Instant.now());
+        try {
+            var resultado   = enrolamientoClientesService.guardarComisionCuenta(comisionCuentaDto);
+            appConfig.customLog.info("Guardado Comisión Cuenta ID  ["+resultado.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +resultado.toString()+"] ");
+            estadoPeticion.setEstadoOk("Registro guardado correctamente (ID: "+resultado.getId()+")");
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
+            appConfig.customLog.error(PREFIX_ERROR_SAVE+" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
+            model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            return listarComisionCuenta(comisionCuentaDto, result, model);
+        }
+        return REDIRECT+ URL_COMIS_CTA;
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------
+    //Auxiliares
+    //-----------------------------------------------------------------------------------------------------
 
     private void addNotificationsOfErrors(List<FieldError> listOfErrors) {
         for ( var error : listOfErrors ) {

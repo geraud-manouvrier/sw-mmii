@@ -20,7 +20,6 @@ CERT_DOCKER_DIR="${CERT_HOST_DIR}"
 FULL_PATH_TO_WAR_FILE="${ROOT_HOST_DIR}/${WAR_FILE}"
 CONT_ID=""
 RELEASE_VERSION=""
-RELEASE_DATE=""
 
 
 
@@ -61,16 +60,27 @@ _fn_enter_container() {
     docker exec -it "$CONT_ID" /bin/bash
 }
 
+# Función para obtener el nombre del directorio del release
+_fn_get_release_dir() {
+    RELEASE_DIR=$(find ${ROOT_HOST_DIR}/releases -maxdepth 1 -type d -name "${RELEASE_VERSION}-*" | sort -r | head -n 1)
+    if [ -z "$RELEASE_DIR" ]; then
+        echo "No se encontró el directorio para el release ${RELEASE_VERSION}"
+        exit 1
+    fi
+    echo "Directorio del release encontrado: $RELEASE_DIR"
+}
+
 # Función para realizar los pasos previos al inicio del contenedor
 _fn_pre_start_actions() {
     # Mostrando datos del release
     echo "Versión del release: $RELEASE_VERSION"
-    echo "Fecha del release: $RELEASE_DATE"
+
+    _fn_get_release_dir
 
     echo "Realizando pasos previos al inicio del contenedor..."
     cd $ROOT_HOST_DIR || { echo "Directorio no existe $ROOT_HOST_DIR"; exit 1; }
-    cp -a "${WAR_FILE}" "${WAR_NAME}_ROLLBACK.war"
-    cp -a "releases/${RELEASE_DATE}-${RELEASE_VERSION}/${WAR_NAME}-${RELEASE_VERSION}.war" "./${WAR_FILE}"
+    cp -a "${WAR_FILE}" "${WAR_FILE}_ROLLBACK"
+    cp -a "${RELEASE_DIR}/${WAR_NAME}-${RELEASE_VERSION}.war" "./${WAR_FILE}"
     echo "${RELEASE_VERSION}" > $SEM_VER_FILE
     cd "${WORK_DIR}" || { echo "Directorio no existe $WORK_DIR"; exit 1; }
 }
@@ -152,7 +162,7 @@ _fn_help() {
     echo "rollback | help | newcert | renew | enter"
     echo ""
     echo "OPCIONES:"
-    echo "  deploy <versión> <ID de iteración> <fecha>    Despliega una nueva versión de la aplicación."
+    echo "  deploy <versión>    Despliega una nueva versión de la aplicación."
     echo "  start          Inicia el contenedor de la aplicación."
     echo "  stop           Detiene el contenedor de la aplicación."
     echo "  logs           Muestra los logs del contenedor de la aplicación."
@@ -163,8 +173,8 @@ _fn_help() {
     echo "  help           Muestra esta ayuda."
     echo ""
     echo "EJEMPLO PARA DEPLOY:"
-    echo "  deploy v7.0.0-RC 01 20240529"
-    echo "    Despliega la versión v7.0.0-RC con ID de iteración 01 y fecha 20240529."
+    echo "  deploy v7.0.0-RC"
+    echo "    Despliega la versión v7.0.0-RC"
     echo ""
     echo "NOTAS:"
     echo "  - Las opciones 'deploy', 'rollback', 'help', 'newcert', 'renew' y 'enter' deben ejecutarse solas."
@@ -182,7 +192,7 @@ _fn_validate_options() {
     fi
     # Definir las expresiones regulares para los formatos
     local solo_opciones_regex='^(rollback|help|newcert|renew|enter)$'
-    local despliegue_regex='^deploy [^ ]+ [^ ]+$'
+    local despliegue_regex='^deploy [^ ]+$'
     local combinables_regex='^(stop )?(start)( logs)?$|^stop$|^logs$'
 
     # Unir todos los argumentos en una sola cadena para la validación
@@ -219,13 +229,12 @@ _fn_get_docker_pid
 for arg in "$@"; do
     case "$arg" in
         deploy)
-            if [ $# -ne 3 ]; then
-                echo "Por favor, proporciona la versión y fecha para el despliegue."
+            if [ $# -ne 2 ]; then
+                echo "Por favor, proporciona la versión para el despliegue."
                 exit 1
             fi
 
             RELEASE_VERSION="$2"
-            RELEASE_DATE="$3"
             _fn_new_deploy
             ;;
         start)

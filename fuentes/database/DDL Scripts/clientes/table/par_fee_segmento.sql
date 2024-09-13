@@ -7,9 +7,9 @@ create table clientes.par_fee_segmento
     annual_fee             numeric(45, 20) not null,
     tasa_proteccion        numeric(45, 20) not null,
     tasa_suracorp          numeric(45, 20) not null,
-    fee_diario             numeric(45, 20) generated always as (((power(((1)::numeric(45, 20) + annual_fee),
-                                                                        (((1)::numeric(45, 20) / (365)::numeric(45, 20)))::numeric(45, 20)) -
-                                                                  (1)::numeric(45, 20)))::numeric(45, 20)) stored,
+    fee_diario             numeric(45, 20) generated always as (((
+        power(((1)::numeric(45, 20) + annual_fee), (((1)::numeric(45, 20) / (365)::numeric(45, 20)))::numeric(45, 20)) -
+        (1)::numeric(45, 20)))::numeric(45, 20)) stored,
     fee_diario_proteccion  numeric(45, 20) generated always as (((power(((1)::numeric(45, 20) + tasa_proteccion),
                                                                         (((1)::numeric(45, 20) / (365)::numeric(45, 20)))::numeric(45, 20)) -
                                                                   (1)::numeric(45, 20)))::numeric(45, 20)) stored,
@@ -21,7 +21,7 @@ create table clientes.par_fee_segmento
     constraint par_fee_segmento_pk
         primary key (id),
     constraint no_overlap_rango_monto
-        exclude using gist ("numrange(monto_min, monto_max, '[)'::text)" with pg_catalog.&&),
+        exclude using gist (numrange(monto_min, monto_max, '[)'::text) with pg_catalog.&&),
     constraint check_annual_fee
         check (annual_fee = (tasa_proteccion + tasa_suracorp))
 );

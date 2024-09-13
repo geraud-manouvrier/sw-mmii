@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.models.service;
 
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.dto.ParSourceCodeDto;
 import cl.qande.mmii.app.models.exception.DaoException;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,9 +13,14 @@ public interface IMantenedoresInstrumentosService {
     List<ParSourceCodeDto> listaSourceCode(boolean flagOrdenada);
 
     @Transactional(readOnly = true)
-    List<ParSourceCodeDto> listaSourceCode(String sourceCodePershing, Integer signoMovimiento);
+    ParSourceCodeDto sourceCodeByPershingCodeAndSigno(String sourceCodePershing, Integer signoMovimiento);
 
-    abstract ParSourceCodeDto sourceCodeById(Long id);
+    @Transactional(readOnly = true)
+    ParSourceCodeDto sourceCodeById(Long id);
 
+    @Transactional
     ParSourceCodeDto save(ParSourceCodeDto parSourceCodeDto) throws DaoException;
+
+    @Transactional
+    ParSourceCodeDto save(ParSourceCode parSourceCodeFromApi) throws DaoException;
 }

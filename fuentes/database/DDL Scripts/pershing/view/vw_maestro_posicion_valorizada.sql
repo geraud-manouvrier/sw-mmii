@@ -13,7 +13,7 @@ SELECT process_date,
        office_id,
        ip_number,
        account_number,
-       cusip_number                                                  AS cusip,
+       cusip_number                                              AS cusip,
        quantity,
        account_type,
        cash_margin_account,
@@ -22,21 +22,21 @@ SELECT process_date,
        fx_rate,
        market_price,
        (
-               CASE
-                   WHEN tipo_reg::text = 'CAJA'::text OR sub_tipo_reg::text = 'C'::text THEN quantity
-                   ELSE quantity * latest_price
-                   END * factor_mkv_mult)::numeric(45, 20)           AS market_value,
+           CASE
+               WHEN tipo_reg::text = 'CAJA'::text OR sub_tipo_reg::text = 'C'::text THEN quantity
+               ELSE quantity * latest_price
+               END * factor_mkv_mult)::numeric(45, 20)           AS market_value,
        CASE
            WHEN tipo_reg::text = 'CAJA'::text THEN 1::numeric(45, 20)
            WHEN sub_tipo_reg::text = 'C'::text THEN fx_rate
            ELSE latest_price * fx_rate
-           END::numeric(45, 20)                                      AS usde_market_price,
+           END::numeric(45, 20)                                  AS usde_market_price,
        (
-               CASE
-                   WHEN tipo_reg::text = 'CAJA'::text OR sub_tipo_reg::text = 'C'::text THEN quantity
-                   ELSE quantity * latest_price
-                   END * factor_mkv_mult * fx_rate)::numeric(45, 20) AS usde_market_value,
-       security_symbol                                               AS symbol,
+           CASE
+               WHEN tipo_reg::text = 'CAJA'::text OR sub_tipo_reg::text = 'C'::text THEN quantity
+               ELSE quantity * latest_price
+               END * factor_mkv_mult * fx_rate)::numeric(45, 20) AS usde_market_value,
+       security_symbol                                           AS symbol,
        isin_code,
        security_description,
        product_type,

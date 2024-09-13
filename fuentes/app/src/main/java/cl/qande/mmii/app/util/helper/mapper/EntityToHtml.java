@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.util.helper.mapper;
 
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiarioReporte;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
@@ -17,6 +18,51 @@ public interface EntityToHtml {
     String CIERRA_TABLE = "</tbody></table>";
     String THEAD_TBODY = "</thead><tbody>";
     String ABRE_TR = "<tr>";
+
+    public static String resultadoParametrosSuracorpToHtml(ParSourceCode[][] listaRegistros, String msg) {
+        StringBuilder bld = new StringBuilder();
+        if (listaRegistros==null || listaRegistros.length==0 ) {
+            bld.append("<p>No hay registros de ningún tipo (ok o error)</p>");
+        } else {
+            bld.append(resultadoParametrosSuracorpEncabezadoToHtml(listaRegistros[1], "con errores"));
+            bld.append(resultadoParametrosSuracorpEncabezadoToHtml(listaRegistros[0], "OK"));
+        }
+        if ( ! msg.isEmpty()) {
+            bld.append("<br><br><b>"+msg+"</b>");
+        }
+        return bld.toString();
+    }
+    public static String resultadoParametrosSuracorpEncabezadoToHtml() {
+        StringBuilder bld = new StringBuilder();
+        bld.append(ABRE_TR);
+        bld.append("<th>Source Code Pershing</th>");
+        bld.append("<th>Signo Movto.</th>");
+        bld.append("<th>Descr. Movto.</th>");
+        bld.append("<th>Aplica Flujo Neto</th>");
+        bld.append("<th>Obs. Int.</th>");
+        bld.append(CIERRA_TR);
+        return bld.toString();
+    }
+    public static String resultadoParametrosSuracorpEncabezadoToHtml(ParSourceCode[] lista, String msgTipo) {
+        StringBuilder bld = new StringBuilder();
+
+        if (lista.length==0) {
+            bld.append("<p>No hay Registros "+msgTipo+"</p>");
+        } else {
+            bld.append("<br><br>Detalle registros "+msgTipo+" ("+lista.length+"):<br>" + ABRE_TABLE + resultadoParametrosSuracorpEncabezadoToHtml() + THEAD_TBODY);
+            for (var registro : lista) {
+                bld.append(ABRE_TR);
+                bld.append(ABRE_TD + registro.getSourceCodePershing() + CIERRA_TD);
+                bld.append(ABRE_TD + registro.getSignoMovimiento() + CIERRA_TD);
+                bld.append(ABRE_TD + registro.getDescripcionMovimiento() + CIERRA_TD);
+                bld.append(ABRE_TD + registro.getAplicaFlujoNeto() + CIERRA_TD);
+                bld.append(ABRE_TD + registro.getObservacionesInternas() + CIERRA_TD);
+                bld.append(CIERRA_TR);
+            }
+            bld.append(CIERRA_TABLE);
+        }
+        return bld.toString();
+    }
 
     public static String resultadoCuentaNoMapeadasToHtml(List<VwCuentasNoMapeadasPershingProjection> listaRegistros) {
         if (listaRegistros==null) {
