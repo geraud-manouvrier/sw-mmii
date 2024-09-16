@@ -16,30 +16,39 @@ public class CustomScheduler {
     public static final String USUARIO_JOB = "jobAppUser";
     public static final String CRON_NEVER_EXEC = "0 44 21 1 5 *";
 
+    private final AppConfig appConfig;
+    private final ThreadPoolTaskScheduler taskScheduler;
+    private final CronTrigger cronReportesMaestros;
+    private final CronTrigger cronControlDiario;
+    private final CronTrigger cronFtpPershing;
+    private final CronTrigger cronMallaDiaria;
+    private final CronTrigger cronCuentasNoMapeadas;
+    private final CronTrigger cronParametrosSuraCorp;
+    private final JobReportesMaestros jobReportesMaestros;
+    private final JobControlDiario jobControlDiario;
+    private final JobGetFromFtpPershing jobGetFromFtpPershing;
+    private final JobMallaProcesos jobMallaProcesos;
+    private final JobCuentasNoMapeadas jobCuentasNoMapeadas;
+    private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
+
     @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private ThreadPoolTaskScheduler taskScheduler;
-    @Autowired
-    private CronTrigger cronReportesMaestros;
-    @Autowired
-    private CronTrigger cronControlDiario;
-    @Autowired
-    private CronTrigger cronFtpPershing;
-    @Autowired
-    private CronTrigger cronMallaDiaria;
-    @Autowired
-    private CronTrigger cronCuentasNoMapeadas;
-    @Autowired
-    private JobReportesMaestros jobReportesMaestros;
-    @Autowired
-    private JobControlDiario jobControlDiario;
-    @Autowired
-    private JobGetFromFtpPershing jobGetFromFtpPershing;
-    @Autowired
-    private JobMallaProcesos jobMallaProcesos;
-    @Autowired
-    private JobCuentasNoMapeadas jobCuentasNoMapeadas;
+    public CustomScheduler(AppConfig appConfig, ThreadPoolTaskScheduler taskScheduler, CronTrigger cronReportesMaestros, CronTrigger cronControlDiario, CronTrigger cronFtpPershing, CronTrigger cronMallaDiaria, CronTrigger cronCuentasNoMapeadas, CronTrigger cronParametrosSuraCorp, JobReportesMaestros jobReportesMaestros, JobControlDiario jobControlDiario, JobGetFromFtpPershing jobGetFromFtpPershing, JobMallaProcesos jobMallaProcesos, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp) {
+        this.appConfig = appConfig;
+        this.taskScheduler = taskScheduler;
+        this.cronReportesMaestros = cronReportesMaestros;
+        this.cronControlDiario = cronControlDiario;
+        this.cronFtpPershing = cronFtpPershing;
+        this.cronMallaDiaria = cronMallaDiaria;
+        this.cronCuentasNoMapeadas = cronCuentasNoMapeadas;
+        this.cronParametrosSuraCorp = cronParametrosSuraCorp;
+        this.jobReportesMaestros = jobReportesMaestros;
+        this.jobControlDiario = jobControlDiario;
+        this.jobGetFromFtpPershing = jobGetFromFtpPershing;
+        this.jobMallaProcesos = jobMallaProcesos;
+        this.jobCuentasNoMapeadas = jobCuentasNoMapeadas;
+        this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
+    }
+
 
     @PostConstruct
     public void scheduleRunnableWithCronTrigger() {
@@ -53,6 +62,8 @@ public class CustomScheduler {
         this.registraTarea(jobMallaProcesos, cronMallaDiaria, "Malla Procesos");
 
         this.registraTarea(jobCuentasNoMapeadas, cronCuentasNoMapeadas, "Cuentas No Mapeadas");
+
+        this.registraTarea(jobParametrosFromSuracorp, cronParametrosSuraCorp, "Parámetros SuraCorp");
 
     }
 

@@ -14,7 +14,7 @@ public class JobCuentasNoMapeadas implements Runnable {
 
     private static final int DESFASE_DIAS = -1;
     private static final String USUARIO_JOB = "jobAppUser";
-    private static final String JOB_NAME = "Tarea Cuentas No Mapeadas";
+    public static final String JOB_NAME = "Tarea Cuentas No Mapeadas";
     private final AppConfig appConfig;
     private final CalendarioHelper calendarioHelper;
     private final NotificacionEmail notificacionEmail;

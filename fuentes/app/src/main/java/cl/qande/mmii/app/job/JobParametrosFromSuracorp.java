@@ -1,6 +1,7 @@
 package cl.qande.mmii.app.job;
 
 import cl.qande.mmii.app.config.AppConfig;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
@@ -15,7 +16,7 @@ public class JobParametrosFromSuracorp implements Runnable {
 
     private static final int DESFASE_DIAS = -1;
     private static final String USUARIO_JOB = "jobAppUser";
-    private static final String JOB_NAME = "Tarea Parámetros From SuraCorp";
+    public static final String JOB_NAME = "Tarea Parámetros From SuraCorp";
     private final AppConfig appConfig;
     private final CalendarioHelper calendarioHelper;
     private final NotificacionEmail notificacionEmail;
@@ -30,24 +31,32 @@ public class JobParametrosFromSuracorp implements Runnable {
     }
 
     public boolean ejecutaJob(String usuario, boolean flagSendMail) throws QandeMmiiException {
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+        var processDate	= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+        var resultado   = false;
+        var msg         = "";
+        ParSourceCode[][] resultadoCarga    = null;
 
         try {
-            var resultadoCarga = mainService.actualizaParametrosFromMmiiSuraCorp();
-            var flagIsOk    = (resultadoCarga.length==2 && resultadoCarga[1].length==0);
+            resultadoCarga = mainService.actualizaParametrosFromMmiiSuraCorp();
+            resultado    = (resultadoCarga.length==2 && resultadoCarga[1].length==0);
+        } catch (QandeMmiiException e) {
+            this.logError(" Obtener valores desde API REST Parámetros por "+usuario, e.getMessage());
+            msg = e.getMessage();
+        } catch (Exception e) {
+            this.logError(" Ejecución por "+usuario, e.getMessage());
+            msg = e.getMessage();
+        }
+
+        try {
             if(flagSendMail) {
-                notificacionEmail.notificarJobParametrosFromSuracorp(flagIsOk, processDate, processDate, JOB_NAME, resultadoCarga, "");
-                return flagIsOk;
+                notificacionEmail.notificarJobParametrosFromSuracorp(resultado, processDate, processDate, JOB_NAME, resultadoCarga, msg);
+                return resultado;
             } else {
                 this.logMessage(" Enviar mail por "+usuario+" desactivado");
-                return flagIsOk;
+                return resultado;
             }
         } catch (MailException e) {
             this.logError(" Enviar mail por "+usuario, e.getMessage());
-            return false;
-        } catch (Exception e) {
-            this.logError(" Ejecución por "+usuario, e.getMessage());
-            notificacionEmail.notificarJobParametrosFromSuracorp(true, processDate, processDate, JOB_NAME, null, "");
             return false;
         }
 

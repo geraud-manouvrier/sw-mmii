@@ -40,10 +40,6 @@ public class Menu {
     public static final String CONT_SFL_GMON   ="CONT_SFL_GMON";
     public static final String CONT_SFL_ISCA   ="CONT_SFL_ISCA";
     public static final String CONT_SFL_ISRC   ="CONT_SFL_ISRC";
-    //Rectificaciones
-    public static final String RECT_NO_INF   ="RECT_NO_INF";
-    public static final String RECT_NO_INF_APR   ="RECT_NO_INF_APR";
-    public static final String RECT_NO_INF_REVER ="RECT_NO_INF_REVER";
     //Enrolamiento
     public static final String MANT_ENROL_CLIENTE ="MANT_ENROL_CLIENTE";
     public static final String MANT_FEE_SEGMENTO ="MANT_FEE_SEGMENTO";
@@ -175,15 +171,6 @@ public class Menu {
         opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_COMIS_CTA, "Excepciones Comisiones", "/mantenedores/enrolamiento/comision_cuenta", false));
         categoriaMantenedoresEnrolamiento.setListaOpciones(opcionesMantenedoresEnrolamiento);
 
-        ArrayList<OpcionMenu> opcionesRegistroRectificacion    = new ArrayList<>();
-        opcionesRegistroRectificacion.add(new OpcionMenu(RECT_NO_INF, "Registros No Informados", "/rectificacion/registros_no_informados/nuevo", false));
-        categoriaRegistroRectificaciones.setListaOpciones(opcionesRegistroRectificacion);
-
-        ArrayList<OpcionMenu> opcionesAprobacionRectificacion    = new ArrayList<>();
-        opcionesAprobacionRectificacion.add(new OpcionMenu(RECT_NO_INF_APR, "Aprobación o rechazo", "/rectificacion/registros_no_informados/aprobacion", false));
-        opcionesAprobacionRectificacion.add(new OpcionMenu(RECT_NO_INF_REVER, "Reversa Registros", "/rectificacion/registros_no_informados/reversa", false));
-        categoriaAprobacionRectificaciones.setListaOpciones(opcionesAprobacionRectificacion);
-
         ArrayList<OpcionMenu> opcionesMantenedoresParametros    = new ArrayList<>();
         opcionesMantenedoresParametros.add(new OpcionMenu(MANT_FEE_SEGMENTO, "Fee Segmentos", "/mantenedores/parametros/fee_segmento", false));
         categoriaMantenedoresParametros.setListaOpciones(opcionesMantenedoresParametros);
@@ -199,8 +186,6 @@ public class Menu {
         opcionesMenu.add(categoriaControlOperaciones);
         opcionesMenu.add(categoriaReportesSfl);
         opcionesMenu.add(categoriaMantenedoresEnrolamiento);
-        opcionesMenu.add(categoriaRegistroRectificaciones);
-        opcionesMenu.add(categoriaAprobacionRectificaciones);
         opcionesMenu.add(categoriaMantenedoresParametros);
 
         this.opcionPorDefecto   = ADMINQANDE_LOGS;

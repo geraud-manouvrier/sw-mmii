@@ -2,7 +2,9 @@ package cl.qande.mmii.app.controllers;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.job.JobControlDiario;
+import cl.qande.mmii.app.job.JobCuentasNoMapeadas;
 import cl.qande.mmii.app.job.JobGetFromFtpPershing;
+import cl.qande.mmii.app.job.JobParametrosFromSuracorp;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.db.pershing.dao.IProcesoSflDao;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -28,20 +30,30 @@ public class JobsController {
     private static final String CAMPO_SESION    = "sesionWeb";
     private static final String PRE_DET_ERROR = "Hubo un error al ejecutar el Job: ";
     private static final String MSG_OK    = "Job ejecutado correctamente";
+    private static final String MSG_SIN_MAIL = "(sin mail)";
+
+    private final SesionWeb sesionWeb;
+    private final AppConfig appConfig;
+    private final CalendarioHelper calendarioHelper;
+    private final ReportesMaestrosService reportesMaestrosService;
+    private final IProcesoSflDao procesoSflPershingDao;
+    private final JobGetFromFtpPershing jobGetFromFtpPershing;
+    private final JobControlDiario jobControlDiario;
+    private final JobCuentasNoMapeadas jobCuentasNoMapeadas;
+    private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
+
     @Autowired
-    private SesionWeb sesionWeb;
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
-    @Autowired
-    private ReportesMaestrosService reportesMaestrosService;
-    @Autowired
-    private IProcesoSflDao procesoSflPershingDao;
-    @Autowired
-    private JobGetFromFtpPershing jobGetFromFtpPershing;
-    @Autowired
-    private JobControlDiario jobControlDiario;
+    public JobsController(SesionWeb sesionWeb, AppConfig appConfig, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp) {
+        this.sesionWeb = sesionWeb;
+        this.appConfig = appConfig;
+        this.calendarioHelper = calendarioHelper;
+        this.reportesMaestrosService = reportesMaestrosService;
+        this.procesoSflPershingDao = procesoSflPershingDao;
+        this.jobGetFromFtpPershing = jobGetFromFtpPershing;
+        this.jobControlDiario = jobControlDiario;
+        this.jobCuentasNoMapeadas = jobCuentasNoMapeadas;
+        this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
+    }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping({"", "/"})
@@ -178,6 +190,61 @@ public class JobsController {
         model.addAttribute("startProcessDate", startProcessDate);
         model.addAttribute("endProcessDate", endProcessDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.PERSHING_ETDO_FTP, false);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping({
+            "/fecha/{processDate}/cuenta_no_mapeadas"})
+    public String jobsCuentasNoMapeadas(
+            @PathVariable(value = "processDate") String processDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+        var estadoPeticion  = new EstadoPeticion();
+        try {
+            jobCuentasNoMapeadas.ejecutaJob(processDate, sesionWeb.getUsuario(), true);
+            estadoPeticion.setEstadoOk(MSG_OK, "Job Cuentas No mapeadas OK");
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError("Error Job Cuentas No Mapeadas", PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConFecha(processDate, model);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping({
+            "/fecha/{processDate}/parametros_suracorp",
+            "/fecha/{processDate}/parametros_suracorp_sin_mail"})
+    public String jobsParametrosSuracorp(
+            @PathVariable(value = "processDate") String processDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+        var processName     = getProcessFromUrl(request.getRequestURI());
+        var flagEnviarMail  = ! processName.contains("sin_mail");
+        var estadoPeticion  = new EstadoPeticion();
+        try {
+            var resultadoJob    = jobParametrosFromSuracorp.ejecutaJob(sesionWeb.getUsuario(), flagEnviarMail);
+            if (resultadoJob) {
+                estadoPeticion.setEstadoOk(MSG_OK, "Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL)+" OK");
+            } else {
+                estadoPeticion.setEstadoError("Error Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL), "Ver log");
+            }
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError("Error Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL), PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConFecha(processDate, model);
+    }
+
+    private String getProcessFromUrl(String url) {
+        var ini         = url.indexOf("/fecha/")+7+8+1;  //Primer caracter luego del / terminando la fecha
+        var finProcess  = url.indexOf("/", ini);
+        if (finProcess>0) {
+            return url.substring(ini, finProcess);
+        }
+        return url.substring(ini);
+
+
+
     }
 
 }

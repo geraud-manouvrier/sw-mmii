@@ -44,4 +44,8 @@ public class SchedulingConfig {
     public CronTrigger cronCuentasNoMapeadas(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronCuentasNoMapeadas());
     }
+    @Bean
+    public CronTrigger cronParametrosSuraCorp(AppSchedulingProperties appSchedulingProperties) {
+        return new CronTrigger(appSchedulingProperties.getCronParametrosSuraCorp());
+    }
 }

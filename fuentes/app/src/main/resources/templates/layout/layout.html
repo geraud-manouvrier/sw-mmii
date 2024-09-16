@@ -33,7 +33,6 @@
     <!-- Theme style -->
     <link rel="stylesheet" th:href="@{/dist/css/adminlte.min.css}">
 
-    <!-- Kendo UI v2023.1.314 -->
     <script th:src="@{/plugins/jquery/jquery.min.js}"></script>
 
     <link th:href="@{/syncfusion.v26.1.35/css/material.css}" rel="stylesheet" />
@@ -223,9 +222,6 @@
         </div>
         <strong>Copyright &copy; 2019 <a href="#">Q&E :: Quality and Engineering</a>.</strong> All rights reserved.
 
-        <!-- jQuery
-        <script th:src="@{/plugins/jquery/jquery.min.js}"></script>
-        -->
         <!-- Bootstrap 4 -->
         <script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
         <!-- AdminLTE App -->
@@ -240,9 +236,6 @@
         </div>
         <strong>Copyright &copy; 2019 <a href="#">Q&E :: Quality and Engineering</a>.</strong> All rights reserved.
 
-        <!-- jQuery
-        <script th:src="@{/plugins/jquery/jquery.min.js}"></script>
-        -->
         <!-- Bootstrap 4 -->
         <script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
         <!-- AdminLTE App -->
@@ -259,12 +252,6 @@
                 <div class="mb-1" th:each="notification : ${notifications}">
                     <i class="fas fa-info-circle"></i><span th:text="${' '+notification}"></span>
                 </div>
-                <!--
-                <p th:each="notification : ${notifications}" class="notification-message">
-                    <i class="far fa-bell"></i>
-                    <span th:text="${notification}"></span>
-                </p>
-                -->
             </div>
         </div>
     </aside>
