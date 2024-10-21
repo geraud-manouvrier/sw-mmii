@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 import org.springframework.web.context.annotation.SessionScope;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,15 +27,15 @@ public class SesionWeb {
     private List<String> notifications = new ArrayList<>();
 
 
-    @PostConstruct
-    public void inicializar() {
-        //TODO: Inicializar con token y otros elementos
-        this.uuid = UUID.randomUUID();
-    }
     public void setAutenticacion(String username, Collection<? extends GrantedAuthority> roles) {
         this.appUsuario = username;
         this.appRoles = roles;
         this.appMenu    = new Menu();
+        this.uuid = UUID.randomUUID();
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public Menu getAppMenu() {
@@ -60,7 +59,7 @@ public class SesionWeb {
         return appRoles;
     }
 
-    private boolean tieneRol(String role) {
+    public boolean tieneRol(String role) {
         var context = SecurityContextHolder.getContext();
         if (context == null) {
             return false;

@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: clavepostgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: qande-mmii
+    volumes:
+      - ./postgresql16/postgres-data:/var/lib/postgresql/data
+
+    ports:
+      - "5433:5432"

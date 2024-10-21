@@ -8,6 +8,7 @@ import cl.qande.mmii.app.models.exception.SflPershingException;
 import cl.qande.mmii.app.models.service.ISflService;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.models.service.TxtService;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,60 +60,60 @@ public class SflImpl implements ISflService {
 
         switch (idSfl) {
             case ISRC_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageIsrcFileDao.saveAll(txtService.processIsrcWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Iniciando parse Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Iniciando parse Sfl [" + idSfl + "]...");
                 stageIsrcFileDao.parseSfl(idProceso);
                 break;
             case ISCA_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageIscaFileDao.saveAll(txtService.processIscaWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Iniciando parse Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Iniciando parse Sfl [" + idSfl + "]...");
                 stageIscaFileDao.parseSfl(idProceso);
                 break;
             case GACT_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageGactFileDao.saveAll(txtService.processGactWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Iniciando parse Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Iniciando parse Sfl [" + idSfl + "]...");
                 stageGactFileDao.parseSfl(idProceso);
                 break;
             case GCUS_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageGcusFileDao.saveAll(txtService.processGcusExpWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Iniciando parse Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Iniciando parse Sfl [" + idSfl + "]...");
                 stageGcusFileDao.parseSfl(idProceso);
                 break;
             case GMON_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageGmonFileDao.saveAll(txtService.processGmonWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Iniciando parse Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Iniciando parse Sfl [" + idSfl + "]...");
                 stageGmonFileDao.parseSfl(idProceso);
                 break;
             case ACCT_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageAcctFileDao.saveAll(txtService.processAcctWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Iniciando parse Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Iniciando parse Sfl [" + idSfl + "]...");
                 stageAcctFileDao.parseSfl(idProceso);
                 break;
             case CAPT_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageCaptFileDao.saveAll(txtService.processCaptWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
+                CustomLog.getInstance().info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
                 break;
             case GTOL_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stageGtolFileDao.saveAll(txtService.processGtolWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
+                CustomLog.getInstance().info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
                 break;
             case POTL_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stagePotlFileDao.saveAll(txtService.processPotlWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
+                CustomLog.getInstance().info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
                 break;
             case PTLD_SFL_EXT:
-                appConfig.customLog.info("Guardando Sfl [" + idSfl + "]...");
+                CustomLog.getInstance().info("Guardando Sfl [" + idSfl + "]...");
                 stagePtldFileDao.saveAll(txtService.processPtldWithProcess(idProceso, processDate, fullPathFile));
-                appConfig.customLog.info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
+                CustomLog.getInstance().info("Parse para Sfl [" + idSfl + "] no implementado. SFL solamente guardado en tabla stage inicial.");
                 break;
             default:
                 Boolean flagGuardarEnBd   = isActiveGuardarEnBd(idSfl);
@@ -121,13 +122,13 @@ public class SflImpl implements ISflService {
                     throw new SchemaStonexException("Sfl definido para guardar, pero no implementado: ["+idSfl+"]", processDate, processStamp);
                 } else {
                     if (Boolean.FALSE.equals(flagGuardarEnBd)) {
-                        appConfig.customLog.info("Saltando Sfl guardado y parse [" + idSfl + "]. No configurado para guardar.");
+                        CustomLog.getInstance().info("Saltando Sfl guardado y parse [" + idSfl + "]. No configurado para guardar.");
                     } else {
-                        appConfig.customLog.info("Saltando Sfl guardado y parse ["+idSfl+"]. No registrado en maestro.");
+                        CustomLog.getInstance().info("Saltando Sfl guardado y parse ["+idSfl+"]. No registrado en maestro.");
                     }
                 }
         }
-        appConfig.customLog.info("Finalizado guardado y parse Sfl [" + idSfl + "]...");
+        CustomLog.getInstance().info("Finalizado guardado y parse Sfl [" + idSfl + "]...");
     }
 
     @Transactional
@@ -159,9 +160,9 @@ public class SflImpl implements ISflService {
                     throw new SflPershingException("Sfl definido para procesar, pero no implementado: ["+idSfl+"] ", fullPathFile);
                 } else {
                     if (Boolean.FALSE.equals(flagProcesarParseEnBd)) {
-                        appConfig.customLog.info("Saltando Sfl ["+idSfl+"]. No configurado para procesarse.");
+                        CustomLog.getInstance().info("Saltando Sfl ["+idSfl+"]. No configurado para procesarse.");
                     } else {
-                        appConfig.customLog.info("Saltando configurado Sfl ["+idSfl+"]. No registrado en maestro.");
+                        CustomLog.getInstance().info("Saltando configurado Sfl ["+idSfl+"]. No registrado en maestro.");
                     }
                 }
         }

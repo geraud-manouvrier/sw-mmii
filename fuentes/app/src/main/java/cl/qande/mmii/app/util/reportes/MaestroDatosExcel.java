@@ -6,6 +6,7 @@ import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.IReporteMaestroDatosService;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -37,11 +38,11 @@ public class MaestroDatosExcel {
 
     public void generaReportesExcel(String processDate) throws QandeMmiiException {
         this.usaDateStyle   = null;
-        appConfig.customLog.info("Iniciando generación de Reporte Excel para fecha : ["+processDate+"]");
+        CustomLog.getInstance().info("Iniciando generación de Reporte Excel para fecha : ["+processDate+"]");
         this.generaReporteClientes(processDate);
         this.generaReporteMovimientos(processDate);
         this.generaReporteSaldos(processDate);
-        appConfig.customLog.info("Generación reporte Excel finalizada");
+        CustomLog.getInstance().info("Generación reporte Excel finalizada");
     }
 
     public void generaReporteClientes(String processDate) throws QandeMmiiException {
@@ -61,11 +62,11 @@ public class MaestroDatosExcel {
         String fileLocation = dirReportes + "/"+nombreArchivo;
         FileOutputStream outputStream;
         try {
-            appConfig.customLog.info("Creando archivo en directorio...");
+            CustomLog.getInstance().info("Creando archivo en directorio...");
             outputStream = new FileOutputStream(fileLocation);
-            appConfig.customLog.info("Escribiendo en disco...");
+            CustomLog.getInstance().info("Escribiendo en disco...");
             reporteExcel.write(outputStream);
-            appConfig.customLog.info("Cerrando archivo...");
+            CustomLog.getInstance().info("Cerrando archivo...");
             reporteExcel.close();
         } catch (FileNotFoundException e) {
             throw new QandeMmiiException(e, "Error al crear archivo excel");
@@ -75,7 +76,7 @@ public class MaestroDatosExcel {
     }
 
     private XSSFWorkbook reporteClientes(String processDate) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Clientes para fecha : ["+processDate+"]");
+        CustomLog.getInstance().info("Iniciando generación de Reporte Clientes para fecha : ["+processDate+"]");
         String[] encabezado = reportesMaestrosHelper.encabezadoClientes(ReportesMaestrosHelper.EXTENSION_EXCEL);
         this.usaDateStyle   = null;
         var reporteExcel = new XSSFWorkbook();
@@ -91,7 +92,7 @@ public class MaestroDatosExcel {
         for (int i = 0; i < encabezado.length; i++) {
             this.addCell(header, i, encabezado[i], null);
         }
-        appConfig.customLog.info("Encabezados reporte Clientes generados; iniciando escritura de datos en excel.");
+        CustomLog.getInstance().info("Encabezados reporte Clientes generados; iniciando escritura de datos en excel.");
         for (VwReporteMaestroDatosCliente fila : reporteClientes) {
             row++;
             int col = 0;
@@ -151,11 +152,11 @@ public class MaestroDatosExcel {
 
 
         }
-        appConfig.customLog.info("Datos agregados a excel Clientes.");
+        CustomLog.getInstance().info("Datos agregados a excel Clientes.");
         return reporteExcel;
     }
     private XSSFWorkbook reporteMovimientos(String processDate) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Movimientos para fecha : ["+processDate+"]");
+        CustomLog.getInstance().info("Iniciando generación de Reporte Movimientos para fecha : ["+processDate+"]");
         String[] encabezado = reportesMaestrosHelper.encabezadoMovimientos(ReportesMaestrosHelper.EXTENSION_EXCEL);
         this.usaDateStyle   = null;
         var reporteExcel = new XSSFWorkbook();
@@ -172,7 +173,7 @@ public class MaestroDatosExcel {
         for (int i = 0; i < encabezado.length; i++) {
             this.addCell(header, i, encabezado[i], null);
         }
-        appConfig.customLog.info("Encabezados reporte Movimientos generados; iniciando escritura de datos en excel.");
+        CustomLog.getInstance().info("Encabezados reporte Movimientos generados; iniciando escritura de datos en excel.");
         for (VwReporteMaestroDatosMovimiento fila : reporteMovimientos) {
             row++;
             int col = 0;
@@ -226,12 +227,12 @@ public class MaestroDatosExcel {
             this.addCell(dataRow, col, fila.getAplicaFlujoNeto(), null);
 
         }
-        appConfig.customLog.info("Datos agregados a excel Movimientos.");
+        CustomLog.getInstance().info("Datos agregados a excel Movimientos.");
         return reporteExcel;
     }
 
     private XSSFWorkbook reporteSaldos(String processDate) throws QandeMmiiException {
-        appConfig.customLog.info("Iniciando generación de Reporte Saldos para fecha : ["+processDate+"]");
+        CustomLog.getInstance().info("Iniciando generación de Reporte Saldos para fecha : ["+processDate+"]");
         String[] encabezado = reportesMaestrosHelper.encabezadoSaldos(ReportesMaestrosHelper.EXTENSION_EXCEL);
         this.usaDateStyle   = null;
         var reporteExcel = new XSSFWorkbook();
@@ -247,7 +248,7 @@ public class MaestroDatosExcel {
         for (int i = 0; i < encabezado.length; i++) {
             this.addCell(header, i, encabezado[i], null);
         }
-        appConfig.customLog.info("Encabezados reporte Saldos generados; iniciando escritura de datos en excel.");
+        CustomLog.getInstance().info("Encabezados reporte Saldos generados; iniciando escritura de datos en excel.");
         for (VwReporteMaestroDatosSaldo fila : reporteSaldos) {
             row++;
             int col = 0;
@@ -285,7 +286,7 @@ public class MaestroDatosExcel {
             this.addCell(dataRow, col++, fila.getNombreSubSubTipoActivo(), null);
 
         }
-        appConfig.customLog.info("Datos agregados a excel Saldos.");
+        CustomLog.getInstance().info("Datos agregados a excel Saldos.");
         return reporteExcel;
     }
 

@@ -6,6 +6,7 @@ import cl.qande.mmii.app.models.dto.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.IEnrolamientoClientesService;
 import cl.qande.mmii.app.util.SesionWeb;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -102,29 +103,29 @@ public class MantenedorEnrolamientoController {
         }
         if (result.hasErrors()) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID);
-            appConfig.customLog.error(PREFIX_ERROR_VALID +" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
+            CustomLog.getInstance().error(PREFIX_ERROR_VALID +" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             this.addNotificationsOfErrors(result.getFieldErrors());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
         if ( (cuenta==null || cuenta.isBlank()) && (esClienteNuevo) ) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Cuenta obligatoria.");
-            appConfig.customLog.error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
+            CustomLog.getInstance().error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
 
-        appConfig.customLog.info("Actualizando registro ID Cliente  ["+id+"] cliente por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
+        CustomLog.getInstance().info("Actualizando registro ID Cliente  ["+id+"] cliente por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
         try {
             var clienteGuardado = enrolamientoClientesService.guardarCliente(clienteDto);
-            appConfig.customLog.info("Guardado Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
+            CustomLog.getInstance().info("Guardado Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
             if (esClienteNuevo) {
                 var cuentaDto = new CuentaDto();
                 cuentaDto.setIdCliente(clienteGuardado.getId());
                 cuentaDto.setIdCuentaCustodio(cuenta);
                 cuentaDto.setIdCustodio("pershing");
                 cuentaDto.setHabilitado(true);
-                appConfig.customLog.info("Guardando Cuenta Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +cuentaDto+"] ");
+                CustomLog.getInstance().info("Guardando Cuenta Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +cuentaDto+"] ");
                 enrolamientoClientesService.guardarCuenta(cuentaDto);
             }
         } catch (Exception e) {
@@ -133,7 +134,7 @@ public class MantenedorEnrolamientoController {
             } else {
                 estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
             }
-            appConfig.customLog.error(PREFIX_ERROR_SAVE+" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
+            CustomLog.getInstance().error(PREFIX_ERROR_SAVE+" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
@@ -172,7 +173,7 @@ public class MantenedorEnrolamientoController {
         var estadoPeticion  = new EstadoPeticion();
         if (result.hasErrors()) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
-            appConfig.customLog.error(PREFIX_ERROR_SAVE +" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
+            CustomLog.getInstance().error(PREFIX_ERROR_SAVE +" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             this.addNotificationsOfErrors(result.getFieldErrors());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listarComisionCuenta(comisionCuentaDto, result, model);
@@ -183,11 +184,11 @@ public class MantenedorEnrolamientoController {
         comisionCuentaDto.setLogFechaCreacion(Instant.now());
         try {
             var resultado   = enrolamientoClientesService.guardarComisionCuenta(comisionCuentaDto);
-            appConfig.customLog.info("Guardado Comisión Cuenta ID  ["+resultado.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +resultado.toString()+"] ");
+            CustomLog.getInstance().info("Guardado Comisión Cuenta ID  ["+resultado.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +resultado.toString()+"] ");
             estadoPeticion.setEstadoOk("Registro guardado correctamente (ID: "+resultado.getId()+")");
         } catch (Exception e) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
-            appConfig.customLog.error(PREFIX_ERROR_SAVE+" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
+            CustomLog.getInstance().error(PREFIX_ERROR_SAVE+" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listarComisionCuenta(comisionCuentaDto, result, model);
         }

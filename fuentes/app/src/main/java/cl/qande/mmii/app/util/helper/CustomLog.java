@@ -1,28 +1,18 @@
 package cl.qande.mmii.app.util.helper;
 
+import cl.qande.mmii.app.util.SesionWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.UUID;
 
 @Component
-public class CustomLog {
+public class CustomLog implements ApplicationContextAware {
 
-    /*
-    TODO:
-     -Migrar a LOG4J2
-     -Múltiples appender: app y otro para jobs
-     -Async
-     -Log into DB
-     -Log into cloud (syslog u otro)
-
-     https://www.baeldung.com/log4j2-appenders-layouts-filters
-     https://www.baeldung.com/java-logging-intro
-     https://logging.apache.org/log4j/2.x/
-     https://logging.apache.org/log4j/2.x/manual/async.html
-     https://logging.apache.org/log4j/2.x/manual/appenders.html
-     */
     private static final String MSG_INFO    = "INFO";
     private static final String MSG_DEBUG    = "DEBUG";
     private static final String MSG_ERROR    = "ERROR";
@@ -30,6 +20,28 @@ public class CustomLog {
     private static final int INDEX_STACK    = 3;
 
     private UUID uuid;
+    private static CustomLog instance;
+    private static ApplicationContext applicationContext;
+
+    private CustomLog() {
+        this.uuid = UUID.randomUUID();
+    }
+
+    public static CustomLog getInstance() {
+        if (instance == null) {
+            instance = new CustomLog();
+        }
+        return instance;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) {
+        applicationContext = context;
+    }
+
+    private <T> T getBean(Class<T> clazz) {
+        return applicationContext.getBean(clazz);
+    }
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
@@ -41,15 +53,40 @@ public class CustomLog {
         Logger log = LoggerFactory.getLogger(className);
         switch (typeLog) {
             case MSG_INFO:
-                log.info(MSG_PATTERN, methodName, msg, this.uuid);
+                log.info(MSG_PATTERN, methodName, msg, getLogUuid());
                 break;
             case MSG_ERROR:
-                log.error(MSG_PATTERN, methodName, msg, this.uuid);
+                log.error(MSG_PATTERN, methodName, msg, getLogUuid());
                 break;
             case MSG_DEBUG:
             default:
-                log.debug(MSG_PATTERN, methodName, msg, this.uuid);
+                log.debug(MSG_PATTERN, methodName, msg, getLogUuid());
                 break;
+        }
+    }
+    private UUID getLogUuid() {
+        var sesionWeb   = getSesionWeb();
+        if (sesionWeb!=null && sesionWeb.getUuid()!=null)
+            return sesionWeb.getUuid();
+        return this.uuid;
+    }
+
+    private void addWebNotification(String msg) {
+        var sesionWeb   = getSesionWeb();
+        if (sesionWeb!=null && sesionWeb.getUuid()!=null)
+            sesionWeb.addNotification(msg);
+    }
+
+    private SesionWeb getSesionWeb() {
+        // Verifica si hay atributos de solicitud (request) activos
+        if (RequestContextHolder.getRequestAttributes() == null) {
+            // No hay una solicitud activa, retorna null sin intentar obtener el bean
+            return null;
+        }
+        try {
+            return getBean(SesionWeb.class);
+        } catch (Exception e) {
+            return null;
         }
     }
 

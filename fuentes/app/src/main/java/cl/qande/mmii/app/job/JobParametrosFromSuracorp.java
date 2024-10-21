@@ -7,6 +7,7 @@ import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.models.service.ParametrosFromMmiiSuraCorp;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,10 +66,10 @@ public class JobParametrosFromSuracorp implements Runnable {
 
     public boolean ejecutaJob() {
         try {
-            appConfig.customLog.info("Iniciando Job "+JOB_NAME+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
-            return this.ejecutaJob(USUARIO_JOB, false);
+            CustomLog.getInstance().info("Iniciando Job "+JOB_NAME+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+            return this.ejecutaJob(USUARIO_JOB, true);
         } catch (Exception e) {
-            appConfig.customLog.error("Error al realizar tarea "+JOB_NAME+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
+            CustomLog.getInstance().error("Error al realizar tarea "+JOB_NAME+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
             return false;
         }
     }
@@ -80,9 +81,9 @@ public class JobParametrosFromSuracorp implements Runnable {
 
 
     private void logMessage(String message) {
-        appConfig.customLog.info(JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+        CustomLog.getInstance().info(JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
     }
     private void logError(String message, String errorDescr) {
-        appConfig.customLog.info("Error "+JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+errorDescr+"]");
+        CustomLog.getInstance().info("Error "+JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+errorDescr+"]");
     }
 }

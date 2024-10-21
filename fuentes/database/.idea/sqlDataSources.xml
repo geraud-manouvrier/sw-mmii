@@ -10,6 +10,7 @@
             <name qname="pershing" />
             <name qname="public" />
             <name qname="stage_pershing" />
+            <name qname="zz_backup" />
           </node>
         </node>
       </scope>

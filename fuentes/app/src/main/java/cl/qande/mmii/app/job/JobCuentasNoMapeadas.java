@@ -5,6 +5,7 @@ import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.service.ControlDatosService;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,10 +49,10 @@ public class JobCuentasNoMapeadas implements Runnable {
         }
     }
     private void logMessage(String message) {
-        appConfig.customLog.info(JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+        CustomLog.getInstance().info(JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
     }
     private void logError(String message, String errorDescr) {
-        appConfig.customLog.info("Error "+JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+errorDescr+"]");
+        CustomLog.getInstance().info("Error "+JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+errorDescr+"]");
     }
     public void tarea() {
         this.logMessage(" Iniciando");

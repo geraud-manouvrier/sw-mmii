@@ -69,26 +69,52 @@ FROM (SELECT 'pershing'::character varying(100)                                 
              vw_pos.quantity,
              CASE
                  WHEN vw_pos.tipo_reg::text = 'CAJA'::text OR vw_pos.sub_tipo_reg::text = 'C'::text THEN 1::numeric
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL THEN 1::numeric
                  ELSE val_his.latest_price
                  END::numeric(45, 20)                                                                      AS market_price,
              val_his.process_date                                                                          AS process_date_val_his,
-             val_his.latest_price,
+             CASE
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL THEN 1::numeric
+                 ELSE val_his.latest_price
+                 END::numeric(45, 20)                                                                      AS latest_price,
              CASE
                  WHEN vw_pos.tipo_reg::text = 'CAJA'::text THEN 1::numeric
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL THEN 1::numeric
                  ELSE val_his.exchange_rate_denom_currency_usd
                  END::numeric(45, 20)                                                                      AS fx_rate,
              COALESCE(val_his.factored_market_value_multiplier,
                       1::numeric(45, 20))                                                                  AS factor_mkv_mult,
              CASE
-                 WHEN vw_pos.tipo_reg::text = 'CAJA'::text THEN vw_pos.cusip_number
-                 ELSE val_his.isin_code
-                 END                                                                                       AS isin_code,
+                 WHEN vw_pos.tipo_reg::text = 'CAJA'::text THEN vw_pos.cusip_number::text
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL THEN ''::text
+                 ELSE TRIM(BOTH FROM val_his.isin_code)
+                 END::character varying(100)                                                               AS isin_code,
              par_crrcy.codigo                                                                              AS currency,
-             par_asset.id_sub_sub_tipo                                                                     AS product_type,
-             par_asset.id_sub_sub_tipo                                                                     AS id_sub_sub_tipo_activo,
-             par_asset.id_sub_tipo                                                                         AS id_sub_tipo_activo,
-             par_asset.id_tipo                                                                             AS id_tipo_activo,
-             par_asset.glosa                                                                               AS nombre_sub_sub_tipo_activo
+             CASE
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL
+                     THEN 'CURRENCY'::character varying
+                 ELSE par_asset.id_sub_sub_tipo
+                 END::character varying(100)                                                               AS product_type,
+             CASE
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL
+                     THEN 'CURRENCY'::character varying
+                 ELSE par_asset.id_sub_sub_tipo
+                 END::character varying(100)                                                               AS id_sub_sub_tipo_activo,
+             CASE
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL
+                     THEN 'CURRENCY'::character varying
+                 ELSE par_asset.id_sub_tipo
+                 END::character varying(100)                                                               AS id_sub_tipo_activo,
+             CASE
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL
+                     THEN 'CURRENCY'::character varying
+                 ELSE par_asset.id_tipo
+                 END::character varying(100)                                                               AS id_tipo_activo,
+             CASE
+                 WHEN vw_pos.cusip_number::text = 'USD999997'::text AND val_his.id IS NULL
+                     THEN 'Monedas'::character varying
+                 ELSE par_asset.glosa
+                 END::character varying(1000)                                                              AS nombre_sub_sub_tipo_activo
       FROM pershing.vw_maestro_posicion vw_pos
                LEFT JOIN pershing.sfl_isca_historica val_his
                          ON vw_pos.process_date::text = val_his.process_date::text AND

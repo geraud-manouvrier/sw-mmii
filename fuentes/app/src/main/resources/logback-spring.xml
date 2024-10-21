@@ -1,0 +1,94 @@
+<configuration>
+    <property resource="application.properties" />
+    <property name="LOG_PATH" value="${logging.file.path}" />
+    <property name="LOG_FILENAME_BASE" value="${app.properties.config.log-filename-base}" />
+    <property name="LOG_FILENAME_PATTERN" value="${app.properties.config.log-filename-pattern}" />
+
+    <property name="LOG_PATTERN_TS" value="${app.properties.config.log-pattern-timestamp}" />
+    <property name="LOG_PATTERN_MSG" value="${app.properties.config.log-pattern-msg}" />
+    <property name="LOG_PATTERN_LEVEL" value="%-5level" />
+
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN_TS} %highlight(${LOG_PATTERN_LEVEL}) ${LOG_PATTERN_MSG}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Definir el appender general con rotación diaria y tamaño máximo de archivo -->
+    <appender name="GENERAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILENAME_BASE}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILENAME_BASE}-${LOG_FILENAME_PATTERN}.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN_TS} ${LOG_PATTERN_LEVEL} ${LOG_PATTERN_MSG}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender específico para los logs de API -->
+    <appender name="API" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILENAME_BASE}-api.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILENAME_BASE}-api-${LOG_FILENAME_PATTERN}.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN_TS} ${LOG_PATTERN_LEVEL} ${LOG_PATTERN_MSG}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender específico para los logs de los jobs -->
+    <appender name="JOB" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILENAME_BASE}-job.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILENAME_BASE}-job-${LOG_FILENAME_PATTERN}.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>365</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN_TS} ${LOG_PATTERN_LEVEL} ${LOG_PATTERN_MSG}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- Appender asíncrono para el appender general -->
+    <appender name="ASYNC_GENERAL" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>2048</queueSize>
+        <appender-ref ref="GENERAL" />
+    </appender>
+
+    <!-- Appender asíncrono para el appender de API -->
+    <appender name="ASYNC_API" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>2048</queueSize>
+        <appender-ref ref="API" />
+    </appender>
+
+    <!-- Appender asíncrono para el appender de JOB -->
+    <appender name="ASYNC_JOB" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>2048</queueSize>
+        <appender-ref ref="JOB" />
+    </appender>
+
+    <!-- Configuración de loggers específicos -->
+    <logger name="cl.qande.mmii.app.controllers.api" level="info" additivity="true">
+        <appender-ref ref="ASYNC_API" />
+    </logger>
+
+    <logger name="cl.qande.mmii.app.interceptors.ApiHeadersInterceptor" level="info" additivity="true">
+        <appender-ref ref="ASYNC_API" />
+    </logger>
+
+    <logger name="cl.qande.mmii.app.job" level="info" additivity="true">
+        <appender-ref ref="ASYNC_JOB" />
+    </logger>
+
+    <!-- Logger root para manejar todos los logs generales -->
+    <root level="info">
+        <appender-ref ref="ASYNC_GENERAL" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

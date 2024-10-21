@@ -130,7 +130,7 @@ public class ArchivosHelper {
         if ( ! Files.exists(Paths.get(fullPath))) {
             try {
                 Files.createDirectory(Paths.get(fullPath));
-                appConfig.customLog.info("Directorio creado: ["+fullPath+"]");
+                CustomLog.getInstance().info("Directorio creado: ["+fullPath+"]");
             } catch (IOException e) {
                 throw new QandeMmiiException(e, "Error creando directorio de Reportes Inversiones ["+fullPath+"]: "+e.getMessage());
             }
@@ -180,7 +180,7 @@ public class ArchivosHelper {
             try {
                 Files.delete(archivoPorBorrar.toPath());
             } catch (IOException e) {
-                appConfig.customLog.error("Error en borrar archivo ["+archivoPorBorrar.getAbsolutePath()+"]");
+                CustomLog.getInstance().error("Error en borrar archivo ["+archivoPorBorrar.getAbsolutePath()+"]");
             }
         }
 
@@ -201,7 +201,7 @@ public class ArchivosHelper {
             fileContent = FileUtils.readFileToByteArray(new File(ruta, filename));
         } catch (IOException e) {
             var msg = "Error al serializar base 64 archivo ["+ruta+"] ["+filename+"]: "+e.getMessage();
-            appConfig.customLog.error(msg);
+            CustomLog.getInstance().error(msg);
             throw new QandeMmiiException(e, msg);
         }
         return Base64.getEncoder().encodeToString(fileContent);

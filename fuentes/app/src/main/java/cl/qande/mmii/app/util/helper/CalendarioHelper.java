@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.util.helper;
 
+import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.stereotype.Component;
 
@@ -10,17 +11,19 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class CalendarioHelper {
 
-    public static final String FORMATO_AAAA_MM_DD = "yyyy-MM-dd";
-    public static final String FORMATO_DD_MM_AAAA = "dd-MM-yyyy";
-    public static final String FORMATO_AAAAMM = "yyyyMM";
+    public static final String FORMATO_AAAA_MM_DD       = "yyyy-MM-dd";
+    public static final String FORMATO_DD_MM_AAAA       = "dd-MM-yyyy";
+    public static final String FORMATO_AAAAMM           = "yyyyMM";
 
-    public static final String FORMATO_HTML = "dd/MM/yyyy";
-    public static final String FORMATO_API_BCOCENTRAL = "dd-MM-yyyy";
-    public static final String FORMATO_BD = FORMATO_AAAA_MM_DD;
+    public static final String FORMATO_HTML             = "dd/MM/yyyy";
+    public static final String FORMATO_API_BCOCENTRAL   = "dd-MM-yyyy";
+    public static final String FORMATO_BD               = FORMATO_AAAA_MM_DD;
+    public static final String FORMATO_PROCESS_DATE     = "yyyyMMdd";
 
     protected static final String[] MESES_ES = new String[]{
             "Enero", "Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre",
@@ -172,6 +175,58 @@ public class CalendarioHelper {
                         && dateAsStr.matches("^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$")
                 && isValidValueDate(dateAsStr, FORMATO_AAAA_MM_DD)
         );
+    }
+
+
+    public boolean isValidProcessDate(String dateAsStr) {
+        return (
+                dateAsStr!=null
+                        && dateAsStr.matches("^(19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])$")
+                        && isValidValueDate(dateAsStr, FORMATO_PROCESS_DATE)
+        );
+    }
+
+    public int getDiasEntreFechas(Date fechaInicio, Date fechaFin) {
+        int milisecondsByDay = 86400000;
+        return (int) ((fechaFin.getTime()-fechaInicio.getTime()) / milisecondsByDay);
+    }
+
+    public List<String> processDateRangeToList(String startProcessDate, String endProcessDate) throws QandeMmiiException {
+        int maxDiffFechas   = 150;
+        if (! isValidProcessDate(startProcessDate) ) {
+            throw new QandeMmiiException("Start Process Date no válida");
+        }
+        if (! isValidProcessDate(endProcessDate) ) {
+            throw new QandeMmiiException("End Process Date no válida");
+        }
+        var salida = new java.util.ArrayList<String>();
+        try {
+            var startDate   = convierteFechaStrToDateWithFormat(startProcessDate, FORMATO_PROCESS_DATE);
+            var endDate     = convierteFechaStrToDateWithFormat(endProcessDate, FORMATO_PROCESS_DATE);
+            if (startDate.compareTo(endDate)>0) {
+                throw new QandeMmiiException("Start Process Date debe ser menor o igual a End Process Date");
+            }
+            var diff        = getDiasEntreFechas(startDate, endDate);
+            if (diff>maxDiffFechas) {
+                throw new QandeMmiiException("Rango de fechas no puede superar los 150 días ["+startProcessDate+" - "+endProcessDate+" - "+diff+"]");
+            }
+            int desfase = 0;
+            while(true) {
+                var currentDate = fechaConDesfaseDias(startDate, desfase);
+                var currentProcessDate  = convierteDateToStringWithFormat(currentDate, FORMATO_PROCESS_DATE);
+                salida.add(currentProcessDate);
+                desfase++;
+                if (currentProcessDate.equals(endProcessDate)) {
+                    break;
+                }
+                if (desfase>maxDiffFechas) {
+                    throw new QandeMmiiException("Error al generar rango de fechas, se superó rango de generación de fechas: Desfase en ["+desfase+"] para ["+currentProcessDate+"]; ["+startProcessDate+" - "+endProcessDate+" - "+diff+"]");
+                }
+            }
+        } catch (ParseException e) {
+            throw new QandeMmiiException("Error al convertir process date: "+e.getMessage());
+        }
+        return salida;
     }
 
 }

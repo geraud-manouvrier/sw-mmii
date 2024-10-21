@@ -4,6 +4,7 @@ import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCodeResponse;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,21 +28,21 @@ public class ParametrosFromMmiiSuraCorp {
     public ParSourceCode[][] actualizaParametrosFromMmiiSuraCorp() throws QandeMmiiException {
         List<ParSourceCode> listaOk = new ArrayList<>();
         List<ParSourceCode> listaError = new ArrayList<>();
-        appConfig.customLog.info("Obteniendo lista de códigos de fuente desde MMII SuraCorp");
+        CustomLog.getInstance().info("Obteniendo lista de códigos de fuente desde MMII SuraCorp");
         ParSourceCodeResponse response = null;
         try {
             response = apiRestClientService.getListSourceCode();
         } catch (Exception e) {
             throw new QandeMmiiException(e, "Error al obtener lista de SourceCode desde MMII SuraCorp: " + e.getMessage());
         }
-        appConfig.customLog.info("Guardando lista de códigos de fuente en base de datos");
+        CustomLog.getInstance().info("Guardando lista de códigos de fuente en base de datos");
         for (ParSourceCode parSourceCode : response.getListaParSourceCode()) {
             try {
                 mantenedoresInstrumentosService.save(parSourceCode);
                 listaOk.add(parSourceCode);
             } catch (Exception e) {
                 listaError.add(parSourceCode);
-                appConfig.customLog.error("Error al guardar registro ["+parSourceCode.toString()+"]: " + e.getMessage());
+                CustomLog.getInstance().error("Error al guardar registro ["+parSourceCode.toString()+"]: " + e.getMessage());
             }
         }
         ParSourceCode[][] respuesta = new ParSourceCode[2][];

@@ -4,6 +4,7 @@ import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.mail.EmailDetails;
 import cl.qande.mmii.app.models.service.IEmailService;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -30,7 +31,7 @@ public class EmailServiceImpl implements IEmailService {
     public void sendSimpleMail(EmailDetails details) throws QandeMmiiException {
 
         if (!mailingEnabled) {
-            appConfig.customLog.info(MSG_MAIL_OFF+details.toString());
+            CustomLog.getInstance().info(MSG_MAIL_OFF+details.toString());
             return;
         }
         // Try block to check for exceptions
@@ -65,7 +66,7 @@ public class EmailServiceImpl implements IEmailService {
     */
     public void sendHtmlMail(EmailDetails details) throws QandeMmiiException {
         if (!mailingEnabled) {
-            appConfig.customLog.info(MSG_MAIL_OFF+details.toString());
+            CustomLog.getInstance().info(MSG_MAIL_OFF+details.toString());
             return;
         }
         MimeMessage mimeMessage
@@ -89,7 +90,7 @@ public class EmailServiceImpl implements IEmailService {
     public void sendMailWithAttachment(EmailDetails details) throws QandeMmiiException
     {
         if (!mailingEnabled) {
-            appConfig.customLog.info(MSG_MAIL_OFF+details.toString());
+            CustomLog.getInstance().info(MSG_MAIL_OFF+details.toString());
             return;
         }
         // Creating a mime message

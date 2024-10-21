@@ -6,6 +6,7 @@ import cl.qande.mmii.app.models.db.pershing.dao.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -114,7 +115,7 @@ public class SflPershingController {
             model.addAttribute("listaRegW", stageAcctRegWDao.findByProcessDate(processDate));
             estadoPeticion.setEstadoOk("Datos SFL OK", "Datos SFL listado correctamente");
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar contenido SFL", "Se produjo un error al listar contenido SFL");
         }
         model.addAttribute(CAMPO_TITULO, TITULO_CTRL_DIARIO+" ["+idSfl+"]");
@@ -135,7 +136,7 @@ public class SflPershingController {
             model.addAttribute("listaRegB", stageGactRegBDao.findByProcessDate(processDate));
             estadoPeticion.setEstadoOk("Datos SFL OK", "Datos SFL listado correctamente");
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar contenido SFL", "Se produjo un error al listar contenido SFL");
         }
         model.addAttribute(CAMPO_TITULO, TITULO_CTRL_DIARIO+" ["+idSfl+"]");
@@ -156,7 +157,7 @@ public class SflPershingController {
             model.addAttribute("listaRegB", stageGcusRegBDao.findByProcessDate(processDate));
             estadoPeticion.setEstadoOk("Datos SFL OK", "Datos SFL listado correctamente");
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar contenido SFL", "Se produjo un error al listar contenido SFL");
         }
         model.addAttribute(CAMPO_TITULO, TITULO_CTRL_DIARIO+" ["+idSfl+"]");
@@ -177,7 +178,7 @@ public class SflPershingController {
             model.addAttribute("listaRegB", stageGmonRegBDao.findByProcessDate(processDate));
             estadoPeticion.setEstadoOk("Datos SFL OK", "Datos SFL listado correctamente");
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar contenido SFL", "Se produjo un error al listar contenido SFL");
         }
         model.addAttribute(CAMPO_TITULO, TITULO_CTRL_DIARIO+" ["+idSfl+"]");
@@ -211,7 +212,7 @@ public class SflPershingController {
             model.addAttribute("listaRegO", stageIscaRegODao.findByProcessDate(processDate));
             estadoPeticion.setEstadoOk("Datos SFL OK", "Datos SFL listado correctamente");
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar contenido SFL", "Se produjo un error al listar contenido SFL");
         }
         model.addAttribute(CAMPO_TITULO, TITULO_CTRL_DIARIO+" ["+idSfl+"]");
@@ -231,7 +232,7 @@ public class SflPershingController {
             model.addAttribute("listaRegA", stageIsrcRegADao.findByProcessDate(processDate));
             estadoPeticion.setEstadoOk("Datos SFL OK", "Datos SFL listado correctamente");
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar contenido SFL con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar contenido SFL", "Se produjo un error al listar contenido SFL");
         }
         model.addAttribute(CAMPO_TITULO, TITULO_CTRL_DIARIO+" ["+idSfl+"]");

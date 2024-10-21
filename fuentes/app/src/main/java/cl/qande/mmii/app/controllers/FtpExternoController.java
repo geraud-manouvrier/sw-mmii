@@ -5,6 +5,7 @@ import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.FtpPershingService;
 import cl.qande.mmii.app.util.SesionWeb;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +52,14 @@ public class FtpExternoController {
                     break;
                 default:
                     estadoPeticion.setEstadoWarning("Nombre FTP incorrecto", "El nombre del FTP ["+ftpName+"] es inválido");
-                    appConfig.customLog.error("El nombre del FTP ["+ftpName+"] es inválido");
+                    CustomLog.getInstance().error("El nombre del FTP ["+ftpName+"] es inválido");
                     break;
             }
             if(listaArchivos!=null) {
-                appConfig.customLog.info("Contenido FTP "+ftpName+": "+listaArchivos.toString());
+                CustomLog.getInstance().info("Contenido FTP "+ftpName+": "+listaArchivos.toString());
             }
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar contenido FTP "+ftpName+": "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar contenido FTP "+ftpName+": "+e.getMessage());
             estadoPeticion.setEstadoError(ERR_MSG, ERR_DET);
         }
         model.addAttribute("listaArchivos", listaArchivos);

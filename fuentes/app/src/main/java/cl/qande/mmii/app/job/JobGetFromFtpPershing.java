@@ -5,6 +5,7 @@ import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.models.service.PershingService;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,25 +28,25 @@ public class JobGetFromFtpPershing implements Runnable {
         try {
             pershingService.processByDate(processDate, useDownloadedFiles, "*");
             notificacionEmail.notificarOkProcesoSflFtpPershing(processDate);
-            appConfig.customLog.info("Mail FTP Pershing con fecha [" + processDate + "] enviado OK");
+            CustomLog.getInstance().info("Mail FTP Pershing con fecha [" + processDate + "] enviado OK");
             return true;
 
         } catch (Exception e) {
-            appConfig.customLog.error("Errores al realizar FTP Pershing con fecha ["+processDate+"]: "+e.getMessage());
+            CustomLog.getInstance().error("Errores al realizar FTP Pershing con fecha ["+processDate+"]: "+e.getMessage());
             notificacionEmail.notificarErrorProcesoSflFtpPershing(processDate, "Error Job FTP Pershing: ["+e.getMessage()+"]");
             return false;
         }
     }
 
     public void tarea() {
-        appConfig.customLog.info("Iniciando tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+        CustomLog.getInstance().info("Iniciando tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
         try {
             this.processByProcessDate(processDate, false);
         } catch (QandeMmiiException e) {
-            appConfig.customLog.error("Error al realizar tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
+            CustomLog.getInstance().error("Error al realizar tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
         }
-        appConfig.customLog.info("Finalizando tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+        CustomLog.getInstance().info("Finalizando tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
     }
 
     @Override

@@ -3,6 +3,7 @@ package cl.qande.mmii.app.models.service;
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.pershing.entity.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.mapper.EntityTransform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class TxtService {
 
         try {
             result  = Files.readAllLines(Paths.get(fullPathFile), SFL_CHARSET);
-            appConfig.customLog.info("Leído archivo TXT SFL ["+fullPathFile+"], se encontraron ["+result.size()+"] líneas.");
+            CustomLog.getInstance().info("Leído archivo TXT SFL ["+fullPathFile+"], se encontraron ["+result.size()+"] líneas.");
         }catch (Exception e) {
             throw new QandeMmiiException(e, "Error al leer TXT SFL: ["+e.getMessage()+"]");
         }

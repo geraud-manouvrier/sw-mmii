@@ -8,6 +8,7 @@ import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,7 +57,7 @@ public class MaestroDatosController {
             estadoPeticion.setEstadoOk("Listado clientes OK", "Listado de Clientes generado correctamente");
             model.addAttribute(HTML_SALIDA_REPORTE, salidaReporte);
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar reporte Maestro Clientes con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar reporte Maestro Clientes con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar Clientes", "Se produjo un error al listar los clientes");
             model.addAttribute(HTML_SALIDA_REPORTE, null);
         }
@@ -87,7 +88,7 @@ public class MaestroDatosController {
             estadoPeticion.setEstadoOk("Listado saldos OK", "Listado de Saldos generado correctamente");
             model.addAttribute(HTML_SALIDA_REPORTE, salidaReporte);
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar reporte Maestro Saldos con rango fechas [" + startProcessDate + " - "+endProcessDate+"]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar reporte Maestro Saldos con rango fechas [" + startProcessDate + " - "+endProcessDate+"]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar Saldos", "Se producjo un error al listar los saldos");
             model.addAttribute(HTML_SALIDA_REPORTE, null);
         }
@@ -122,7 +123,7 @@ public class MaestroDatosController {
             estadoPeticion.setEstadoOk("Listado Movimientos OK", "Listado de Movimientos generado correctamente");
             model.addAttribute(HTML_SALIDA_REPORTE, salidaReporte);
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar reporte Maestro Movimientos con rango fechas [" + startProcessDate + " - "+endProcessDate+"]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar reporte Maestro Movimientos con rango fechas [" + startProcessDate + " - "+endProcessDate+"]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar Movimientos", "Se producjo un error al listar los saldos");
             model.addAttribute(HTML_SALIDA_REPORTE, null);
         }

@@ -5,6 +5,7 @@ import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ControlDiarioService;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,12 +31,12 @@ public class JobControlDiario implements Runnable {
 
         try {
             var resultadoProceso = controlDiarioService.ejecutaControlDiarioSegmentado(processDate, usuario);
-            appConfig.customLog.info("Generación control diario con fecha [" + processDate + "] finalizado OK");
+            CustomLog.getInstance().info("Generación control diario con fecha [" + processDate + "] finalizado OK");
             notificacionEmail.notificarOkControlDiarioSegmentado(processDate, resultadoProceso);
-            appConfig.customLog.info("Mail control diario con fecha [" + processDate + "] enviado OK");
+            CustomLog.getInstance().info("Mail control diario con fecha [" + processDate + "] enviado OK");
 
         } catch (Exception e) {
-            appConfig.customLog.error("Errores al realizar control diario con fecha ["+processDate+"]: "+e.getMessage());
+            CustomLog.getInstance().error("Errores al realizar control diario con fecha ["+processDate+"]: "+e.getMessage());
             notificacionEmail.notificarErrorControlDiarioSegmentado(processDate, "Error Job Control Diario: ["+e.getMessage()+"]");
         }
 
@@ -49,16 +50,16 @@ public class JobControlDiario implements Runnable {
 
         try {
             var resultadoProceso = controlDiarioService.ejecutaControlDiarioSegmentado(processDate, usuario);
-            appConfig.customLog.info("Generación control diario segmentado con fecha [" + processDate + "] finalizado OK");
+            CustomLog.getInstance().info("Generación control diario segmentado con fecha [" + processDate + "] finalizado OK");
             if (flagEnviarMail) {
                 notificacionEmail.notificarOkControlDiarioSegmentado(processDate, resultadoProceso);
-                appConfig.customLog.info("Mail control diario segmentado con fecha [" + processDate + "] enviado OK");
+                CustomLog.getInstance().info("Mail control diario segmentado con fecha [" + processDate + "] enviado OK");
             } else {
-                appConfig.customLog.info("Flag Mail control diario segmentado con fecha [" + processDate + "] desactivado");
+                CustomLog.getInstance().info("Flag Mail control diario segmentado con fecha [" + processDate + "] desactivado");
             }
             return true;
         } catch (Exception e) {
-            appConfig.customLog.error("Errores al realizar control diario segmentado con fecha ["+processDate+"]: "+e.getMessage());
+            CustomLog.getInstance().error("Errores al realizar control diario segmentado con fecha ["+processDate+"]: "+e.getMessage());
             if (flagEnviarMail) {
                 notificacionEmail.notificarErrorControlDiarioSegmentado(processDate, "Error Job Control Diario Segmentado: ["+e.getMessage()+"]");
             }
@@ -67,14 +68,14 @@ public class JobControlDiario implements Runnable {
     }
 
     public void tarea() {
-        appConfig.customLog.info("Iniciando tarea Control Diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+        CustomLog.getInstance().info("Iniciando tarea Control Diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
         try {
             this.realizaControlDiarioSegmentado(processDate);
         } catch (QandeMmiiException e) {
-            appConfig.customLog.error("Error al realizar tarea control diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
+            CustomLog.getInstance().error("Error al realizar tarea control diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
         }
-        appConfig.customLog.info("Finalizando tarea control diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+        CustomLog.getInstance().info("Finalizando tarea control diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
     }
 
     @Override

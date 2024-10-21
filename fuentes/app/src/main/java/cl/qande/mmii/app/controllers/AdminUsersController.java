@@ -5,6 +5,7 @@ import cl.qande.mmii.app.models.db.core.dao.IUsuarioDao;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.SesionWeb;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.UsuariosHelper;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,11 @@ public class AdminUsersController {
     public String listaUsuarios(
             Model model) throws QandeMmiiException {
 
-        appConfig.customLog.info("Pasando por método listado: ["+sesionWeb.getUsuario()+"]");
+        CustomLog.getInstance().info("Pasando por método listado: ["+sesionWeb.getUsuario()+"]");
         try {
         model.addAttribute("listaUsuarios", usuarioDao.findAll());
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar usuarios: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar usuarios: "+e.getMessage());
         }
         model.addAttribute(CAMPO_TITULO, "Lista Usuarios");
         model.addAttribute(CAMPO_SESION, sesionWeb);
@@ -54,7 +55,7 @@ public class AdminUsersController {
     public String cambioClave(
             @PathVariable(value= "username") String username,
             Model model) throws QandeMmiiException {
-        appConfig.customLog.info("Reseteando clave por ["+sesionWeb.getUsuario()+"] para ["+username+"]");
+        CustomLog.getInstance().info("Reseteando clave por ["+sesionWeb.getUsuario()+"] para ["+username+"]");
         var estadoPeticion   = new EstadoPeticion();
 
         var defaultPwd  = appConfig.appConfigProperties.getDefaultPwd();

@@ -5,6 +5,7 @@ import cl.qande.mmii.app.models.db.core.dao.IUsuarioDao;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.SesionWeb;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.UsuariosHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,7 @@ public class UsuarioRolController {
     public String panelUsuario(
             Model model) throws QandeMmiiException {
 
-        appConfig.customLog.info("Pasando por método /usuario: ["+sesionWeb.getUsuario()+"]");
+        CustomLog.getInstance().info("Pasando por método /usuario: ["+sesionWeb.getUsuario()+"]");
         model.addAttribute(CAMPO_TITULO, "Panel Usuario");
         model.addAttribute(CAMPO_SESION, sesionWeb);
         sesionWeb.getAppMenu().cambiaNavegacion("", false);
@@ -50,7 +51,7 @@ public class UsuarioRolController {
             Principal principal,
             @RequestParam(value= "passwd") String passwd,
             @RequestParam(value= "passwd_repeat") String passwdRepeat) throws QandeMmiiException {
-        appConfig.customLog.info("Modificando clave: ["+sesionWeb.getUsuario()+"]");
+        CustomLog.getInstance().info("Modificando clave: ["+sesionWeb.getUsuario()+"]");
         var estadoPeticion   = new EstadoPeticion();
         if (principal!= null) {
             if (passwd.equals(passwdRepeat)) {
@@ -76,9 +77,9 @@ public class UsuarioRolController {
             estadoPeticion.setEstadoError(MSG_ERROR_CLAVE, "Hubo un error al validar el usuario.");
         }
         if (estadoPeticion.getCodigo().equals(0)) {
-            appConfig.customLog.info("Modifcación contraseña: "+estadoPeticion.getDetalle());
+            CustomLog.getInstance().info("Modifcación contraseña: "+estadoPeticion.getDetalle());
         } else {
-            appConfig.customLog.error("Error Modifcación contraseña: "+estadoPeticion.getDetalle());
+            CustomLog.getInstance().error("Error Modifcación contraseña: "+estadoPeticion.getDetalle());
         }
 
         model.addAttribute(CAMPO_STATUS, estadoPeticion);

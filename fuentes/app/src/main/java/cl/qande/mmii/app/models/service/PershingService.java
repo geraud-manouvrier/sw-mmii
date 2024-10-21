@@ -5,6 +5,7 @@ import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.impl.SflImpl;
 import cl.qande.mmii.app.util.helper.ArchivosHelper;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +55,7 @@ public class PershingService {
             archivosDescargados = ftpPershingService.downloadFilesByPattern(fechaPershing);
             message = "Paso FTP Pershing finalizado";
             procesoFtpPershingService.procesaFtp(processDate, processStamp, message);
-            appConfig.customLog.info("Descarga FTP Pershing con fecha [" + processDate + "]-["+fechaPershing+"] finalizado OK. Archivos descargados: "+archivosDescargados.toString());
+            CustomLog.getInstance().info("Descarga FTP Pershing con fecha [" + processDate + "]-["+fechaPershing+"] finalizado OK. Archivos descargados: "+archivosDescargados.toString());
         } catch (QandeMmiiException e) {
             procesoFtpPershingService.procesaFtp(processDate, processStamp, "Error en paso FTP Pershing: ["+e.getMessage()+"]");
             throw new QandeMmiiException(e, "Error en paso FTP Pershing: ["+e.getMessage()+"]");
@@ -78,7 +79,7 @@ public class PershingService {
         message = "Iniciando paso Archivos por Fecha Proceso: ["+processDate+"] y Fecha Pershing: ["+fechaPershing+"]. Id SFL: ["+idSfl+"]...";
         idProceso   = procesoFtpPershingService.procesaFtp(processDate, processStamp, message).getId();
         var archivosDescargados = archivosHelper.listadoDeSflZipPershingPorFechaIdSfl(fechaPershing, idSfl);
-        appConfig.customLog.info("Archivos detectados a procesar: [" + List.of(archivosDescargados) + "]");
+        CustomLog.getInstance().info("Archivos detectados a procesar: [" + List.of(archivosDescargados) + "]");
         try {
             message = "Iniciando procesado lista de archivos...";
             procesoFtpPershingService.procesaFtp(processDate, processStamp, message);

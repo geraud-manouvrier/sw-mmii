@@ -6,6 +6,7 @@ import cl.qande.mmii.app.models.dto.ParFeeSegmentoDto;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.IMantenedoresParametrosService;
 import cl.qande.mmii.app.util.SesionWeb;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -94,18 +95,18 @@ public class ParametrosController {
 
         if (result.hasErrors()) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, "Campos tienen errores");
-            appConfig.customLog.error(PREFIX_ERROR_VALID +" ID ["+id+MSG_APPEND_USER +usuario+"]: ["+result.getAllErrors()+"] ");
+            CustomLog.getInstance().error(PREFIX_ERROR_VALID +" ID ["+id+MSG_APPEND_USER +usuario+"]: ["+result.getAllErrors()+"] ");
             sesionWeb.addNotification(estadoPeticion.getDetalle());
             sesionWeb.addNotification(result.getFieldErrors());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return inicioFeeSegmentoPorId(id, parFeeSegmentoDto, result, model);
         }
-        appConfig.customLog.info("Guardando registro ID ["+id+MSG_APPEND_USER+usuario+ parFeeSegmentoDto.toString()+"] ");
+        CustomLog.getInstance().info("Guardando registro ID ["+id+MSG_APPEND_USER+usuario+ parFeeSegmentoDto.toString()+"] ");
         try {
             mantenedoresParametrosService.guardarRegistro(parFeeSegmentoDto);
         } catch (Exception e) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID);
-            appConfig.customLog.error(PREFIX_ERROR_VALID+" ID ["+id+MSG_APPEND_USER+usuario+"]: ["+e.getMessage()+"] ");
+            CustomLog.getInstance().error(PREFIX_ERROR_VALID+" ID ["+id+MSG_APPEND_USER+usuario+"]: ["+e.getMessage()+"] ");
             sesionWeb.addNotification(estadoPeticion.getDetalle());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return inicioFeeSegmentoPorId(id, parFeeSegmentoDto, result, model);

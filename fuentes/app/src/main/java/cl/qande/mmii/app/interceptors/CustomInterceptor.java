@@ -3,6 +3,7 @@ package cl.qande.mmii.app.interceptors;
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.util.SesionWeb;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
@@ -63,7 +64,7 @@ public class CustomInterceptor implements HandlerInterceptor {
     }
     private ModelMap auxSetOnError(ModelMap modelMap, String viewName) {
         if (viewName.startsWith("errores/error_403")) {
-            appConfig.customLog.error("Error de acceso denegado para usuario: [" + sesionWeb.getUsuario() + "] Roles: [" + sesionWeb.listaDeRoles().toString() + "]");
+            CustomLog.getInstance().error("Error de acceso denegado para usuario: [" + sesionWeb.getUsuario() + "] Roles: [" + sesionWeb.listaDeRoles().toString() + "]");
             modelMap.addAttribute(ATTR_SESION, sesionWeb);
             modelMap.addAttribute(ATTR_TITTLE, "Acceso denegado");
         }
@@ -87,7 +88,7 @@ public class CustomInterceptor implements HandlerInterceptor {
             Class<?> controllerClass = method.getDeclaringClass();
 
             if (controllerClass.isAnnotationPresent(RequestMapping.class)) {
-                appConfig.customLog.info("Intercepted request to controller for user: ["+sesionWeb.getUsuario()+"] to RequestURI: ["+request.getRequestURI()+"]-["+request.getMethod()+"]");
+                CustomLog.getInstance().info("Intercepted request to controller for user: ["+sesionWeb.getUsuario()+"] to RequestURI: ["+request.getRequestURI()+"]-["+request.getMethod()+"]");
                 sesionWeb.clearNotifications();
             }
         }

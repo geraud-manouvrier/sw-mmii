@@ -4,6 +4,7 @@ import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.config.properties.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.helper.ArchivosHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -41,27 +42,27 @@ public class QandeMmiiApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		appConfig.customLog.info("Iniciando método run...");
+		CustomLog.getInstance().info("Iniciando método run...");
 		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getRootFolder()))) {
 			throw new QandeMmiiException("Directorio APP no existe <"+appConfig.appConfigProperties.getRootFolder()+">; finalizando...");
 		}
 		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getUploadFolder()))) {
-			appConfig.customLog.info("Directorio UPLOADS no existe <{}>, creando..."+ appConfig.appConfigProperties.getUploadFolder());
+			CustomLog.getInstance().info("Directorio UPLOADS no existe <{}>, creando..."+ appConfig.appConfigProperties.getUploadFolder());
 			archivosHelper.creaDirectorioSubida();
 		}
 		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getLogFolder()))) {
-			appConfig.customLog.info("Directorio LOGS no existe <{}>, creando..."+ appConfig.appConfigProperties.getLogFolder());
+			CustomLog.getInstance().info("Directorio LOGS no existe <{}>, creando..."+ appConfig.appConfigProperties.getLogFolder());
 			archivosHelper.creaDirectorioLogs();
 		}
 		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getReportesMaestrosFolder()))) {
-			appConfig.customLog.info("Directorio Reportes Maestro no existe <{}>, creando..."+ appConfig.appConfigProperties.getReportesMaestrosFolder());
+			CustomLog.getInstance().info("Directorio Reportes Maestro no existe <{}>, creando..."+ appConfig.appConfigProperties.getReportesMaestrosFolder());
 			archivosHelper.creaDirectorioReportesMaestro();
 		}
 		if( ! Files.exists(archivosHelper.getPathFromName(appConfig.appConfigProperties.getDownloadableFolder()))) {
-			appConfig.customLog.info("Directorio de Descargables no existe <{}>, creando..."+ appConfig.appConfigProperties.getDownloadableFolder());
+			CustomLog.getInstance().info("Directorio de Descargables no existe <{}>, creando..."+ appConfig.appConfigProperties.getDownloadableFolder());
 			archivosHelper.creaDirectorioDownloadable();
 		}
 
-		appConfig.customLog.info("Método run finalizado");
+		CustomLog.getInstance().info("Método run finalizado");
 	}
 }

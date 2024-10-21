@@ -7,6 +7,7 @@ import cl.qande.mmii.app.models.exception.DaoException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.IMantenedoresInstrumentosService;
 import cl.qande.mmii.app.util.SesionWeb;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -82,16 +83,16 @@ public class ParametrosInstrumentosController {
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listaSourceCode(parSourceCodeDto, result, model);
         }
-        appConfig.customLog.info("Agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"] ");
+        CustomLog.getInstance().info("Agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"] ");
         try {
             mantenedoresInstrumentosService.save(parSourceCodeDto);
         } catch (DaoException daoException) {
-            appConfig.customLog.error("Error agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"]; Error: "+daoException.getMessage());
+            CustomLog.getInstance().error("Error agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"]; Error: "+daoException.getMessage());
             estadoPeticion.setEstadoError(ERROR_AGREGAR, daoException.getMessage());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listaSourceCode(parSourceCodeDto, result, model);
         } catch (Exception e) {
-            appConfig.customLog.error("Error no controlado agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"]; Error: "+e);
+            CustomLog.getInstance().error("Error no controlado agregando registro Source Code Pershing por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALUE +parSourceCodeDto+"]; Error: "+e);
             estadoPeticion.setEstadoError(ERROR_AGREGAR, ERROR_AGREGAR);
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
             return listaSourceCode(parSourceCodeDto, result, model);

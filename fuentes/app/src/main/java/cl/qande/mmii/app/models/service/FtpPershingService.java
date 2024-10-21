@@ -4,6 +4,7 @@ import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.config.ProxySocketFactory;
 import cl.qande.mmii.app.config.properties.FtpPershingProperties;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
@@ -40,19 +41,19 @@ public class FtpPershingService {
         try {
             this.openConnection();
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_CONEXION+e.getMessage());
+            CustomLog.getInstance().error(ERROR_CONEXION+e.getMessage());
             throw new QandeMmiiException(e, ERROR_CONEXION+e.getMessage());
         }
         try {
             contenidoDir    = sftpClient.ls(remotePath);
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_LISTAR+e.getMessage());
+            CustomLog.getInstance().error(ERROR_LISTAR+e.getMessage());
             throw new QandeMmiiException(e, ERROR_LISTAR+e.getMessage());
         }
         try {
             closeConnection();
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_DESCONEXION+e.getMessage());
+            CustomLog.getInstance().error(ERROR_DESCONEXION+e.getMessage());
             throw new QandeMmiiException(e, ERROR_DESCONEXION+e.getMessage());
         }
         return contenidoDir;
@@ -64,41 +65,41 @@ public class FtpPershingService {
         List<String> listaDescargados = new ArrayList<>();
         var remotePath	= ftpPershingProperties.getServerPath();
         var downloadPath= ftpPershingProperties.getDownloadPath();
-        appConfig.customLog.info("Iniciando listado de ["+remotePath+"]");
+        CustomLog.getInstance().info("Iniciando listado de ["+remotePath+"]");
         List<RemoteResourceInfo> contenidoDir;
 
         try {
             this.openConnection();
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_CONEXION+e.getMessage());
+            CustomLog.getInstance().error(ERROR_CONEXION+e.getMessage());
             throw new QandeMmiiException(e, ERROR_CONEXION+e.getMessage());
         }
         try {
             contenidoDir    = sftpClient.ls(remotePath);
-            appConfig.customLog.info("El directorio del cual se descargarán archivos '*"+remoteFilePattern+"*' contiene ["+contenidoDir.size()+"] elementos: ["+contenidoDir.toString()+"]");
+            CustomLog.getInstance().info("El directorio del cual se descargarán archivos '*"+remoteFilePattern+"*' contiene ["+contenidoDir.size()+"] elementos: ["+contenidoDir.toString()+"]");
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_LISTAR+e.getMessage());
+            CustomLog.getInstance().error(ERROR_LISTAR+e.getMessage());
             throw new QandeMmiiException(e, ERROR_LISTAR+e.getMessage());
         }
         for (var archivoRemoto : contenidoDir) {
             try {
                 if (archivoRemoto.getName().contains(remoteFilePattern)) {
-                    appConfig.customLog.info("Bajando archivo ["+archivoRemoto.getPath()+"]");
+                    CustomLog.getInstance().info("Bajando archivo ["+archivoRemoto.getPath()+"]");
                     sftpClient.get(archivoRemoto.getPath() , downloadPath+archivoRemoto.getName());
                     listaDescargados.add(archivoRemoto.getName());
                 } else {
-                    appConfig.customLog.info("Omitiendo archivo ["+archivoRemoto.getPath()+"]");
+                    CustomLog.getInstance().info("Omitiendo archivo ["+archivoRemoto.getPath()+"]");
                 }
 
             } catch (IOException e) {
-                appConfig.customLog.error("Error bajando archivo ["+archivoRemoto.getPath()+"]");
+                CustomLog.getInstance().error("Error bajando archivo ["+archivoRemoto.getPath()+"]");
                 throw new RuntimeException(e);
             }
         }
         try {
             closeConnection();
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_DESCONEXION+e.getMessage());
+            CustomLog.getInstance().error(ERROR_DESCONEXION+e.getMessage());
             throw new QandeMmiiException(e, ERROR_DESCONEXION+e.getMessage());
         }
         return listaDescargados;
@@ -106,25 +107,25 @@ public class FtpPershingService {
 
     public List<RemoteResourceInfo> listDir() throws QandeMmiiException {
         var remotePath	= ftpPershingProperties.getServerPath();
-        appConfig.customLog.info("Iniciando listado de ["+remotePath+"]");
+        CustomLog.getInstance().info("Iniciando listado de ["+remotePath+"]");
         List<RemoteResourceInfo> contenidoDir;
 
         try {
             this.openConnection();
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_CONEXION+e.getMessage());
+            CustomLog.getInstance().error(ERROR_CONEXION+e.getMessage());
             throw new QandeMmiiException(e, ERROR_CONEXION+e.getMessage());
         }
         try {
             contenidoDir    = sftpClient.ls(remotePath);
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_LISTAR+e.getMessage());
+            CustomLog.getInstance().error(ERROR_LISTAR+e.getMessage());
             throw new QandeMmiiException(e, ERROR_LISTAR+e.getMessage());
         }
         try {
             closeConnection();
         } catch (IOException e) {
-            appConfig.customLog.error(ERROR_DESCONEXION+e.getMessage());
+            CustomLog.getInstance().error(ERROR_DESCONEXION+e.getMessage());
             throw new QandeMmiiException(e, ERROR_DESCONEXION+e.getMessage());
         }
         return contenidoDir;
@@ -140,13 +141,13 @@ public class FtpPershingService {
         var sshKey      = ftpPershingProperties.getSshPrivateKey();
         var useSshKey   = ftpPershingProperties.isUseSshKey();
         var proxyPort   = ftpPershingProperties.getUseProxyPort();
-        appConfig.customLog.info("Iniciando conexión SFTP Pershing a ["+username+"@"+server+":"+port+"]");
+        CustomLog.getInstance().info("Iniciando conexión SFTP Pershing a ["+username+"@"+server+":"+port+"]");
 
         this.sshClient = new SSHClient();
         this.sshClient.addHostKeyVerifier(new PromiscuousVerifier());
 
         if (proxyPort>0) {
-            appConfig.customLog.info("Usando proxy para SFTP Pershing en puerto ["+proxyPort+"]");
+            CustomLog.getInstance().info("Usando proxy para SFTP Pershing en puerto ["+proxyPort+"]");
             ProxySocketFactory proxySocketFactory = new ProxySocketFactory("localhost", proxyPort);
             this.sshClient.setSocketFactory(proxySocketFactory);
         }
@@ -154,19 +155,19 @@ public class FtpPershingService {
         try {
             this.sshClient.connect(server, port);
         } catch (ConnectException e) {
-            appConfig.customLog.error("Error de conexión a FTP ["+e.getMessage()+"]");
-            appConfig.customLog.info("Intentando por segunda vez...");
+            CustomLog.getInstance().error("Error de conexión a FTP ["+e.getMessage()+"]");
+            CustomLog.getInstance().info("Intentando por segunda vez...");
             this.sshClient.connect(server, port);
         } catch (Exception e) {
-            appConfig.customLog.error("Error desconocido conexión a FTP ["+e.getMessage()+"]; cause: "+e.getCause());
+            CustomLog.getInstance().error("Error desconocido conexión a FTP ["+e.getMessage()+"]; cause: "+e.getCause());
             throw e;
         }
 
         if (useSshKey) {
-            appConfig.customLog.info("Usando autenticación con SSH KEY en ["+sshKey+"]");
+            CustomLog.getInstance().info("Usando autenticación con SSH KEY en ["+sshKey+"]");
             this.sshClient.authPublickey(username, sshKey);
         } else {
-            appConfig.customLog.info("Usando autenticación con password");
+            CustomLog.getInstance().info("Usando autenticación con password");
             this.sshClient.authPassword(username, password);
         }
         this.sftpClient = this.sshClient.newSFTPClient();

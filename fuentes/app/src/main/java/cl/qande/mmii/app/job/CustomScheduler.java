@@ -1,6 +1,7 @@
 package cl.qande.mmii.app.job;
 
 import cl.qande.mmii.app.config.AppConfig;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -69,10 +70,10 @@ public class CustomScheduler {
 
     private void registraTarea(Runnable taskOrJob, Trigger triggerOrCron, String nombreTarea) {
         if (triggerOrCron.toString().equals(CRON_NEVER_EXEC)) {
-            appConfig.customLog.info("Tarea " + nombreTarea+" no registrada (ejecución desactivada)");
+            CustomLog.getInstance().info("Tarea " + nombreTarea+" no registrada (ejecución desactivada)");
         } else {
             taskScheduler.schedule(taskOrJob, triggerOrCron);
-            appConfig.customLog.info("Tarea " + nombreTarea + " registrada");
+            CustomLog.getInstance().info("Tarea " + nombreTarea + " registrada");
         }
 
     }

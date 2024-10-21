@@ -1,10 +1,10 @@
 package cl.qande.mmii.app.controllers.api;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.api.ApiResponse;
 import cl.qande.mmii.app.models.api.ApiResponseOk;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.helper.ApiHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,30 +18,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class InicioApi {
 
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private ApiHelper apiHelper;
+    private final ApiHelper apiHelper;
 
-    private static final String HEADER_JSON_KEY    = "Content-Type";
-    private static final String HEADER_JSON_VAL    = "application/json";
+    @Autowired
+    public InicioApi(ApiHelper apiHelper) {
+        this.apiHelper = apiHelper;
+    }
+
     @GetMapping(value= {"/status"})
     public ResponseEntity<ApiResponse> statusApi(
-            @RequestHeader(value = "x-api_key", required = true) String apiKey,
-            @RequestHeader(value = "x-client_id", required = true) String appClientId) {
-        appConfig.customLog.info("Iniciando método rest status...");
+            @RequestHeader(value = ApiHelper.HEADER_API_KEY, required = true) String apiKey,
+            @RequestHeader(value = ApiHelper.HEADER_CLIENT_ID, required = true) String appClientId) {
+        CustomLog.getInstance().info("Iniciando método rest status...");
         var responseHeaders	= new HttpHeaders();
-        responseHeaders.set(HEADER_JSON_KEY, HEADER_JSON_VAL);
+        responseHeaders.set(ApiHelper.HEADER_JSON_KEY, ApiHelper.HEADER_JSON_VAL);
 
         try {
-            apiHelper.validateApiKey(apiKey, appClientId);
-            appConfig.customLog.info("Método REST finalizado");
+            apiHelper.validateApiKey(apiKey, appClientId, ApiHelper.ID_API_STATUS);
+            CustomLog.getInstance().info("Método REST finalizado");
             return new ResponseEntity<>(new ApiResponseOk(), responseHeaders, HttpStatus.OK);
         } catch (QandeMmiiException qandeMmiiException) {
             return new ResponseEntity<>(new ApiResponse(1, qandeMmiiException.getMessage()), responseHeaders, HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
-            appConfig.customLog.error("Error en método REST ["+e.getMessage()+"]");
+            CustomLog.getInstance().error("Error en método REST ["+e.getMessage()+"]");
             return new ResponseEntity<>(new ApiResponse(2, "Error: "+e.getMessage()), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

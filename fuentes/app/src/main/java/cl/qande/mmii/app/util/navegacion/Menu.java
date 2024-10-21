@@ -45,6 +45,10 @@ public class Menu {
     public static final String MANT_FEE_SEGMENTO ="MANT_FEE_SEGMENTO";
     public static final String MANT_COMIS_CTA ="MANT_COMIS_CTA";
 
+    //Admin User
+    public static final String ADMIN_JOBS_BY_USER ="ADMIN_JOBS_BY_USER";
+
+
 
     public static final String ROLE_ADMIN  = "ROLE_ADMIN";      //Máximos privilegios, admin del sistema
     public static final String ROLE_SUPER  = "ROLE_SUPER";      //Usuario con permisos mayores al básico (no admin sistema)
@@ -171,6 +175,10 @@ public class Menu {
         opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_COMIS_CTA, "Excepciones Comisiones", "/mantenedores/enrolamiento/comision_cuenta", false));
         categoriaMantenedoresEnrolamiento.setListaOpciones(opcionesMantenedoresEnrolamiento);
 
+        ArrayList<OpcionMenu> opcionesProcesosPorUsuario    = new ArrayList<>();
+        opcionesProcesosPorUsuario.add(new OpcionMenu(ADMIN_JOBS_BY_USER, "Reprocesos", "/jobs/jobs_por_usuario", false));
+        categoriaProcesosPorUsuario.setListaOpciones(opcionesProcesosPorUsuario);
+
         ArrayList<OpcionMenu> opcionesMantenedoresParametros    = new ArrayList<>();
         opcionesMantenedoresParametros.add(new OpcionMenu(MANT_FEE_SEGMENTO, "Fee Segmentos", "/mantenedores/parametros/fee_segmento", false));
         categoriaMantenedoresParametros.setListaOpciones(opcionesMantenedoresParametros);
@@ -186,6 +194,7 @@ public class Menu {
         opcionesMenu.add(categoriaControlOperaciones);
         opcionesMenu.add(categoriaReportesSfl);
         opcionesMenu.add(categoriaMantenedoresEnrolamiento);
+        opcionesMenu.add(categoriaProcesosPorUsuario);
         opcionesMenu.add(categoriaMantenedoresParametros);
 
         this.opcionPorDefecto   = ADMINQANDE_LOGS;

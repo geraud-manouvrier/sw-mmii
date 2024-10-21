@@ -153,17 +153,17 @@ public class ReportesMaestrosHelper {
 
         CSVWriter writer;
         try {
-            appConfig.customLog.info("Creando archivo CSV en directorio...");
+            CustomLog.getInstance().info("Creando archivo CSV en directorio...");
             writer = new CSVWriter(new FileWriter(fileLocation, CHARSET_ISO_88591), ';', DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END);
         } catch (IOException e) {
             throw new QandeMmiiException(e, "Error al crear archivo CSV");
         }
 
-        appConfig.customLog.info("Escribiendo en disco...");
+        CustomLog.getInstance().info("Escribiendo en disco...");
         writer.writeAll(contenidoCsv, false);
 
         try {
-            appConfig.customLog.info("Cerrando archivo CSV...");
+            CustomLog.getInstance().info("Cerrando archivo CSV...");
             writer.close();
         } catch (IOException e) {
             throw new QandeMmiiException(e, "Error al cerrar archivo CSV");

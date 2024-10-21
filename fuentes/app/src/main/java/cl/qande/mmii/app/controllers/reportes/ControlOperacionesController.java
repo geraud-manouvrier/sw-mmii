@@ -6,6 +6,7 @@ import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ControlDiarioService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,7 +50,7 @@ public class ControlOperacionesController {
             estadoPeticion.setEstadoOk("Resultado control OK", "Resultado del control listado correctamente");
             model.addAttribute(CAMPO_LISTA_REGISTROS, controlDiarioService.resultadoVigenteDelDia(processDate));
         } catch (Exception e) {
-            appConfig.customLog.error("Error al listar resultado control con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar resultado control con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar resultado", "Se produjo un error al listar resultado del control");
             model.addAttribute(CAMPO_LISTA_REGISTROS, null);
         }
