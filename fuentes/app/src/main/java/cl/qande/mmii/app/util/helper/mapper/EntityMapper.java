@@ -42,6 +42,13 @@ public interface EntityMapper <D, E> {
         return value;
     }
 
+    @Named("negativeIsNull")
+    public static Integer negativeIsNull(Integer value) {
+        if (value!=null && value<0)
+            return null;
+        return value;
+    }
+
     @Named("redondea")
     public static BigDecimal redondea(BigDecimal dtoValue) {
         return MathHelper.redondeaDecimal(dtoValue, 4);

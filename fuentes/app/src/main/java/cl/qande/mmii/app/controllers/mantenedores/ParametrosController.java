@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.controllers.mantenedores;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.dto.ParFeeSegmentoDto;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -25,8 +24,6 @@ import java.math.BigDecimal;
 @RequestMapping("/mantenedores/parametros")
 public class ParametrosController {
     public static final String ERROR_SUMA_TASAS = "Suma de Tasas deben ser igual a Annual Fee. ";
-    @Autowired
-    private IMantenedoresParametrosService mantenedoresParametrosService;
     private static final String PREFIS_ERROR_DTO    = "error.";
     private static final String CAMPO_TITULO    = "titulo";
     private static final String CAMPO_STATUS    = "status";
@@ -44,10 +41,14 @@ public class ParametrosController {
     private static final String TITULO_FEE_SEGMENTO = "Mantenedor Fee Segmentos";
     private static final String URL_FEE_SEGMENTO = "/mantenedores/parametros/fee_segmento";
 
+    private final IMantenedoresParametrosService mantenedoresParametrosService;
+    private final SesionWeb sesionWeb;
+
     @Autowired
-    private SesionWeb sesionWeb;
-    @Autowired
-    private AppConfig appConfig;
+    public ParametrosController(IMantenedoresParametrosService mantenedoresParametrosService, SesionWeb sesionWeb) {
+        this.mantenedoresParametrosService = mantenedoresParametrosService;
+        this.sesionWeb = sesionWeb;
+    }
 
     //-----------------------------------------------------------------------------------------------------
     //Fee Segmento

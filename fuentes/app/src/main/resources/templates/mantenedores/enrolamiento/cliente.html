@@ -24,6 +24,7 @@
     <!--/*@thymesVar id="clienteDto" type="cl.qande.mmii.app.models.dto.ClienteDto"*/-->
     <!--/*@thymesVar id="listaTiposId" type="java.util.List<cl.qande.mmii.app.models.dto.TipoIdentificadorDto>"*/-->
     <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.dto.ClienteMaestroDto>"*/-->
+    <!--/*@thymesVar id="lista_relacionados" type="java.util.List<cl.qande.mmii.app.models.dto.PersonaRelacionadaDto>"*/-->
 
 
     <!-- Main content -->
@@ -69,7 +70,7 @@
             <div class="form-group row">
               <label for="idTipoIdentificador" class="col-md-2 col-form-label">Tipo Identificador</label>
               <div class="col-md-2">
-                <select class="form-control" th:field="*{idTipoIdentificador}" id="idTipoIdentificador" name="idTipoIdentificador">
+                <select class="form-control" th:field="*{idTipoIdentificador}" id="idTipoIdentificador" name="idTipoIdentificador" onchange="toggleDivRelacionados()">
                   <option th:each="tipoIdentificador : ${listaTiposId}" th:value="${tipoIdentificador.id}" th:text="${tipoIdentificador.tipoIdentificador + ' - ' + tipoIdentificador.glosaIdentificador}" th:selected="${tipoIdentificador.id==idTipoIdentificador}"></option>
                 </select>
               </div>
@@ -82,12 +83,25 @@
                 <input class="form-control" type="text" id="cuenta" name="cuenta" th:value="${(listaCuentasCliente!=null) ? listaCuentasCliente: ''}" th:readonly="${(clienteDto.id!=null && clienteDto.id!=0)}">
               </div>
             </div>
+
+            <div id="div-relacionados">
+              <div class="form-group row">
+                <div>
+                  <h3 class="card-title" th:text="${'Relacionado (sólo para clientes NIT)'}"></h3>
+                </div>
+                <input type="hidden" id="personasRelacionadas" name="personasRelacionadas" />
+              </div>
+              <div class="form-group row">
+                <div id="PersonasGrid"></div>
+              </div>
+            </div>
+
           </form>
 
         </div>
         <!-- /.card-body -->
         <div class="card-footer">
-          <a class="btn btn-app" th:onclick="guardar()"><i class="fas fa-save"></i>Guardar</a>
+          <a id="guardar-btn" class="btn btn-app" ><i class="fas fa-save"></i>Guardar</a>
         </div>
         <!-- /.card-footer-->
       </div>
@@ -122,7 +136,7 @@
               <td th:text="${registro_actual.nombre}"></td>
               <td th:text="${registro_actual.listaCuentas}"></td>
               <td>
-                <a class="btn bg-info" th:href="@{/mantenedores/enrolamiento/cliente/editar/{id}(id=${registro_actual.id})}">Editar</a>
+                <a class="btn bg-info" th:href="@{/mantenedores/enrolamiento/cliente/editar/{id}(id=${registro_actual.id})}">Editar / Ver Detalle</a>
               </td>
             </tr>
             </tbody>
@@ -177,7 +191,118 @@
 <script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
 
 
-<script>
+<script th:inline="javascript">
+  $(document).ready(function() {
+
+
+
+    var temporaryId = -1;
+    var defaultId   = null;
+    var idGrilla    = "PersonasGrid";
+
+    /*<![CDATA[*/
+
+    var relacionadosData = [
+      /*[# th:each="objeto : ${lista_relacionados}"]*/
+      {
+        id: ( ([[${objeto.getId}]] ==null || [[${objeto.getId}]]<0) ? (temporaryId--) : [[${objeto.getId}]] ),
+        idTipoIdentificador: [[${objeto.getIdTipoIdentificador}]],
+        identificador: [[${objeto.getIdentificador}]],
+        nombre: [[${objeto.getNombre}]]
+      },
+      /*[/]*/
+    ];
+
+    var tipoIdentificadorData = [
+      /*[# th:each="objeto : ${listaTiposId}"]*/
+      {
+        id: [[${objeto.id}]],
+        name: [[${objeto.tipoIdentificador}]] + ' - ' + [[${objeto.glosaIdentificador}]]
+      },
+      /*[/]*/
+    ];
+    /*]]>*/
+
+    if (tipoIdentificadorData.length>0) {
+      defaultId = tipoIdentificadorData[0].id;
+    }
+
+
+    ej.grids.Grid.Inject(ej.grids.Page, ej.grids.Edit,  ej.grids.Toolbar);
+
+    var gridRelacionados = new ej.grids.Grid({
+      dataSource: relacionadosData,
+      editSettings: {
+        mode: 'Batch', showConfirmDialog: false, newRowPosition: 'Bottom',
+        allowEditing: true, allowAdding: true, allowDeleting: true
+      },
+      toolbar: ['Add', 'Cancel', 'Delete'],
+      enableHover: false,
+      cellSaved: function() {
+        this.editModule.batchSave();
+      },
+      batchDelete: function() {
+        this.editModule.batchSave();
+      },
+      columns: [
+        { field: 'id', headerText: 'ID Interno',  isPrimaryKey: true, allowEditing: false, visible: false, defaultValue: temporaryId--},
+        { field: 'identificador', headerText: 'ID Relacionado', validationRules: { required: true }, defaultValue: '' },
+        { field: 'nombre', headerText: 'Nombre',validationRules: { required: true }, defaultValue: '' },
+        { field: 'idTipoIdentificador', headerText: 'Tipo Identificador', validationRules: { required: true }, editType: 'dropdownedit', defaultValue: defaultId,
+          edit: {
+            params: {
+              dataSource: new ej.data.DataManager(tipoIdentificadorData),
+              fields: { text: 'name', value: 'id' },
+              query:  new ej.data.Query(),
+              actionComplete: () => false
+            }
+          },
+          /*
+          // Usar valueAccessor para mostrar el texto en lugar del valor
+          valueAccessor: (field, data, column) => {
+            let tipoIdentificador = tipoIdentificadorData.find(item => item.id === data.idTipoIdentificador);
+            return tipoIdentificador ? tipoIdentificador.name : '';
+          }*/
+          // Definir template para mostrar el texto (Name) en lugar del valor (Id). A diferencia de valueAccessor, se puede modificar el HTML completo (sofisticar estilo, agregar íconos)
+          template: function (data) {
+            let tipoIdentificador = tipoIdentificadorData.find(item => item.id === data.idTipoIdentificador);
+            return tipoIdentificador ? tipoIdentificador.name : '';
+          }
+        }
+      ],
+      height: 150
+
+    });
+    // Renderizar el Grid
+    gridRelacionados.appendTo('#'+idGrilla);
+
+
+    // Función para obtener los datos del Grid
+    function obtenerPersonasRelacionadas() {
+      //gridRelacionados.endEdit();
+      gridRelacionados.editModule.batchSave();
+      console.debug(gridRelacionados.getDataRows())
+      console.debug(gridRelacionados.getBatchChanges())
+      console.debug(gridRelacionados.getCurrentViewRecords())
+      return gridRelacionados.getCurrentViewRecords();
+    }
+
+
+    function guardar() {
+      var id      = $('#id').val();
+      var myForm  = document.getElementById('form_guardar_registro');
+      var personasRelacionadas      = obtenerPersonasRelacionadas();
+      console.log(personasRelacionadas);
+
+      if (id!="") {
+        var oldAction   = myForm.action;
+        myForm.action = oldAction + '/'+id;
+      }
+      document.getElementById('personasRelacionadas').value = JSON.stringify(personasRelacionadas);
+      myForm.submit();
+    }
+
+
 
   $(function () {
     $("#tabla_valores").DataTable({
@@ -186,19 +311,29 @@
     }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
   });
 
-  function guardar() {
-    var id = $('#id').val();
-    var myForm  = document.getElementById('form_guardar_registro');
-    if (id!="") {
-      var oldAction   = myForm.action;
-      console.log(oldAction);
-      myForm.action = oldAction + '/'+id;
-    }
-    console.log(myForm.action);
-    myForm.submit();
-  }
+  $('#guardar-btn').on('click', guardar);
+
 
   $('#my-card').CardWidget('collapse');
+
+  });
+</script>
+<script>
+  function toggleDivRelacionados() {
+    var selectElement = document.getElementById("idTipoIdentificador");
+    var selectedValue = selectElement.value;
+    var divRelacionados = document.getElementById("div-relacionados");
+    if (selectedValue == 32) {
+      divRelacionados.style.display = "block";
+    } else {
+      divRelacionados.style.display = "none";
+    }
+  }
+
+  // Call the function on page load to set the initial state
+  document.addEventListener("DOMContentLoaded", function() {
+    toggleDivRelacionados();
+  });
 </script>
 
 <div th:replace="layout/layout :: scripting_cierre"></div>

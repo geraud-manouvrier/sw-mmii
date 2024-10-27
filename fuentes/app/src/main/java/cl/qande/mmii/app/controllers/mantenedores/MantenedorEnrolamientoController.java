@@ -1,13 +1,14 @@
 package cl.qande.mmii.app.controllers.mantenedores;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.dto.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IEnrolamientoClientesService;
+import cl.qande.mmii.app.models.service.EnrolamientoClientesService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,6 +33,8 @@ public class MantenedorEnrolamientoController {
     private static final String CAMPO_STATUS    = "status";
     private static final String CAMPO_SESION    = "sesionWeb";
     private static final String CAMPO_LISTA_REGISTROS    = "lista_registros";
+    private static final String CAMPO_LISTA_RELACIONADOS    = "lista_relacionados";
+    private static final String CAMPO_LISTA_CTAS_CTES    = "listaCuentasCliente";
     private static final String CAMPO_MODIFICAR_CLIENTE = "clienteDto";
     private static final String CAMPO_LISTA_TIPOS_ID = "listaTiposId";
     private static final String TITULO_CLIENTE = "Mantenedor Clientes";
@@ -43,13 +48,11 @@ public class MantenedorEnrolamientoController {
     public static final String CONCAT_MSG_VALOR = "]: Valor [";
 
     private final SesionWeb sesionWeb;
-    private final AppConfig appConfig;
-    private final IEnrolamientoClientesService enrolamientoClientesService;
+    private final EnrolamientoClientesService enrolamientoClientesService;
 
     @Autowired
-    public MantenedorEnrolamientoController(SesionWeb sesionWeb, AppConfig appConfig, IEnrolamientoClientesService enrolamientoClientesService) {
+    public MantenedorEnrolamientoController(SesionWeb sesionWeb, EnrolamientoClientesService enrolamientoClientesService) {
         this.sesionWeb = sesionWeb;
-        this.appConfig = appConfig;
         this.enrolamientoClientesService = enrolamientoClientesService;
     }
 
@@ -80,10 +83,9 @@ public class MantenedorEnrolamientoController {
             Model model) throws QandeMmiiException {
         if(model.getAttribute(CAMPO_STATUS)==null) {
             clienteDto    = enrolamientoClientesService.listarClientePorId(id);
+            model.addAttribute(CAMPO_LISTA_RELACIONADOS, enrolamientoClientesService.listarRelacionadosPorIdCliente(id, true));
             model.addAttribute(CAMPO_MODIFICAR_CLIENTE, clienteDto);
-            var listaCuentasCliente  = enrolamientoClientesService.listarCuentasPorIdCliente(id, ",");
-
-            model.addAttribute("listaCuentasCliente", listaCuentasCliente);
+            model.addAttribute(CAMPO_LISTA_CTAS_CTES, enrolamientoClientesService.listarCuentasPorIdCliente(id, ","));
         }
         return listaCliente(clienteDto, result, model);
     }
@@ -95,39 +97,45 @@ public class MantenedorEnrolamientoController {
             @Valid ClienteDto clienteDto,
             BindingResult result,
             Model model,
-            @RequestParam(value= "cuenta") String cuenta) throws QandeMmiiException {
+            @RequestParam(value= "cuenta") String cuenta,
+            @RequestParam(value = "personasRelacionadas", required = false) String personasRelacionadasJson) throws QandeMmiiException {
         var estadoPeticion  = new EstadoPeticion();
+        List<PersonaRelacionadaDto> personasRelacionadas = new ArrayList<>();
+
+        try {
+            personasRelacionadas = mapperRelacionadosFromJson(personasRelacionadasJson);
+        } catch (QandeMmiiException e) {
+            estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, "Error al obtener datos de persona relacionada");
+            this.addNotificationsOfErrors(result.getFieldErrors());
+            model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            return formularioEditarCliente(id, clienteDto, result, model);
+        }
+
         var esClienteNuevo  = (id==null || id==0);
         if (clienteDto.getIdentificador()==null || clienteDto.getIdentificador().isBlank()) {
             result.rejectValue("identificador", "error.clienteDto", "ID Cliente es obligatorio.");
         }
+        this.validateDto(personasRelacionadas, result);
+
         if (result.hasErrors()) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID);
             CustomLog.getInstance().error(PREFIX_ERROR_VALID +" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             this.addNotificationsOfErrors(result.getFieldErrors());
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            model.addAttribute(CAMPO_LISTA_RELACIONADOS, personasRelacionadas);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
         if ( (cuenta==null || cuenta.isBlank()) && (esClienteNuevo) ) {
             estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Cuenta obligatoria.");
             CustomLog.getInstance().error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            model.addAttribute(CAMPO_LISTA_RELACIONADOS, personasRelacionadas);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
 
         CustomLog.getInstance().info("Actualizando registro ID Cliente  ["+id+"] cliente por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
         try {
-            var clienteGuardado = enrolamientoClientesService.guardarCliente(clienteDto);
-            CustomLog.getInstance().info("Guardado Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
-            if (esClienteNuevo) {
-                var cuentaDto = new CuentaDto();
-                cuentaDto.setIdCliente(clienteGuardado.getId());
-                cuentaDto.setIdCuentaCustodio(cuenta);
-                cuentaDto.setIdCustodio("pershing");
-                cuentaDto.setHabilitado(true);
-                CustomLog.getInstance().info("Guardando Cuenta Cliente ID  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +cuentaDto+"] ");
-                enrolamientoClientesService.guardarCuenta(cuentaDto);
-            }
+            enrolamientoClientesService.guardarCliente(clienteDto, personasRelacionadas, cuenta, esClienteNuevo, sesionWeb.getUsuario());
         } catch (Exception e) {
             if (e instanceof IllegalArgumentException) {
                 estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE+": "+e.getMessage());
@@ -136,6 +144,7 @@ public class MantenedorEnrolamientoController {
             }
             CustomLog.getInstance().error(PREFIX_ERROR_SAVE+" ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
             model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            model.addAttribute(CAMPO_LISTA_RELACIONADOS, personasRelacionadas);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
         return REDIRECT+ URL_CLIENTE;
@@ -153,7 +162,7 @@ public class MantenedorEnrolamientoController {
         model.addAttribute(CAMPO_TITULO, TITULO_COMIS_CTA);
         model.addAttribute(CAMPO_SESION, sesionWeb);
 
-        var listaClientes   = enrolamientoClientesService.listarClienteCuentaMaestro();
+        var listaClientes   = enrolamientoClientesService.listarClienteCuentaMaestro(true);
         listaClientes.sort(Comparator.comparing(ClienteCuentaMaestroDto::getNombreCliente));
 
         model.addAttribute("lista_clientes", listaClientes);
@@ -210,6 +219,42 @@ public class MantenedorEnrolamientoController {
         }
     }
 
+
+
+    private List<PersonaRelacionadaDto> mapperRelacionadosFromJson(String personasRelacionadasJson) throws QandeMmiiException {
+        List<PersonaRelacionadaDto> personasRelacionadas = new ArrayList<>();
+
+        if (personasRelacionadasJson != null && !personasRelacionadasJson.isEmpty()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                var contador    = -1;
+                personasRelacionadas = Arrays.asList(objectMapper.readValue(personasRelacionadasJson, PersonaRelacionadaDto[].class));
+                for (PersonaRelacionadaDto persona : personasRelacionadas) {
+                    if (persona.getId() == null || persona.getId() < 0) {
+                        persona.setId(contador--);
+                    }
+                }
+            } catch (JsonProcessingException e) {
+                throw new QandeMmiiException(e, "Error al obtener datos de persona relacionada: ["+e.getMessage()+"]");
+            }
+        }
+        return personasRelacionadas;
+    }
+
+    private BindingResult validateDto(List<PersonaRelacionadaDto> listaPersonasRelacionadasDto, BindingResult result) {
+        String objectName = " persona relacionada N° ";
+        int correl  = 0;
+        for (var personaRelacionadaDto : listaPersonasRelacionadasDto) {
+            correl++;
+            if (personaRelacionadaDto.getIdentificador() == null || personaRelacionadaDto.getIdentificador().isEmpty()) {
+                result.rejectValue("identificador", "error.identificador", "Campo identificador " + objectName + correl + "es obligatorio.");
+            }
+            if (personaRelacionadaDto.getNombre() == null || personaRelacionadaDto.getNombre().isEmpty()) {
+                result.rejectValue("nombre", "error.nombre", "Campo nombre " + objectName + correl + "es obligatorio.");
+            }
+        }
+        return result;
+    }
 
 
 }

@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.controllers.mantenedores;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.dto.ParSourceCodeDto;
 import cl.qande.mmii.app.models.exception.DaoException;
@@ -35,12 +34,15 @@ public class ParametrosInstrumentosController {
     private static final String URL_BASE_SRCCOD_PER = "/mantenedores/parametros_instrumentos/source_code_pershing/crear";
     private static final String ERROR_AGREGAR = "Error al agregar registro.";
     public static final String CONCAT_MSG_VALUE = "]: Valor registro [";
+
+    private final SesionWeb sesionWeb;
+    private final IMantenedoresInstrumentosService mantenedoresInstrumentosService;
+
     @Autowired
-    private SesionWeb sesionWeb;
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private IMantenedoresInstrumentosService mantenedoresInstrumentosService;
+    public ParametrosInstrumentosController(SesionWeb sesionWeb, IMantenedoresInstrumentosService mantenedoresInstrumentosService) {
+        this.sesionWeb = sesionWeb;
+        this.mantenedoresInstrumentosService = mantenedoresInstrumentosService;
+    }
 
 
     @GetMapping({"/source_code_pershing/crear"})

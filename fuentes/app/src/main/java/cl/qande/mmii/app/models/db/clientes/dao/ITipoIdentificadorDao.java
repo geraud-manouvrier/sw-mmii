@@ -10,5 +10,5 @@ public interface ITipoIdentificadorDao extends CrudRepository<TipoIdentificador,
 
     public List<TipoIdentificador> findAll();
 
-    public Optional<TipoIdentificador> findById(Integer integer);
+    public Optional<TipoIdentificador> findById(Integer id);
 }

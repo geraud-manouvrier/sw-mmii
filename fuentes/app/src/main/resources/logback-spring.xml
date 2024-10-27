@@ -82,6 +82,10 @@
         <appender-ref ref="ASYNC_API" />
     </logger>
 
+    <logger name="cl.qande.mmii.app.util.helper.ApiHelper" level="info" additivity="true">
+        <appender-ref ref="ASYNC_API" />
+    </logger>
+
     <logger name="cl.qande.mmii.app.job" level="info" additivity="true">
         <appender-ref ref="ASYNC_JOB" />
     </logger>
