@@ -20,15 +20,18 @@ public class TipoIdentificadorDto implements Serializable {
     private String glosaIdentificador;
     @NotNull
     private Boolean habilitado = false;
+    private Boolean flagTieneRelacionados;
 
     public TipoIdentificadorDto() {
     }
 
-    public TipoIdentificadorDto(Integer id, String tipoIdentificador, String glosaIdentificador, Boolean habilitado) {
+    public TipoIdentificadorDto(Integer id, String tipoIdentificador, String glosaIdentificador, Boolean habilitado,
+                                Boolean flagTieneRelacionados) {
         this.id = id;
         this.tipoIdentificador = tipoIdentificador;
         this.glosaIdentificador = glosaIdentificador;
         this.habilitado = habilitado;
+        this.flagTieneRelacionados = flagTieneRelacionados;
     }
 
     public Integer getId() {
@@ -63,6 +66,14 @@ public class TipoIdentificadorDto implements Serializable {
         this.habilitado = habilitado;
     }
 
+    public Boolean getFlagTieneRelacionados() {
+        return flagTieneRelacionados;
+    }
+
+    public void setFlagTieneRelacionados(Boolean flagTieneRelacionados) {
+        this.flagTieneRelacionados = flagTieneRelacionados;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,20 +82,23 @@ public class TipoIdentificadorDto implements Serializable {
         return Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.tipoIdentificador, entity.tipoIdentificador) &&
                 Objects.equals(this.glosaIdentificador, entity.glosaIdentificador) &&
-                Objects.equals(this.habilitado, entity.habilitado);
+                Objects.equals(this.habilitado, entity.habilitado) &&
+                Objects.equals(this.flagTieneRelacionados, entity.flagTieneRelacionados);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tipoIdentificador, glosaIdentificador, habilitado);
+        return Objects.hash(id, tipoIdentificador, glosaIdentificador, habilitado, flagTieneRelacionados);
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "tipoIdentificador = " + tipoIdentificador + ", " +
-                "glosaIdentificador = " + glosaIdentificador + ", " +
-                "habilitado = " + habilitado + ")";
+        return "TipoIdentificadorDto{" +
+                "id=" + id +
+                ", tipoIdentificador='" + tipoIdentificador + '\'' +
+                ", glosaIdentificador='" + glosaIdentificador + '\'' +
+                ", habilitado=" + habilitado +
+                ", flagTieneRelacionados=" + flagTieneRelacionados +
+                '}';
     }
 }

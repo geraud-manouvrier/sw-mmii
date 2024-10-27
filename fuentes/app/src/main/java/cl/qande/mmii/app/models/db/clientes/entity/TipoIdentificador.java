@@ -26,6 +26,17 @@ public class TipoIdentificador {
     @Column(name = "habilitado", nullable = false)
     private Boolean habilitado = false;
 
+    @Column(name = "flag_tiene_relacionados")
+    private Boolean flagTieneRelacionados;
+
+    public Boolean getFlagTieneRelacionados() {
+        return flagTieneRelacionados;
+    }
+
+    public void setFlagTieneRelacionados(Boolean flagTieneRelacionados) {
+        this.flagTieneRelacionados = flagTieneRelacionados;
+    }
+
     public Integer getId() {
         return id;
     }

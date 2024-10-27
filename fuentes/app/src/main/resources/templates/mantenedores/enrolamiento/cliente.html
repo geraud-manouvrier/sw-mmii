@@ -71,7 +71,11 @@
               <label for="idTipoIdentificador" class="col-md-2 col-form-label">Tipo Identificador</label>
               <div class="col-md-2">
                 <select class="form-control" th:field="*{idTipoIdentificador}" id="idTipoIdentificador" name="idTipoIdentificador" onchange="toggleDivRelacionados()">
-                  <option th:each="tipoIdentificador : ${listaTiposId}" th:value="${tipoIdentificador.id}" th:text="${tipoIdentificador.tipoIdentificador + ' - ' + tipoIdentificador.glosaIdentificador}" th:selected="${tipoIdentificador.id==idTipoIdentificador}"></option>
+                  <option th:each="tipoIdentificador : ${listaTiposId}"
+                          th:value="${tipoIdentificador.id}"
+                          th:text="${tipoIdentificador.tipoIdentificador + ' - ' + tipoIdentificador.glosaIdentificador}"
+                          th:selected="${tipoIdentificador.id==idTipoIdentificador}"
+                          th:attr="data-flag=${tipoIdentificador.flagTieneRelacionados}"></option>
                 </select>
               </div>
               <span class="text-danger" th:if="${#fields.hasErrors('idTipoIdentificador') and (clienteDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{idTipoIdentificador}"></span>
@@ -321,9 +325,12 @@
 <script>
   function toggleDivRelacionados() {
     var selectElement = document.getElementById("idTipoIdentificador");
-    var selectedValue = selectElement.value;
+
+    var selectedOption  = selectElement.options[selectElement.selectedIndex];
+    var esNit           = selectedOption.getAttribute("data-flag")=='true';
+
     var divRelacionados = document.getElementById("div-relacionados");
-    if (selectedValue == 32) {
+    if (esNit) {
       divRelacionados.style.display = "block";
     } else {
       divRelacionados.style.display = "none";

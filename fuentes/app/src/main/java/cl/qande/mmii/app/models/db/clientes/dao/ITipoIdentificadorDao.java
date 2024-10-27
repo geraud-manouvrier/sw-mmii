@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ITipoIdentificadorDao extends CrudRepository<TipoIdentificador, Integer> {
 
-    public List<TipoIdentificador> findAll();
+    public List<TipoIdentificador> findAllByOrderByTipoIdentificadorAsc();
 
     public Optional<TipoIdentificador> findById(Integer id);
 }

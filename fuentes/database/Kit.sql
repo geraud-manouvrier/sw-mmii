@@ -1,62 +1,21 @@
 /*
 2024-10-27
-Actual: 8.6.0-COL
+Actual: 8.6.1-COL
 */
-
---========================================================================
---========================================================================
---========================================================================
---Creción de usuarios admin y app
-/*
-CREATE USER mmii_admindb CREATEDB CREATEROLE PASSWORD 'b55tO<RB4aza';
-GRANT azure_pg_admin TO mmii_admindb;
---create database qande_mmii with owner mmii_admindb;
-create database qande_mmii;
-CREATE USER mmii_appuserdb PASSWORD 'H;859md+5GAf';
-GRANT CONNECT ON DATABASE qande_mmii TO mmii_appuserdb;
---ALTER DEFAULT PRIVILEGES FOR ROLE mmii_appuserdb GRANT SELECT, INSERT, DELETE ON TABLES TO mmii_appuserdb;
---ALTER DEFAULT PRIVILEGES FOR ROLE mmii_appuserdb GRANT EXECUTE ON FUNCTIONS TO mmii_appuserdb;
-*/
-
---========================================================================
---========================================================================
---========================================================================
--- Panel Jobs User
-
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_ADMIN_JOBS_BY_USER' FROM public.users where username in ('admin-qye')
-;
-
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_ADMIN_JOBS_BY_USER' FROM public.users where username in ('usuario')
-;
 
 --========================================================================
 --========================================================================
 --========================================================================
 -- Desarrollo personas relacionadas
-create table clientes.persona_relacionada
-(
-    id                    integer generated always as identity
-        constraint persona_relacionada_pk
-            primary key,
-    identificador         varchar(100) not null,
-    nombre                varchar(100) not null,
-    id_tipo_identificador integer      not null
-        constraint cliente_tipo_identificador_fk
-            references clientes.tipo_identificador,
-    id_cliente integer      not null
-        constraint cliente_id_fk
-            references clientes.cliente,
-    flag_habilitado         boolean      not null default true,
-    creacion_ts           timestamp    not null default now(),
-    creacion_user           VARCHAR(100) not null,
-    modificacion_ts           timestamp    null default null,
-    modificacion_user           VARCHAR(100)  null default null
-);
+alter table clientes.tipo_identificador add column flag_tiene_relacionados boolean default false not null;
 
-create unique index persona_relacionada_id_cliente_identificador_uindex
-    on clientes.persona_relacionada (identificador, id_cliente);
+update clientes.tipo_identificador set flag_tiene_relacionados=true where tipo_identificador='NI';
+
+
+--========================================================================
+--========================================================================
+--========================================================================
+--
 
 
 --========================================================================

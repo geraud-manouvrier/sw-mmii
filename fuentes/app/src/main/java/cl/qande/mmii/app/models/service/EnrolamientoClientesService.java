@@ -59,7 +59,7 @@ public class EnrolamientoClientesService {
 
         var clienteGuardado = this.guardarCliente(clienteDto);
         CustomLog.getInstance().info("Guardado Cliente ID  ["+clienteDto.toString()+"] ");
-        boolean esNit   = this.tipoIdentificadorById(clienteGuardado.getIdTipoIdentificador()).getTipoIdentificador().equals("NI");
+        boolean esNit   = this.tipoIdentificadorById(clienteGuardado.getIdTipoIdentificador()).getFlagTieneRelacionados().equals(Boolean.TRUE);
         if (esClienteNuevo) {
             var cuentaDto   = this.guardarCuentaDeCliente(clienteGuardado.getId(), cuenta);
             CustomLog.getInstance().info("Guardada Cuenta Cliente ID  ["+cuentaDto+"] ");
@@ -217,7 +217,7 @@ public class EnrolamientoClientesService {
     //TipoIdentificador
     @Transactional(readOnly = true)
     public List<TipoIdentificadorDto> listarTiposIdentificador() {
-        return tipoIdentificadorMapper.toDto(tipoIdentificadorDao.findAll());
+        return tipoIdentificadorMapper.toDto(tipoIdentificadorDao.findAllByOrderByTipoIdentificadorAsc());
     }
     @Transactional(readOnly = true)
     public TipoIdentificadorDto tipoIdentificadorById(Integer id) {
