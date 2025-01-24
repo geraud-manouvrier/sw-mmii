@@ -5,7 +5,7 @@ import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IReporteMaestroDatosService;
+import cl.qande.mmii.app.models.service.ReporteMaestroDatosService;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -30,7 +30,7 @@ public class MaestroDatosExcel {
     @Autowired
     private AppConfig appConfig;
     @Autowired
-    private IReporteMaestroDatosService reporteMaestroDatosService;
+    private ReporteMaestroDatosService reporteMaestroDatosService;
     @Autowired
     private ReportesMaestrosHelper reportesMaestrosHelper;
 

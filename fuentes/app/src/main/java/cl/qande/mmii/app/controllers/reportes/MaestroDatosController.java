@@ -1,11 +1,8 @@
 package cl.qande.mmii.app.controllers.reportes;
 
-import cl.qande.mmii.app.config.AppConfig;
-import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosClientesDao;
-import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
-import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
+import cl.qande.mmii.app.models.service.ReporteMaestroDatosService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.helper.CustomLog;
@@ -25,18 +22,16 @@ public class MaestroDatosController {
     private static final String CAMPO_STATUS    = "status";
     private static final String CAMPO_SESION    = "sesionWeb";
     private static final String HTML_SALIDA_REPORTE    = "salidaReporte";
+    private final SesionWeb sesionWeb;
+    private final CalendarioHelper calendarioHelper;
+    private final ReporteMaestroDatosService reporteMaestroDatosService;
+
     @Autowired
-    private SesionWeb sesionWeb;
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
-    @Autowired
-    private IReporteMaestroDatosClientesDao maestroDatosClientesDao;
-    @Autowired
-    private IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao;
-    @Autowired
-    private IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao;
+    public MaestroDatosController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReporteMaestroDatosService reporteMaestroDatosService) {
+        this.sesionWeb = sesionWeb;
+        this.calendarioHelper = calendarioHelper;
+        this.reporteMaestroDatosService = reporteMaestroDatosService;
+    }
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_CLIENTE))")
     @GetMapping({"/clientes"})
@@ -53,7 +48,7 @@ public class MaestroDatosController {
             Model model) throws QandeMmiiException {
         var estadoPeticion   = new EstadoPeticion();
         try {
-            var salidaReporte   = maestroDatosClientesDao.findByProcessDateBetween(processDate, processDate);
+            var salidaReporte   = reporteMaestroDatosService.findClientesByProcessDateBetween(processDate, processDate);
             estadoPeticion.setEstadoOk("Listado clientes OK", "Listado de Clientes generado correctamente");
             model.addAttribute(HTML_SALIDA_REPORTE, salidaReporte);
         } catch (Exception e) {
@@ -84,7 +79,7 @@ public class MaestroDatosController {
             Model model) throws QandeMmiiException {
         var estadoPeticion   = new EstadoPeticion();
         try {
-            var salidaReporte   = reporteMaestroDatosSaldoDao.findByProcessDateBetween(startProcessDate, endProcessDate);
+            var salidaReporte   = reporteMaestroDatosService.findSaldosByProcessDateBetween(startProcessDate, endProcessDate);
             estadoPeticion.setEstadoOk("Listado saldos OK", "Listado de Saldos generado correctamente");
             model.addAttribute(HTML_SALIDA_REPORTE, salidaReporte);
         } catch (Exception e) {
@@ -119,7 +114,7 @@ public class MaestroDatosController {
             Model model) throws QandeMmiiException {
         var estadoPeticion   = new EstadoPeticion();
         try {
-            var salidaReporte   = reporteMaestroDatosMovimientosDao.findByProcessDateBetween(startProcessDate, endProcessDate);
+            var salidaReporte   = reporteMaestroDatosService.findMovimientosByProcessDateBetween(startProcessDate, endProcessDate);
             estadoPeticion.setEstadoOk("Listado Movimientos OK", "Listado de Movimientos generado correctamente");
             model.addAttribute(HTML_SALIDA_REPORTE, salidaReporte);
         } catch (Exception e) {
@@ -134,4 +129,18 @@ public class MaestroDatosController {
         model.addAttribute("endProcessDate", endProcessDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.REP_MAESTRO_MOVTOS, false);
     }
+
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_CONSOLIDADO))")
+    @GetMapping({"/consolidados"})
+    public String consolidados(
+            Model model) throws QandeMmiiException {
+
+        model.addAttribute(CAMPO_TITULO, "Consolidados");
+        model.addAttribute(CAMPO_SESION, sesionWeb);
+        model.addAttribute("consolidadoMovimientos", reporteMaestroDatosService.reporteConsolidadoMovimientos());
+        model.addAttribute("consolidadoSaldos", reporteMaestroDatosService.reporteConsolidadoSaldos());
+        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.REP_MAESTRO_CONSOLIDADO, false);
+    }
+
 }

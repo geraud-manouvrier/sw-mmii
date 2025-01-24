@@ -4,7 +4,8 @@ import cl.qande.mmii.app.models.api.ApiResponse;
 import cl.qande.mmii.app.models.api.ReporteMaestrosResponseError;
 import cl.qande.mmii.app.models.api.ReporteMaestrosResponseOk;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IReporteMaestroDatosService;
+import cl.qande.mmii.app.models.service.ControlDiarioService;
+import cl.qande.mmii.app.models.service.ReporteMaestroDatosService;
 import cl.qande.mmii.app.util.helper.ApiHelper;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/reportes-maestros")
 public class ReporteMaestrosController {
     private final ApiHelper apiHelper;
-    private final IReporteMaestroDatosService reporteMaestroDatosService;
+    private final ReporteMaestroDatosService reporteMaestroDatosService;
+    private final ControlDiarioService controlDiarioService;
 
     private static final String ERROR_PREFIX    = "Error en método REST Reportes Maestros";
 
     @Autowired
-    public ReporteMaestrosController(ApiHelper apiHelper, IReporteMaestroDatosService reporteMaestroDatosService) {
+    public ReporteMaestrosController(ApiHelper apiHelper, ReporteMaestroDatosService reporteMaestroDatosService, ControlDiarioService controlDiarioService) {
         this.apiHelper = apiHelper;
         this.reporteMaestroDatosService = reporteMaestroDatosService;
+        this.controlDiarioService = controlDiarioService;
     }
 
 
@@ -48,6 +51,11 @@ public class ReporteMaestrosController {
             CustomLog.getInstance().error(ERROR_PREFIX+" ["+qandeMmiiException.getMessage()+"] Cod. "+HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(new ReporteMaestrosResponseError(1, "Error al validar llamada: "+qandeMmiiException.getMessage()), responseHeaders, HttpStatus.BAD_REQUEST);
         }
+        var resultado   = controlDiarioService.resultadoJobs(processDate);
+        if (resultado==null || resultado!=0) {
+            return new ResponseEntity<>(new ReporteMaestrosResponseError(4, "Error en validación de datos: no han sido validados o no superan validación diaria. Re intente más tarde."), responseHeaders, HttpStatus.OK);
+        }
+
         var respuesta = new ReporteMaestrosResponseOk();
 
         try {

@@ -11,12 +11,8 @@ create table public.control_diario
     identificador       varchar(100)                    not null,
     cant_reg            integer                         not null,
     username            varchar(30)                     not null,
-    id_segmentacion     integer,
     constraint control_diario_pk
         primary key (id)
-            deferrable,
-    constraint control_diario_pk2
-        unique (process_date, correlativo_diario, id_control, identificador, id_segmentacion)
             deferrable
 );
 

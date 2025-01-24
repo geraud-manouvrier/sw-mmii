@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.job;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -16,16 +15,13 @@ public class JobParametrosFromSuracorp implements Runnable {
 
 
     private static final int DESFASE_DIAS = -1;
-    private static final String USUARIO_JOB = "jobAppUser";
     public static final String JOB_NAME = "Tarea Parámetros From SuraCorp";
-    private final AppConfig appConfig;
     private final CalendarioHelper calendarioHelper;
     private final NotificacionEmail notificacionEmail;
     private final ParametrosFromMmiiSuraCorp mainService;
 
     @Autowired
-    public JobParametrosFromSuracorp(AppConfig appConfig, CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, ParametrosFromMmiiSuraCorp mainService) {
-        this.appConfig = appConfig;
+    public JobParametrosFromSuracorp(CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, ParametrosFromMmiiSuraCorp mainService) {
         this.calendarioHelper = calendarioHelper;
         this.notificacionEmail = notificacionEmail;
         this.mainService = mainService;
@@ -67,7 +63,7 @@ public class JobParametrosFromSuracorp implements Runnable {
     public boolean ejecutaJob() {
         try {
             CustomLog.getInstance().info("Iniciando Job "+JOB_NAME+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
-            return this.ejecutaJob(USUARIO_JOB, true);
+            return this.ejecutaJob(CustomScheduler.USUARIO_JOB, true);
         } catch (Exception e) {
             CustomLog.getInstance().error("Error al realizar tarea "+JOB_NAME+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
             return false;

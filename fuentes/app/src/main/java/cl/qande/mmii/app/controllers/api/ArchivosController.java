@@ -6,6 +6,7 @@ import cl.qande.mmii.app.models.api.Archivo;
 import cl.qande.mmii.app.models.api.ArchivosMaestrosResponseError;
 import cl.qande.mmii.app.models.api.ArchivosMaestrosResponseOk;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
+import cl.qande.mmii.app.models.service.ControlDiarioService;
 import cl.qande.mmii.app.util.helper.ApiHelper;
 import cl.qande.mmii.app.util.helper.ArchivosHelper;
 import cl.qande.mmii.app.util.helper.CustomLog;
@@ -25,12 +26,14 @@ public class ArchivosController {
     private final AppConfig appConfig;
     private final ApiHelper apiHelper;
     private final ArchivosHelper archivosHelper;
+    private final ControlDiarioService controlDiarioService;
 
     @Autowired
-    public ArchivosController(AppConfig appConfig, ApiHelper apiHelper, ArchivosHelper archivosHelper) {
+    public ArchivosController(AppConfig appConfig, ApiHelper apiHelper, ArchivosHelper archivosHelper, ControlDiarioService controlDiarioService) {
         this.appConfig = appConfig;
         this.apiHelper = apiHelper;
         this.archivosHelper = archivosHelper;
+        this.controlDiarioService = controlDiarioService;
     }
 
 
@@ -53,6 +56,10 @@ public class ArchivosController {
         } catch (QandeMmiiException qandeMmiiException) {
             CustomLog.getInstance().error("Error en método REST Obtener Archivos Reportes Ingresos/Egresos ["+qandeMmiiException.getMessage()+"] Cod. "+HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(new ArchivosMaestrosResponseError(1, "Error al validar llamada: "+qandeMmiiException.getMessage()), responseHeaders, HttpStatus.BAD_REQUEST);
+        }
+        var resultado   = controlDiarioService.resultadoJobs(processDate);
+        if (resultado==null || resultado!=0) {
+            return new ResponseEntity<>(new ArchivosMaestrosResponseError(4, "Error en validación de datos: no han sido validados o no superan validación diaria. Re intente más tarde."), responseHeaders, HttpStatus.OK);
         }
         List<Archivo> listaArchivosApi = new ArrayList<>();
         var listaArchivos = archivosHelper.listadoDeArchivosMaestros(processDate);

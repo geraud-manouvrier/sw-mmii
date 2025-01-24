@@ -24,6 +24,8 @@
 
         <!-- Main content -->
         <section class="content">
+            <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.ControlDiario>"*/-->
+            <!--/*@thymesVar id="last_errors" type="java.util.List<java.lang.String>"*/-->
 
             <!-- Default box -->
             <div id="main-card" class="card collapsed-card">
@@ -63,66 +65,26 @@
                     </div>
                 </div>
                 <div class="card-body login-card-body">
-                    <table id="tabla_valores" class="table table-bordered table-striped table-hover">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Correl.</th>
-                            <th>Process Date</th>
-                            <th>ID Segm.</th>
-                            <th>Cod. Pais</th>
-                            <th>Modelo Asesoría</th>
-                            <th>Pais</th>
-                            <th>TS Control</th>
-                            <th>TS Registro</th>
-                            <th>Id Control</th>
-                            <th>Glosa Control</th>
-                            <th>Descripción Control</th>
-                            <th>Identificador</th>
-                            <th>Cant. Registros</th>
-                            <th>Username</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="registro_actual: ${lista_registros}">
-                            <td th:text="${registro_actual.idReporte}"></td>
-                            <td th:text="${registro_actual.correlativoDiario}"></td>
-                            <td th:text="${registro_actual.processDate}"></td>
-                            <td th:text="${registro_actual.idSegmentacion}"></td>
-                            <td th:text="${registro_actual.codPaisAtencion}"></td>
-                            <td th:text="${registro_actual.modeloAsesoria}"></td>
-                            <td th:text="${registro_actual.variante}"></td>
-                            <td th:text="${registro_actual.timestampControl}"></td>
-                            <td th:text="${registro_actual.timestampRegistro}"></td>
-                            <td th:text="${registro_actual.idControl}"></td>
-                            <td th:text="${registro_actual.glosaControl}"></td>
-                            <td th:text="${registro_actual.descripcionControl}"></td>
-                            <td th:text="${registro_actual.identificador}"></td>
-                            <td th:text="${registro_actual.cantReg}"></td>
-                            <td th:text="${registro_actual.username}"></td>
-                        </tr>
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th>ID</th>
-                            <th>Correl.</th>
-                            <th>Process Date</th>
-                            <th>ID Segm.</th>
-                            <th>Cod. Pais</th>
-                            <th>Modelo Asesoría</th>
-                            <th>Pais</th>
-                            <th>TS Control</th>
-                            <th>TS Registro</th>
-                            <th>Id Control</th>
-                            <th>Glosa Control</th>
-                            <th>Descripción Control</th>
-                            <th>Identificador</th>
-                            <th>Cant. Registros</th>
-                            <th>Username</th>
-                        </tr>
-                        </tfoot>
-                    </table>
+                    <div id="grid-wrapper-resultado" th:if="${!#lists.isEmpty(lista_registros)}"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            <div id="errors-card" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Últimos 10 errores</h3>
 
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div th:if="${#lists.isEmpty(last_errors)}">No existen errores en los últimos 10 días</div>
+                    <ul th:if="${!#lists.isEmpty(last_errors)}">
+                        <li th:each="error : ${last_errors}" th:text="${#strings.substring(error, 0, 4)} + '-' + ${#strings.substring(error, 4, 6)} + '-' + ${#strings.substring(error, 6, 8)}"></li>
+                    </ul>
                 </div>
                 <!-- /.card-body -->
             </div>
@@ -140,19 +102,6 @@
 <!-- ./wrapper -->
 
 
-<!-- DataTables  & Plugins -->
-<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
-<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
-<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
-<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
-<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
 
 <!-- InputMask -->
 <script th:src="@{/plugins/moment/moment.min.js}"></script>
@@ -161,89 +110,9 @@
 <!-- Tempusdominus Bootstrap 4 -->
 <script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
 
-<script>
-    $(function () {
-
-        $('#processDate').daterangepicker(
-            {
-                "singleDatePicker": true,
-                "showDropdowns": true,
-                "autoApply": true,
-                "alwaysShowCalendars" : true,
-                "showCustomRangeLabel" : false,
-                ranges: {
-                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
-                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
-                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
-                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
-                },
-                "locale": {
-                    "format": "YYYY-MM-DD",
-                    "separator": " - ",
-                    "applyLabel": "Aceptar",
-                    "cancelLabel": "Cancelar",
-                    "fromLabel": "From",
-                    "toLabel": "To",
-                    "customRangeLabel": "Custom",
-                    "weekLabel": "W",
-                    "daysOfWeek": [
-                        "Do",
-                        "Lu",
-                        "Ma",
-                        "Mi",
-                        "Ju",
-                        "Vi",
-                        "Sa"
-                    ],
-                    "monthNames": [
-                        "Enero",
-                        "Febrero",
-                        "Marzo",
-                        "Abril",
-                        "Mayo",
-                        "Junio",
-                        "Julio",
-                        "Agosto",
-                        "Septiembre",
-                        "Octubre",
-                        "Noviembre",
-                        "Diciembre"
-                    ],
-                    "firstDay": 1
-                }
-            }
-        )
-
-    })
-
-</script>
 
 <script>
-
-    $(function () {
-        $("#tabla_valores").DataTable({
-            dom: 'Bfrtip',"responsive": true, "lengthChange": true, "autoWidth": false, "pageLength": 100,
-            "buttons": ["copy", "csv", "excel", "print", "colvis"],
-            "columns": [
-                { "visible": false },
-                { "visible": false },
-                null,
-                { "visible": false },
-                { "visible": false },
-                { "visible": false },
-                null,
-                { "visible": false },
-                { "visible": false },
-                null,
-                null,
-                null,
-                null,
-                null,
-                { "visible": false }
-            ]
-        }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
-    });
+    createCustomSingleCalendarHtml("processDate", {});
 
     function buscar() {
         var corteUrl = 'control_diario';
@@ -256,6 +125,52 @@
     $('#main-card').CardWidget('collapse');
 
 </script>
+
+<script th:inline="javascript">
+
+    $(document).ready(function() {
+        /*<![CDATA[*/
+        var resultadoDataSource =  [
+            /*[# th:each="objeto : ${lista_registros}"]*/
+            {
+                id: [[${objeto.getId}]],
+                correlativoDiario: [[${objeto.getCorrelativoDiario}]],
+                processDate: [[${objeto.getProcessDate()}]],
+                timestampControl: [[${objeto.getTimestampControl}]],
+                timestampRegistro: [[${objeto.getTimestampRegistro}]],
+                idControl: [[${objeto.getIdControl}]],
+                glosaControl: [[${objeto.getGlosaControl}]],
+                descripcionControl: [[${objeto.getDescripcionControl}]],
+                identificador: [[${objeto.getIdentificador}]],
+                cantReg: [[${objeto.getCantReg}]],
+                username: [[${objeto.getUsername}]]
+            },
+            /*[/]*/
+        ];
+
+        /*]]>*/
+
+        var resultadoColumn = [
+            { field: 'id', headerText: 'ID', visible: false },
+            { field: 'correlativoDiario', headerText: 'Correl.', visible: false },
+            { field: 'processDate', headerText: 'Process Date' },
+            { field: 'timestampControl', headerText: 'TS Control', visible: false },
+            { field: 'timestampRegistro', headerText: 'TS Registro', visible: false },
+            { field: 'idControl', headerText: 'ID Control' },
+            { field: 'glosaControl', headerText: 'Glosa' },
+            { field: 'descripcionControl', headerText: 'Descripcion' },
+            { field: 'identificador', headerText: 'Identificador' },
+            { field: 'cantReg', headerText: 'Cant. Reg.' },
+            { field: 'username', headerText: 'User', visible: false }
+        ];
+
+        var processDate = $('#processDate').val().replaceAll('-','');
+        createDefaultGridWithWrapper('grid-wrapper-resultado', resultadoDataSource, resultadoColumn, 'ControlDiario_'+processDate, ';', 0);
+
+    });
+</script>
+
+
 
 <div th:replace="layout/layout :: customCalendarHtml"></div>
 

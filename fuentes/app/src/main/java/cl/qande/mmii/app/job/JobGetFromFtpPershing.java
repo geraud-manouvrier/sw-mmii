@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.job;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.models.service.PershingService;
@@ -10,19 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-//@EnableAsync(proxyTargetClass = true)
 public class JobGetFromFtpPershing implements Runnable {
 
     private static final int DESFASE_DIAS = -1;
 
+    private final CalendarioHelper calendarioHelper;
+    private final NotificacionEmail notificacionEmail;
+    private final PershingService pershingService;
+
     @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
-    @Autowired
-    private NotificacionEmail notificacionEmail;
-    @Autowired
-    private PershingService pershingService;
+    public JobGetFromFtpPershing(CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, PershingService pershingService) {
+        this.calendarioHelper = calendarioHelper;
+        this.notificacionEmail = notificacionEmail;
+        this.pershingService = pershingService;
+    }
 
     public boolean processByProcessDate(String processDate, boolean useDownloadedFiles) throws QandeMmiiException {
         try {

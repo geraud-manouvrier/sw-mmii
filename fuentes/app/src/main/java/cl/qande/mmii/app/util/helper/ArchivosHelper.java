@@ -30,14 +30,18 @@ import java.util.Date;
 @Component
 public class ArchivosHelper {
 
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private FtpPershingProperties ftpPershingProperties;
+    private final AppConfig appConfig;
+    private final FtpPershingProperties ftpPershingProperties;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final String UPLOADS_TX_PREFIX   = "CargaTx_";
     private static final String UPLOADS_TIMESTAMP   = "yyyy.MM.dd.HH.mm.ss.SSS.Z";
+
+    @Autowired
+    public ArchivosHelper(AppConfig appConfig, FtpPershingProperties ftpPershingProperties) {
+        this.appConfig = appConfig;
+        this.ftpPershingProperties = ftpPershingProperties;
+    }
 
     public String subirArchivo(MultipartFile file) throws QandeMmiiException {
 

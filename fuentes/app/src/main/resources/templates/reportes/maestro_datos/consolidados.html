@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="card-title" th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="consolidadoMovimientos" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteConsolidadoMovimiento>"*/-->
+        <!--/*@thymesVar id="consolidadoSaldos" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteConsolidadoSaldo>"*/-->
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Consolidado Movimientos</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-movimientos" th:if="${!#lists.isEmpty(consolidadoMovimientos)}"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Consolidado Saldos</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-saldos" th:if="${!#lists.isEmpty(consolidadoSaldos)}"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+<script th:inline="javascript">
+
+    $(document).ready(function() {
+        /*<![CDATA[*/
+        var movimientosDataSource =  [
+            /*[# th:each="objeto : ${consolidadoMovimientos}"]*/
+            {
+                periodo: [[${objeto.getPeriodo}]],
+                agnio: [[${objeto.getAgnio}]],
+                mes: [[${objeto.getPeriodo().substring(objeto.getPeriodo().length() - 2)}]],
+                clients: [[${objeto.getClients}]],
+                accounts: [[${objeto.getAccounts}]],
+                accountsWithoutClient: [[${objeto.getAccountsWithoutClient}]],
+                usdeNetAmount: [[${objeto.getUsdeNetAmount}]],
+                retiro: [[${objeto.getRetiro}]],
+                recaudo: [[${objeto.getRecaudo}]]
+            },
+            /*[/]*/
+        ];
+
+
+        var saldosDataSource =  [
+            /*[# th:each="objeto : ${consolidadoSaldos}"]*/
+            {
+                periodo: [[${objeto.getPeriodo}]],
+                agnio: [[${objeto.getAgnio}]],
+                mes: [[${objeto.getPeriodo().substring(objeto.getPeriodo().length() - 2)}]],
+                clients: [[${objeto.getClients}]],
+                accounts: [[${objeto.getAccounts}]],
+                accountsWithoutClient: [[${objeto.getAccountsWithoutClient}]],
+                usdeMarketValue: [[${objeto.getUsdeMarketValue}]],
+                ingresoProteccion: [[${objeto.getIngresoProteccion}]]
+            },
+            /*[/]*/
+        ];
+
+        /*]]>*/
+
+        var movimientosColumn = [
+            { field: 'periodo', headerText: 'Periodo', visible: false },
+            { field: 'agnio', headerText: 'Año' },
+            { field: 'mes', headerText: 'Mes' },
+            { field: 'clients', headerText: 'Clientes', format: 'N0' },
+            { field: 'accounts', headerText: 'Cuentas', format: 'N0' },
+            { field: 'accountsWithoutClient', headerText: 'Cuentas sin Cliente', format: 'N0' },
+            { field: 'usdeNetAmount', headerText: 'USDE Net Amount', format: 'N4' },
+            { field: 'retiro', headerText: 'Retiro', format: 'N4' },
+            { field: 'recaudo', headerText: 'Recaudo', format: 'N4' }
+        ];
+
+
+        var saldosColumn = [
+            { field: 'periodo', headerText: 'Periodo', visible: false },
+            { field: 'agnio', headerText: 'Año' },
+            { field: 'mes', headerText: 'Mes' },
+            { field: 'clients', headerText: 'Clientes', format: 'N0' },
+            { field: 'accounts', headerText: 'Cuentas', format: 'N0' },
+            { field: 'accountsWithoutClient', headerText: 'Cuentas sin Cliente', format: 'N0' },
+            { field: 'usdeMarketValue', headerText: 'USDE Market Value', format: 'N4' },
+            { field: 'ingresoProteccion', headerText: 'Ingreso Protección', format: 'N4' }
+        ];
+
+        createDefaultGridWithWrapper('grid-wrapper-movimientos', movimientosDataSource, movimientosColumn, 'ConsolidadoMovimientos', ';', 0);
+        createDefaultGridWithWrapper('grid-wrapper-saldos', saldosDataSource, saldosColumn, 'ConsolidadoSaldos', ';', 0);
+
+    });
+</script>
+
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

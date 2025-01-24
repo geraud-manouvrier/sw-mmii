@@ -34,17 +34,23 @@
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
                         </button>
-                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-                            <i class="fas fa-times"></i>
-                        </button>
                     </div>
                 </div>
                 <div class="card-body login-card-body">
                     <div class="form-group row">
-                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
-                        <div class="col-md-2">
-                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        <p class="col-md-2 text-primary">Consideraciones</p>
+                        <div class="col-md text-info">
+                            <p>1. Reportes Maestros: Materializar los datos sobreescribirá datos antiguos de Clientes con datos nuevos no necesariamente válidos (AdvFee, nombre, etc.)</p>
+                            <p>2. Maestros específicos: Seleccionar generar sólo Cuentas o Movimientos o Saldos, borrará TODOS los Archivos Maestros de dicho día previamente y luego generará SÓLO el seleccionado.</p>
                         </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="rango_fechas" class="col-md-1 col-form-label">Process Dates</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd -> yyyy-MM-dd" id="rango_fechas" name="rango_fechas" th:value="${startProcessDate+ ' -> '+endProcessDate}">
+                        </div>
+                        <input type="hidden" id="maxDiasDesfase" name="maxDiasDesfase" th:value="${maxDiasDesfase != null ? maxDiasDesfase: 7}">
                     </div>
 
                 </div>
@@ -54,9 +60,22 @@
                     <a class="btn btn-app" onclick="procesar('ftp_pershing_sin_descarga')"><i class="fas fa-file-alt"></i>FTP Pershing (sin descarga)</a>
                 </div>
                 <div class="card-footer">
-                    <a class="btn btn-app" onclick="procesar('reporte_maestros')"><i class="fas fa-file-excel"></i>Reportes Maestros</a>
-                    <a class="btn btn-app" onclick="procesar('control_diario_segmentado')"><i class="fas fa-tasks"></i>Control Diario Segmentado (con mail)</a>
-                    <a class="btn btn-app" onclick="procesar('control_diario_segmentado_sin_mail')"><i class="fas fa-tasks"></i>Control Diario Segmentado (sin mail)</a>
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <a class="btn btn-app" onclick="procesar('reporte_maestros')"><i class="fas fa-file-excel"></i>Reportes Maestros</a>
+                            <a class="btn btn-app" onclick="procesar('reporte_maestros_cuentas')"><i class="fas fa-file-excel"></i>Maestros Cuentas</a>
+                            <a class="btn btn-app" onclick="procesar('reporte_maestros_movimientos')"><i class="fas fa-file-excel"></i>Maestros Movimientos</a>
+                            <a class="btn btn-app" onclick="procesar('reporte_maestros_saldos')"><i class="fas fa-file-excel"></i>Maestros Saldos</a>
+                        </div>
+                        <div class="col-md-2">
+                            <input class="col-form-input" type="checkbox" id="materializa-data" name="materializa-data" checked>
+                            <label class="col-form-label" for="materializa-data">Materializa Data</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-app" onclick="procesar('control_diario')"><i class="fas fa-tasks"></i>Control Diario Segmentado (con mail)</a>
+                    <a class="btn btn-app" onclick="procesar('control_diario_sin_mail')"><i class="fas fa-tasks"></i>Control Diario Segmentado (sin mail)</a>
                 </div>
                 <div class="card-footer">
                     <a class="btn btn-app" onclick="procesar('cuenta_no_mapeadas')"><i class="fas fa-tasks"></i>Cuentas No Mapeadas</a>
@@ -92,25 +111,28 @@
 <script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
 
 <script>
-    $(function () {
-
-        $('#processDate').daterangepicker(
+    function createRangeCalendar(calendarName, maxDiasDesfase) {
+        var idCalendar         = '#'+calendarName;
+        return $(idCalendar).daterangepicker(
             {
-                "singleDatePicker": true,
                 "showDropdowns": true,
                 "autoApply": true,
                 "alwaysShowCalendars" : true,
                 "showCustomRangeLabel" : false,
+                minDate: moment().subtract(maxDiasDesfase, 'days'),
                 ranges: {
                     'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
                     'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
                     'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
                     'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
-                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Últ. 2 días': [moment().subtract(2, 'days'), moment().subtract(1, 'days')],
+                    'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')]
+
                 },
                 "locale": {
                     "format": "YYYY-MM-DD",
-                    "separator": " - ",
+                    "separator": " -> ",
                     "applyLabel": "Aceptar",
                     "cancelLabel": "Cancelar",
                     "fromLabel": "From",
@@ -143,24 +165,42 @@
                     "firstDay": 1
                 }
             }
-        )
-
-    })
+        );
+    }
 
 </script>
 
 <script>
-    function procesar(urlSuffix) {
-        var corteUrl = 'fecha';
-        var oldUrl = location.href;
-        var processDate = $('#processDate').val().replaceAll('-','');
-        var newUrl  = "";
-        var pos = oldUrl.indexOf(corteUrl);
-        if (pos>0) {
-            newUrl = oldUrl.substring(0, pos) + corteUrl + '/' + processDate + '/'+urlSuffix;
-        } else {
-            newUrl  = oldUrl + '/' + corteUrl + '/' + processDate + '/'+urlSuffix;
+
+
+    $(function () {
+        var maxDiasDesfase = $('#maxDiasDesfase').val();
+        createRangeCalendar("rango_fechas", maxDiasDesfase);
+    });
+
+    function procesar(processName) {
+
+        var materializaData = $('#materializa-data').is(':checked');
+        if ( processName.includes('reporte_maestros') ) {
+            mensajeAlert    = materializaData ? 'Si datos de clientes han sido modificados, los datos antiguos de los maestros serán calculados usando estos nuevos datos (Adv. Fee., Ejecutivo, mail...)' : '';
+            var resp    = confirm('Procesará Maestros con Materialización de datos: '+materializaData+'. '+mensajeAlert);
+            if (!resp)
+                return;
+            if (materializaData)
+                processName = processName + '_materializa';
         }
+
+
+        var formatoHtml = 'YYYYMMDD';
+        var corteUrl    = 'jobs'
+
+        var dataCal             = $('#rango_fechas').data('daterangepicker');
+        var startProcessDate    = dataCal.startDate.format(formatoHtml);
+        var endProcessDate      = dataCal.endDate.format(formatoHtml);
+
+        var oldUrl = location.href;
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/process/' + processName + '/startProcessDate/'+startProcessDate+ '/endProcessDate/'+endProcessDate;
+
         location.href = newUrl;
     }
 </script>

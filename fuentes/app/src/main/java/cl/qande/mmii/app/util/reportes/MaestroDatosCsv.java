@@ -1,11 +1,10 @@
 package cl.qande.mmii.app.util.reportes;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IReporteMaestroDatosService;
+import cl.qande.mmii.app.models.service.ReporteMaestroDatosService;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import cl.qande.mmii.app.util.helper.mapper.ReportesMaestrosMapper;
@@ -16,21 +15,25 @@ import java.util.ArrayList;
 
 @Component
 public class MaestroDatosCsv {
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private IReporteMaestroDatosService reporteMaestroDatosService;
+    private final ReporteMaestroDatosService reporteMaestroDatosService;
+    private final ReportesMaestrosHelper reportesMaestrosHelper;
+    private final ReportesMaestrosMapper reportesMaestrosMapper;
 
     @Autowired
-    private ReportesMaestrosHelper reportesMaestrosHelper;
-    @Autowired
-    private ReportesMaestrosMapper reportesMaestrosMapper;
+    public MaestroDatosCsv(ReporteMaestroDatosService reporteMaestroDatosService, ReportesMaestrosHelper reportesMaestrosHelper, ReportesMaestrosMapper reportesMaestrosMapper) {
+        this.reporteMaestroDatosService = reporteMaestroDatosService;
+        this.reportesMaestrosHelper = reportesMaestrosHelper;
+        this.reportesMaestrosMapper = reportesMaestrosMapper;
+    }
 
-    public void generaReportesCsv(String processDate) throws QandeMmiiException {
+    public void generaReportesCsv(String processDate, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos) throws QandeMmiiException {
         CustomLog.getInstance().info("Iniciando generación de Reporte CSV para fecha : ["+processDate+"]");
-        this.generaReporteClientes(processDate);
-        this.generaReporteMovimientos(processDate);
-        this.generaReporteSaldos(processDate);
+        if (generarClientes)
+            this.generaReporteClientes(processDate);
+        if (generarMovimientos)
+            this.generaReporteMovimientos(processDate);
+        if (generarSaldos)
+            this.generaReporteSaldos(processDate);
         CustomLog.getInstance().info("Generación reporte CSV finalizada");
     }
     public void generaReporteClientes(String processDate) throws QandeMmiiException {

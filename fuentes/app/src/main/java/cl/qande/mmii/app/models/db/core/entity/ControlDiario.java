@@ -58,17 +58,6 @@ public class ControlDiario {
     @Column(name = "username", nullable = false, length = 30)
     private String username;
 
-    @Column(name = "id_segmentacion")
-    private Integer idSegmentacion;
-
-    public Integer getIdSegmentacion() {
-        return idSegmentacion;
-    }
-
-    public void setIdSegmentacion(Integer idSegmentacion) {
-        this.idSegmentacion = idSegmentacion;
-    }
-
     public Long getId() {
         return id;
     }

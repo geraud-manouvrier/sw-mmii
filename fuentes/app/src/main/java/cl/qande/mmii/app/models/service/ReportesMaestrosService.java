@@ -1,13 +1,10 @@
 package cl.qande.mmii.app.models.service;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.helper.ArchivosHelper;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.helper.CustomLog;
-import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import cl.qande.mmii.app.util.reportes.MaestroDatosCsv;
-import cl.qande.mmii.app.util.reportes.MaestroDatosExcel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +14,11 @@ public class ReportesMaestrosService {
     private final MaestroDatosCsv maestroDatosCsv;
     private final NotificacionEmail notificacionEmail;
     private final ArchivosHelper archivosHelper;
-    private final IReporteMaestroDatosService reporteMaestroDatosService;
+    private final ReporteMaestroDatosService reporteMaestroDatosService;
     private final CalendarioHelper calendarioHelper;
 
     @Autowired
-    public ReportesMaestrosService(MaestroDatosCsv maestroDatosCsv, NotificacionEmail notificacionEmail, ArchivosHelper archivosHelper, IReporteMaestroDatosService reporteMaestroDatosService, CalendarioHelper calendarioHelper) {
+    public ReportesMaestrosService(MaestroDatosCsv maestroDatosCsv, NotificacionEmail notificacionEmail, ArchivosHelper archivosHelper, ReporteMaestroDatosService reporteMaestroDatosService, CalendarioHelper calendarioHelper) {
         this.maestroDatosCsv = maestroDatosCsv;
         this.notificacionEmail = notificacionEmail;
         this.archivosHelper = archivosHelper;
@@ -30,11 +27,11 @@ public class ReportesMaestrosService {
     }
 
 
-    public boolean generaReportesMaestros(String startProcessDate, String endProcessDate) {
+    public boolean generaReportesMaestros(String startProcessDate, String endProcessDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borrarArchivosExistentes) {
         try {
             var listaProcessDate = calendarioHelper.processDateRangeToList(startProcessDate, endProcessDate);
             for (var processDate : listaProcessDate) {
-                if (!generaReportesMaestros(processDate)) {
+                if (!generaReportesMaestros(processDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borrarArchivosExistentes)) {
                     CustomLog.getInstance().error("Error Reportes Maestros con rango de fechas ["+startProcessDate+" - "+endProcessDate+"]: en fecha: "+processDate);
                     return false;
                 }
@@ -45,17 +42,21 @@ public class ReportesMaestrosService {
         }
         return true;
     }
-    public boolean generaReportesMaestros(String processDate) throws QandeMmiiException {
+    public boolean generaReportesMaestros(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borrarArchivosExistentes) throws QandeMmiiException {
         boolean estadoGeneracion    = true;
         CustomLog.getInstance().info("Se generarán reportes Maestros con fecha proceso ["+processDate+"]");
 
-        archivosHelper.borraListadoDeArchivosMaestros(processDate);
-        CustomLog.getInstance().info("Archivos existentes borrados");
-        this.materializaDatos(processDate);
+        if (borrarArchivosExistentes) {
+            archivosHelper.borraListadoDeArchivosMaestros(processDate);
+            CustomLog.getInstance().info("Archivos existentes borrados");
+        }
+        if (materializaData) {
+            this.materializaDatos(processDate);
+        }
 
         try {
             CustomLog.getInstance().info("Iniciando generación reporte CSV con fecha proceso ["+processDate+"]");
-            maestroDatosCsv.generaReportesCsv(processDate);
+            maestroDatosCsv.generaReportesCsv(processDate, generarClientes, generarMovimientos, generarSaldos);
             CustomLog.getInstance().info("Reporte CSV con fecha proceso ["+processDate+"] generado.");
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error al generar Reporte CSV con fecha ["+processDate+"]: "+e.getMessage());

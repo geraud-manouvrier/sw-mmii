@@ -1,40 +1,48 @@
 
-function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObject, name, separator) {
+function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObject = [], name = 'Archivo', separator = ';', pageSize = 40) {
     ej.grids.Grid.Inject(
         ej.grids.Resize, ej.grids.Sort, ej.grids.Group,
         ej.grids.Filter, ej.grids.Page, ej.grids.Toolbar,
         ej.grids.ExcelExport, ej.grids.Reorder, ej.grids.ColumnChooser
     );
 
-    var gridElementId       = wrapperElementId+'-grid';
-    var toolbarElementId    = wrapperElementId+'-toolbar';
-    var wrapperElement      = document.getElementById(wrapperElementId);
+    const gridElementId = `${wrapperElementId}-grid`;
+    const toolbarElementId = `${wrapperElementId}-toolbar`;
+    const wrapperElement = document.getElementById(wrapperElementId);
 
     if (!wrapperElement) {
+        console.info(`No se encontró el elemento con ID: ${wrapperElementId}`);
         return;
     }
     wrapperElement.innerHTML = `<div id="${toolbarElementId}"></div><div id="${gridElementId}"></div>`;
+    const defaultPageSizes = [10, 20, 50, 100, "All"];
+    if (!defaultPageSizes.includes(pageSize) && typeof pageSize === 'number' && pageSize!=0) {
+        defaultPageSizes.push(pageSize);
+        defaultPageSizes.sort((a, b) => a - b); // Ordena los números en orden ascendente
+    }
+    if (pageSize==0) {
+        pageSize    = dataSource.length;
+    }
 
-    var baseFileName    = (name==null) ? 'Archivo' : name;
-    var csvSeparator    = separator==null ? ';' : separator;
-    var grid = new ej.grids.Grid({
+    const grid = new ej.grids.Grid({
         dataSource: dataSource,
+        columns: columnsObject,
         gridLines: 'Both',
         allowSorting: true,
         allowGrouping: true,
         allowFiltering: true,
-        filterSettings: { type:'CheckBox' },
+        filterSettings: { type: 'CheckBox' },
         allowExcelExport: true,
         allowReordering: true,
         showColumnChooser: true,
         toolbar: [
-            { text: 'Collapse', id: toolbarElementId+'-colapseall', align: 'Left', prefixIcon: "e-chevron-up icon"},
-            { text: 'Expand', id: toolbarElementId+'-expandall', align: 'Left', prefixIcon: "e-chevron-down icon"},
-            { type: 'Separator'},
-            { text: baseFileName+'.xlsx', id: toolbarElementId+'-excel'},
-            { text: baseFileName+'.csv', id: toolbarElementId+'-csv'},
-            { type: 'Separator'},
-            { text: 'Search', id: toolbarElementId+'-search', align: 'Right'},
+            { text: 'Collapse', id: `${toolbarElementId}-colapseall`, align: 'Left', prefixIcon: "e-chevron-up icon" },
+            { text: 'Expand', id: `${toolbarElementId}-expandall`, align: 'Left', prefixIcon: "e-chevron-down icon" },
+            { type: 'Separator' },
+            { text: `${name}.xlsx`, id: `${toolbarElementId}-excel` },
+            { text: `${name}.csv`, id: `${toolbarElementId}-csv` },
+            { type: 'Separator' },
+            { text: 'Search', id: `${toolbarElementId}-search`, align: 'Right' },
             'ColumnChooser'
         ],
         columnChooserSettings: {
@@ -48,25 +56,30 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
         },
         allowPaging: true,
         pageSettings: {
-            pageSize: 50,
-            pageSizes: [10, 20, 50]
+            pageSize: pageSize,
+            pageSizes: defaultPageSizes
         },
-        dataBound: function(){
+        dataBound: function () {
             this.autoFitColumns();
+        },
+        actionComplete: function (args) {
+            if (args.requestType === "columnstate") {
+                this.autoFitColumns();
+            }
         },
         created: () => {
             document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
                 grid.search(event.target.value)
             });
+        },
+        toolbarClick: function (args) {
+            clickHandler(args, grid, name, separator);
         }
     });
-    if (columnsObject!=null) {
-        grid.columns = columnsObject;
-    }
 
     grid.appendTo(`#${gridElementId}`);
 
-    function clickHandler(args, fileName, csvSeparator) {
+    function clickHandler(args, grid, fileName, csvSeparator) {
         switch (args.item.id) {
             case toolbarElementId + '-colapseall':
                 grid.groupModule.collapseAll();
@@ -88,13 +101,11 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
                 grid.csvExport(csvExportProperties);
                 break;
             default:
-                console.info("default ["+args.item.id+"]");
+                console.info(`default [${args.item.id}]; delegando`);
+                grid.notify('toolbarClick', args);
                 break;
         }
     }
-    grid.toolbarClick = function(args) {
-        clickHandler(args, baseFileName, csvSeparator);
-    };
 
     return grid;
 }

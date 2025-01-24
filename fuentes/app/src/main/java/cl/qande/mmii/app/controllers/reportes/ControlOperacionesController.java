@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.controllers.reportes;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ControlDiarioService;
@@ -26,10 +25,9 @@ public class ControlOperacionesController {
     private static final String CAMPO_STATUS    = "status";
     private static final String CAMPO_SESION    = "sesionWeb";
     private static final String CAMPO_LISTA_REGISTROS    = "lista_registros";
+    public static final String CAMPO_ULTIMOS_ERRORES = "last_errors";
     @Autowired
     private SesionWeb sesionWeb;
-    @Autowired
-    private AppConfig appConfig;
     @Autowired
     private ControlDiarioService controlDiarioService;
     @Autowired
@@ -49,6 +47,7 @@ public class ControlOperacionesController {
         try {
             estadoPeticion.setEstadoOk("Resultado control OK", "Resultado del control listado correctamente");
             model.addAttribute(CAMPO_LISTA_REGISTROS, controlDiarioService.resultadoVigenteDelDia(processDate));
+            model.addAttribute(CAMPO_ULTIMOS_ERRORES, controlDiarioService.lastErrors(10));
         } catch (Exception e) {
             CustomLog.getInstance().error("Error al listar resultado control con fecha [" + processDate + "]: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar resultado", "Se produjo un error al listar resultado del control");

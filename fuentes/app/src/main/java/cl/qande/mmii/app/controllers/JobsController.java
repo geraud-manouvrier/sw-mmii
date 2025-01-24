@@ -39,12 +39,12 @@ public class JobsController {
 
     private static final String ERROR_RANGO_FECHAS  = "Error en el rango de fechas";
     private static final String TITULO_JOBS_MAIN    = "Ejecución Jobs";
-    private static final String MSG_REPROCESO_OK    = "Re proceso correcto";
     private static final String PRE_DET_ERROR       = "Hubo un error al ejecutar el Job: ";
     private static final String MSG_OK              = "Job ejecutado correctamente";
     private static final String MSG_SIN_MAIL        = "(sin mail)";
     private static final String MSG_JOB_ERR         = "Error Job";
     private static final String MSG_APPEND_USER     = "]; usuario: [";
+    private static final String MSG_APPEND_ERROR_CTRL_DIARIO = "Errores al realizar control diario con fecha [";
 
     private final SesionWeb sesionWeb;
     private final CalendarioHelper calendarioHelper;
@@ -67,121 +67,237 @@ public class JobsController {
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
     }
 
+    /****************************************************
+     * Raiz endpoint panel admin jobs
+     ****************************************************/
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"", "/"})
-    public String inicioJobs(Model model) throws QandeMmiiException {
-
-        var processDate		= calendarioHelper.defaultProcessDate();
-        CustomLog.getInstance().info("Pasando por método /jobs: ["+sesionWeb.getUsuario()+"]");
-        return inicioJobsConFecha(processDate, model);
-    }
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"/fecha/{processDate}"})
-    public String inicioJobsConFecha(
-            @PathVariable(value = "processDate", required = false) String processDate,
+    @GetMapping({"", "/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
+    public String inicioJobsConRangoFechas(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE, required = false) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE, required = false) String endProcessDate,
             Model model) throws QandeMmiiException {
-
-        CustomLog.getInstance().info("Pasando por método /jobs/{processDate}: ["+processDate+"]");
-        model.addAttribute(CAMPO_TITULO, TITULO_JOBS_MAIN);
-        model.addAttribute(CAMPO_SESION, sesionWeb);
-        model.addAttribute("processDate", processDate);
-        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.ADMIN_JOBS, false);
-    }
-
-
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"/fecha/{processDate}/reporte_maestros"})
-    public String jobsReporteMaestros(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
-        try {
-            if (reportesMaestrosService.generaReportesMaestros(processDate)) {
-                CustomLog.getInstance().info("Job Reportes Maestros Excel con fecha [" + processDate + "] finalizado OK");
-                estadoPeticion.setEstadoOk("Job Reportes Maestros OK", "Jobs ejecutado correctamente.");
-            } else {
-                CustomLog.getInstance().error("Errores al generar Reportes Maestros Excel con fecha [" + processDate + "]");
-                estadoPeticion.setEstadoError("Error Job Reportes Maestros", "No se pudo ejecutar el job.");
-            }
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Reportes Maestros", PRE_DET_ERROR +e.getMessage());
+        if (startProcessDate == null || startProcessDate.isEmpty() || endProcessDate == null || endProcessDate.isEmpty() ) {
+            startProcessDate	= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+            endProcessDate      = startProcessDate;
         }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
+        return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, true);
     }
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS_BY_USER))")
+    @GetMapping({"/jobs_por_usuario",
+            "/jobs_por_usuario/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
+    public String inicioJobsPorUsuarioConRangoFechas(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE, required = false) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE, required = false) String endProcessDate,
+            Model model) throws QandeMmiiException {
+        if (startProcessDate == null || startProcessDate.isEmpty() || endProcessDate == null || endProcessDate.isEmpty() ) {
+            startProcessDate	= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+            endProcessDate      = startProcessDate;
+        }
+        return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, false);
+    }
+
+    /****************************************************
+     * Panel admin jobs
+     ****************************************************/
+
+
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"/fecha/{processDate}/control_diario_segmentado", "/fecha/{processDate}/control_diario_segmentado_sin_mail"})
-    public String jobsControlDiarioSegmentado(
-            @PathVariable(value = "processDate") String processDate,
+    @GetMapping({"/process/control_diario/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/control_diario_sin_mail/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
+    public String jobsControlDiario(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
             Model model,
             HttpServletRequest request) throws QandeMmiiException {
         var estadoPeticion   = new EstadoPeticion();
         try {
             var flagEnviarMail=true;
-            if(request.getRequestURI().contains("control_diario_segmentado_sin_mail")) {
-                CustomLog.getInstance().info("Job Control Diario Segmentado invocado sin envío de email");
+            if(request.getRequestURI().contains("control_diario_sin_mail")) {
+                CustomLog.getInstance().info("Job Control Diario invocado sin envío de email");
                 flagEnviarMail=false;
             }
-            jobControlDiario.realizaControlDiarioSegmentado(processDate, sesionWeb.getUsuario(), flagEnviarMail);
-            CustomLog.getInstance().info("Job Control Diario Segmentado con fecha [" + processDate + "] OK");
-            estadoPeticion.setEstadoOk("Job Control Diario Segmentado OK", "Job ejecutado correctamente.");
+            jobControlDiario.realizaControlDiario(startProcessDate, endProcessDate, sesionWeb.getUsuario(), flagEnviarMail);
+            CustomLog.getInstance().info("Job Control Diario con fecha [" + startProcessDate+" -"+endProcessDate + "] OK");
+            estadoPeticion.setEstadoOk("Job Control Diario OK", MSG_OK);
 
         } catch (Exception e) {
-            CustomLog.getInstance().error("Errores al realizar control diario con fecha ["+processDate+"]: "+e.getMessage());
-            estadoPeticion.setEstadoError("Errores al realizar control diario con fecha ["+processDate+"]", PRE_DET_ERROR +e.getMessage());
+            CustomLog.getInstance().error(MSG_APPEND_ERROR_CTRL_DIARIO +startProcessDate+" -"+endProcessDate+"]: "+e.getMessage());
+            estadoPeticion.setEstadoError(MSG_APPEND_ERROR_CTRL_DIARIO +startProcessDate+" -"+endProcessDate+"]", PRE_DET_ERROR +e.getMessage());
         }
         model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
+        return inicioJobsConRangoFechas(startProcessDate, endProcessDate, model);
     }
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"/fecha/{processDate}/ftp_pershing_con_descarga"})
+    @GetMapping({"/process/ftp_pershing_con_descarga/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/ftp_pershing_sin_descarga/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
     public String jobsFtpPershingConDescarga(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
         var estadoPeticion   = new EstadoPeticion();
+        var flagUseDownloadedFiles=false;
+        if(request.getRequestURI().contains("ftp_pershing_sin_descarga")) {
+            flagUseDownloadedFiles=true;
+        }
         try {
-            if (jobGetFromFtpPershing.processByProcessDate(processDate, false)) {
-                estadoPeticion.setEstadoOk(MSG_OK, "Job FTP Pershing (con descarga) OK");
-            } else {
-                estadoPeticion.setEstadoError("Error Job FTP Pershing (con descarga)", PRE_DET_ERROR+" Ver log");
+            var listaProcessDate = calendarioHelper.processDateRangeToList(startProcessDate, endProcessDate);
+            for (var processDate : listaProcessDate) {
+                if (jobGetFromFtpPershing.processByProcessDate(processDate, flagUseDownloadedFiles)) {
+                    estadoPeticion.setEstadoOk(MSG_OK, "Job FTP Pershing (use downloaded: "+flagUseDownloadedFiles+") OK");
+                } else {
+                    estadoPeticion.setEstadoError("Error Job FTP Pershing (use downloaded: "+flagUseDownloadedFiles+")", PRE_DET_ERROR+" Ver log");
+                }
             }
-
         } catch (Exception e) {
             estadoPeticion.setEstadoError("Error Job FTP Pershing (con descarga)", PRE_DET_ERROR +e.getMessage());
         }
         model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
+        return inicioJobsConRangoFechas(startProcessDate, endProcessDate, model);
     }
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"/fecha/{processDate}/ftp_pershing_sin_descarga"})
-    public String jobsFtpPershingSinDescarga(
-            @PathVariable(value = "processDate") String processDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion   = new EstadoPeticion();
+    @GetMapping({
+            "/process/cuenta_no_mapeadas/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
+    public String jobsCuentasNoMapeadas(
+            @PathVariable String startProcessDate,
+            @PathVariable String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+        var estadoPeticion  = new EstadoPeticion();
         try {
-            jobGetFromFtpPershing.processByProcessDate(processDate, true);
-            estadoPeticion.setEstadoOk(MSG_OK, "Job FTP Pershing (sin descarga) OK");
+            var listaProcessDate = calendarioHelper.processDateRangeToList(startProcessDate, endProcessDate);
+            for (var processDate : listaProcessDate) {
+                jobCuentasNoMapeadas.ejecutaJob(processDate, sesionWeb.getUsuario(), true);
+            }
+            estadoPeticion.setEstadoOk(MSG_OK, "Job Cuentas No mapeadas OK");
         } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job FTP Pershing (sin descarga)", PRE_DET_ERROR +e.getMessage());
+            estadoPeticion.setEstadoError("Error Job Cuentas No Mapeadas", PRE_DET_ERROR +e.getMessage());
         }
         model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
+        return inicioJobsConRangoFechas(startProcessDate, endProcessDate, model);
+    }
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
+    @GetMapping({
+            "/process/parametros_suracorp/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/parametros_suracorp_sin_mail/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
+    public String jobsParametrosSuracorp(
+            @PathVariable String startProcessDate,
+            @PathVariable String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+        var processName     = getMethodFromUrl(request.getRequestURI());
+        var flagEnviarMail  = ! processName.contains("sin_mail");
+        var estadoPeticion  = new EstadoPeticion();
+        try {
+            var resultadoJob    = jobParametrosFromSuracorp.ejecutaJob(sesionWeb.getUsuario(), flagEnviarMail);
+            if (resultadoJob) {
+                estadoPeticion.setEstadoOk(MSG_OK, "Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL)+" OK");
+            } else {
+                estadoPeticion.setEstadoError("Error Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL), "Ver log");
+            }
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError("Error Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL), PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConRangoFechas(startProcessDate, endProcessDate, model);
     }
 
 
+    /*************************************************************************************
+     * Nueva forma de paneles y manejo de URLs (pendiente centralizar el getmapping)
+     *************************************************************************************/
+
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"/reportes/proceso_ftp_pershing"})
+    @GetMapping({"/process/reporte_maestros/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_materializa/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_cuentas/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_cuentas_materializa/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_movimientos/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_movimientos_materializa/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_saldos/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_saldos_materializa/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+    })
+    public String jobsReporteMaestros(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+
+        var materializaData         = request.getRequestURI().contains("_materializa");
+        var generaTodos             = request.getRequestURI().contains("reporte_maestros/") || request.getRequestURI().contains("reporte_maestros_materializa/");
+        var generarClientes         = request.getRequestURI().contains("reporte_maestros_cuentas") || generaTodos;
+        var generarMovimientos      = request.getRequestURI().contains("reporte_maestros_movimientos") || generaTodos;
+        var generarSaldos           = request.getRequestURI().contains("reporte_maestros_saldos") || generaTodos;
+        var borraArchivosExistentes = request.getRequestURI().contains("reporte_maestros_cuentas") || request.getRequestURI().contains("reporte_maestros_movimientos") || request.getRequestURI().contains("reporte_maestros_saldos");
+
+        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, model, true);
+    }
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS_BY_USER))")
+    @GetMapping({"/jobs_por_usuario/process/reporte_maestros/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
+    public String jobsReporteMaestrosPorUsuario(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
+            Model model) throws QandeMmiiException {
+        var materializaData = true;
+        var generarClientes     = true;
+        var generarMovimientos  = true;
+        var generarSaldos       = true;
+        var borraArchivosExistentes = true;
+
+        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, model, false);
+    }
+
+    private String jobMaestrosHandler(
+            String startProcessDate, String endProcessDate,
+            boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borraArchivosExistentes,
+            Model model, boolean isAdmin) throws QandeMmiiException {
+        var estadoPeticion          = new EstadoPeticion();
+        try {
+            CustomLog.getInstance().info("Iniciando Job Reportes Maestros y Control diario con rango fecha [" + startProcessDate + " - "+endProcessDate + MSG_APPEND_USER + sesionWeb.getUsuario() + "]...");
+            if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {
+                if ( reportesMaestrosService.generaReportesMaestros(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes) ) {
+                    sesionWeb.addNotification("Reportes Maestros re-procesados correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
+                    if (jobControlDiario.realizaControlDiario(startProcessDate, endProcessDate, sesionWeb.getUsuario(), true)) {
+                        estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg("Reportes Maestros", "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
+                        sesionWeb.addNotification("Control diario finalizado correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
+                    } else {
+                        estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en Reportes Maestros al ejecutar control diario");
+                        sesionWeb.addNotification("Control diario finalizado con errores: ["+startProcessDate+" - "+endProcessDate+"]");
+                    }
+                } else {
+                    sesionWeb.addNotification("Reportes Maestros no pudieron ser re-procesados: ["+startProcessDate+" - "+endProcessDate+"]");
+                    estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en re-proceso Reportes Maestros");
+                }
+            } else {
+                estadoPeticion.setEstadoError(ERROR_RANGO_FECHAS);
+            }
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError(MSG_JOB_ERR, PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
+    }
+
+
+
+    /****************************************************
+     * Panel de Estado procesos FTP Custodios
+     ****************************************************/
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
+    @GetMapping({"/proceso_ftp_pershing"})
     public String reporteFtpPershing(
-            Model model) {
-
-        return "redirect:/jobs/reportes/proceso_ftp_pershing/fecha_desde/"+calendarioHelper.defaultProcessDate()+"/fecha_hasta/"+calendarioHelper.defaultProcessDate();
+            Model model) throws QandeMmiiException {
+        return reporteFtpPershingPorFecha(calendarioHelper.defaultProcessDate(), calendarioHelper.defaultProcessDate(), model);
     }
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({"/reportes/proceso_ftp_pershing/fecha_desde/{startProcessDate}/fecha_hasta/{endProcessDate}"})
+    @GetMapping({"/proceso_ftp_pershing/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
     public String reporteFtpPershingPorFecha(
             @PathVariable String startProcessDate,
             @PathVariable String endProcessDate,
@@ -204,120 +320,27 @@ public class JobsController {
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.PERSHING_ETDO_FTP, false);
     }
 
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({
-            "/fecha/{processDate}/cuenta_no_mapeadas"})
-    public String jobsCuentasNoMapeadas(
-            @PathVariable(value = "processDate") String processDate,
-            Model model,
-            HttpServletRequest request) throws QandeMmiiException {
-        var estadoPeticion  = new EstadoPeticion();
-        try {
-            jobCuentasNoMapeadas.ejecutaJob(processDate, sesionWeb.getUsuario(), true);
-            estadoPeticion.setEstadoOk(MSG_OK, "Job Cuentas No mapeadas OK");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Cuentas No Mapeadas", PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
-    @GetMapping({
-            "/fecha/{processDate}/parametros_suracorp",
-            "/fecha/{processDate}/parametros_suracorp_sin_mail"})
-    public String jobsParametrosSuracorp(
-            @PathVariable(value = "processDate") String processDate,
-            Model model,
-            HttpServletRequest request) throws QandeMmiiException {
-        var processName     = getProcessFromUrl(request.getRequestURI());
-        var flagEnviarMail  = ! processName.contains("sin_mail");
-        var estadoPeticion  = new EstadoPeticion();
-        try {
-            var resultadoJob    = jobParametrosFromSuracorp.ejecutaJob(sesionWeb.getUsuario(), flagEnviarMail);
-            if (resultadoJob) {
-                estadoPeticion.setEstadoOk(MSG_OK, "Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL)+" OK");
-            } else {
-                estadoPeticion.setEstadoError("Error Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL), "Ver log");
-            }
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError("Error Job Parámetros "+(flagEnviarMail ? "" : MSG_SIN_MAIL), PRE_DET_ERROR +e.getMessage());
-        }
-        model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        return inicioJobsConFecha(processDate, model);
-    }
-
-
-
-    /****************************************************
-     * Panel de admin jobs para usuarios
-     ****************************************************/
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS_BY_USER))")
-    @GetMapping({ "/jobs_por_usuario"})
-    public String inicioJobsPorUsuario(Model model) throws QandeMmiiException {
-
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
-        return inicioJobsPorUsuarioConRangoFechas(processDate, processDate, model);
-    }
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS_BY_USER))")
-    @GetMapping({"/jobs_por_usuario/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
-    public String inicioJobsPorUsuarioConRangoFechas(
-            @PathVariable(value = CAMPO_START_PROCESS_DATE, required = true) String startProcessDate,
-            @PathVariable(value = CAMPO_END_PROCESS_DATE, required = true) String endProcessDate,
-            Model model) throws QandeMmiiException {
-
-        model.addAttribute(CAMPO_TITULO, TITULO_JOBS_MAIN);
-        model.addAttribute(CAMPO_SESION, sesionWeb);
-        model.addAttribute(CAMPO_START_PROCESS_DATE, startProcessDate);
-        model.addAttribute(CAMPO_END_PROCESS_DATE, endProcessDate);
-        model.addAttribute("maxDiasDesfase", getMaxDesfaseDias());
-        return inicioJobsComun(false);
-    }
-
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS_BY_USER))")
-    @GetMapping({"/jobs_por_usuario/process/reporte_maestros/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"})
-    public String jobsReporteMaestrosPorUsuario(
-            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
-            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
-            Model model) throws QandeMmiiException {
-        var estadoPeticion = new EstadoPeticion();
-        estadoPeticion.setEstadoOk(MSG_REPROCESO_OK, this.setJobMsg("Reportes Maestros", "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
-        CustomLog.getInstance().info("Iniciando Job Reportes Maestros y Control diario con rango fecha [" + startProcessDate + " - "+endProcessDate + MSG_APPEND_USER + sesionWeb.getUsuario() + "]...");
-        if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {
-
-            if ( reportesMaestrosService.generaReportesMaestros(startProcessDate, endProcessDate) ) {
-                sesionWeb.addNotification("Reportes Maestros re-procesados correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
-                return inicioJobsPorUsuarioConRangoFechas(startProcessDate, endProcessDate, model);
-            } else {
-                sesionWeb.addNotification("Reportes Maestros no pudieron ser re-procesados: ["+startProcessDate+" - "+endProcessDate+"]");
-                estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en re-proceso Reportes Maestros");
-            }
-            model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        } else {
-            estadoPeticion.setEstadoError(ERROR_RANGO_FECHAS);
-        }
-        return inicioJobsPorUsuarioConRangoFechas(startProcessDate, endProcessDate, model);
-    }
-
-
-
 
 
     /****************************************************
      * Funciones auxiliares
      ****************************************************/
-    private String inicioJobsComun(boolean isAdmin) throws QandeMmiiException {
+
+
+    private String inicioJobsConRangoFechasHandler(
+            String startProcessDate, String endProcessDate,
+            Model model, boolean isAdmin) throws QandeMmiiException {
+        model.addAttribute(CAMPO_TITULO, TITULO_JOBS_MAIN);
+        model.addAttribute(CAMPO_SESION, sesionWeb);
+        model.addAttribute(CAMPO_START_PROCESS_DATE, startProcessDate);
+        model.addAttribute(CAMPO_END_PROCESS_DATE, endProcessDate);
+        model.addAttribute("maxDiasDesfase", getMaxDesfaseDias());
         var opcionMenu  = isAdmin ? Menu.ADMIN_JOBS : Menu.ADMIN_JOBS_BY_USER;
         return sesionWeb.getAppMenu().cambiaNavegacion(opcionMenu, false);
     }
 
-    private String getProcessFromUrl(String url) {
-        var ini         = url.indexOf("/fecha/")+7+8+1;  //Primer caracter luego del / terminando la fecha
-        var finProcess  = url.indexOf("/", ini);
-        if (finProcess>0) {
-            return url.substring(ini, finProcess);
-        }
-        return url.substring(ini);
+    private String getMethodFromUrl(String requestUri) {
+        return requestUri.substring(requestUri.indexOf("/process/")+9, requestUri.indexOf("/", requestUri.indexOf("/process/")+9));
     }
 
     private int diferenciaDias(String startProcessDate, String endProcessDate) throws ParseException {

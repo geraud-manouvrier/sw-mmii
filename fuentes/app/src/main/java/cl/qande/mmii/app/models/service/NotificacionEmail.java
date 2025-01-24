@@ -3,7 +3,6 @@ package cl.qande.mmii.app.models.service;
 import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
-import cl.qande.mmii.app.models.db.core.entity.ControlDiarioReporte;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
 import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -64,26 +63,7 @@ public class NotificacionEmail {
 
     public void notificarOkControlDiario(String processDate, List<ControlDiario> resultado) throws QandeMmiiException {
         var mensaje = this.generaTituloHtml("Resultado del control diario para fecha proceso ["+processDate+"]");
-        mensaje     = mensaje+ EntityToHtml.resultadoControlDiarioToHtml(resultado);
-        var asunto  = appNotificacionMailProperties.getControlDiario().getDefaultSubject()+SUBJECT_OK+processDate;
-        var recipients  = new String[]{appNotificacionMailProperties.getControlDiario().getRecipientTo(),
-                appNotificacionMailProperties.getControlDiario().getRecipientCc(),
-                appNotificacionMailProperties.getControlDiario().getRecipientBcc()};
-        this.enviaMail(mensaje, asunto, appNotificacionMailProperties.getControlDiario(), recipients);
-    }
-
-    public void notificarErrorControlDiarioSegmentado(String processDate, String detalle) throws QandeMmiiException {
-        var mensaje = "Error al realizar control diario segmentado para fecha proceso ["+processDate+"]." + this.generaDetalle(detalle);
-        var asunto  = appNotificacionMailProperties.getControlDiario().getDefaultSubject()+SUBJECT_ERROR+processDate;
-        var recipients  = new String[]{appNotificacionMailProperties.getControlDiario().getRecipientErrorTo(),
-                appNotificacionMailProperties.getControlDiario().getRecipientErrorCc(),
-                appNotificacionMailProperties.getControlDiario().getRecipientErrorBcc()};
-        this.enviaMail(mensaje, asunto, appNotificacionMailProperties.getControlDiario(), recipients);
-    }
-
-    public void notificarOkControlDiarioSegmentado(String processDate, List<ControlDiarioReporte> resultado) throws QandeMmiiException {
-        var mensaje = this.generaTituloHtml("Resultado del control diario segmentado para fecha proceso ["+processDate+"]");
-        mensaje     = mensaje+ EntityToHtml.resultadoControlDiarioSegmentadoToHtml(resultado);
+        mensaje     = mensaje+ EntityToHtml.resultadoControlDiarioToHtml(resultado, "");
         var asunto  = appNotificacionMailProperties.getControlDiario().getDefaultSubject()+SUBJECT_OK+processDate;
         var recipients  = new String[]{appNotificacionMailProperties.getControlDiario().getRecipientTo(),
                 appNotificacionMailProperties.getControlDiario().getRecipientCc(),

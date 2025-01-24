@@ -9,6 +9,7 @@ IMAGE_NAME=mytomcat:v1
 WAR_NAME=core-web-col-web
 WAR_FILE="${WAR_NAME}.war"
 HOST_NAME="mmii-proteccion-dev.qande.cl"
+DEFAULT_TIME_LOGS=30
 # Dir base
 ROOT_HOST_DIR=/qye
 BASE_HOST_DIR="${ROOT_HOST_DIR}/qande-mmii-proteccion"
@@ -51,7 +52,11 @@ _fn_stop_container() {
 # Función para ver los logs del contenedor
 _fn_view_logs() {
     echo "Mostrando logs del contenedor..."
-    docker logs -f "$CONT_ID"
+    if [ $# -eq 1 ]; then
+        timeout "$1"s docker logs -f "$CONT_ID"
+    else
+        docker logs -f "$CONT_ID"
+    fi
 }
 
 # Función para ingresar al contenedor
@@ -90,7 +95,7 @@ _fn_new_deploy() {
     _fn_pre_start_actions
     _fn_stop_container
     _fn_start_container
-    _fn_view_logs
+    _fn_view_logs "$DEFAULT_TIME_LOGS"
 }
 
 # Función para hacer rollback
@@ -101,7 +106,7 @@ _fn_rollback() {
     cd "${WORK_DIR}" || { echo "Directorio no existe $WORK_DIR"; exit 1; }
     _fn_stop_container
     _fn_start_container
-    _fn_view_logs
+    _fn_view_logs "$DEFAULT_TIME_LOGS"
 }
 
 # Función para manejar variables de entorno para pasar valores a archivos docker
@@ -129,7 +134,7 @@ _fn_new_cert() {
     sudo certbot certonly --manual --manual-auth-hook "${ROOT_HOST_DIR}/acme-dns-auth.py" --preferred-challenges dns --debug-challenges -d "${HOST_NAME}"
     _fn_stop_container
     _fn_start_container
-    _fn_view_logs
+    _fn_view_logs "$DEFAULT_TIME_LOGS"
 }
 
 # Función para renovar certificado
@@ -137,17 +142,17 @@ _fn_renew_cert() {
     # Mostrar mensaje de confirmación
     echo "***************************************************"
     echo "* Debe abrir los puertos 80/443 en el firewall    *"
-    echo "* Agregue la IP 0.0.0.0/0 a las IPs permitidas    *"
     echo "* Además, se le pedirá la contraseña de root      *"
     echo "***************************************************"
-    
+    echo "Presione Enter para continuar o Ctrl+C para cancelar."
+
     # Esperar a que el usuario presione Enter
-    read -n 1 -r -s -p "Presione Enter para continuar o Ctrl+C para cancelar...."
+    read -n 1 -r -s -p "Presione Enter para continuar..."
     echo ""  # Añadir una nueva línea después de la entrada del usuario
     sudo certbot renew
     _fn_stop_container
     _fn_start_container
-    _fn_view_logs
+    _fn_view_logs "$DEFAULT_TIME_LOGS"
 }
 
 # Función de ayuda
@@ -157,7 +162,7 @@ _fn_help() {
     echo "Despliega y administra la aplicación Q&E MMII."
     echo ""
     echo "Uso:"
-    echo "deploy <versión> <ID de iteración> <fecha>"
+    echo "deploy <versión> <fecha>"
     echo "[start|stop|logs]"
     echo "rollback | help | newcert | renew | enter"
     echo ""
@@ -212,6 +217,8 @@ _fn_validate_options() {
 
 }
 
+echo "Parámetros de llamada: [$*]"
+
 
 # Validamos llamado
 if ! _fn_validate_options "$@"; then
@@ -236,6 +243,7 @@ for arg in "$@"; do
 
             RELEASE_VERSION="$2"
             _fn_new_deploy
+            exit 0
             ;;
         start)
             _fn_start_container

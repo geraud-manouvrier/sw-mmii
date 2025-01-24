@@ -3,8 +3,7 @@ package cl.qande.mmii.app.models.service;
 import cl.qande.mmii.app.models.db.core.dao.IUsuarioDao;
 import cl.qande.mmii.app.models.db.core.entity.Role;
 import cl.qande.mmii.app.models.db.core.entity.Usuario;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,31 +20,34 @@ import java.util.List;
 @Service("jpaUserDetailsService")
 public class JpaUserDetailsService implements UserDetailsService{
 
+	private final IUsuarioDao usuarioDao;
+
 	@Autowired
-	private IUsuarioDao usuarioDao;
-	
-	private Logger logger = LoggerFactory.getLogger(JpaUserDetailsService.class);
-	
-	@Override
+	public JpaUserDetailsService(IUsuarioDao usuarioDao) {
+        this.usuarioDao = usuarioDao;
+    }
+
+
+    @Override
 	@Transactional(readOnly=true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
         Usuario usuario = usuarioDao.findByUsername(username);
         
         if(usuario == null) {
-        	logger.error("Error en el Login: no existe el usuario '{}' en el sistema!", username);
+			CustomLog.getInstance().error("Username: " + username + " no existe en el sistema!");
         	throw new UsernameNotFoundException("Username: " + username + " no existe en el sistema!");
         }
         
         List<GrantedAuthority> authorities = new ArrayList<>();
         
         for(Role role: usuario.getRoles()) {
-        	logger.info("Role: {}",role.getAuthority());
+			CustomLog.getInstance().info("Role: "+role.getAuthority());
         	authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
         }
         
         if(authorities.isEmpty()) {
-        	logger.error("Error en el Login: Usuario '{}' no tiene roles asignados!", username);
+			CustomLog.getInstance().error("Error en el Login: Usuario '"+username+"' no tiene roles asignados!");
         	throw new UsernameNotFoundException("Error en el Login: usuario '" + username + "' no tiene roles asignados!");
         }
         

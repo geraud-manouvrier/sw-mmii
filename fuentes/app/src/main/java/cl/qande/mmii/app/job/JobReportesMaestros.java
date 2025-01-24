@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.job;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.models.service.ReportesMaestrosService;
@@ -10,24 +9,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-//@EnableAsync(proxyTargetClass = true)
 public class JobReportesMaestros implements Runnable {
 
     private static final int DESFASE_DIAS = -1;
 
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
+    private final CalendarioHelper calendarioHelper;
+    private final ReportesMaestrosService reportesMaestrosService;
+    private final NotificacionEmail notificacionEmail;
 
     @Autowired
-    private ReportesMaestrosService reportesMaestrosService;
-    @Autowired
-    private NotificacionEmail notificacionEmail;
+    public JobReportesMaestros(CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, NotificacionEmail notificacionEmail) {
+        this.calendarioHelper = calendarioHelper;
+        this.reportesMaestrosService = reportesMaestrosService;
+        this.notificacionEmail = notificacionEmail;
+    }
 
-    public boolean generaReportesByProcessDate(String processDate) throws QandeMmiiException {
+    public boolean generaReportesByProcessDate(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borrarArchivosExistentes) throws QandeMmiiException {
 
-        if (reportesMaestrosService.generaReportesMaestros(processDate)) {
+        if (reportesMaestrosService.generaReportesMaestros(processDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borrarArchivosExistentes)) {
             CustomLog.getInstance().info("Generación Reportes Maestros Excel con fecha ["+processDate+"] finalizada OK");
             return true;
         } else {
@@ -42,7 +41,7 @@ public class JobReportesMaestros implements Runnable {
         CustomLog.getInstance().info("Iniciando tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
         try {
-            this.generaReportesByProcessDate(processDate);
+            this.generaReportesByProcessDate(processDate, true, true, true, true, true);
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
         }

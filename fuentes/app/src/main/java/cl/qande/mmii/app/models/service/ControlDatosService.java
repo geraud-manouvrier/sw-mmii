@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class ControlDatosService {
 
+    private final ICuentasNoMapeadasPershingDao cuentasNoMapeadasPershingDao;
+
     @Autowired
-    private ICuentasNoMapeadasPershingDao cuentasNoMapeadasPershingDao;
+    public ControlDatosService(ICuentasNoMapeadasPershingDao cuentasNoMapeadasPershingDao) {
+        this.cuentasNoMapeadasPershingDao = cuentasNoMapeadasPershingDao;
+    }
 
     public List<VwCuentasNoMapeadasPershingProjection> listaCuentasNoMapeadas(String processDate) {
         return cuentasNoMapeadasPershingDao.listaCuentasNoMapeadasByProcessDate(processDate);
