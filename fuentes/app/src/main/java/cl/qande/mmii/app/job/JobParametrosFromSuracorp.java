@@ -1,7 +1,6 @@
 package cl.qande.mmii.app.job;
 
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
-import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
 import cl.qande.mmii.app.models.service.ParametrosFromMmiiSuraCorp;
@@ -44,18 +43,14 @@ public class JobParametrosFromSuracorp implements Runnable {
             msg = e.getMessage();
         }
 
-        try {
-            if(flagSendMail) {
-                notificacionEmail.notificarJobParametrosFromSuracorp(resultado, processDate, processDate, JOB_NAME, resultadoCarga, msg);
-                return resultado;
-            } else {
-                this.logMessage(" Enviar mail por "+usuario+" desactivado");
-                return resultado;
-            }
-        } catch (MailException e) {
-            this.logError(" Enviar mail por "+usuario, e.getMessage());
-            return false;
+        if(flagSendMail) {
+            notificacionEmail.notificarJobParametrosFromSuracorp(resultado, processDate, processDate, JOB_NAME, resultadoCarga, msg);
+            return resultado;
+        } else {
+            this.logMessage(" Enviar mail por "+usuario+" desactivado");
+            return resultado;
         }
+
 
     }
 

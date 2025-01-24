@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-//@EnableAsync(proxyTargetClass = true)
 public class JobControlDiario implements Runnable {
 
     public static final Integer ID_JOB = 1;
@@ -65,19 +64,19 @@ public class JobControlDiario implements Runnable {
         }
     }
 
-    public void tarea() {
+    public boolean ejecutaJob() {
         CustomLog.getInstance().info("Iniciando tarea Control Diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
         try {
-            this.realizaControlDiario(processDate, CustomScheduler.USUARIO_JOB, true);
+            return this.realizaControlDiario(processDate, CustomScheduler.USUARIO_JOB, true);
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error al realizar tarea control diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
+            return false;
         }
-        CustomLog.getInstance().info("Finalizando tarea control diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
     }
 
     @Override
     public void run() {
-        this.tarea();
+        this.ejecutaJob();
     }
 }

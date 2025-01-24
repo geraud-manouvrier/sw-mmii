@@ -29,10 +29,6 @@ public class JobCuentasNoMapeadas implements Runnable {
         this.controlDatosService = controlDatosService;
     }
 
-    private void ejecutaJob() throws MailException {
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
-        ejecutaJob(processDate, CustomScheduler.USUARIO_JOB, true);
-    }
     public boolean ejecutaJob(String processDate, String usuario, boolean flagSendMail) throws MailException {
         boolean estado;
         List<VwCuentasNoMapeadasPershingProjection> listaCuentasNoMapeadas = new ArrayList<>();
@@ -57,18 +53,19 @@ public class JobCuentasNoMapeadas implements Runnable {
     private void logError(String message, String errorDescr) {
         CustomLog.getInstance().info("Error "+JOB_NAME+message+": "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+errorDescr+"]");
     }
-    public void tarea() {
+    public boolean ejecutaJob() {
         this.logMessage(" Iniciando");
         try {
-            this.ejecutaJob();
+            var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+            return ejecutaJob(processDate, CustomScheduler.USUARIO_JOB, true);
         } catch (Exception e) {
             this.logError("Error al realizar ", e.getMessage());
+            return false;
         }
-        this.logMessage(" Finalizando");
     }
 
     @Override
     public void run() {
-        this.tarea();
+        this.ejecutaJob();
     }
 }

@@ -7,6 +7,7 @@ import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjec
 import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.mail.EmailDetails;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.mapper.EntityToHtml;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,9 +95,15 @@ public class NotificacionEmail {
         this.enviaMail(mensaje, asunto, mailConfiguration, flagOk);
     }
 
-    public void notificarJobParametrosFromSuracorp(boolean isOk, String startProcessDate, String endProcessDate, String jobName, ParSourceCode[][] resultado, String msg) throws QandeMmiiException {
+    public void notificarJobParametrosFromSuracorp(boolean isOk, String startProcessDate, String endProcessDate, String jobName, ParSourceCode[][] resultado, String msg) {
         var mailConfiguration   = appNotificacionMailProperties.getParametrosSuracorp();
         notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoParametrosSuracorpToHtml(resultado, msg), mailConfiguration);
+
+    }
+
+    public void notificarJobMallaDiaria(boolean isOk, String startProcessDate, String endProcessDate, String jobName, String msg) {
+        var mailConfiguration   = appNotificacionMailProperties.getMallaDiaria();
+        notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, msg, mailConfiguration);
 
     }
 
@@ -105,11 +112,16 @@ public class NotificacionEmail {
      * Funciones auxiliares
      ********************************/
 
-    private void notificacionGenerica(boolean isOk, String startProcessDate, String endProcessDate, String jobName, String detalle, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration) throws QandeMmiiException {
+    private void notificacionGenerica(boolean isOk, String startProcessDate, String endProcessDate, String jobName, String detalle, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration) {
         var recipients          = getRecipients(isOk, mailConfiguration);
         var mensaje             = generaBodyHtml(isOk, startProcessDate, endProcessDate, jobName, detalle);
         var asunto              = mailConfiguration.getDefaultSubject()+(isOk ? SUBJECT_OK : SUBJECT_ERROR)+"["+startProcessDate+" - "+endProcessDate+"]";
-        this.enviaMail(mensaje, asunto, mailConfiguration, recipients);
+        try {
+            this.enviaMail(mensaje, asunto, mailConfiguration, recipients);
+        } catch (QandeMmiiException e) {
+            CustomLog.getInstance().error("Error enviando mail para job ["+jobName+"] con fechas ["+startProcessDate+"-"+endProcessDate+"]: "+e.getMessage());
+            CustomLog.getInstance().info("Detalle mail para job ["+jobName+"] con fechas ["+startProcessDate+"-"+endProcessDate+"]: "+detalle);
+        }
 
     }
 

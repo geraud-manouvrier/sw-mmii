@@ -37,19 +37,19 @@ public class JobReportesMaestros implements Runnable {
 
     }
 
-    public void tarea() {
+    public boolean ejecutaJob() {
         CustomLog.getInstance().info("Iniciando tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
         try {
-            this.generaReportesByProcessDate(processDate, true, true, true, true, true);
+            return this.generaReportesByProcessDate(processDate, true, true, true, true, true);
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
+            return false;
         }
-        CustomLog.getInstance().info("Finalizando tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
     }
 
     @Override
     public void run() {
-        this.tarea();
+        this.ejecutaJob();
     }
 }

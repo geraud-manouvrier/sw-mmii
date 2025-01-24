@@ -38,19 +38,19 @@ public class JobGetFromFtpPershing implements Runnable {
         }
     }
 
-    public void tarea() {
+    public boolean ejecutaJob() {
         CustomLog.getInstance().info("Iniciando tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
         try {
-            this.processByProcessDate(processDate, false);
+            return this.processByProcessDate(processDate, false);
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error al realizar tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
+            return false;
         }
-        CustomLog.getInstance().info("Finalizando tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
     }
 
     @Override
     public void run() {
-        this.tarea();
+        this.ejecutaJob();
     }
 }

@@ -78,73 +78,20 @@
 <script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
 
 <script>
-    function createRangeCalendar(calendarName, maxDiasDesfase) {
-        var idCalendar         = '#'+calendarName;
-        return $(idCalendar).daterangepicker(
-            {
-                "showDropdowns": true,
-                "autoApply": true,
-                "alwaysShowCalendars" : true,
-                "showCustomRangeLabel" : false,
-                minDate: moment().subtract(maxDiasDesfase, 'days'),
-                maxDate: moment().subtract(1, 'days'),
-                ranges: {
-                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Atrás 2 días': [moment().subtract(2, 'days'), moment().subtract(2, 'days')],
-                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
-                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
-                    'Últ. 2 días': [moment().subtract(2, 'days'), moment().subtract(1, 'days')],
-                    'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')],
-                    'Últ. 7 días': [moment().subtract(7, 'days'), moment().subtract(1, 'days')]
 
-                },
-                "locale": {
-                    "format": "YYYY-MM-DD",
-                    "separator": " -> ",
-                    "applyLabel": "Aceptar",
-                    "cancelLabel": "Cancelar",
-                    "fromLabel": "From",
-                    "toLabel": "To",
-                    "customRangeLabel": "Custom",
-                    "weekLabel": "W",
-                    "daysOfWeek": [
-                        "Do",
-                        "Lu",
-                        "Ma",
-                        "Mi",
-                        "Ju",
-                        "Vi",
-                        "Sa"
-                    ],
-                    "monthNames": [
-                        "Enero",
-                        "Febrero",
-                        "Marzo",
-                        "Abril",
-                        "Mayo",
-                        "Junio",
-                        "Julio",
-                        "Agosto",
-                        "Septiembre",
-                        "Octubre",
-                        "Noviembre",
-                        "Diciembre"
-                    ],
-                    "firstDay": 1
-                }
-            }
-        );
-    }
+    var maxDiasDesfase = $('#maxDiasDesfase').val();
 
-</script>
+    var customRanges= {
+        'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Atrás 2 días': [moment().subtract(2, 'days'), moment().subtract(2, 'days')],
+        'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+        'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+        'Últ. 2 días': [moment().subtract(2, 'days'), moment().subtract(1, 'days')],
+        'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')],
+        'Últ. 7 días': [moment().subtract(7, 'days'), moment().subtract(1, 'days')]
 
-<script>
-
-
-    $(function () {
-        var maxDiasDesfase = $('#maxDiasDesfase').val();
-        createRangeCalendar("rango_fechas", maxDiasDesfase);
-    });
+    };
+    createCustomCalendarHtml("rango_fechas", customRanges, true, moment().subtract(maxDiasDesfase, 'days'), moment().subtract(1, 'days'));
 
     function procesar(processName) {
 

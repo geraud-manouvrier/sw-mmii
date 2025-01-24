@@ -1,63 +1,29 @@
 
-function createCustomSingleCalendarHtml(calendarName, customRanges) {
-    var idCalendar         = '#'+calendarName;
+function createCustomCalendarHtml(calendarName, customRanges, multiple=false, minDate=null, maxDate=null) {
+    //https://www.daterangepicker.com/#google_vignette
+    var idCalendar  = '#'+calendarName;
+    var separator   = multiple ? " -> " : " - ";
+    var dateOfStart         = moment('2024-04-22', 'YYYY-MM-DD');
+
+    if (minDate == null || moment(minDate).isBefore(dateOfStart)) {
+        minDate = dateOfStart;
+    }
+    if (maxDate==null)
+        maxDate=moment().subtract(1, 'days');
+
     return $(idCalendar).daterangepicker(
         {
-            "singleDatePicker": true,
+            "singleDatePicker": (!multiple),
             "showDropdowns": true,
             "autoApply": true,
             "alwaysShowCalendars" : true,
             "showCustomRangeLabel" : false,
             ranges: customRanges,
+            "minDate": minDate,
+            "maxDate": maxDate,
             "locale": {
                 "format": "YYYY-MM-DD",
-                "separator": " - ",
-                "applyLabel": "Aceptar",
-                "cancelLabel": "Cancelar",
-                "fromLabel": "From",
-                "toLabel": "To",
-                "customRangeLabel": "Custom",
-                "weekLabel": "W",
-                "daysOfWeek": [
-                    "Do",
-                    "Lu",
-                    "Ma",
-                    "Mi",
-                    "Ju",
-                    "Vi",
-                    "Sa"
-                ],
-                "monthNames": [
-                    "Enero",
-                    "Febrero",
-                    "Marzo",
-                    "Abril",
-                    "Mayo",
-                    "Junio",
-                    "Julio",
-                    "Agosto",
-                    "Septiembre",
-                    "Octubre",
-                    "Noviembre",
-                    "Diciembre"
-                ],
-                "firstDay": 1
-            }
-        }
-    );
-}
-function createCustomCalendarHtml(calendarName, customRanges) {
-    var idCalendar         = '#'+calendarName;
-    return $(idCalendar).daterangepicker(
-        {
-            maxDate: moment().subtract(1, 'days'),
-            "autoApply": true,
-            "alwaysShowCalendars" : true,
-            "showCustomRangeLabel" : false,
-            ranges: customRanges,
-            "locale": {
-                "format": "YYYY-MM-DD",
-                "separator": " -> ",
+                "separator": separator,
                 "applyLabel": "Aceptar",
                 "cancelLabel": "Cancelar",
                 "fromLabel": "From",
@@ -94,61 +60,6 @@ function createCustomCalendarHtml(calendarName, customRanges) {
 }
 
 
-function customNotification(tipoMensaje, titulo, mensaje) {
-    //https://codeseven.github.io/toastr/demo.html
-    toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": true,
-        "positionClass": "toast-bottom-right",
-        "preventDuplicates": false,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "15000",
-        "extendedTimeOut": "5000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    };
-    switch(tipoMensaje) {
-        case "OK":
-            toastr.success(mensaje, titulo, {
-                onclick: function() {
-                    abrirControlSidebar();
-                }
-            });
-            break;
-        case "ERROR":
-            toastr.error(mensaje, titulo, {
-                onclick: function() {
-                    abrirControlSidebar();
-                }
-            });
-            break;
-        case "INFO":
-            toastr.info(mensaje, titulo, {
-                onclick: function() {
-                    abrirControlSidebar();
-                }
-            });
-            break;
-        case "WARNING":
-            toastr.warning(mensaje, titulo, {
-                onclick: function() {
-                    abrirControlSidebar();
-                }
-            });
-            break;
-        default:
-            toastr.info(mensaje, titulo, {
-                onclick: function() {
-                    abrirControlSidebar();
-                }
-            });
-    }
-}
 
 function abrirControlSidebar() {
     $('[data-widget="control-sidebar"]').trigger('click');

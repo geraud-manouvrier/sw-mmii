@@ -42,6 +42,8 @@
                         <div class="col-md text-info">
                             <p>1. Reportes Maestros: Materializar los datos sobreescribirá datos antiguos de Clientes con datos nuevos no necesariamente válidos (AdvFee, nombre, etc.)</p>
                             <p>2. Maestros específicos: Seleccionar generar sólo Cuentas o Movimientos o Saldos, borrará TODOS los Archivos Maestros de dicho día previamente y luego generará SÓLO el seleccionado.</p>
+                            <p>3. Al reprocesar Maestros desde este panel, NO se enviará mail de control diario (aunque si se ejecutará).</p>
+                            <p>4. Malla diaria NO CONSIDERA FECHA ingresada, usará siempre la fecha por defecto de cada job (T-1 normalmente). NO USAR para reprocesar fechas pasadas.</p>
                         </div>
                     </div>
 
@@ -85,6 +87,9 @@
                     <a class="btn btn-app" onclick="procesar('parametros_suracorp_sin_mail')"><i class="fas fa-tasks"></i>Parámetros MMII (sin mail)</a>
                 </div>
                 <div class="card-footer">
+                    <a class="btn btn-app" onclick="procesar('malla_diaria')"><i class="fas fa-tasks"></i>Malla Diaria</a>
+                </div>
+                <div class="card-footer">
                 </div>
                 <!-- /.card-footer-->
             </div>
@@ -111,72 +116,20 @@
 <script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
 
 <script>
-    function createRangeCalendar(calendarName, maxDiasDesfase) {
-        var idCalendar         = '#'+calendarName;
-        return $(idCalendar).daterangepicker(
-            {
-                "showDropdowns": true,
-                "autoApply": true,
-                "alwaysShowCalendars" : true,
-                "showCustomRangeLabel" : false,
-                minDate: moment().subtract(maxDiasDesfase, 'days'),
-                ranges: {
-                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
-                    'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
-                    'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
-                    'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Últ. 2 días': [moment().subtract(2, 'days'), moment().subtract(1, 'days')],
-                    'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')]
 
-                },
-                "locale": {
-                    "format": "YYYY-MM-DD",
-                    "separator": " -> ",
-                    "applyLabel": "Aceptar",
-                    "cancelLabel": "Cancelar",
-                    "fromLabel": "From",
-                    "toLabel": "To",
-                    "customRangeLabel": "Custom",
-                    "weekLabel": "W",
-                    "daysOfWeek": [
-                        "Do",
-                        "Lu",
-                        "Ma",
-                        "Mi",
-                        "Ju",
-                        "Vi",
-                        "Sa"
-                    ],
-                    "monthNames": [
-                        "Enero",
-                        "Febrero",
-                        "Marzo",
-                        "Abril",
-                        "Mayo",
-                        "Junio",
-                        "Julio",
-                        "Agosto",
-                        "Septiembre",
-                        "Octubre",
-                        "Noviembre",
-                        "Diciembre"
-                    ],
-                    "firstDay": 1
-                }
-            }
-        );
-    }
+    var maxDiasDesfase = $('#maxDiasDesfase').val();
 
-</script>
+    var customRanges= {
+        'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Atrás 3 días': [moment().subtract(3, 'days'), moment().subtract(3, 'days')],
+        'Atrás 7 días': [moment().subtract(7, 'days'), moment().subtract(7, 'days')],
+        'Atrás 10 días': [moment().subtract(10, 'days'), moment().subtract(10, 'days')],
+        'Cierre Anterior': [moment().subtract(1, 'month').endOf('month'), moment().subtract(1, 'month').endOf('month')],
+        'Últ. 2 días': [moment().subtract(2, 'days'), moment().subtract(1, 'days')],
+        'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')]
+    };
+    createCustomCalendarHtml("rango_fechas", customRanges, true, moment().subtract(maxDiasDesfase, 'days'), moment().subtract(1, 'days'));
 
-<script>
-
-
-    $(function () {
-        var maxDiasDesfase = $('#maxDiasDesfase').val();
-        createRangeCalendar("rango_fechas", maxDiasDesfase);
-    });
 
     function procesar(processName) {
 
@@ -188,6 +141,11 @@
                 return;
             if (materializaData)
                 processName = processName + '_materializa';
+        }
+        if (processName=="malla_diaria") {
+            var resp    = confirm('Malla diaria OMITE fecha ingresada. Usará configuración por defecto de fechas y flag. ¿Desea continuar?');
+            if (!resp)
+                return;
         }
 
 

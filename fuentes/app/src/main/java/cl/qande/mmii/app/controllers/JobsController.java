@@ -234,7 +234,7 @@ public class JobsController {
         var generarSaldos           = request.getRequestURI().contains("reporte_maestros_saldos") || generaTodos;
         var borraArchivosExistentes = request.getRequestURI().contains("reporte_maestros_cuentas") || request.getRequestURI().contains("reporte_maestros_movimientos") || request.getRequestURI().contains("reporte_maestros_saldos");
 
-        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, model, true);
+        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, false, model, true);
     }
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS_BY_USER))")
@@ -249,12 +249,13 @@ public class JobsController {
         var generarSaldos       = true;
         var borraArchivosExistentes = true;
 
-        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, model, false);
+        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, true, model, false);
     }
 
     private String jobMaestrosHandler(
             String startProcessDate, String endProcessDate,
             boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borraArchivosExistentes,
+            boolean mailControlDiario,
             Model model, boolean isAdmin) throws QandeMmiiException {
         var estadoPeticion          = new EstadoPeticion();
         try {
@@ -262,7 +263,7 @@ public class JobsController {
             if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {
                 if ( reportesMaestrosService.generaReportesMaestros(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes) ) {
                     sesionWeb.addNotification("Reportes Maestros re-procesados correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
-                    if (jobControlDiario.realizaControlDiario(startProcessDate, endProcessDate, sesionWeb.getUsuario(), true)) {
+                    if (jobControlDiario.realizaControlDiario(startProcessDate, endProcessDate, sesionWeb.getUsuario(), mailControlDiario)) {
                         estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg("Reportes Maestros", "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
                         sesionWeb.addNotification("Control diario finalizado correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
                     } else {
