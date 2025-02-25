@@ -15,20 +15,22 @@ public class JobMallaProcesos implements Runnable {
 
     private final CalendarioHelper calendarioHelper;
     private final JobControlDiario jobControlDiario;
-    private final JobCuentasNoMapeadas jobCuentasNoMapeadas;
     private final JobGetFromFtpPershing jobGetFromFtpPershing;
     private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
     private final JobReportesMaestros jobReportesMaestros;
+    private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
+    private final JobRepInvControl jobRepInvControl;
     private final NotificacionEmail notificacionEmail;
 
     @Autowired
-    public JobMallaProcesos(CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, NotificacionEmail notificacionEmail) {
+    public JobMallaProcesos(CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, NotificacionEmail notificacionEmail) {
         this.calendarioHelper = calendarioHelper;
         this.jobGetFromFtpPershing = jobGetFromFtpPershing;
         this.jobControlDiario = jobControlDiario;
         this.jobReportesMaestros = jobReportesMaestros;
-        this.jobCuentasNoMapeadas = jobCuentasNoMapeadas;
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
+        this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
+        this.jobRepInvControl = jobRepInvControl;
         this.notificacionEmail = notificacionEmail;
     }
 
@@ -43,8 +45,10 @@ public class JobMallaProcesos implements Runnable {
                 jobReportesMaestros.ejecutaJob() &&
                 //Job Control Diario
                 jobControlDiario.ejecutaJob() &&
-                //Job Cuenta no mapeadas
-                jobCuentasNoMapeadas.ejecutaJob()
+                //Job Rentabilidades
+                jobRepInvPrecalculoDiario.ejecutaJob() &&
+                //Controles rentabilidades
+                jobRepInvControl.ejecutaJob()
         ) {
                 CustomLog.getInstance().info("Malla Procesos finalizada OK");
                 return true;

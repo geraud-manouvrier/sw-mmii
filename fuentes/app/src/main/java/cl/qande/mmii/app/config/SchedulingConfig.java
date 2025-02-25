@@ -48,4 +48,12 @@ public class SchedulingConfig {
     public CronTrigger cronParametrosSuraCorp(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronParametrosSuraCorp());
     }
+    @Bean
+    public CronTrigger cronReporteInversiones(AppSchedulingProperties appSchedulingProperties) {
+        return new CronTrigger(appSchedulingProperties.getCronReporteInversiones());
+    }
+    @Bean
+    public CronTrigger cronReporteInversionesControles(AppSchedulingProperties appSchedulingProperties) {
+        return new CronTrigger(appSchedulingProperties.getCronReporteInversionesControles());
+    }
 }

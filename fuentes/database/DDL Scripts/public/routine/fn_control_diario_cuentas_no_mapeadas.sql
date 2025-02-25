@@ -13,18 +13,18 @@ $$
             'Cuentas no mapeadas'::VARCHAR(1000) as glosa_control,
             'Cuentas informadas por custodio, no agregadas en mantenedor enrolamiento'::VARCHAR(1000) as descripcion_control,
             CTA_NO_INF.process_date::VARCHAR(100),
-            CTA_NO_INF.account_no::VARCHAR(100) as identificador,
+            CTA_NO_INF.account_id::VARCHAR(100) as identificador,
             count(*)::int as cant_reg
             FROM
             (
                 SELECT DISTINCT
                     ctas_no_map.process_date,
-                    ctas_no_map.account_no
+                    ctas_no_map.account_no||' - '||ctas_no_map.client_name as account_id
                 FROM public.vw_cuentas_no_mapeadas_pershing ctas_no_map
                 WHERE ctas_no_map.process_date=_process_date
             ) CTA_NO_INF
-            GROUP BY CTA_NO_INF.process_date::VARCHAR(100), CTA_NO_INF.account_no::VARCHAR(100)
-            ORDER BY CTA_NO_INF.process_date::VARCHAR(100), CTA_NO_INF.account_no::VARCHAR(100);
+            GROUP BY CTA_NO_INF.process_date::VARCHAR(100), CTA_NO_INF.account_id::VARCHAR(100)
+            ORDER BY CTA_NO_INF.process_date::VARCHAR(100), CTA_NO_INF.account_id::VARCHAR(100);
     RETURN;
     END;
 $$;

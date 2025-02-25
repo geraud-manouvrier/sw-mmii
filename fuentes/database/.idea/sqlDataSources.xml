@@ -9,6 +9,7 @@
             <name qname="clientes" />
             <name qname="pershing" />
             <name qname="public" />
+            <name qname="rep_inv" />
             <name qname="stage_pershing" />
             <name qname="zz_backup" />
           </node>

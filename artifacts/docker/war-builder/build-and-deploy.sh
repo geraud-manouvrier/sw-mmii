@@ -6,6 +6,7 @@ BRANCH="${BRANCH}"      # Pasado como variable de entorno
 TAG="${TAG}"            # Pasado como variable de entorno
 OUTPUT_DIR="/mnt/output"
 WORK_DIR="/app"
+PROJECT_DIR="fuentes/app"  # Directorio relativo dentro del repositorio
 
 # Clonar el repositorio
 if [ -n "$TAG" ]; then
@@ -17,7 +18,7 @@ else
 fi
 
 # Obtener la versión del proyecto
-cd $WORK_DIR/core-web || exit 1
+cd "$WORK_DIR/$PROJECT_DIR" || exit 1
 VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 echo "Versión detectada: $VERSION"
 

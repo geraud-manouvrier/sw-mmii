@@ -1,6 +1,8 @@
 package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.models.db.clientes.dao.*;
+import cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection;
+import cl.qande.mmii.app.models.db.core.entity.UniversoCuentaProjection;
 import cl.qande.mmii.app.models.dto.*;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.mapper.*;
@@ -73,6 +75,18 @@ public class EnrolamientoClientesService {
             CustomLog.getInstance().info("Inhabilitadas Personas Relacionadas  para Cliente ["+clienteDto+"] ");
         }
     }
+
+    @Transactional(readOnly = true)
+    //Lista clientes con datos para el periodo
+    public List<UniversoClienteProjection> listaUniversoClientes(String processDate) {
+        return clienteCuentaMaestroDao.listaUniversoClientes(processDate);
+    }
+    @Transactional(readOnly = true)
+    //Lista cuentas con datos para el periodo
+    public List<UniversoCuentaProjection> listaUniversoCuentas(String processDate) {
+        return clienteCuentaMaestroDao.listaUniversoCuentas(processDate);
+    }
+
 
 
 

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Pre Cálculos Agregados Retornos</h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="lista_registros_nivel1" type="java.util.List<cl.qande.mmii.app.models.db.rep_inv.entity.ConsolidadoAgregadoN1>"*/-->
+        <!--/*@thymesVar id="lista_registros_nivel2" type="java.util.List<cl.qande.mmii.app.models.db.rep_inv.entity.ConsolidadoAgregadoN2>"*/-->
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="main_form" th:action="@{/retornos/base-agregada}" method="post">
+                        <div class="form-group row">
+                            <label for="rango_fechas" class="col-md-1 col-form-label">Process Dates</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" placeholder="yyyy-MM-dd -> yyyy-MM-dd" id="rango_fechas" name="rango_fechas" th:value="${startProcessDate+ ' -> '+endProcessDate}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cliente" class="col-md-1 col-form-label">Lista Cliente</label>
+                            <div class="col-md-3">
+                                <input id="cliente" name="cliente" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cuenta" class="col-md-1 col-form-label">Lista Cuenta</label>
+                            <div class="col-md-3">
+                                <input id="cuenta" name="cuenta" disabled="disabled" />
+                            </div>
+                        </div>
+                        <input type="hidden" id="fecha_desde" name="fecha_desde">
+                        <input type="hidden" id="fecha_hasta" name="fecha_hasta">
+                    </form>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" onclick="postByRangeProcessDate('rango_fechas', 'main_form')"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+            <div th:if="${lista_registros_nivel1 != null}" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Pre Cálculos Agregados Cliente <span th:text="'(' + ${#lists.size(lista_registros_nivel1)} + ' registros)'"></span></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-nivel1" th:if="${!#lists.isEmpty(lista_registros_nivel1)}"></div>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+
+
+            <div th:if="${lista_registros_nivel2 != null}" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Pre Cálculos Agregados Cliente/Cuenta <span th:text="'(' + ${#lists.size(lista_registros_nivel2)} + ' registros)'"></span></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-nivel2" th:if="${!#lists.isEmpty(lista_registros_nivel2)}"></div>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(document).ready(function() {
+        createComboWithSourceClienteCuenta(/*[[${lista_clientes}]]*/ [], /*[[${lista_cuentas}]]*/ [], /*[[${clienteDefault}]]*/ "", /*[[${cuentaDefault}]]*/ "");
+
+
+        var registrosN1DataSource =  [
+            /*[# th:each="objeto : ${lista_registros_nivel1}"]*/
+            {
+                processDate: [[${objeto.id.processDate}]],
+                agregadorN1: [[${objeto.id.agregadorN1}]],
+                saldoDia: [[${objeto.saldoDia}]],
+                abonosDia: [[${objeto.abonosDia}]],
+                retirosDia: [[${objeto.retirosDia}]],
+                dividendosDia: [[${objeto.dividendosDia}]],
+                comisionDevengadaDia: [[${objeto.comisionDevengadaDia}]],
+                saldoDiaAnterior: [[${objeto.saldoDiaAnterior}]],
+                utilidad: [[${objeto.utilidad}]],
+                rentabilidadBasePitatoria: [[${objeto.rentabilidadBasePitatoria}]]
+
+            },
+            /*[/]*/
+        ];
+        var registrosN2DataSource =  [
+            /*[# th:each="objeto : ${lista_registros_nivel2}"]*/
+            {
+                processDate: [[${objeto.id.processDate}]],
+                agregadorN1: [[${objeto.id.agregadorN1}]],
+                agregadorN2: [[${objeto.id.agregadorN2}]],
+                saldoDia: [[${objeto.saldoDia}]],
+                abonosDia: [[${objeto.abonosDia}]],
+                retirosDia: [[${objeto.retirosDia}]],
+                dividendosDia: [[${objeto.dividendosDia}]],
+                comisionDevengadaDia: [[${objeto.comisionDevengadaDia}]],
+                saldoDiaAnterior: [[${objeto.saldoDiaAnterior}]],
+                utilidad: [[${objeto.utilidad}]],
+                rentabilidadBasePitatoria: [[${objeto.rentabilidadBasePitatoria}]]
+
+            },
+            /*[/]*/
+        ];
+
+        var columnsRegistrosN1 = [
+            { field: 'processDate', headerText: 'processDate' },
+            { field: 'agregadorN1', headerText: 'agregadorN1' },
+            { field: 'saldoDia', headerText: 'Saldo', format: 'N4' },
+            { field: 'dividendosDia', headerText: 'Dividendos', format: 'N4' },
+            { field: 'abonosDia', headerText: 'Abonos', format: 'N4' },
+            { field: 'retirosDia', headerText: 'Retiros', format: 'N4' },
+            { field: 'comisionDevengadaDia', headerText: 'Com. Dev.', format: 'N6' },
+            { field: 'saldoDiaAnterior', headerText: 'Saldo Anterior', format: 'N4' },
+            { field: 'utilidad', headerText: 'Utilidad', format: 'N4' },
+            { field: 'rentabilidadBasePitatoria', headerText: 'Rentabilidad Base', format: 'N6' }
+        ];
+
+        var columnsRegistrosN2 = [
+            { field: 'processDate', headerText: 'processDate' },
+            { field: 'agregadorN1', headerText: 'agregadorN1' },
+            { field: 'agregadorN2', headerText: 'agregadorN2' },
+            { field: 'saldoDia', headerText: 'Saldo', format: 'N4' },
+            { field: 'dividendosDia', headerText: 'Dividendos', format: 'N4' },
+            { field: 'abonosDia', headerText: 'Abonos', format: 'N4' },
+            { field: 'retirosDia', headerText: 'Retiros', format: 'N4' },
+            { field: 'comisionDevengadaDia', headerText: 'Com. Dev.', format: 'N6' },
+            { field: 'saldoDiaAnterior', headerText: 'Saldo Anterior', format: 'N4' },
+            { field: 'utilidad', headerText: 'Utilidad', format: 'N4' },
+            { field: 'rentabilidadBasePitatoria', headerText: 'Rentabilidad Base', format: 'N6' }
+        ];
+
+        window.appPubGlobVar.gridNivel1     = createDefaultGridWithWrapper('grid-wrapper-nivel1', registrosN1DataSource, columnsRegistrosN1, 'AgregadosNivel1', ';', 20, { columns: ['agregadorN1'] });
+        window.appPubGlobVar.gridNivel2     = createDefaultGridWithWrapper('grid-wrapper-nivel2', registrosN2DataSource, columnsRegistrosN2, 'AgregadosNivel2', ';', 20, { columns: ['agregadorN1', 'agregadorN2'] });
+
+    });
+
+    /*]]>*/
+</script>
+
+<script>
+    createCustomCalendarRangeHtml("rango_fechas", getRangesRentabilidades());
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

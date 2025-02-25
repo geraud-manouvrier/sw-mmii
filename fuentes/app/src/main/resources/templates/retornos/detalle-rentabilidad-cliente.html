@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Detalle Retornos Cliente</h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.rep_inv.entity.RentabilidadCalculada>"*/-->
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="main_form" th:action="@{/retornos/detalle-rentabilidad-cliente}" method="post">
+                        <div class="form-group row">
+                            <label for="rango_fechas" class="col-md-1 col-form-label">Process Dates</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" placeholder="yyyy-MM-dd -> yyyy-MM-dd" id="rango_fechas" name="rango_fechas" th:value="${startProcessDate+ ' -> '+endProcessDate}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cliente" class="col-md-1 col-form-label">Lista Cliente</label>
+                            <div class="col-md-3">
+                                <input type="text" id="cliente" name="cliente" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cuenta" class="col-md-1 col-form-label">Lista Cuenta</label>
+                            <div class="col-md-3">
+                                <input type="text" id="cuenta" name="cuenta" disabled="disabled" />
+                            </div>
+                        </div>
+                        <input type="hidden" id="fecha_desde" name="fecha_desde">
+                        <input type="hidden" id="fecha_hasta" name="fecha_hasta">
+
+
+
+                    </form>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" onclick="postByRangeProcessDate('rango_fechas', 'main_form')"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div th:if="${lista_registros != null}" class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Listado Retornos Diarios por Nivel <span th:text="'(' + ${#lists.size(lista_registros)} + ' registros)'"></span></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-retornos" th:if="${!#lists.isEmpty(lista_registros)}"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- DataTables  & Plugins -->
+<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
+<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
+<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
+<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
+<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
+<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(document).ready(function() {
+        createComboWithSourceClienteCuenta(/*[[${lista_clientes}]]*/ [], /*[[${lista_cuentas}]]*/ [], /*[[${clienteDefault}]]*/ "", /*[[${cuentaDefault}]]*/ "");
+
+        var clientesDataSource  = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_registros)}]]*/ '[]');
+        var columnClientes      = createDefaultColumns(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).getClassFields(T(cl.qande.mmii.app.models.db.rep_inv.entity.RentabilidadCalculada))}]]*/ [], true);
+
+
+        columnClientes = columnClientes.filter(col => col.field !== 'rentabilidad');
+        columnClientes = columnClientes.filter(col => col.field !== 'rentabilidadBasePitatoria');
+        columnClientes = columnClientes.filter(col => col.field !== 'saldoRentabilidad');
+
+        columnClientes = columnClientes.filter(col => col.field !== 'base1RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base1RentabilidadPeriodoCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base2RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base2RentabilidadPeriodoCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base3RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base3RentabilidadPeriodoCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base4RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base4RentabilidadPeriodoCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base5RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base5RentabilidadPeriodoCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base6RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base6RentabilidadPeriodoCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base7RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base7RentabilidadPeriodoCl');
+        
+        columnClientes = columnClientes.filter(col => col.field !== 'base8StartDate');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8FechaDesde');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8FechaHasta');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8Rentabilidad');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8DiasConSaldo');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8SumaSaldosIniciales');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8SumaSaldoRentabilidad');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8RentabilidadPonderadaCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8RentabilidadPeriodoCl');
+        columnClientes = columnClientes.filter(col => col.field !== 'base8CantReg');
+        
+        columnClientes = columnClientes.filter(col => col.field !== 'agregadorN3');
+        columnClientes = columnClientes.filter(col => col.field !== 'agregadorN4');
+        updateColumnAttribute(columnClientes, ['rowId', 'id', 'subNivel', 'agregadorN1', 'processDateAsDate'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['agregadorN1'], 'headerText', 'Client ID')
+        updateColumnAttribute(columnClientes, ['agregadorN2'], 'headerText', 'Account No')
+        updateColumnAttribute(columnClientes, ['base1StartDate', 'base2StartDate', 'base3StartDate', 'base4StartDate', 'base5StartDate', 'base6StartDate', 'base7StartDate'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1SumaSaldosIniciales', 'base2SumaSaldosIniciales', 'base3SumaSaldosIniciales', 'base4SumaSaldosIniciales', 'base5SumaSaldosIniciales', 'base6SumaSaldosIniciales', 'base7SumaSaldosIniciales'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1SumaSaldoRentabilidad', 'base2SumaSaldoRentabilidad', 'base3SumaSaldoRentabilidad', 'base4SumaSaldoRentabilidad', 'base5SumaSaldoRentabilidad', 'base6SumaSaldoRentabilidad', 'base7SumaSaldoRentabilidad'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1DiasConSaldo', 'base2DiasConSaldo', 'base3DiasConSaldo', 'base4DiasConSaldo', 'base5DiasConSaldo', 'base6DiasConSaldo', 'base7DiasConSaldo'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1CantReg', 'base2CantReg', 'base3CantReg', 'base4CantReg', 'base5CantReg', 'base6CantReg', 'base7CantReg'], 'visible', false)
+
+        updateColumnAttribute(columnClientes, ['saldoDia','abonosDia','retirosDia','dividendosDia','saldoDiaAnterior','utilidad'], 'format', 'N4');
+        updateColumnAttribute(columnClientes, ['comisionDevengadaDia','rentabilidadBasePitatoria','base1Rentabilidad','base2Rentabilidad','base3Rentabilidad','base4Rentabilidad','base5Rentabilidad','base6Rentabilidad','base7Rentabilidad'], 'format', 'N6');
+
+
+        updateColumnAttribute(columnClientes, ['base1FechaDesde', 'base1FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base2FechaDesde', 'base2FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base3FechaDesde', 'base3FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base4FechaDesde', 'base4FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base5FechaDesde', 'base5FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base6FechaDesde', 'base6FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base7FechaDesde', 'base7FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base1Rentabilidad'], 'headerText', 'Base 1 [Ini. Oper.]');
+        updateColumnAttribute(columnClientes, ['base2Rentabilidad'], 'headerText', 'Base 2 [Apertura Cta.]');
+        updateColumnAttribute(columnClientes, ['base3Rentabilidad'], 'headerText', 'Base 3 [1 Mes]');
+        updateColumnAttribute(columnClientes, ['base4Rentabilidad'], 'headerText', 'Base 4 [3 Meses]');
+        updateColumnAttribute(columnClientes, ['base5Rentabilidad'], 'headerText', 'Base 5 [12 Meses]');
+        updateColumnAttribute(columnClientes, ['base6Rentabilidad'], 'headerText', 'Base 6 [YTD]');
+        updateColumnAttribute(columnClientes, ['base7Rentabilidad'], 'headerText', 'Base 7 [20 Meses]');
+
+
+        updateColumnAttribute(columnClientes, ['base2Rentabilidad'], 'visible', false);
+
+        window.appPubGlobVar.gridRetornos     = createDefaultGridWithWrapper('grid-wrapper-retornos', clientesDataSource, columnClientes, 'Retornos', ';', 0, { columns: ['nivel'] });
+
+
+    });
+
+    /*]]>*/
+</script>
+
+<script>
+
+    createCustomCalendarRangeHtml("rango_fechas", getRangesRentabilidades());
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

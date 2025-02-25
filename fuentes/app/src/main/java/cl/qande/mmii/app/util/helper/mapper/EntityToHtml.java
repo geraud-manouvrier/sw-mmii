@@ -3,6 +3,7 @@ package cl.qande.mmii.app.util.helper.mapper;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
+import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
 
 import java.util.List;
 
@@ -107,6 +108,32 @@ public interface EntityToHtml {
             bld.append(SALTO_CIERRE_HTML)
                     .append(msg)
                     .append("</b>");
+        }
+        return bld.toString();
+    }
+
+    public static String resultadoControlRepInvToHtml(List<ResultadoControl> listaRegistros, String msg) {
+        StringBuilder bld = new StringBuilder();
+        if (listaRegistros==null || listaRegistros.isEmpty()) {
+            bld.append(NO_REG_HTML);
+        } else {
+            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Id", "Id Control", "Glosa Control", "Descripcion Control", "Process Date", "Identificador", "Cant. Reg")).append(TABLE_BODY_BEGIN);
+            int rowIndex = 0;
+            for (var registro : listaRegistros) {
+                bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR)
+                        .append(ABRE_TD).append(registro.getId()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getIdControl()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getGlosaControl()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getDescripcionControl()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getProcessDate()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getIdentificador()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getCantReg()).append(CIERRA_TD)
+                        .append(CIERRA_TR);
+            }
+            bld.append(TABLE_END);
+        }
+        if ( ! msg.isEmpty()) {
+            bld.append(SALTO_CIERRE_HTML +msg+"</b>");
         }
         return bld.toString();
     }

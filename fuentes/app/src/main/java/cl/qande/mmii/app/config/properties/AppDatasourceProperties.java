@@ -14,11 +14,13 @@ public class AppDatasourceProperties {
     private final DataSourceConfiguration dbcore;
     private final DataSourceConfiguration dbpershing;
     private final DataSourceConfiguration dbclientes;
+    private final DataSourceConfiguration dbauxiliar;
 
-    public AppDatasourceProperties(DataSourceConfiguration dbcore, DataSourceConfiguration dbpershing, DataSourceConfiguration dbclientes) {
+    public AppDatasourceProperties(DataSourceConfiguration dbcore, DataSourceConfiguration dbpershing, DataSourceConfiguration dbclientes, DataSourceConfiguration dbauxiliar) {
         this.dbcore = dbcore;
         this.dbpershing = dbpershing;
         this.dbclientes = dbclientes;
+        this.dbauxiliar = dbauxiliar;
     }
 
     public static class DataSourceConfiguration {
@@ -66,5 +68,9 @@ public class AppDatasourceProperties {
 
     public DataSourceConfiguration getDbclientes() {
         return dbclientes;
+    }
+
+    public DataSourceConfiguration getDbauxiliar() {
+        return dbauxiliar;
     }
 }

@@ -1,15 +1,28 @@
 package cl.qande.mmii.app.util.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class CustomThymeleafHelper {
 
     private static final String DEFAULT_SEP_DEC =".";
     private static final String DEFAULT_SEP_MIL =",";
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Para evitar que serialice como array numérico
 
     private CustomThymeleafHelper() {
         throw new IllegalStateException("Helper class");
@@ -76,6 +89,25 @@ public class CustomThymeleafHelper {
     public static String formatFechaRepMaestrosWeb(LocalDate fechaAsYmd) {
         CalendarioHelper calendarioHelper = new CalendarioHelper();
         return calendarioHelper.convierteDateToStringWithFormat(CalendarioHelper.dateFromLocalDate(fechaAsYmd), CalendarioHelper.FORMATO_HTML);
+    }
+
+    public static String convertListToJson(List<?> lista) {
+        try {
+            return objectMapper.writeValueAsString(ReflectionHelper.convertListToMap(lista));
+        } catch (JsonProcessingException e) {
+            CustomLog.getInstance().error("Error covietiendo Objeto a lista ["+lista+"]: "+e.getMessage());
+            return "[]"; // En caso de error, devuelve un array vacío
+        }
+    }
+
+
+    public static List<String> getClassFields(Class<?> clazz) {
+        if (clazz == null) {
+            return Collections.emptyList(); // Si no se puede determinar la clase, devuelve una lista vacía
+        }
+        return Arrays.stream(clazz.getDeclaredFields())
+                .map(Field::getName)
+                .collect(Collectors.toList());
     }
 
 

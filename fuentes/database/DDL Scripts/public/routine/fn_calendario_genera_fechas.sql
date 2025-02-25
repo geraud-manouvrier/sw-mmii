@@ -30,3 +30,19 @@ $$;
 
 alter function public.fn_calendario_genera_fechas(date, date) owner to postgres;
 
+create or replace function public.fn_calendario_genera_fechas()
+    returns TABLE(fecha_as_date date)
+    language plpgsql
+as
+$$
+    BEGIN
+
+    RETURN QUERY
+        SELECT fn_cal.fecha_as_date as fecha_as_date
+        FROM public.fn_calendario_genera_fechas(NULL, NULL) fn_cal;
+    RETURN;
+    END;
+$$;
+
+alter function public.fn_calendario_genera_fechas() owner to postgres;
+

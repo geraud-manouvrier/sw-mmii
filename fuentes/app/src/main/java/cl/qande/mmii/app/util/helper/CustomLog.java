@@ -47,7 +47,7 @@ public class CustomLog implements ApplicationContextAware {
         this.uuid = uuid;
     }
 
-    private void log(String msg, String typeLog) {
+    private void log(String msg, String typeLog, boolean withUserNotif) {
         var className   = Thread.currentThread().getStackTrace()[INDEX_STACK].getClassName();
         var methodName  = Thread.currentThread().getStackTrace()[INDEX_STACK].getMethodName();
         Logger log = LoggerFactory.getLogger(className);
@@ -63,6 +63,8 @@ public class CustomLog implements ApplicationContextAware {
                 log.debug(MSG_PATTERN, methodName, msg, getLogUuid());
                 break;
         }
+        if (withUserNotif)
+            addWebNotification(msg);
     }
     private UUID getLogUuid() {
         var sesionWeb   = getSesionWeb();
@@ -91,15 +93,23 @@ public class CustomLog implements ApplicationContextAware {
     }
 
     public void info(String msg) {
-        this.log(msg, MSG_INFO);
+        this.log(msg, MSG_INFO, false);
+    }
+
+    public void info(String msg, boolean withUserNotif) {
+        this.log(msg, MSG_INFO, withUserNotif);
     }
 
     public void error(String msg) {
-        this.log(msg, MSG_ERROR);
+        this.log(msg, MSG_ERROR, false);
+    }
+
+    public void error(String msg, boolean withUserNotif) {
+        this.log(msg, MSG_ERROR, withUserNotif);
     }
 
     public void debug(String msg) {
-        this.log(msg, MSG_DEBUG);
+        this.log(msg, MSG_DEBUG, false);
     }
 
 }

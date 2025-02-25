@@ -1,9 +1,6 @@
 package cl.qande.mmii.app.controllers;
 
-import cl.qande.mmii.app.job.JobControlDiario;
-import cl.qande.mmii.app.job.JobCuentasNoMapeadas;
-import cl.qande.mmii.app.job.JobGetFromFtpPershing;
-import cl.qande.mmii.app.job.JobParametrosFromSuracorp;
+import cl.qande.mmii.app.job.*;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.db.pershing.dao.IProcesoSflDao;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -54,9 +51,11 @@ public class JobsController {
     private final JobControlDiario jobControlDiario;
     private final JobCuentasNoMapeadas jobCuentasNoMapeadas;
     private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
+    private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
+    private final JobRepInvControl jobRepInvControl;
 
     @Autowired
-    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp) {
+    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl) {
         this.sesionWeb = sesionWeb;
         this.calendarioHelper = calendarioHelper;
         this.reportesMaestrosService = reportesMaestrosService;
@@ -65,6 +64,8 @@ public class JobsController {
         this.jobControlDiario = jobControlDiario;
         this.jobCuentasNoMapeadas = jobCuentasNoMapeadas;
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
+        this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
+        this.jobRepInvControl = jobRepInvControl;
     }
 
     /****************************************************
@@ -264,8 +265,14 @@ public class JobsController {
                 if ( reportesMaestrosService.generaReportesMaestros(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes) ) {
                     sesionWeb.addNotification("Reportes Maestros re-procesados correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
                     if (jobControlDiario.realizaControlDiario(startProcessDate, endProcessDate, sesionWeb.getUsuario(), mailControlDiario)) {
-                        estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg("Reportes Maestros", "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
                         sesionWeb.addNotification("Control diario finalizado correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
+                        if (jobRepInvPrecalculoDiario.ejecutaJob(startProcessDate)) {
+                            sesionWeb.addNotification("Pre cálculo retornos finalizado correctamente: ["+startProcessDate+" en adelante]");
+                            estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg("Reportes Maestros", "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
+                        } else {
+                            sesionWeb.addNotification("Pre cálculo retornos finalizado correctamente: ["+startProcessDate+" en adelante]");
+                            estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en Reportes Maestros al ejecutar Pre cálculo retornos");
+                        }
                     } else {
                         estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en Reportes Maestros al ejecutar control diario");
                         sesionWeb.addNotification("Control diario finalizado con errores: ["+startProcessDate+" - "+endProcessDate+"]");
@@ -273,6 +280,57 @@ public class JobsController {
                 } else {
                     sesionWeb.addNotification("Reportes Maestros no pudieron ser re-procesados: ["+startProcessDate+" - "+endProcessDate+"]");
                     estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en re-proceso Reportes Maestros");
+                }
+            } else {
+                estadoPeticion.setEstadoError(ERROR_RANGO_FECHAS);
+            }
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError(MSG_JOB_ERR, PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
+    }
+
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
+    @GetMapping({"/process/pre_calculo_rentabilidad_sin_control/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/pre_calculo_rentabilidad_con_control/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+    })
+    public String jobsRepInv(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+
+        var ejecutaControl      = request.getRequestURI().contains("pre_calculo_rentabilidad_con_control");
+        return jobRepInvHandler(startProcessDate, endProcessDate, ejecutaControl, model, true);
+    }
+
+    private String jobRepInvHandler(
+            String startProcessDate, String endProcessDate,
+            boolean ejecutarControl,
+            Model model, boolean isAdmin) throws QandeMmiiException {
+        var estadoPeticion          = new EstadoPeticion();
+        try {
+            CustomLog.getInstance().info("Iniciando Job Pre cálculo retornos con fecha [" + startProcessDate + " - "+ MSG_APPEND_USER + sesionWeb.getUsuario() + "]...");
+            if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {
+                if (jobRepInvPrecalculoDiario.ejecutaJob(startProcessDate)) {
+                    sesionWeb.addNotification("Pre cálculo retornos finalizado correctamente: ["+startProcessDate+" en adelante]");
+                    if (ejecutarControl) {
+                        if (jobRepInvControl.ejecutaJob(startProcessDate, endProcessDate, sesionWeb)) {
+                            sesionWeb.addNotification("Controles retornos finalizados correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
+                            estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg("Pre Cálculo Retornos", "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
+                        } else {
+                            sesionWeb.addNotification("Controles retornos finalizado con errores: ["+startProcessDate+" - "+endProcessDate+"]");
+                            estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en Controles al ejecutar Pre cálculo retornos");
+                        }
+                    } else {
+                        sesionWeb.addNotification("Controles retornos omitidos");
+                        estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg("Pre Cálculo Retornos", "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
+                    }
+                } else {
+                    sesionWeb.addNotification("Pre cálculo retornos finalizado correctamente: ["+startProcessDate+" en adelante]");
+                    estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en al ejecutar Pre cálculo retornos");
                 }
             } else {
                 estadoPeticion.setEstadoError(ERROR_RANGO_FECHAS);

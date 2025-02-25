@@ -229,4 +229,20 @@ public class CalendarioHelper {
         return salida;
     }
 
+    public static String convierteDateToProcessDate(Date fechaDate) {
+        DateFormat dateFormat   = new SimpleDateFormat(CalendarioHelper.FORMATO_PROCESS_DATE);
+        return dateFormat.format(fechaDate);
+    }
+
+    public static Date convierteProcessDateToDate(String fechaStr) throws ParseException {
+        var formatoFecha = new SimpleDateFormat(FORMATO_PROCESS_DATE);
+        return formatoFecha.parse(fechaStr);
+    }
+
+    public static String processDateConDesfase(String processDate, int desfaseDias) throws ParseException {
+        CalendarioHelper calendarioHelper = new CalendarioHelper();
+        var newProcessDate  = calendarioHelper.fechaConDesfaseDias(convierteProcessDateToDate(processDate), desfaseDias);
+        return convierteDateToProcessDate(newProcessDate);
+    }
+
 }

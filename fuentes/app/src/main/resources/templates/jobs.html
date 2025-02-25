@@ -44,6 +44,7 @@
                             <p>2. Maestros específicos: Seleccionar generar sólo Cuentas o Movimientos o Saldos, borrará TODOS los Archivos Maestros de dicho día previamente y luego generará SÓLO el seleccionado.</p>
                             <p>3. Al reprocesar Maestros desde este panel, NO se enviará mail de control diario (aunque si se ejecutará).</p>
                             <p>4. Malla diaria NO CONSIDERA FECHA ingresada, usará siempre la fecha por defecto de cada job (T-1 normalmente). NO USAR para reprocesar fechas pasadas.</p>
+                            <p>5. Cálculo Diario Retornos: Usar mismo Process Date Start/End y con el día <b>DESDE</b> el cual ejecutar el cálculo.</p>
                         </div>
                     </div>
 
@@ -85,6 +86,10 @@
                 <div class="card-footer">
                     <a class="btn btn-app" onclick="procesar('parametros_suracorp')"><i class="fas fa-tasks"></i>Parámetros MMII</a>
                     <a class="btn btn-app" onclick="procesar('parametros_suracorp_sin_mail')"><i class="fas fa-tasks"></i>Parámetros MMII (sin mail)</a>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-app" onclick="procesar('pre_calculo_rentabilidad_sin_control')"><i class="fas fa-file-alt"></i>Precalculo Retornos (sin control)</a>
+                    <a class="btn btn-app" onclick="procesar('pre_calculo_rentabilidad_con_control')"><i class="fas fa-file-alt"></i>Precalculo Retornos (con control)</a>
                 </div>
                 <div class="card-footer">
                     <a class="btn btn-app" onclick="procesar('malla_diaria')"><i class="fas fa-tasks"></i>Malla Diaria</a>

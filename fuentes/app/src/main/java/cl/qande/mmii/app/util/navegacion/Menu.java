@@ -46,6 +46,12 @@ public class Menu {
     public static final String MANT_FEE_SEGMENTO ="MANT_FEE_SEGMENTO";
     public static final String MANT_COMIS_CTA ="MANT_COMIS_CTA";
 
+    //Retornos
+    public static final String REP_INV_BASE ="REP_INV_BASE";
+    public static final String REP_INV_PRECALC ="REP_INV_PRECALC";
+    public static final String REP_INV_RENT ="REP_INV_RENT";
+    public static final String REP_INV_CONTRL ="REP_INV_CONTRL";
+
     //Admin User
     public static final String ADMIN_JOBS_BY_USER ="ADMIN_JOBS_BY_USER";
 
@@ -118,6 +124,7 @@ public class Menu {
         categoriaProcesosPorUsuario.setListaRoles(perfilAdminQye);
         var categoriaMantenedoresParametros    = new CategoriaMenu("MANTENEDORES_PARAM", "Mantenedores Parámetros", false, ICON_CLASS_ENGRANAJE);
         categoriaMantenedoresParametros.setListaRoles(perfilAdminQye);
+        var categoriaReporteInversiones    = new CategoriaMenu("REP_INV", "Retornos", false, ICON_CLASS_FILE);
 
 
         ArrayList<OpcionMenu> opcionesInicio    = new ArrayList<>();
@@ -185,6 +192,13 @@ public class Menu {
         opcionesMantenedoresParametros.add(new OpcionMenu(MANT_FEE_SEGMENTO, "Fee Segmentos", "/mantenedores/parametros/fee_segmento", false));
         categoriaMantenedoresParametros.setListaOpciones(opcionesMantenedoresParametros);
 
+        ArrayList<OpcionMenu> opcionesReporteInversiones    = new ArrayList<>();
+        opcionesReporteInversiones.add(new OpcionMenu(REP_INV_BASE, "Base Cálculo", "/retornos/base-consolidada", false));
+        opcionesReporteInversiones.add(new OpcionMenu(REP_INV_PRECALC, "Base Agregada", "/retornos/base-agregada", false));
+        opcionesReporteInversiones.add(new OpcionMenu(REP_INV_RENT, "Retornos por Cliente", "/retornos/detalle-rentabilidad-cliente", false));
+        opcionesReporteInversiones.add(new OpcionMenu(REP_INV_CONTRL, "Controles", "/retornos/controles", false));
+        categoriaReporteInversiones.setListaOpciones(opcionesReporteInversiones);
+
         opcionesMenu    = new ArrayList<>();
         opcionesMenu.add(categoriaAdminQande);
         opcionesMenu.add(categoriaFtp);
@@ -198,6 +212,7 @@ public class Menu {
         opcionesMenu.add(categoriaMantenedoresEnrolamiento);
         opcionesMenu.add(categoriaProcesosPorUsuario);
         opcionesMenu.add(categoriaMantenedoresParametros);
+        opcionesMenu.add(categoriaReporteInversiones);
 
         this.opcionPorDefecto   = ADMINQANDE_LOGS;
         this.opcionElegida      = this.opcionPorDefecto;

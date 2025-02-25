@@ -23,14 +23,20 @@ public class AppSchedulingProperties {
     private final String cronCuentasNoMapeadas;
     @NotBlank
     private final String cronParametrosSuraCorp;
+    @NotBlank
+    private final String cronReporteInversiones;
+    @NotBlank
+    private final String cronReporteInversionesControles;
 
-    public AppSchedulingProperties(String cronReportesMaestros, String cronControlDiario, String cronFtpPershing, String cronMallaDiaria, String cronCuentasNoMapeadas, String cronParametrosSuraCorp) {
+    public AppSchedulingProperties(String cronReportesMaestros, String cronControlDiario, String cronFtpPershing, String cronMallaDiaria, String cronCuentasNoMapeadas, String cronParametrosSuraCorp, String cronReporteInversiones, String cronReporteInversionesControles) {
         this.cronReportesMaestros = cronReportesMaestros;
         this.cronControlDiario = cronControlDiario;
         this.cronFtpPershing = cronFtpPershing;
         this.cronMallaDiaria = cronMallaDiaria;
         this.cronCuentasNoMapeadas = cronCuentasNoMapeadas;
         this.cronParametrosSuraCorp = cronParametrosSuraCorp;
+        this.cronReporteInversiones = cronReporteInversiones;
+        this.cronReporteInversionesControles = cronReporteInversionesControles;
     }
 
     public String getCronReportesMaestros() {
@@ -55,5 +61,13 @@ public class AppSchedulingProperties {
 
     public @NotBlank String getCronParametrosSuraCorp() {
         return cronParametrosSuraCorp;
+    }
+
+    public @NotBlank String getCronReporteInversiones() {
+        return cronReporteInversiones;
+    }
+
+    public @NotBlank String getCronReporteInversionesControles() {
+        return cronReporteInversionesControles;
     }
 }

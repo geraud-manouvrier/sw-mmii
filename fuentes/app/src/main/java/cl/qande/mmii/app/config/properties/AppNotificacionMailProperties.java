@@ -18,14 +18,19 @@ public class AppNotificacionMailProperties {
     private final NotificacionMailConfiguration cuentasNoMapeadas;
     private final NotificacionMailConfiguration parametrosSuracorp;
     private final NotificacionMailConfiguration mallaDiaria;
+    private final NotificacionMailConfiguration precalculoRentabilidades;
+    private final NotificacionMailConfiguration repinvControl;
 
-    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria) {
+
+    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria, NotificacionMailConfiguration precalculoRentabilidades, NotificacionMailConfiguration repinvControl) {
         this.reportesMaestros = reportesMaestros;
         this.controlDiario = controlDiario;
         this.sflPershing = sflPershing;
         this.cuentasNoMapeadas = cuentasNoMapeadas;
         this.parametrosSuracorp = parametrosSuracorp;
         this.mallaDiaria = mallaDiaria;
+        this.precalculoRentabilidades = precalculoRentabilidades;
+        this.repinvControl = repinvControl;
     }
 
     public NotificacionMailConfiguration getReportesMaestros() {
@@ -52,6 +57,14 @@ public class AppNotificacionMailProperties {
 
     public NotificacionMailConfiguration getMallaDiaria() {
         return mallaDiaria;
+    }
+
+    public NotificacionMailConfiguration getPrecalculoRentabilidades() {
+        return precalculoRentabilidades;
+    }
+
+    public NotificacionMailConfiguration getRepinvControl() {
+        return repinvControl;
     }
 
     public static class NotificacionMailConfiguration {

@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.job;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.Trigger;
@@ -17,7 +16,6 @@ public class CustomScheduler {
     public static final String USUARIO_JOB = "jobAppUser";
     public static final String CRON_NEVER_EXEC = "0 44 21 1 5 *";
 
-    private final AppConfig appConfig;
     private final ThreadPoolTaskScheduler taskScheduler;
     private final CronTrigger cronReportesMaestros;
     private final CronTrigger cronControlDiario;
@@ -25,16 +23,19 @@ public class CustomScheduler {
     private final CronTrigger cronMallaDiaria;
     private final CronTrigger cronCuentasNoMapeadas;
     private final CronTrigger cronParametrosSuraCorp;
+    private final CronTrigger cronReporteInversiones;
+    private final CronTrigger cronReporteInversionesControles;
     private final JobReportesMaestros jobReportesMaestros;
     private final JobControlDiario jobControlDiario;
     private final JobGetFromFtpPershing jobGetFromFtpPershing;
     private final JobMallaProcesos jobMallaProcesos;
     private final JobCuentasNoMapeadas jobCuentasNoMapeadas;
     private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
+    private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
+    private final JobRepInvControl jobRepInvControl;
 
     @Autowired
-    public CustomScheduler(AppConfig appConfig, ThreadPoolTaskScheduler taskScheduler, CronTrigger cronReportesMaestros, CronTrigger cronControlDiario, CronTrigger cronFtpPershing, CronTrigger cronMallaDiaria, CronTrigger cronCuentasNoMapeadas, CronTrigger cronParametrosSuraCorp, JobReportesMaestros jobReportesMaestros, JobControlDiario jobControlDiario, JobGetFromFtpPershing jobGetFromFtpPershing, JobMallaProcesos jobMallaProcesos, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp) {
-        this.appConfig = appConfig;
+    public CustomScheduler(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronReportesMaestros, CronTrigger cronControlDiario, CronTrigger cronFtpPershing, CronTrigger cronMallaDiaria, CronTrigger cronCuentasNoMapeadas, CronTrigger cronParametrosSuraCorp, CronTrigger cronReporteInversiones, CronTrigger cronReporteInversionesControles, JobReportesMaestros jobReportesMaestros, JobControlDiario jobControlDiario, JobGetFromFtpPershing jobGetFromFtpPershing, JobMallaProcesos jobMallaProcesos, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl) {
         this.taskScheduler = taskScheduler;
         this.cronReportesMaestros = cronReportesMaestros;
         this.cronControlDiario = cronControlDiario;
@@ -42,12 +43,16 @@ public class CustomScheduler {
         this.cronMallaDiaria = cronMallaDiaria;
         this.cronCuentasNoMapeadas = cronCuentasNoMapeadas;
         this.cronParametrosSuraCorp = cronParametrosSuraCorp;
+        this.cronReporteInversiones = cronReporteInversiones;
+        this.cronReporteInversionesControles = cronReporteInversionesControles;
         this.jobReportesMaestros = jobReportesMaestros;
         this.jobControlDiario = jobControlDiario;
         this.jobGetFromFtpPershing = jobGetFromFtpPershing;
         this.jobMallaProcesos = jobMallaProcesos;
         this.jobCuentasNoMapeadas = jobCuentasNoMapeadas;
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
+        this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
+        this.jobRepInvControl = jobRepInvControl;
     }
 
 
@@ -65,6 +70,10 @@ public class CustomScheduler {
         this.registraTarea(jobCuentasNoMapeadas, cronCuentasNoMapeadas, "Cuentas No Mapeadas");
 
         this.registraTarea(jobParametrosFromSuracorp, cronParametrosSuraCorp, "Parámetros SuraCorp");
+
+        this.registraTarea(jobRepInvPrecalculoDiario, cronReporteInversiones, jobRepInvPrecalculoDiario.getNombreJob());
+
+        this.registraTarea(jobRepInvControl, cronReporteInversionesControles, jobRepInvControl.getJobName());
 
     }
 

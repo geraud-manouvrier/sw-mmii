@@ -4,6 +4,7 @@ import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
+import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
 import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.mail.EmailDetails;
@@ -26,6 +27,10 @@ public class NotificacionEmail {
     public NotificacionEmail(IEmailService emailService, AppNotificacionMailProperties appNotificacionMailProperties) {
         this.emailService = emailService;
         this.appNotificacionMailProperties = appNotificacionMailProperties;
+    }
+
+    public AppNotificacionMailProperties getAppNotificacionMailProperties() {
+        return appNotificacionMailProperties;
     }
 
 
@@ -105,6 +110,14 @@ public class NotificacionEmail {
         var mailConfiguration   = appNotificacionMailProperties.getMallaDiaria();
         notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, msg, mailConfiguration);
 
+    }
+    public void notificaJobPreCaulculoRentabilidadesDiario(boolean isOk, String startProcessDate, String jobName, String msg) throws QandeMmiiException {
+        var mailConfiguration   = appNotificacionMailProperties.getPrecalculoRentabilidades();
+        notificacionGenerica(isOk, startProcessDate, startProcessDate, jobName, msg, mailConfiguration);
+    }
+    public void notificaJobControlRepInv(boolean isOk, String startProcessDate, String endProcessDate, String jobName, List<ResultadoControl> resultado, String msg) throws QandeMmiiException {
+        var mailConfiguration   = appNotificacionMailProperties.getRepinvControl();
+        notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoControlRepInvToHtml(resultado, msg), mailConfiguration);
     }
 
 
