@@ -109,4 +109,9 @@ public class ReporteMaestroDatosService {
         return entityManager.createNamedQuery(VwReporteConsolidadoSaldo.FIND_ALL, VwReporteConsolidadoSaldo.class)
                 .getResultList();
     }
+
+    @Transactional(readOnly = true)
+    public List<IndicadoresBasePeriodoProjection> indicadoresBasePorPeriodo(String processDate) {
+        return reporteMaestroDatosSaldoDao.indicadoresBasePorPeriodo(processDate);
+    }
 }

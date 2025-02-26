@@ -25,6 +25,8 @@ public class Menu {
     public static final String USUARIOS_ROLES   ="USUARIOS_ROLES";
     //Archivos
     public static final String ARCHIVOS_MAESTROS   ="ARCHIVOS_MAESTROS";
+    //Indicadores negocio
+    public static final String NEGOCIO_COMDEV   ="NEGOCIO_COMDEV";
     //Reportes Maestros
     public static final String REP_MAESTRO_CLIENTE   ="REP_MAESTRO_CLIENTE";
     public static final String REP_MAESTRO_SALDOS   ="REP_MAESTRO_SALDOS";
@@ -106,6 +108,7 @@ public class Menu {
         categoriaUsuarios.setListaRoles(perfilAdminQye);
         var categoriaArchivos    = new CategoriaMenu("ARCHIVOS", "Archivos", false, "nav-icon fas fa-file-excel");
         categoriaArchivos.setListaRoles(perfilTodos);
+        var categoriaIndicadoresNegocio    = new CategoriaMenu("NEGOCIO", "Indicadores Negocio", false, "nav-icon fas fa-chart-line");
         var categoriaReportesMaestros    = new CategoriaMenu("REPORTES_MAESTROS", "Reportes Maestro Datos", false, "nav-icon fab fa-searchengin");
         categoriaReportesMaestros.setListaRoles(perfilTodos);
         var categoriaMantenedoresInstrumentos    = new CategoriaMenu("MANTENEDORES_INSTRUMENTOS", "Mantenedores", false, ICON_CLASS_ENGRANAJE);
@@ -154,6 +157,10 @@ public class Menu {
         ArrayList<OpcionMenu> opcionesArchivos    = new ArrayList<>();
         opcionesArchivos.add(new OpcionMenu(ARCHIVOS_MAESTROS, "Maestro de Datos", "/archivos/maestro_datos/listar", false));
         categoriaArchivos.setListaOpciones(opcionesArchivos);
+
+        ArrayList<OpcionMenu> opcionesIndicadoresNegocio    = new ArrayList<>();
+        opcionesIndicadoresNegocio.add(new OpcionMenu(NEGOCIO_COMDEV, "Indicadores Base", "/indicadores-negocio/ingresos/indicadores-base", false));
+        categoriaIndicadoresNegocio.setListaOpciones(opcionesIndicadoresNegocio);
 
         ArrayList<OpcionMenu> opcionesReportesMaestros    = new ArrayList<>();
         opcionesReportesMaestros.add(new OpcionMenu(REP_MAESTRO_CLIENTE, "Maestro de Cuentas", "/reportes/maestro_datos/clientes", false));
@@ -206,6 +213,7 @@ public class Menu {
         opcionesMenu.add(categoriaParametros);
         opcionesMenu.add(categoriaUsuarios);
         opcionesMenu.add(categoriaArchivos);
+        opcionesMenu.add(categoriaIndicadoresNegocio);
         opcionesMenu.add(categoriaReportesMaestros);
         opcionesMenu.add(categoriaControlOperaciones);
         opcionesMenu.add(categoriaReportesSfl);

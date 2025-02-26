@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.IndicadoresBasePeriodoProjection>"*/-->
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Ingrese criterios de consulta:</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="startProcessDate" class="col-md-2 col-form-label">Start Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd -> yyyy-MM-dd" id="startProcessDate" name="startProcessDate" th:value="${startProcessDate}">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Resultado por Periodos <span th:text="'(' + ${#lists.size(lista_registros)} + ' registros)'"></span></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-resultado" th:if="${!#lists.isEmpty(lista_registros)}"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script th:inline="javascript">
+
+    $(document).ready(function() {
+        /*<![CDATA[*/
+        var resultadoDataSource =  [
+                /*[# th:each="objeto : ${lista_registros}"]*/
+                {
+                    periodo: [[${objeto.getPeriodo}]],
+                    agnio: [[${objeto.getAgnio}]],
+                    mes: [[${objeto.getMes}]],
+                    comdevper: [[${objeto.getComdevper}]],
+                    comdevmargen: [[${objeto.getComdevmargen}]],
+                    aummargen: [[${objeto.getAummargen}]],
+                    flujoneto: [[${objeto.getFlujoneto}]],
+                    feepromedioreal: [[${objeto.getFeepromedioreal}]],
+                    feepromediomargen: [[${objeto.getFeepromediomargen}]],
+                    clientes: [[${objeto.getClientes}]],
+                    cuentas: [[${objeto.getCuentas}]],
+                    diasperiodo: [[${objeto.getDiasperiodo}]],
+                    firstprocessdate: [[${objeto.getFirstprocessdate}]],
+                    lastprocessdate: [[${objeto.getLastprocessdate}]]
+                },
+                /*[/]*/
+            ];
+        /*]]>*/
+
+        var startProcessDate    = $('#startProcessDate').val().replaceAll('-','');
+        var suffixFileName      = '_'+startProcessDate;
+
+
+        var resultadoColumn = [
+            { field: 'periodo', headerText: 'Periodo' },
+            { field: 'agnio', headerText: 'Año' },
+            { field: 'mes', headerText: 'Mes' },
+            { field: 'comdevper', headerText: 'Comision Devengada', format: 'N4' },
+            { field: 'aummargen', headerText: 'AuM Stock', format: 'N4' },
+            { field: 'flujoneto', headerText: 'Flujo Neto', format: 'N4' },
+            { field: 'feepromedioreal', headerText: 'Fee Promedio (Real)', format: 'N6' },
+            { field: 'feepromediomargen', headerText: 'Fee Promedio (en el margen)', format: 'N6' },
+            { field: 'clientes', headerText: 'Clientes', format: 'N0' },
+            { field: 'cuentas', headerText: 'Cuentas', format: 'N0' },
+            { field: 'diasperiodo', headerText: 'Días Periodo', format: 'N0', visible: false},
+            { field: 'comdevmargen', headerText: 'Com. Dev. Margen', format: 'N4', visible: false},
+            { field: 'firstprocessdate', headerText: 'First Process Date', visible: false},
+            { field: 'lastprocessdate', headerText: 'Last Process Date', visible: false}
+        ];
+
+        var customGrid    = createDefaultGridWithWrapper('grid-wrapper-resultado', resultadoDataSource, resultadoColumn, 'IndicadoresPeriodo'+suffixFileName, ';');
+        customGrid.pageSettings.pageSize=customGrid.dataSource.length;
+
+    });
+</script>
+
+
+
+<script>
+
+    createCustomCalendarSingleHtml("startProcessDate", null);
+
+    function buscar() {
+        var formatoHtml = 'YYYYMMDD';
+        var corteUrl    = 'indicadores-base';
+        var oldUrl      = location.href;
+
+        var startProcessDate    = $('#startProcessDate').val().replaceAll('-','');
+
+        location.href   = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/'+startProcessDate;
+
+    }
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

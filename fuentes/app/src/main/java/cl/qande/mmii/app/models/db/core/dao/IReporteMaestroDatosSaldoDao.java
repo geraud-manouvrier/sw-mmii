@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.models.db.core.dao;
 
+import cl.qande.mmii.app.models.db.core.entity.IndicadoresBasePeriodoProjection;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -16,4 +17,7 @@ public interface IReporteMaestroDatosSaldoDao extends CrudRepository<VwReporteMa
 
     @Query(value = "SELECT * FROM public.fn_reporte_maestro_materializa_data(:_process_date, 'SLD', 'PERSHING')", nativeQuery = true)
     public Long materializaDatosSaldosPershing(@Param("_process_date") String processDate);
+
+    @Query(value="SELECT * FROM public.fn_indicadores_cia_base(:_processDate)", nativeQuery = true)
+    public List<IndicadoresBasePeriodoProjection> indicadoresBasePorPeriodo(@Param("_processDate") String processDate);
 }
