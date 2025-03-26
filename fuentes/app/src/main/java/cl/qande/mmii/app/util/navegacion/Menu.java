@@ -11,6 +11,7 @@ public class Menu {
     public static final String ERROR_GENERICO ="errores/error_controlado";
     //Admin Q&E
     public static final String ADMINQANDE_LOGS ="ADMINQANDE_LOGS";
+    public static final String ADMINQANDE_LOGS_VIEWER ="ADMINQANDE_LOGS_VIEWER";
     public static final String ADMIN_JOBS ="ADMIN_JOBS";
     //FTP
     public static final String LS_FTP_PERSHING ="LS_FTP_PERSHING";
@@ -132,6 +133,7 @@ public class Menu {
 
         ArrayList<OpcionMenu> opcionesInicio    = new ArrayList<>();
         opcionesInicio.add(new OpcionMenu(ADMINQANDE_LOGS, "Logs App", "/logs", false));
+        opcionesInicio.add(new OpcionMenu(ADMINQANDE_LOGS_VIEWER, "Logs Viewer (RAW)", "/admin/logs/listar", false));
         opcionesInicio.add(new OpcionMenu(ADMIN_JOBS, "Ejecutar Jobs", "/jobs", false));
         categoriaAdminQande.setListaOpciones(opcionesInicio);
 

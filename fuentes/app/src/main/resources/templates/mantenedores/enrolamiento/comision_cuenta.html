@@ -146,7 +146,7 @@
         RowId: [[${objeto.getRowId}]],
         //Id: [[${objeto.getId}]],
         //IdCuenta: [[${objeto.getIdCuenta}]],
-        ComisionDiariaSaldo: [[${objeto.getComisionDiariaSaldo != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(objeto.getComisionDiariaSaldo): ''}]],
+        ComisionDiariaSaldo: [[${objeto.getComisionDiariaSaldo != null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(objeto.getComisionDiariaSaldo): ''}]],
         FechaInicioVigencia: [[${#dates.format(objeto.getFechaInicioVigencia(), 'yyyy-MM-dd')}]],
         //LogFechaCreacion: [[${objeto.getLogFechaCreacion}]],
         //LogUsuarioCreacion: [[${objeto.getLogUsuarioCreacion}]],

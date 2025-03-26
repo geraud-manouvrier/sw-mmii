@@ -1,108 +1,11 @@
 /*
 2025-02-26
-Actual: 10.1.0-COL
+Actual: 10.2.0-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_NEGOCIO_COMDEV' FROM public.users where username in ('admin-qye')
+SELECT id, 'ROLE_OP_ADMINQANDE_LOGS_VIEWER' FROM public.users where username in ('admin-qye')
 ;
-
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_BASE' FROM public.users where username in ('santiago.isaza')
-;
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_PRECALC' FROM public.users where username in ('santiago.isaza')
-;
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_RENT' FROM public.users where username in ('santiago.isaza')
-;
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_CONTRL' FROM public.users where username in ('santiago.isaza')
-;
-;
-
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_BASE' FROM public.users where username in ('sonia.ortiz')
-;
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_PRECALC' FROM public.users where username in ('sonia.ortiz')
-;
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_RENT' FROM public.users where username in ('sonia.ortiz')
-;
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_INV_CONTRL' FROM public.users where username in ('sonia.ortiz')
-;
-
-INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_CTRL_OPER_DIARIO' FROM public.users where username in ('daniel.gomez1', 'brayan.giraldom')
-;
-
-
---========================================================================
---========================================================================
---========================================================================
--- Indicadores Cia
-
-create or replace function public.fn_indicadores_cia_base(_start_process_date character varying)
-    returns TABLE(periodo integer, agnio integer, mes integer, comdevper numeric, comdevmargen numeric, aummargen numeric, flujoneto numeric, feepromedioreal numeric, feepromediomargen numeric, clientes integer, cuentas integer, diasperiodo integer, firstprocessdate character varying, lastprocessdate character varying)
-    language plpgsql
-as
-$$
-DECLARE _last_process_date VARCHAR(100);
-    BEGIN
-
-    _last_process_date := (SELECT MAX(process_date) FROM public.vw_reporte_maestro_datos_saldos WHERE process_date >= _start_process_date);
-
-    RETURN QUERY
-        SELECT
-            base.periodo::INT,
-            LEFT(base.periodo, 4)::INT,
-            RIGHT(base.periodo, 2)::INT,
-            base.comdevper, base.comdevmargen, base.aummargen,
-            (
-                select sum(mov.usde_net_amount) FROM public.vw_reporte_maestro_datos_movimientos mov
-                WHERE mov.process_date>=base.firstProcessDate
-                  AND LEFT(mov.process_date, 6)=base.periodo
-                  AND mov.aplica_flujo_neto=1
-            )::NUMERIC(45,20) as flujoneto,
-            CASE WHEN base.aum!=0 AND base.diasperiodo!=0 THEN ( ( base.comdevper*base.diasperiodo ) / base.aum ) END::NUMERIC(45,20) as feepromedioreal,
-            CASE WHEN base.aummargen!=0 THEN ( (base.comdevmargen*365) / base.aummargen ) END::NUMERIC(45,20) as feepromediomargen,
-            base.clientes::INT, base.cuentas::INT,
-            base.diasperiodo::INT,
-            base.firstprocessdate::VARCHAR(100),
-            base.lastprocessdate::VARCHAR(100)
-        FROM (
-            SELECT
-                LEFT(process_date, 6)                                                          AS periodo,
-                SUM(comision_devengada_diaria)                                                 AS comdevper,
-                sum(CASE WHEN cal.last_day_of_month OR sld.process_date=_last_process_date THEN comision_devengada_diaria ELSE 0 END) as comdevmargen,
-                sum(CASE WHEN cal.last_day_of_month OR sld.process_date=_last_process_date THEN usde_market_value ELSE 0 END)         as aummargen,
-                sum(usde_market_value)                                                         as aum,
-                count(distinct client_id)                                                      as clientes,
-                count(distinct account_no)                                                     as cuentas,
-                count(distinct process_date)                                                   as diasperiodo,
-                MIN(process_date)                                                              as firstprocessdate,
-                MAX(process_date)                                                              as lastprocessdate
-            FROM public.vw_reporte_maestro_datos_saldos sld
-            INNER JOIN public.vw_calendario cal
-                  ON sld.process_date = cal.fecha_as_str
-            WHERE process_date >= _start_process_date
-            GROUP BY LEFT(process_date, 6)
-            ORDER BY LEFT(process_date, 6)
-        ) as base
-        ;
-
-    RETURN;
-    END;
-$$;
-
-
-SELECT * FROM public.fn_indicadores_cia_base('20220101');
-
-
-
-
 
 
 
@@ -112,6 +15,28 @@ SELECT * FROM public.fn_indicadores_cia_base('20220101');
 --========================================================================
 --
 
+/*
+Nombre: MARIA CLAUDIA URIZA PARDO RICARDO TORRES BELMONTE JT TEN
+# cuenta: T9O003222
+CC: 51788982
+*/
+select *
+from clientes.cliente
+--update clientes.cliente set nombre='MARIA CLAUDIA URIZA PARDO RICARDO TORRES BELMONTE JT TEN'
+where identificador='51788982';
+
+
+select *
+from clientes.cuenta
+--UPDATE clientes.cuenta set id_cuenta_custodio='T9O003222'
+where id_cliente=167 and id=156;
+
+
+
+
+
+
+
 
 
 
@@ -120,10 +45,111 @@ SELECT * FROM public.fn_indicadores_cia_base('20220101');
 --========================================================================
 --========================================================================
 --========================================================================
---
+-- Excepciones Comisiones mal ingresadas y reprocesos
+/*
+Caso Jorge Alberto Zuluaga Martinez – desde el 26/08/2024 – la tasa anualizada a utilizar sería 0,10%, lo que equivale a una tasa diaria de 0,0000027384.
+Caso Lina Maria Toro Villa – desde el 26/08/2024 – la tasa anualizada a utilizar sería 0,10%, lo que equivale a una tasa diaria de 0,0000027384.
+*/
+select * from clientes.cliente
+where identificador in ('98549660','43627165');
+;
+
+select * from clientes.cuenta where id_cliente in (53,56);
+
+UPDATE clientes.comision_cuenta set comision_diaria_saldo= CASE WHEN id_cuenta=54 THEN 0.0000027384 WHEN id_cuenta=57 THEN 0.0000027384 ELSE comision_diaria_saldo END
+--select * from clientes.comision_cuenta
+WHERE id_cuenta in (54,57)
+;
+
+select * from clientes.comision_cuenta
+WHERE id_cuenta in (54,57);
+
+--Reprocesos
+select *
+from public.vw_maestro_saldos_pershing where account_no IN ('T9O001937', 'T9O001960')
+;
+select *
+from public.tbvw_maestro_saldos_pershing where account_no IN ('T9O001937', 'T9O001960')
+;
+
+
+SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20250322
+FROM public.tbvw_maestro_saldos_pershing;
+
+--2498
+SELECT COUNT(*) FROM public.tbvw_maestro_saldos_pershing WHERE account_no IN ('T9O001937', 'T9O001960') and process_date >= '20240826';
+
+update public.tbvw_maestro_saldos_pershing t
+set annual_fee = v.annual_fee,
+    fee_diario = v.fee_diario,
+    comision_devengada_diaria = v.comision_devengada_diaria
+from public.vw_maestro_saldos_pershing v
+where t.account_no = v.account_no
+  and t.process_date = v.process_date
+  and t.cusip = v.cusip
+  and t.currency = v.currency
+  and t.account_no IN ('T9O001937', 'T9O001960')
+  and t.process_date >= '20240826'
+;
 
 
 
+SELECT * FROM public.tbvw_maestro_saldos_pershing WHERE account_no IN ('T9O001937', 'T9O001960') and process_date >= '20240826' order by process_date, account_no, cusip, currency;
+SELECT * FROM zz_backup.tbvw_maestro_saldos_pershing_20250322 WHERE account_no IN ('T9O001937', 'T9O001960') and process_date >= '20240826' order by process_date, account_no, cusip, currency;
+
+
+--========================================================================
+--========================================================================
+--========================================================================
+-- Excepciones Comisiones mal ingresadas y reprocesos   -> Correcciónd e 0.0000027384 a 0.0000272615
+
+select * from clientes.cliente
+where identificador in ('98549660','43627165');
+;
+
+select * from clientes.cuenta where id_cliente in (53,56);
+
+select * from clientes.comision_cuenta WHERE id_cuenta in (54,57);
+
+UPDATE clientes.comision_cuenta set comision_diaria_saldo= CASE WHEN id_cuenta=54 THEN 0.0000272615 WHEN id_cuenta=57 THEN 0.0000272615 ELSE comision_diaria_saldo END
+--select * from clientes.comision_cuenta
+WHERE id_cuenta in (54,57)
+;
+
+select * from clientes.comision_cuenta
+WHERE id_cuenta in (54,57);
+
+--Reprocesos
+select *
+from public.vw_maestro_saldos_pershing where account_no IN ('T9O001937', 'T9O001960')
+;
+select *
+from public.tbvw_maestro_saldos_pershing where account_no IN ('T9O001937', 'T9O001960')
+;
+
+SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20250326
+FROM public.tbvw_maestro_saldos_pershing;
+
+--2546
+SELECT COUNT(*) FROM public.tbvw_maestro_saldos_pershing WHERE account_no IN ('T9O001937', 'T9O001960') and process_date >= '20240826';
+
+update public.tbvw_maestro_saldos_pershing t
+set annual_fee = v.annual_fee,
+    fee_diario = v.fee_diario,
+    comision_devengada_diaria = v.comision_devengada_diaria
+from public.vw_maestro_saldos_pershing v
+where t.account_no = v.account_no
+  and t.process_date = v.process_date
+  and t.cusip = v.cusip
+  and t.currency = v.currency
+  and t.account_no IN ('T9O001937', 'T9O001960')
+  and t.process_date >= '20240826'
+;
+
+
+
+SELECT * FROM public.tbvw_maestro_saldos_pershing WHERE account_no IN ('T9O001937', 'T9O001960') and process_date >= '20240826' order by process_date, account_no, cusip, currency;
+SELECT * FROM zz_backup.tbvw_maestro_saldos_pershing_20250326 WHERE account_no IN ('T9O001937', 'T9O001960') and process_date >= '20240826' order by process_date, account_no, cusip, currency;
 
 
 

@@ -45,7 +45,6 @@ public class ReportesMaestrosService {
     public boolean generaReportesMaestros(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borrarArchivosExistentes) throws QandeMmiiException {
         boolean estadoGeneracion    = true;
         CustomLog.getInstance().info("Se generarán reportes Maestros con fecha proceso ["+processDate+"]");
-
         if (borrarArchivosExistentes) {
             archivosHelper.borraListadoDeArchivosMaestros(processDate);
             CustomLog.getInstance().info("Archivos existentes borrados");

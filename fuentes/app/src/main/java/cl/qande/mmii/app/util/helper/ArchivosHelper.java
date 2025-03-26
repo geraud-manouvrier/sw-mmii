@@ -22,10 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.*;
 
 @Component
 public class ArchivosHelper {
@@ -221,6 +218,25 @@ public class ArchivosHelper {
             filePaths[i] = listFiles[i].getName();
         }
         return filePaths;
+    }
+    public static String[] arrayDeArchivosToArrayString( File[] listFiles, boolean withFullPath) {
+        String[] filePaths = new String[listFiles.length];
+        for (int i = 0; i < listFiles.length; i++) {
+            if (withFullPath) {
+                filePaths[i] = listFiles[i].getAbsolutePath();
+            } else {
+                filePaths[i] = listFiles[i].getName();
+            }
+        }
+        return filePaths;
+    }
+
+    public static List<String> listaArchivosPorExtension(String pathToDirectorio, String extension, boolean withFullPath) {
+        var directorio	= new File(pathToDirectorio);
+        FilenameFilter filtro = (arch, name) -> ( name.matches(".*"+extension) );
+        var listado = directorio.listFiles(filtro);
+        Arrays.sort(listado);
+        return Arrays.asList(arrayDeArchivosToArrayString(listado, withFullPath));
     }
 
 }

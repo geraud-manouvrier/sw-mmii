@@ -1,4 +1,4 @@
-package cl.qande.mmii.app.controllers;
+package cl.qande.mmii.app.controllers.admin;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.dao.IUsuarioDao;
