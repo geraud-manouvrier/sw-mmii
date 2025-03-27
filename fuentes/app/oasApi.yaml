@@ -7,7 +7,7 @@ info:
     Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
   contact:
     email: contacto@qande.cl
-  version: 7.0.0
+  version: 8.0.0
 externalDocs:
   description: Acerca de OAS
   url: https://swagger.io/specification/
@@ -134,6 +134,60 @@ paths:
                 $ref: '#/components/schemas/ArchivosMaestrosResponseError'
       security:
         - api_key: [ ]
+  /retornos:
+    get:
+      tags:
+        - retornos
+      summary: Devuelve retornos
+      description: Devuelve retornos de las cuentas a una fecha o periodo especificado
+      parameters:
+        - name: x-api_key
+          in: header
+          description: 'Api Key necesario para consumir API'
+          required: true
+          schema:
+            type: string
+        - name: x-client_id
+          in: header
+          description: 'ID único de app cliente que consume API'
+          required: true
+          schema:
+            type: string
+        - name: periodo
+          in: path
+          description: 'Periodo a consultar en formato YYYYMM'
+          example: 202505
+          required: true
+          schema:
+            type: integer
+        - name: dia
+          in: path
+          description: 'Día del periodo a consultar. Si es 0, se usa el último día del periodo (cierre de mes)'
+          example: 2
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornosResponseOk'
+        '4XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornosResponseError'
+        '5XX':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornosResponseError'
+      security:
+        - api_key: [ ]
 components:
   schemas:
     ArchivosMaestrosResponseOk:
@@ -174,6 +228,18 @@ components:
           format: int32
         message:
           type: string
+    RetornosResponseOk:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        lista-retornos:
+          $ref: '#/components/schemas/ListaRetornos'
+    RetornosResponseError:
+      $ref: '#/components/schemas/ApiResponseError'
     ApiResponseOk:
       type: object
       properties:
@@ -345,6 +411,33 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Archivo'
+    RetornoCuenta:
+      type: object
+      properties:
+        account-no:
+          type: string
+        rent-dia:
+          type: number
+          format: float
+        rent-1m:
+          type: number
+          format: float
+        rent-3m:
+          type: number
+          format: float
+        rent-12m:
+          type: number
+          format: float
+        rent-ytd:
+          type: number
+          format: float
+        rent-inicio:
+          type: number
+          format: float
+    ListaRetornos:
+      type: array
+      items:
+        $ref: '#/components/schemas/RetornoCuenta'
   securitySchemes:
     api_key:
       type: apiKey
