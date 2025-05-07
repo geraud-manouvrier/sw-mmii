@@ -52,9 +52,9 @@ public class ArchivosController {
 
         try {
             apiHelper.validateApiKey(apiKey, appClientId, ApiHelper.ID_API_ARCHIVOS);
-            this.validaProcessDate(processDate);
+            apiHelper.validaProcessDate(processDate);
         } catch (QandeMmiiException qandeMmiiException) {
-            CustomLog.getInstance().error("Error en método REST Obtener Archivos Reportes Ingresos/Egresos ["+qandeMmiiException.getMessage()+"] Cod. "+HttpStatus.BAD_REQUEST);
+            CustomLog.getInstance().error("Error en método REST Obtener Archivos Reportes Maestros ["+qandeMmiiException.getMessage()+"] Cod. "+HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(new ArchivosMaestrosResponseError(1, "Error al validar llamada: "+qandeMmiiException.getMessage()), responseHeaders, HttpStatus.BAD_REQUEST);
         }
         var resultado   = controlDiarioService.resultadoJobs(processDate);
@@ -78,13 +78,6 @@ public class ArchivosController {
 
         return new ResponseEntity<>(new ArchivosMaestrosResponseOk(listaArchivosApi), responseHeaders, HttpStatus.OK);
 
-    }
-
-    public void validaProcessDate(String processDate)  throws QandeMmiiException {
-        if ( ! (processDate != null && processDate.length()==8 && processDate.matches("[\\d]+") ) ) {
-            CustomLog.getInstance().error("Error Process Date ["+processDate+"]");
-            throw new QandeMmiiException("Process Date inválido");
-        }
     }
 
 

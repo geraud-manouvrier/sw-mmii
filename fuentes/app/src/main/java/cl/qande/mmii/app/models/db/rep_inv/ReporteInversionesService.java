@@ -92,4 +92,10 @@ public class ReporteInversionesService {
         return rentabilidadCalculadaDao.calculaRentabilidad(agregadorN1, agregadorN2, agregadorN3, agregadorN4, startProcessDate, endProcessDate, todosNiveles);
     }
 
+    @Transactional
+    //Calcula y retorna rentabilidades a mostrar para toda la base Clientes (por cuenta
+    public List<RentabilidadCalculada> calculaRentabilidadPorCuentaUniversoClientes(String processDate) {
+        return rentabilidadCalculadaDao.calculaRentabilidadPorCuentaUniversoClientes(processDate);
+    }
+
 }

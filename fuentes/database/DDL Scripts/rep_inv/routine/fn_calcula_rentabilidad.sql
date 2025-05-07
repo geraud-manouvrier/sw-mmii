@@ -43,14 +43,21 @@ BEGIN
         WHERE tbn.agregador_n1=COALESCE(_agregador_n1, tbn.agregador_n1)
         AND tbn.process_date>=_start_process_date AND tbn.process_date<=_end_process_date
     );
-    INSERT INTO temptb_consolidado_agregado (nivel, sub_nivel, process_date, process_date_as_date, agregador_n1, agregador_n2, agregador_n3, agregador_n4, abonos_dia, retiros_dia, dividendos_dia, saldo_dia, comision_devengada_dia)
+    INSERT INTO temptb_consolidado_agregado
+    (
+        nivel, sub_nivel, process_date, process_date_as_date,
+        agregador_n1, agregador_n2, agregador_n3, agregador_n4,
+        saldo_dia_anterior, abonos_dia, retiros_dia, dividendos_dia, saldo_dia,
+        comision_devengada_dia, utilidad, rentabilidad, rentabilidad_base_pitatoria, saldo_rentabilidad
+    )
     SELECT
         'N2'::VARCHAR(100) as nivel,
         rank() OVER (ORDER BY tbn.process_date, tbn.agregador_n1, tbn.agregador_n2)::BIGINT as sub_nivel,
         tbn.process_date, tbn.process_date_as_date,
         tbn.agregador_n1, tbn.agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4,
-        tbn.abonos_dia, tbn.retiros_dia, tbn.dividendos_dia, tbn.saldo_dia,
-        tbn.comision_devengada_dia
+        tbn.saldo_dia_anterior, tbn.abonos_dia, tbn.retiros_dia, tbn.dividendos_dia, tbn.saldo_dia,
+        tbn.comision_devengada_dia,
+        tbn.utilidad, tbn.rentabilidad, tbn.rentabilidad_base_pitatoria, tbn.saldo_rentabilidad
     FROM rep_inv.consolidado_agregado_n2 tbn
     WHERE tbn.agregador_n1=COALESCE(_agregador_n1, tbn.agregador_n1) AND tbn.agregador_n2=COALESCE(_agregador_n2, tbn.agregador_n2)
     AND tbn.process_date>=_start_process_date AND tbn.process_date<=_end_process_date

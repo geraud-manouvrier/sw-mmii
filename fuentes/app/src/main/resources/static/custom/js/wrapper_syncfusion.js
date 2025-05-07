@@ -217,15 +217,18 @@ function booleanTemplateForColumnByValue(value) {
         : '<i class="fa fa-times text-danger"></i>';
 }
 
-function generateDataSourcesClienteCuenta(listaClientes, listaCuentas) {
+function generateDataSourcesClienteCuenta(listaClientes, listaCuentas, includeTodosClientes) {
     // Construir DataSource de clientes
-    var clientDataSource = [
-        {
+
+    var clientDataSource = [];
+
+    if (includeTodosClientes) {
+        clientDataSource.push({
             ClientFieldValue: "",
             ClientText: "Todos los Clientes",
             ClientFieldGroup: "Todos"
-        }
-    ];
+        });
+    }
 
     listaClientes.forEach(obj => {
         clientDataSource.push({
@@ -284,7 +287,7 @@ function createComboBoxClienteCuenta(clientDataSource, cuentaDataSource, cliente
 }
 
 function createComboWithSourceClienteCuenta(listaClientes, listaCuentas, clienteDefault, cuentaDefault) {
-    var dataSources     = generateDataSourcesClienteCuenta(listaClientes, listaCuentas);
+    var dataSources     = generateDataSourcesClienteCuenta(listaClientes, listaCuentas, false);
     return createComboBoxClienteCuenta(dataSources.clientDataSource, dataSources.cuentaDataSource, clienteDefault, cuentaDefault);
 }
 

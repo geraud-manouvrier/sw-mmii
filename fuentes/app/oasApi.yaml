@@ -7,7 +7,7 @@ info:
     Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
   contact:
     email: contacto@qande.cl
-  version: 8.0.0
+  version: 9.0.0
 externalDocs:
   description: Acerca de OAS
   url: https://swagger.io/specification/
@@ -220,6 +220,8 @@ components:
           $ref: '#/components/schemas/ListaMovimientoCustodio'
         maestro-saldos:
           $ref: '#/components/schemas/ListaSaldoCustodio'
+        maestro-relacionado-cuenta:
+          $ref: '#/components/schemas/ListaRelacionadoCuenta'
     ReporteMaestrosResponseError:
       type: object
       properties:
@@ -392,6 +394,43 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/MovimientoCustodio'
+    RelacionadoCuenta:
+      type: object
+      properties:
+        custodian:
+          type: string
+          maxLength: 100
+        client-id:
+          type: string
+          maxLength: 100
+        tipo-id:
+          type: string
+          maxLength: 100
+        office-id:
+          type: string
+          maxLength: 100
+        account-no:
+          type: string
+          maxLength: 100
+        name:
+          type: string
+          maxLength: 100
+        id-relacionado:
+          type: string
+          maxLength: 100
+        nombre-relacionado:
+          type: string
+          maxLength: 100
+        tipo-id-relacionado:
+          type: string
+          maxLength: 100
+        cargo-id-relacionado:
+          type: string
+          maxLength: 100
+    ListaRelacionadoCuenta:
+      type: array
+      items:
+        $ref: '#/components/schemas/RelacionadoCuenta'
     Archivo:
       type: object
       properties:

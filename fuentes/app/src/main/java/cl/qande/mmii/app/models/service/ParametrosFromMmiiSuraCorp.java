@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.models.service;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCodeResponse;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -15,13 +14,11 @@ import java.util.List;
 public class ParametrosFromMmiiSuraCorp {
 
     private final ApiRestClientService apiRestClientService;
-    private final AppConfig appConfig;
     private final IMantenedoresInstrumentosService mantenedoresInstrumentosService;
 
     @Autowired
-    public ParametrosFromMmiiSuraCorp(ApiRestClientService apiRestClientService, AppConfig appConfig, IMantenedoresInstrumentosService mantenedoresInstrumentosService) {
+    public ParametrosFromMmiiSuraCorp(ApiRestClientService apiRestClientService, IMantenedoresInstrumentosService mantenedoresInstrumentosService) {
         this.apiRestClientService = apiRestClientService;
-        this.appConfig = appConfig;
         this.mantenedoresInstrumentosService = mantenedoresInstrumentosService;
     }
 

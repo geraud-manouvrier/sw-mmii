@@ -4,6 +4,7 @@ import cl.qande.mmii.app.config.properties.AppApiProperties;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.IParametroCoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +16,7 @@ public class ApiHelper {
     public static final String ID_API_CONTRATOS     = "API_PUB_CONTRATOS";
     public static final String ID_API_ARCHIVOS      = "API_PUB_ARCHIVOS";
     public static final String ID_API_REP_MAESTROS  = "API_PUB_REP_MAESTROS";
+    public static final String ID_API_RET           = "API_PUB_RET";
     public static final String ID_API_JOBS          = "API_INT_JOBS";
     public static final String ID_API_PARAMS        = "API_INT_PARAM";
 
@@ -47,5 +49,15 @@ public class ApiHelper {
     }
     public boolean isEnabledApiReportesMaestros() {
         return ( appApiProperties.isEnabledGlobal() && appApiProperties.isEnabledReportesMaestros() );
+    }
+    public boolean isEnabledApiRetornos() {
+        return ( appApiProperties.isEnabledGlobal() && appApiProperties.isEnabledRetornos() );
+    }
+
+    public void validaProcessDate(String processDate)  throws QandeMmiiException {
+        if ( ! (processDate != null && processDate.length()==8 && processDate.matches("[\\d]+") ) ) {
+            CustomLog.getInstance().error("Error Process Date ["+processDate+"]");
+            throw new QandeMmiiException("Process Date inválido");
+        }
     }
 }

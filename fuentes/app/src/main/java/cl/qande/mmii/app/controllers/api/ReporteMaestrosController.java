@@ -40,13 +40,13 @@ public class ReporteMaestrosController {
         responseHeaders.set(ApiHelper.HEADER_JSON_KEY, ApiHelper.HEADER_JSON_VAL);
 
         if (! apiHelper.isEnabledApiReportesMaestros()) {
-            CustomLog.getInstance().error(ERROR_PREFIX+" [Api Archivos no habilitada] Cod. "+HttpStatus.BAD_REQUEST);
+            CustomLog.getInstance().error(ERROR_PREFIX+" [Api Reportes Maestros no habilitada] Cod. "+HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(new ReporteMaestrosResponseError(3, "Api Reportes Maestros no habilitada"), responseHeaders, HttpStatus.BAD_REQUEST);
         }
 
         try {
             apiHelper.validateApiKey(apiKey, appClientId, ApiHelper.ID_API_REP_MAESTROS);
-            this.validaProcessDate(processDate);
+            apiHelper.validaProcessDate(processDate);
         } catch (QandeMmiiException qandeMmiiException) {
             CustomLog.getInstance().error(ERROR_PREFIX+" ["+qandeMmiiException.getMessage()+"] Cod. "+HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(new ReporteMaestrosResponseError(1, "Error al validar llamada: "+qandeMmiiException.getMessage()), responseHeaders, HttpStatus.BAD_REQUEST);
@@ -68,13 +68,6 @@ public class ReporteMaestrosController {
 
         return new ResponseEntity<>(respuesta, responseHeaders, HttpStatus.OK);
 
-    }
-
-    public void validaProcessDate(String processDate)  throws QandeMmiiException {
-        if ( ! (processDate != null && processDate.length()==8 && processDate.matches("[\\d]+") ) ) {
-            CustomLog.getInstance().error("Error Process Date ["+processDate+"]");
-            throw new QandeMmiiException("Process Date inválido");
-        }
     }
 
 
