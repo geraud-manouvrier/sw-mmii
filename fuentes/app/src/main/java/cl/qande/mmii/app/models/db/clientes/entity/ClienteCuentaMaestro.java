@@ -7,6 +7,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 /**
  * Mapping for DB view
@@ -47,6 +48,14 @@ public class ClienteCuentaMaestro {
 
     @Column(name = "habilitado")
     private Boolean habilitado;
+
+    @Column(name = "fee", precision = 45, scale = 20)
+    private BigDecimal fee;
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
 
     public ClienteCuentaMaestroId getId() {
         return id;

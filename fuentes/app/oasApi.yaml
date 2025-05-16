@@ -7,7 +7,7 @@ info:
     Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
   contact:
     email: contacto@qande.cl
-  version: 9.0.0
+  version: 9.0.1
 externalDocs:
   description: Acerca de OAS
   url: https://swagger.io/specification/
@@ -43,7 +43,7 @@ paths:
   /reportes-maestros/{process-date}:
     get:
       tags:
-        - archivos
+        - reportes-maestros
       summary: Obtiene los datos de los Reportes Maestros
       description: Obtiene los datos de los Reportes Maestros para una fecha de proceso dada
       parameters:

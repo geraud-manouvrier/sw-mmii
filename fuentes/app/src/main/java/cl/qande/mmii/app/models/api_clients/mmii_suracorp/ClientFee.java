@@ -10,6 +10,10 @@ public class ClientFee {
     private String accountNumber;
     private BigDecimal fee;
 
+    public ClientFee() {
+        // Constructor vacío requerido por Jackson
+    }
+
     public ClientFee(String custodian, String accountNumber, BigDecimal fee) {
         this.custodian      = custodian;
         this.accountNumber  = accountNumber;

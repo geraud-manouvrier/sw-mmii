@@ -1,6 +1,6 @@
 /*
-2025-05-07
-Actual: 10.3.0-COL
+2025-05-15
+Actual: 11.0.0-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
@@ -11,117 +11,648 @@ INSERT INTO public.authorities(user_id, authority)
 SELECT id, 'ROLE_OP_NEGOCIO_COMDEV' FROM public.users where username in ('andres.fernandez', 'daniel.gomez1')
 ;
 
+INSERT INTO public.parametro (id_parametro, sub_id_parametro, valor_parametro, comentario)
+VALUES ('api.api_key', 'proteccion.temp-retornos', 'a3f9c8d4-12ab-4e8f-9c3d-567e2f8a9b12',
+        'Api Key para invocación temporal a prod');
 
-
-
---========================================================================
---========================================================================
---========================================================================
--- Homologación TIPO ID y reproceso histórico
-/*
-En base a los datos enviados, se actualizarán los siguientes tipo id:
-    RC por RCN
-    PA por PAS
-    NI por NIT
-    NU por NUIP
-En base a los datos enviados, se agregarán/crearán los siguientes tipo id:
-    FI Fideicomiso
-    RM Registro Mercantil
-    PE Permiso Especial de Permanencia
-    PT Permiso por protección temporal
-*/
 select *
-from clientes.tipo_identificador;
-
-
-/*
-insertar estos:
-    FI Fideicomiso
-    RM Registro Mercantil
-    PE Permiso Especial de Permanencia
-    PT Permiso por protección temporal
-*/
-INSERT INTO clientes.tipo_identificador (tipo_identificador, glosa_identificador, habilitado, flag_tiene_relacionados)
-VALUES
-('FI', 'Fideicomiso', true, false),
-('RM', 'Registro Mercantil', true, false),
-('PE', 'Permiso Especial de Permanencia', true, false),
-('PT', 'Permiso por protección temporal', true, false)
+--DELETE
+from public.authorities
+where authority = 'ROLE_OP_MANT_COMIS_CTA'
+AND user_id not in (select id FROM public.users where username in ('admin-qye', 'user-qye', 'usuario'))
 ;
-/*Actualziamos estos tipo identificador:
-RC por RCN
-PA por PAS
-NI por NIT
-NU por NUIP
-*/
-UPDATE clientes.tipo_identificador SET tipo_identificador = 'RCN' WHERE tipo_identificador = 'RC';
-UPDATE clientes.tipo_identificador SET tipo_identificador = 'PAS' WHERE tipo_identificador = 'PA';
-UPDATE clientes.tipo_identificador SET tipo_identificador = 'NIT' WHERE tipo_identificador = 'NI';
-UPDATE clientes.tipo_identificador SET tipo_identificador = 'NUIP' WHERE tipo_identificador = 'NU';
+
+--========================================================================
+--========================================================================
+--========================================================================
+-- Fee como dato del Cliente
+
+ALTER TABLE clientes.cliente ADD COLUMN fee numeric(45,20) DEFAULT NULL;
+ALTER TABLE public.tbvw_maestro_cuentas_pershing ADD COLUMN fee numeric(45,20) DEFAULT NULL;
+
+--TODO: Agregar a maestro cuentas
+
+--TODO: Carga masiva histórica
 
 
-
-SELECT tipo_identificador_cliente, count(*)
-FROM public.tbvw_maestro_cuentas_pershing
-GROUP BY tipo_identificador_cliente order by 2 DESC;
-SELECT tipo_identificador_cliente, count(*)
-FROM public.tbvw_maestro_saldos_pershing
-GROUP BY tipo_identificador_cliente order by 2 DESC;
-SELECT tipo_identificador_cliente, count(*)
-FROM public.tbvw_maestro_movimientos_pershing
-GROUP BY tipo_identificador_cliente order by 2 DESC;
-
-/*
-Ahora actualziamos tablas materialziadas:
-public.tbvw_maestro_cuentas_pershing
-public.tbvw_maestro_saldos_pershing
-public.tbvw_maestro_movimientos_pershing
-*/
---Respaldamos
-SELECT * INTO zz_backup.tbvw_maestro_cuentas_pershing_20250304
-FROM public.tbvw_maestro_cuentas_pershing;
-SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20250304
-FROM public.tbvw_maestro_saldos_pershing;
-SELECT * INTO zz_backup.tbvw_maestro_movimientos_pershing_20250304
-FROM public.tbvw_maestro_movimientos_pershing;
---Actualizamos
-UPDATE public.tbvw_maestro_cuentas_pershing         SET tipo_identificador_cliente = 'RCN' WHERE tipo_identificador_cliente = 'RC';
-UPDATE public.tbvw_maestro_saldos_pershing          SET tipo_identificador_cliente = 'RCN' WHERE tipo_identificador_cliente = 'RC';
-UPDATE public.tbvw_maestro_movimientos_pershing     SET tipo_identificador_cliente = 'RCN' WHERE tipo_identificador_cliente = 'RC';
-
-UPDATE public.tbvw_maestro_cuentas_pershing         SET tipo_identificador_cliente = 'PAS' WHERE tipo_identificador_cliente = 'PA';
-UPDATE public.tbvw_maestro_saldos_pershing          SET tipo_identificador_cliente = 'PAS' WHERE tipo_identificador_cliente = 'PA';
-UPDATE public.tbvw_maestro_movimientos_pershing     SET tipo_identificador_cliente = 'PAS' WHERE tipo_identificador_cliente = 'PA';
-
-UPDATE public.tbvw_maestro_cuentas_pershing         SET tipo_identificador_cliente = 'NIT' WHERE tipo_identificador_cliente = 'NI';
-UPDATE public.tbvw_maestro_saldos_pershing          SET tipo_identificador_cliente = 'NIT' WHERE tipo_identificador_cliente = 'NI';
-UPDATE public.tbvw_maestro_movimientos_pershing     SET tipo_identificador_cliente = 'NIT' WHERE tipo_identificador_cliente = 'NI';
-
-UPDATE public.tbvw_maestro_cuentas_pershing         SET tipo_identificador_cliente = 'NUIP' WHERE tipo_identificador_cliente = 'NU';
-UPDATE public.tbvw_maestro_saldos_pershing          SET tipo_identificador_cliente = 'NUIP' WHERE tipo_identificador_cliente = 'NU';
-UPDATE public.tbvw_maestro_movimientos_pershing     SET tipo_identificador_cliente = 'NUIP' WHERE tipo_identificador_cliente = 'NU';
+drop view clientes.vw_maestro_clientes;
+create view clientes.vw_maestro_clientes as
+SELECT cte.id,
+       cte.identificador,
+       cte.nombre,
+       cte.id_tipo_identificador,
+       tid.tipo_identificador,
+       tid.glosa_identificador,
+       tid.habilitado,
+       (((SELECT string_agg(cta.id_cuenta_custodio::text, ','::text) AS string_agg
+          FROM clientes.cuenta cta
+          WHERE cta.id_cliente = cte.id)))::character varying(100) AS lista_cuentas,
+    cte.fee
+FROM clientes.cliente cte
+         LEFT JOIN clientes.tipo_identificador tid ON cte.id_tipo_identificador = tid.id;
 
 
 
 
-select * from public.rectificacion_cuentas_no_informadas limit 10;
-select * from public.rectificacion_movimientos_no_informados limit 10;
-select * from public.rectificacion_saldos_no_informados limit 10;
-
-select *, tipo_identificador_cliente from public.tbvw_maestro_cuentas_pershing limit 10;
-select *, tipo_identificador_cliente from public.tbvw_maestro_saldos_pershing limit 10;
-select *, tipo_identificador_cliente from public.tbvw_maestro_movimientos_pershing limit 10;
-
-
-
+drop view public.vw_cuentas_no_mapeadas_pershing;
+drop view public.vw_maestro_cuentas_pershing;
+drop view clientes.vw_maestro_comision;
+drop view public.vw_maestro_movimientos_pershing;
+drop view public.vw_maestro_saldos_pershing;
+drop view clientes.vw_maestro_clientes_cuentas;
+drop function public.fn_reporte_maestro_datos_clientes;
+drop view public.vw_reporte_maestro_datos_clientes;
 
 
 
 
+create view clientes.vw_maestro_clientes_cuentas
+as
+SELECT c.id                    AS id_interno_cliente,
+       c.identificador         AS identificador_cliente,
+       c.nombre                AS nombre_cliente,
+       c.id_tipo_identificador AS id_tipo_identificador_cliente,
+       ti.tipo_identificador   AS tipo_identificador_cliente,
+       ti.glosa_identificador  AS glosa_identificador_cliente,
+       cu.id                   AS id_interno_cuenta,
+       cu.id_custodio,
+       cu.id_cuenta_custodio,
+       cu.habilitado,
+       c.fee
+FROM clientes.cliente c
+         JOIN clientes.tipo_identificador ti ON c.id_tipo_identificador = ti.id
+         LEFT JOIN clientes.cuenta cu ON c.id = cu.id_cliente;
+
+
+
+create view public.vw_maestro_cuentas_pershing
+as
+SELECT vw_act.id,
+       vw_act.custodian,
+       maestro_crm.id_interno_cliente,
+       maestro_crm.identificador_cliente AS client_id,
+       maestro_crm.nombre_cliente        AS name,
+       maestro_crm.id_tipo_identificador_cliente,
+       maestro_crm.tipo_identificador_cliente,
+       maestro_crm.glosa_identificador_cliente,
+       maestro_crm.id_interno_cuenta,
+       maestro_crm.id_custodio,
+       maestro_crm.id_cuenta_custodio,
+       maestro_crm.habilitado,
+       maestro_crm.fee,
+       vw_act.ibd_number,
+       vw_act.id_office,
+       vw_act.ip_number,
+       vw_act.account_number             AS account_no,
+       vw_act.id_proceso,
+       vw_act.process_date,
+       vw_act.record_id_sequence_number,
+       vw_act.account_short_name,
+       vw_act.full_name,
+       vw_act.full_address,
+       vw_act.transaction_type,
+       vw_act.autotitled_usertitled_account,
+       vw_act.account_type_code,
+       vw_act.registration_type,
+       vw_act.registration_type_value,
+       vw_act.number_of_account_title_lines,
+       vw_act.account_registration_line_1,
+       vw_act.account_registration_line_2,
+       vw_act.account_registration_line_3,
+       vw_act.account_registration_line_4,
+       vw_act.account_registration_line_5,
+       vw_act.account_registration_line_6,
+       vw_act.registration_type_detail,
+       vw_act.date_account_opened,
+       vw_act.date_account_information_updated,
+       vw_act.account_status_indicator,
+       vw_act.pending_closed_date,
+       vw_act.date_account_closed,
+       vw_act.closing_notice_date,
+       vw_act.account_reactivated_date,
+       vw_act.date_account_reopened,
+       vw_act.proceeds,
+       vw_act.transfer_instructions,
+       vw_act.income_isntructions,
+       vw_act.number_of_confirms_for_thi_account,
+       vw_act.number_of_statements_for_this_account,
+       vw_act.investment_objetive_trans_code,
+       vw_act.comments_act,
+       vw_act.employer_shotname,
+       vw_act.employers_cusip,
+       vw_act.employers_symbol,
+       vw_act.margin_privileges_revoked,
+       vw_act.statement_review_date,
+       vw_act.margin_papers_on_file,
+       vw_act.cash_margin_account,
+       vw_act.option_papers_on_file,
+       vw_act.good_faith_margin,
+       vw_act.ip_discretion_granted,
+       vw_act.invest_advisor_discretion_granted,
+       vw_act.invest_advisor_discretion_granted_value,
+       vw_act.third_party_discretion_granted,
+       vw_act.third_party_name,
+       vw_act.risk_factor_code,
+       vw_act.investment_objetive_code,
+       vw_act.option_equities,
+       vw_act.option_index,
+       vw_act.option_debt,
+       vw_act.option_currency,
+       vw_act.option_level_1,
+       vw_act.option_level_2,
+       vw_act.option_level_3,
+       vw_act.option_level_4,
+       vw_act.option_call_limits,
+       vw_act.option_put_limits,
+       vw_act.option_total_limits_of_puts_and_calls,
+       vw_act.non_us_dollar_trading,
+       vw_act.non_customer_indicator,
+       vw_act.third_party_fee_indicator,
+       vw_act.third_party_fee_approval_date,
+       vw_act.intermediary_account_ind,
+       vw_act.commission_schedule,
+       vw_act.group_index,
+       vw_act.money_manager_id,
+       vw_act.money_manager_objective_id,
+       vw_act.dtc_id_confirm_number,
+       vw_act.caps_master_mnemonic,
+       vw_act.employee_id,
+       vw_act.prime_broker_free_fund_indicator,
+       vw_act.fee_based_account_indicator,
+       vw_act.fee_based_termination_date,
+       vw_act.plan_name,
+       vw_act.self_directed_401_k_account_type,
+       vw_act.plan_type,
+       vw_act.plan_number,
+       vw_act.employee_or_employee_relative,
+       vw_act.commission_percent_discount,
+       vw_act.ind_12_b_1_fee_blocking,
+       vw_act.name_of_ip_signed_new_account_form,
+       vw_act.date_of_ip_signed_new_account_form,
+       vw_act.name_of_principal_signed_new_account_form,
+       vw_act.date_of_principal_signed_new_account_form,
+       vw_act.politically_exposed_person,
+       vw_act.private_banking_account,
+       vw_act.foreign_bank_account,
+       vw_act.initial_source_of_funds,
+       vw_act.usa_patriot_act_exempt_reason,
+       vw_act.country_of_citizenship_code,
+       vw_act.country_of_citizenship_value,
+       vw_act.country_of_residence_code,
+       vw_act.country_of_residence_value,
+       vw_act.birth_date,
+       vw_act.age_based_fund_roll_exempt,
+       vw_act.money_fundreform_retail,
+       vw_act.trusted_contact_status,
+       vw_act.regulatory_account_type_category,
+       vw_act.account_managed_by_trust_comp_id,
+       vw_act.voting_auth,
+       vw_act.customer_type,
+       vw_act.fulfillment_method,
+       vw_act.credit_interest_indicator,
+       vw_act.ama_indicator,
+       vw_act.ama_indicator_value,
+       vw_act.tax_id_type,
+       vw_act.tax_id_number,
+       vw_act.date_tax_id_applied_for,
+       vw_act.w_8_w_9_indicator,
+       vw_act.w_8_w_9_date_signed,
+       vw_act.w_8_w_9_effective_date,
+       vw_act.w_8_w_9_document_type,
+       vw_act.w_8_date_signed,
+       vw_act.w_8_effective_date,
+       vw_act.w_9_date_signed,
+       vw_act.w_9_effective_date,
+       vw_act.tax_status,
+       vw_act.b_notice_reason_code,
+       vw_act.first_b_notice_status,
+       vw_act.date_first_b_notice_status_issued_enforced,
+       vw_act.date_first_notice_status_satisfied,
+       vw_act.second_b_notice_status,
+       vw_act.date_second_b_notice_status_issued_enforced,
+       vw_act.date_second_b_notice_status_satisfied,
+       vw_act.c_notice_status,
+       vw_act.date_c_notice_status_issued_enforced,
+       vw_act.date_c_notice_status_satisfied,
+       vw_act.old_account_number,
+       vw_act.original_account_open_date,
+       vw_act.unidentified_large_trader_id,
+       vw_act.large_trader_type_code,
+       vw_act.large_trader_type_last_change_date,
+       vw_act.initial_source_of_funds_other,
+       vw_act.finance_away,
+       vw_act.account_funding_date,
+       vw_act.statement_currency_code,
+       vw_act.future_statement_currency_code,
+       vw_act.future_statement_currency_code_effective_date,
+       vw_act.account_level_routing_code_1,
+       vw_act.account_level_routing_code_2,
+       vw_act.account_level_routing_code_3,
+       vw_act.account_level_routing_code_4,
+       vw_act.self_directed_ind,
+       vw_act.digital_advice_ind,
+       vw_act.pte_account_ind,
+       vw_act.first_ip,
+       vw_act.second_ip,
+       vw_act.third_ip,
+       vw_act.fourth_ip,
+       vw_act.fifth_ip,
+       vw_act.sixth_ip,
+       vw_act.seventh_ip,
+       vw_act.eighth_ip,
+       vw_act.ninth_ip,
+       vw_act.tenth_ip,
+       vw_act.alert_im_acornym,
+       vw_act.alert_im_access_code,
+       vw_act.broker_acronym,
+       vw_act.cross_reference_indicator,
+       vw_act.bny_trust_indicator,
+       vw_act.source_of_asset_at_acct_opening,
+       vw_act.commission_doscount_code,
+       vw_act.external_account_number,
+       vw_act.confirmation_suppression_indicator,
+       vw_act.date_last_mail_sent,
+       vw_act.date_last_mail_sent_outside,
+       vw_act.fully_paid_lending_agreement_indicator,
+       vw_act.fully_paid_lending_agreement_date,
+       vw_act.custodian_account_type,
+       vw_act.mifid_customer_categorization,
+       vw_act.cash_management_tran_code,
+       vw_act.sweep_status_indicator,
+       vw_act.date_sweep_activated,
+       vw_act.date_sweep_details_changed,
+       vw_act.cober_margin_debit_indicator,
+       vw_act.first_fund_sweep_account_id,
+       vw_act.firstfund_sweep_account_percent,
+       vw_act.first_fundsweep_account_redemption_priority,
+       vw_act.second_fund_sweep_account_id,
+       vw_act.second_fund_sweep_account_percent,
+       vw_act.second_fundsweep_account_redemption_priority,
+       vw_act.type_of_bank_account,
+       vw_act.banklink_aba_number,
+       vw_act.banklink_dda_number,
+       vw_act.fund_bank_indicator,
+       vw_act.w_9_corp_tax_classification_code,
+       vw_act.combined_margin_acct_indicator,
+       vw_act.pledge_collateral_account_indicator,
+       vw_act.finra_institutional_account_code,
+       vw_act.proposed_account_reference_id,
+       vw_act.advisor_model_id,
+       vw_act.firm_model_style_id,
+       vw_act.dvp_restriction_code,
+       vw_act.dvp_restriction_exp_date,
+       vw_act.escheatment_withholding_ind,
+       vw_act.source_of_origination,
+       vw_act.source_of_persona,
+       vw_act.client_onboarding_method,
+       vw_act.tax_filing_code,
+       vw_act.nor_purpose_collateral_acct_ind,
+       vw_act.addr_1_trx_code,
+       vw_act.addr_1_special_handling_ind,
+       vw_act.addr_1_delivery_id,
+       vw_act.addr_1_attention_line_prefix,
+       vw_act.addr_1_attention_line_detail,
+       vw_act.addr_1_line_1,
+       vw_act.addr_1_line_2,
+       vw_act.addr_1_line_3,
+       vw_act.addr_1_line_4,
+       vw_act.addr_1_city_state,
+       vw_act.addr_1_country_code,
+       vw_act.addr_2_trx_code,
+       vw_act.addr_2_special_handling_ind,
+       vw_act.addr_2_delivery_id,
+       vw_act.addr_2_attention_line_prefix,
+       vw_act.addr_2_attention_line_detail,
+       vw_act.addr_2_line_1,
+       vw_act.addr_2_line_2,
+       vw_act.addr_2_line_3,
+       vw_act.addr_2_line_4,
+       vw_act.addr_2_city_state,
+       vw_act.addr_2_country_code,
+       vw_act.account_description,
+       vw_act.set_as_mail_addr_2_ind,
+       vw_act.principal_billing_allocation_pct,
+       vw_act.seasonal_addr_id_1,
+       vw_act.from_date_1,
+       vw_act.to_date_1,
+       vw_act.seasonal_addr_id_2,
+       vw_act.from_date_2,
+       vw_act.to_date_2,
+       vw_act.seasonal_addr_id_3,
+       vw_act.from_date_3,
+       vw_act.to_date_3,
+       vw_act.cost_basis_acct_system,
+       vw_act.disposition_method_mutual_funds,
+       vw_act.disposition_method_other,
+       vw_act.disposition_method_stocks,
+       vw_act.amortize_taxable_premium_bonds,
+       vw_act.accrue_market_disc_based_on,
+       vw_act.accrue_market_disc_income,
+       vw_act.addr_3_trx_code,
+       vw_act.addr_3_special_handling_ind,
+       vw_act.addr_3_delivery_id,
+       vw_act.addr_3_attention_line_prefix,
+       vw_act.addr_3_attention_line_detail,
+       vw_act.addr_3_line_1,
+       vw_act.addr_3_line_2,
+       vw_act.addr_3_line_3,
+       vw_act.addr_3_line_4,
+       vw_act.addr_3_city_state,
+       vw_act.addr_3_country_code,
+       vw_act.set_as_mail_addr_3_ind,
+       vw_act.addr_4_trx_code,
+       vw_act.addr_4_special_handling_ind,
+       vw_act.addr_4_delivery_id,
+       vw_act.addr_4_attention_line_prefix,
+       vw_act.addr_4_attention_line_detail,
+       vw_act.addr_4_line_1,
+       vw_act.addr_4_line_2,
+       vw_act.addr_4_line_3,
+       vw_act.addr_4_line_4,
+       vw_act.addr_4_city_state,
+       vw_act.addr_4_country_code,
+       vw_act.set_as_mail_addr_4_ind,
+       vw_act.addr_5_trx_code,
+       vw_act.addr_5_special_handling_ind,
+       vw_act.addr_5_delivery_id,
+       vw_act.addr_5_attention_line_prefix,
+       vw_act.addr_5_attention_line_detail,
+       vw_act.addr_5_line_1,
+       vw_act.addr_5_line_2,
+       vw_act.addr_5_line_3,
+       vw_act.addr_5_line_4,
+       vw_act.addr_5_city_state,
+       vw_act.addr_5_country_code,
+       vw_act.set_as_mail_addr_5_ind,
+       vw_act.addr_6_trx_code,
+       vw_act.addr_6_special_handling_ind,
+       vw_act.addr_6_delivery_id,
+       vw_act.addr_6_attention_line_prefix,
+       vw_act.addr_6_attention_line_detail,
+       vw_act.addr_6_line_1,
+       vw_act.addr_6_line_2,
+       vw_act.addr_6_line_3,
+       vw_act.addr_6_line_4,
+       vw_act.addr_6_city_state,
+       vw_act.addr_6_country_code,
+       vw_act.set_as_mail_addr_6_ind,
+       vw_act.addr_7_trx_code,
+       vw_act.addr_7_special_handling_ind,
+       vw_act.addr_7_delivery_id,
+       vw_act.addr_7_attention_line_prefix,
+       vw_act.addr_7_attention_line_detail,
+       vw_act.addr_7_line_1,
+       vw_act.addr_7_line_2,
+       vw_act.addr_7_line_3,
+       vw_act.addr_7_line_4,
+       vw_act.addr_7_city_state,
+       vw_act.addr_7_country_code,
+       vw_act.set_as_mail_addr_7_ind,
+       vw_act.record_transaction_code,
+       vw_act.base_currency,
+       vw_act.income_currency,
+       vw_act.statement_language,
+       vw_act.statement_format_code,
+       vw_act.msrb_statement_ind,
+       vw_act.pep,
+       vw_act.first_name_pep,
+       vw_act.last_name_pep,
+       vw_act.suffix_pep,
+       vw_act.political_office_held,
+       vw_act.country_of_office,
+       vw_act.foreign_bank_account_ind,
+       vw_act.foreign_bank_cert_date,
+       vw_act.foreign_bank_cert_exp_date,
+       vw_act.central_bank_ind,
+       vw_act.acct_foreign_financial_inst,
+       vw_act.foreign_bank_acct_oper_1,
+       vw_act.foreign_bank_acct_oper_2,
+       vw_act.foreign_bank_acct_oper_3,
+       vw_act.number_people_own,
+       vw_act.proprietary_acct_owned,
+       vw_act.tel_1_transaction_code,
+       vw_act.tel_1_us_ind,
+       vw_act.tel_1_type_id,
+       vw_act.tel_1_number,
+       vw_act.tel_1_extension,
+       vw_act.tel_2_transaction_code,
+       vw_act.tel_2_us_ind,
+       vw_act.tel_2_type_id,
+       vw_act.tel_2_number,
+       vw_act.tel_2_extension,
+       vw_act.tel_3_transaction_code,
+       vw_act.tel_3_us_ind,
+       vw_act.tel_3_type_id,
+       vw_act.tel_3_number,
+       vw_act.tel_3_extension,
+       vw_act.tel_4_transaction_code,
+       vw_act.tel_4_us_ind,
+       vw_act.tel_4_type_id,
+       vw_act.tel_4_number,
+       vw_act.tel_4_extension,
+       vw_act.tel_5_transaction_code,
+       vw_act.tel_5_us_ind,
+       vw_act.tel_5_type_id,
+       vw_act.tel_5_number,
+       vw_act.tel_5_extension,
+       vw_act.tel_6_transaction_code,
+       vw_act.tel_6_us_ind,
+       vw_act.tel_6_type_id,
+       vw_act.tel_6_number,
+       vw_act.tel_6_extension,
+       vw_act.tel_7_transaction_code,
+       vw_act.tel_7_us_ind,
+       vw_act.tel_7_type_id,
+       vw_act.tel_7_number,
+       vw_act.tel_7_extension,
+       vw_act.tel_8_transaction_code,
+       vw_act.tel_8_us_ind,
+       vw_act.tel_8_type_id,
+       vw_act.tel_8_number,
+       vw_act.tel_8_extension,
+       vw_act.email_address,
+       vw_act.external_position_ind,
+       vw_act.purge_eligible_ind,
+       vw_act.advisory_acct_ind,
+       vw_act.product_profile_code,
+       vw_act.cents_per_share_discount,
+       vw_act.option_disclosure_date,
+       vw_act.country_acct_level_tax_residency
+FROM pershing.vw_maestro_cuenta vw_act
+         LEFT JOIN clientes.vw_maestro_clientes_cuentas maestro_crm
+                   ON vw_act.id_custodian::text = maestro_crm.id_custodio::text AND
+                      vw_act.account_number::text = maestro_crm.id_cuenta_custodio::text;
+
+
+create view public.vw_reporte_maestro_datos_clientes
+as
+SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
+       id_reg,
+       custodian,
+       client_id,
+       tipo_identificador_cliente,
+       firm_no,
+       sub_no,
+       rep_no,
+       office_id,
+       account_no,
+       name,
+       vw_union.fee,
+       full_name,
+       address,
+       short_name,
+       date_of_birth,
+       acct_status_value,
+       email,
+       country_code_value,
+       country,
+       w8_date,
+       w9_date,
+       w8_status_value,
+       w9_status_value,
+       discr_trading_code_value,
+       account_type,
+       cash_margin_account,
+       debit_card_indicator,
+       open_date,
+       close_date,
+       participant_type,
+       last_statement_date,
+       tax_id,
+       process_date,
+       is_last_info,
+       is_last_schema_by_account_no
+FROM (SELECT 'B'::text                                                                                                  AS src_vw,
+             rank()
+             OVER (ORDER BY vw_acct.id, vw_acct.process_date, vw_acct.custodian, vw_acct.account_no)                    AS row_id,
+             vw_acct.id                                                                                                 AS id_reg,
+             upper(vw_acct.custodian::text)::character varying(100)                                                     AS custodian,
+             upper(vw_acct.client_id::text)::character varying(100)                                                     AS client_id,
+             vw_acct.tipo_identificador_cliente,
+             vw_acct.ibd_number                                                                                         AS firm_no,
+             vw_acct.id_office::character varying(100)                                                                  AS sub_no,
+             upper(vw_acct.ip_number::text)::character varying(100)                                                     AS rep_no,
+             upper(vw_acct.id_office)::character varying(100)                                                           AS office_id,
+             upper(vw_acct.account_no::text)::character varying(100)                                                    AS account_no,
+             COALESCE(upper(vw_acct.name::text),
+                      upper(vw_acct.full_name::text))::character varying(100)                                           AS name,
+             upper(vw_acct.full_name::text)::character varying(100)                                                     AS full_name,
+             upper(vw_acct.full_address::text)::character varying(100)                                                  AS address,
+             upper(vw_acct.account_short_name::text)::character varying(100)                                            AS short_name,
+             vw_acct.birth_date                                                                                         AS date_of_birth,
+             CASE
+                 WHEN vw_acct.date_account_closed IS NULL THEN 'OPEN'::text
+                 ELSE 'CLOSED'::text
+                 END::character varying(100)                                                                            AS acct_status_value,
+             lower(vw_acct.email_address::text)::character varying(100)                                                 AS email,
+             upper(vw_acct.country_of_residence_code::text)::character varying(100)                                     AS country_code_value,
+             upper(vw_acct.country_of_residence_value::text)::character varying(100)                                    AS country,
+             fn_fecha_date_to_string(vw_acct.w_8_date_signed, 'YYYYMMDD'::character varying,
+                                     '-'::character varying)                                                            AS w8_date,
+             vw_acct.w_9_date_signed                                                                                    AS w9_date,
+             upper(
+                     CASE
+                         WHEN vw_acct.w_8_w_9_indicator::text = 'W8'::text
+                             THEN pershing.fn_obtiene_valor_param_generic_pershing('w8_status'::character varying,
+                                                                                   (vw_acct.w_8_date_signed IS NOT NULL)::character varying(100))
+                         ELSE NULL::character varying
+                         END::text)::character varying(100)                                                             AS w8_status_value,
+             upper(
+                     CASE
+                         WHEN vw_acct.w_8_w_9_indicator::text = 'W9'::text
+                             THEN pershing.fn_obtiene_valor_param_generic_pershing('w9_status'::character varying,
+                                                                                   (vw_acct.w_9_date_signed IS NOT NULL)::character varying(100))
+                         ELSE NULL::character varying
+                         END::text)::character varying(100)                                                             AS w9_status_value,
+             upper(vw_acct.invest_advisor_discretion_granted_value::text)::character varying(100)                       AS discr_trading_code_value,
+             upper(((vw_acct.registration_type_value::text || ' ('::text) || vw_acct.registration_type::text) ||
+                   ')'::text)::character varying(100)                                                                   AS account_type,
+             upper(vw_acct.cash_margin_account::text)::character varying(100)                                           AS cash_margin_account,
+             upper(vw_acct.ama_indicator_value)::character varying(100)                                                 AS debit_card_indicator,
+             fn_fecha_date_to_string(vw_acct.date_account_opened, 'YYYYMMDD'::character varying,
+                                     '-'::character varying)::character varying(100)                                    AS open_date,
+             vw_acct.date_account_closed                                                                                AS close_date,
+             fn_obtiene_valor_parametro('pershing.participant_type'::character varying,
+                                        'participant_type'::character varying)::character varying(1000)                 AS participant_type,
+             NULL::date                                                                                                 AS last_statement_date,
+             upper(pershing.fn_obtiene_valor_param_generic_pershing('tax_id_type'::character varying,
+                                                                    vw_acct.tax_id_type)::text)::character varying(100) AS tax_id,
+             upper(vw_acct.process_date::text)::character varying(100)                                                  AS process_date,
+             true                                                                                                       AS is_last_info,
+             true                                                                                                       AS is_last_schema_by_account_no,
+             vw_acct.fee
+      FROM tbvw_maestro_cuentas_pershing vw_acct
+      ) vw_union
+ORDER BY process_date, client_id, account_no;
 
 
 
 
+create or replace function public.fn_reporte_maestro_materializa_data(_process_date character varying, _tipo_maestro character varying, _custodio character varying) returns bigint
+    language plpgsql
+as
+$$
+DECLARE _row_count  BIGINT;
+
+
+    BEGIN
+
+    IF (_tipo_maestro NOT IN ('CTA', 'SLD', 'MOV') ) THEN
+        RAISE NOTICE 'Tipo de maestro no válido [%]', _tipo_maestro;
+        return -1;
+    end if;
+
+    IF (_custodio NOT IN ('PERSHING') ) THEN
+        RAISE NOTICE 'Custodio no válido [%]', _custodio;
+        return -2;
+    end if;
+
+    IF (_tipo_maestro='CTA') THEN
+        IF (_custodio ='PERSHING') THEN
+            DELETE FROM public.tbvw_maestro_cuentas_pershing WHERE process_date=_process_date;
+            INSERT INTO public.tbvw_maestro_cuentas_pershing
+            (id, custodian, id_interno_cliente, client_id, name, id_tipo_identificador_cliente, tipo_identificador_cliente, glosa_identificador_cliente, id_interno_cuenta, id_custodio, id_cuenta_custodio, habilitado, fee, ibd_number, id_office, ip_number, account_no, id_proceso, process_date, record_id_sequence_number, account_short_name, full_name, full_address, transaction_type, autotitled_usertitled_account, account_type_code, registration_type, registration_type_value, number_of_account_title_lines, account_registration_line_1, account_registration_line_2, account_registration_line_3, account_registration_line_4, account_registration_line_5, account_registration_line_6, registration_type_detail, date_account_opened, date_account_information_updated, account_status_indicator, pending_closed_date, date_account_closed, closing_notice_date, account_reactivated_date, date_account_reopened, proceeds, transfer_instructions, income_isntructions, number_of_confirms_for_thi_account, number_of_statements_for_this_account, investment_objetive_trans_code, comments_act, employer_shotname, employers_cusip, employers_symbol, margin_privileges_revoked, statement_review_date, margin_papers_on_file, cash_margin_account, option_papers_on_file, good_faith_margin, ip_discretion_granted, invest_advisor_discretion_granted, invest_advisor_discretion_granted_value, third_party_discretion_granted, third_party_name, risk_factor_code, investment_objetive_code, option_equities, option_index, option_debt, option_currency, option_level_1, option_level_2, option_level_3, option_level_4, option_call_limits, option_put_limits, option_total_limits_of_puts_and_calls, non_us_dollar_trading, non_customer_indicator, third_party_fee_indicator, third_party_fee_approval_date, intermediary_account_ind, commission_schedule, group_index, money_manager_id, money_manager_objective_id, dtc_id_confirm_number, caps_master_mnemonic, employee_id, prime_broker_free_fund_indicator, fee_based_account_indicator, fee_based_termination_date, plan_name, self_directed_401_k_account_type, plan_type, plan_number, employee_or_employee_relative, commission_percent_discount, ind_12_b_1_fee_blocking, name_of_ip_signed_new_account_form, date_of_ip_signed_new_account_form, name_of_principal_signed_new_account_form, date_of_principal_signed_new_account_form, politically_exposed_person, private_banking_account, foreign_bank_account, initial_source_of_funds, usa_patriot_act_exempt_reason, country_of_citizenship_code, country_of_citizenship_value, country_of_residence_code, country_of_residence_value, birth_date, age_based_fund_roll_exempt, money_fundreform_retail, trusted_contact_status, regulatory_account_type_category, account_managed_by_trust_comp_id, voting_auth, customer_type, fulfillment_method, credit_interest_indicator, ama_indicator, ama_indicator_value, tax_id_type, tax_id_number, date_tax_id_applied_for, w_8_w_9_indicator, w_8_w_9_date_signed, w_8_w_9_effective_date, w_8_w_9_document_type, w_8_date_signed, w_8_effective_date, w_9_date_signed, w_9_effective_date, tax_status, b_notice_reason_code, first_b_notice_status, date_first_b_notice_status_issued_enforced, date_first_notice_status_satisfied, second_b_notice_status, date_second_b_notice_status_issued_enforced, date_second_b_notice_status_satisfied, c_notice_status, date_c_notice_status_issued_enforced, date_c_notice_status_satisfied, old_account_number, original_account_open_date, unidentified_large_trader_id, large_trader_type_code, large_trader_type_last_change_date, initial_source_of_funds_other, finance_away, account_funding_date, statement_currency_code, future_statement_currency_code, future_statement_currency_code_effective_date, account_level_routing_code_1, account_level_routing_code_2, account_level_routing_code_3, account_level_routing_code_4, self_directed_ind, digital_advice_ind, pte_account_ind, first_ip, second_ip, third_ip, fourth_ip, fifth_ip, sixth_ip, seventh_ip, eighth_ip, ninth_ip, tenth_ip, alert_im_acornym, alert_im_access_code, broker_acronym, cross_reference_indicator, bny_trust_indicator, source_of_asset_at_acct_opening, commission_doscount_code, external_account_number, confirmation_suppression_indicator, date_last_mail_sent, date_last_mail_sent_outside, fully_paid_lending_agreement_indicator, fully_paid_lending_agreement_date, custodian_account_type, mifid_customer_categorization, cash_management_tran_code, sweep_status_indicator, date_sweep_activated, date_sweep_details_changed, cober_margin_debit_indicator, first_fund_sweep_account_id, firstfund_sweep_account_percent, first_fundsweep_account_redemption_priority, second_fund_sweep_account_id, second_fund_sweep_account_percent, second_fundsweep_account_redemption_priority, type_of_bank_account, banklink_aba_number, banklink_dda_number, fund_bank_indicator, w_9_corp_tax_classification_code, combined_margin_acct_indicator, pledge_collateral_account_indicator, finra_institutional_account_code, proposed_account_reference_id, advisor_model_id, firm_model_style_id, dvp_restriction_code, dvp_restriction_exp_date, escheatment_withholding_ind, source_of_origination, source_of_persona, client_onboarding_method, tax_filing_code, nor_purpose_collateral_acct_ind, addr_1_trx_code, addr_1_special_handling_ind, addr_1_delivery_id, addr_1_attention_line_prefix, addr_1_attention_line_detail, addr_1_line_1, addr_1_line_2, addr_1_line_3, addr_1_line_4, addr_1_city_state, addr_1_country_code, addr_2_trx_code, addr_2_special_handling_ind, addr_2_delivery_id, addr_2_attention_line_prefix, addr_2_attention_line_detail, addr_2_line_1, addr_2_line_2, addr_2_line_3, addr_2_line_4, addr_2_city_state, addr_2_country_code, account_description, set_as_mail_addr_2_ind, principal_billing_allocation_pct, seasonal_addr_id_1, from_date_1, to_date_1, seasonal_addr_id_2, from_date_2, to_date_2, seasonal_addr_id_3, from_date_3, to_date_3, cost_basis_acct_system, disposition_method_mutual_funds, disposition_method_other, disposition_method_stocks, amortize_taxable_premium_bonds, accrue_market_disc_based_on, accrue_market_disc_income, addr_3_trx_code, addr_3_special_handling_ind, addr_3_delivery_id, addr_3_attention_line_prefix, addr_3_attention_line_detail, addr_3_line_1, addr_3_line_2, addr_3_line_3, addr_3_line_4, addr_3_city_state, addr_3_country_code, set_as_mail_addr_3_ind, addr_4_trx_code, addr_4_special_handling_ind, addr_4_delivery_id, addr_4_attention_line_prefix, addr_4_attention_line_detail, addr_4_line_1, addr_4_line_2, addr_4_line_3, addr_4_line_4, addr_4_city_state, addr_4_country_code, set_as_mail_addr_4_ind, addr_5_trx_code, addr_5_special_handling_ind, addr_5_delivery_id, addr_5_attention_line_prefix, addr_5_attention_line_detail, addr_5_line_1, addr_5_line_2, addr_5_line_3, addr_5_line_4, addr_5_city_state, addr_5_country_code, set_as_mail_addr_5_ind, addr_6_trx_code, addr_6_special_handling_ind, addr_6_delivery_id, addr_6_attention_line_prefix, addr_6_attention_line_detail, addr_6_line_1, addr_6_line_2, addr_6_line_3, addr_6_line_4, addr_6_city_state, addr_6_country_code, set_as_mail_addr_6_ind, addr_7_trx_code, addr_7_special_handling_ind, addr_7_delivery_id, addr_7_attention_line_prefix, addr_7_attention_line_detail, addr_7_line_1, addr_7_line_2, addr_7_line_3, addr_7_line_4, addr_7_city_state, addr_7_country_code, set_as_mail_addr_7_ind, record_transaction_code, base_currency, income_currency, statement_language, statement_format_code, msrb_statement_ind, pep, first_name_pep, last_name_pep, suffix_pep, political_office_held, country_of_office, foreign_bank_account_ind, foreign_bank_cert_date, foreign_bank_cert_exp_date, central_bank_ind, acct_foreign_financial_inst, foreign_bank_acct_oper_1, foreign_bank_acct_oper_2, foreign_bank_acct_oper_3, number_people_own, proprietary_acct_owned, tel_1_transaction_code, tel_1_us_ind, tel_1_type_id, tel_1_number, tel_1_extension, tel_2_transaction_code, tel_2_us_ind, tel_2_type_id, tel_2_number, tel_2_extension, tel_3_transaction_code, tel_3_us_ind, tel_3_type_id, tel_3_number, tel_3_extension, tel_4_transaction_code, tel_4_us_ind, tel_4_type_id, tel_4_number, tel_4_extension, tel_5_transaction_code, tel_5_us_ind, tel_5_type_id, tel_5_number, tel_5_extension, tel_6_transaction_code, tel_6_us_ind, tel_6_type_id, tel_6_number, tel_6_extension, tel_7_transaction_code, tel_7_us_ind, tel_7_type_id, tel_7_number, tel_7_extension, tel_8_transaction_code, tel_8_us_ind, tel_8_type_id, tel_8_number, tel_8_extension, email_address, external_position_ind, purge_eligible_ind, advisory_acct_ind, product_profile_code, cents_per_share_discount, option_disclosure_date, country_acct_level_tax_residency)
+            SELECT
+                id, custodian, id_interno_cliente, client_id, name, id_tipo_identificador_cliente, tipo_identificador_cliente, glosa_identificador_cliente, id_interno_cuenta, id_custodio, id_cuenta_custodio, habilitado, fee, ibd_number, id_office, ip_number, account_no, id_proceso, process_date, record_id_sequence_number, account_short_name, full_name, full_address, transaction_type, autotitled_usertitled_account, account_type_code, registration_type, registration_type_value, number_of_account_title_lines, account_registration_line_1, account_registration_line_2, account_registration_line_3, account_registration_line_4, account_registration_line_5, account_registration_line_6, registration_type_detail, date_account_opened, date_account_information_updated, account_status_indicator, pending_closed_date, date_account_closed, closing_notice_date, account_reactivated_date, date_account_reopened, proceeds, transfer_instructions, income_isntructions, number_of_confirms_for_thi_account, number_of_statements_for_this_account, investment_objetive_trans_code, comments_act, employer_shotname, employers_cusip, employers_symbol, margin_privileges_revoked, statement_review_date, margin_papers_on_file, cash_margin_account, option_papers_on_file, good_faith_margin, ip_discretion_granted, invest_advisor_discretion_granted, invest_advisor_discretion_granted_value, third_party_discretion_granted, third_party_name, risk_factor_code, investment_objetive_code, option_equities, option_index, option_debt, option_currency, option_level_1, option_level_2, option_level_3, option_level_4, option_call_limits, option_put_limits, option_total_limits_of_puts_and_calls, non_us_dollar_trading, non_customer_indicator, third_party_fee_indicator, third_party_fee_approval_date, intermediary_account_ind, commission_schedule, group_index, money_manager_id, money_manager_objective_id, dtc_id_confirm_number, caps_master_mnemonic, employee_id, prime_broker_free_fund_indicator, fee_based_account_indicator, fee_based_termination_date, plan_name, self_directed_401_k_account_type, plan_type, plan_number, employee_or_employee_relative, commission_percent_discount, ind_12_b_1_fee_blocking, name_of_ip_signed_new_account_form, date_of_ip_signed_new_account_form, name_of_principal_signed_new_account_form, date_of_principal_signed_new_account_form, politically_exposed_person, private_banking_account, foreign_bank_account, initial_source_of_funds, usa_patriot_act_exempt_reason, country_of_citizenship_code, country_of_citizenship_value, country_of_residence_code, country_of_residence_value, birth_date, age_based_fund_roll_exempt, money_fundreform_retail, trusted_contact_status, regulatory_account_type_category, account_managed_by_trust_comp_id, voting_auth, customer_type, fulfillment_method, credit_interest_indicator, ama_indicator, ama_indicator_value, tax_id_type, tax_id_number, date_tax_id_applied_for, w_8_w_9_indicator, w_8_w_9_date_signed, w_8_w_9_effective_date, w_8_w_9_document_type, w_8_date_signed, w_8_effective_date, w_9_date_signed, w_9_effective_date, tax_status, b_notice_reason_code, first_b_notice_status, date_first_b_notice_status_issued_enforced, date_first_notice_status_satisfied, second_b_notice_status, date_second_b_notice_status_issued_enforced, date_second_b_notice_status_satisfied, c_notice_status, date_c_notice_status_issued_enforced, date_c_notice_status_satisfied, old_account_number, original_account_open_date, unidentified_large_trader_id, large_trader_type_code, large_trader_type_last_change_date, initial_source_of_funds_other, finance_away, account_funding_date, statement_currency_code, future_statement_currency_code, future_statement_currency_code_effective_date, account_level_routing_code_1, account_level_routing_code_2, account_level_routing_code_3, account_level_routing_code_4, self_directed_ind, digital_advice_ind, pte_account_ind, first_ip, second_ip, third_ip, fourth_ip, fifth_ip, sixth_ip, seventh_ip, eighth_ip, ninth_ip, tenth_ip, alert_im_acornym, alert_im_access_code, broker_acronym, cross_reference_indicator, bny_trust_indicator, source_of_asset_at_acct_opening, commission_doscount_code, external_account_number, confirmation_suppression_indicator, date_last_mail_sent, date_last_mail_sent_outside, fully_paid_lending_agreement_indicator, fully_paid_lending_agreement_date, custodian_account_type, mifid_customer_categorization, cash_management_tran_code, sweep_status_indicator, date_sweep_activated, date_sweep_details_changed, cober_margin_debit_indicator, first_fund_sweep_account_id, firstfund_sweep_account_percent, first_fundsweep_account_redemption_priority, second_fund_sweep_account_id, second_fund_sweep_account_percent, second_fundsweep_account_redemption_priority, type_of_bank_account, banklink_aba_number, banklink_dda_number, fund_bank_indicator, w_9_corp_tax_classification_code, combined_margin_acct_indicator, pledge_collateral_account_indicator, finra_institutional_account_code, proposed_account_reference_id, advisor_model_id, firm_model_style_id, dvp_restriction_code, dvp_restriction_exp_date, escheatment_withholding_ind, source_of_origination, source_of_persona, client_onboarding_method, tax_filing_code, nor_purpose_collateral_acct_ind, addr_1_trx_code, addr_1_special_handling_ind, addr_1_delivery_id, addr_1_attention_line_prefix, addr_1_attention_line_detail, addr_1_line_1, addr_1_line_2, addr_1_line_3, addr_1_line_4, addr_1_city_state, addr_1_country_code, addr_2_trx_code, addr_2_special_handling_ind, addr_2_delivery_id, addr_2_attention_line_prefix, addr_2_attention_line_detail, addr_2_line_1, addr_2_line_2, addr_2_line_3, addr_2_line_4, addr_2_city_state, addr_2_country_code, account_description, set_as_mail_addr_2_ind, principal_billing_allocation_pct, seasonal_addr_id_1, from_date_1, to_date_1, seasonal_addr_id_2, from_date_2, to_date_2, seasonal_addr_id_3, from_date_3, to_date_3, cost_basis_acct_system, disposition_method_mutual_funds, disposition_method_other, disposition_method_stocks, amortize_taxable_premium_bonds, accrue_market_disc_based_on, accrue_market_disc_income, addr_3_trx_code, addr_3_special_handling_ind, addr_3_delivery_id, addr_3_attention_line_prefix, addr_3_attention_line_detail, addr_3_line_1, addr_3_line_2, addr_3_line_3, addr_3_line_4, addr_3_city_state, addr_3_country_code, set_as_mail_addr_3_ind, addr_4_trx_code, addr_4_special_handling_ind, addr_4_delivery_id, addr_4_attention_line_prefix, addr_4_attention_line_detail, addr_4_line_1, addr_4_line_2, addr_4_line_3, addr_4_line_4, addr_4_city_state, addr_4_country_code, set_as_mail_addr_4_ind, addr_5_trx_code, addr_5_special_handling_ind, addr_5_delivery_id, addr_5_attention_line_prefix, addr_5_attention_line_detail, addr_5_line_1, addr_5_line_2, addr_5_line_3, addr_5_line_4, addr_5_city_state, addr_5_country_code, set_as_mail_addr_5_ind, addr_6_trx_code, addr_6_special_handling_ind, addr_6_delivery_id, addr_6_attention_line_prefix, addr_6_attention_line_detail, addr_6_line_1, addr_6_line_2, addr_6_line_3, addr_6_line_4, addr_6_city_state, addr_6_country_code, set_as_mail_addr_6_ind, addr_7_trx_code, addr_7_special_handling_ind, addr_7_delivery_id, addr_7_attention_line_prefix, addr_7_attention_line_detail, addr_7_line_1, addr_7_line_2, addr_7_line_3, addr_7_line_4, addr_7_city_state, addr_7_country_code, set_as_mail_addr_7_ind, record_transaction_code, base_currency, income_currency, statement_language, statement_format_code, msrb_statement_ind, pep, first_name_pep, last_name_pep, suffix_pep, political_office_held, country_of_office, foreign_bank_account_ind, foreign_bank_cert_date, foreign_bank_cert_exp_date, central_bank_ind, acct_foreign_financial_inst, foreign_bank_acct_oper_1, foreign_bank_acct_oper_2, foreign_bank_acct_oper_3, number_people_own, proprietary_acct_owned, tel_1_transaction_code, tel_1_us_ind, tel_1_type_id, tel_1_number, tel_1_extension, tel_2_transaction_code, tel_2_us_ind, tel_2_type_id, tel_2_number, tel_2_extension, tel_3_transaction_code, tel_3_us_ind, tel_3_type_id, tel_3_number, tel_3_extension, tel_4_transaction_code, tel_4_us_ind, tel_4_type_id, tel_4_number, tel_4_extension, tel_5_transaction_code, tel_5_us_ind, tel_5_type_id, tel_5_number, tel_5_extension, tel_6_transaction_code, tel_6_us_ind, tel_6_type_id, tel_6_number, tel_6_extension, tel_7_transaction_code, tel_7_us_ind, tel_7_type_id, tel_7_number, tel_7_extension, tel_8_transaction_code, tel_8_us_ind, tel_8_type_id, tel_8_number, tel_8_extension, email_address, external_position_ind, purge_eligible_ind, advisory_acct_ind, product_profile_code, cents_per_share_discount, option_disclosure_date, country_acct_level_tax_residency
+            FROM public.vw_maestro_cuentas_pershing where process_date=_process_date;
+            GET DIAGNOSTICS _row_count = ROW_COUNT;
+            RETURN _row_count;
+        END IF;
+    END IF;
+
+
+    IF (_tipo_maestro='SLD') THEN
+        IF (_custodio ='PERSHING') THEN
+            DELETE FROM public.tbvw_maestro_saldos_pershing WHERE process_date=_process_date;
+            INSERT INTO public.tbvw_maestro_saldos_pershing
+            (custodian, tipo_reg, client_id, office_id, account_no, name, process_date, symbol, cusip, isin_code, product_type, security_description, cash_margin_account, quantity, market_price, id_currency, currency, market_value, fx_rate, usde_market_value, total_usde_market_value, id_fee_aplicado, annual_fee, tasa_proteccion, tasa_suracorp, fee_diario, fee_diario_proteccion, fee_diario_sura_corp, comision_devengada_diaria, ingreso_proteccion, usde_market_price, id_sub_sub_tipo_activo, id_sub_tipo_activo, id_tipo_activo, nombre_sub_sub_tipo_activo, tipo_identificador_cliente)
+            SELECT
+                custodian, tipo_reg, client_id, office_id, account_no, name, process_date, symbol, cusip, isin_code, product_type, security_description, cash_margin_account, quantity, market_price, id_currency, currency, market_value, fx_rate, usde_market_value, total_usde_market_value, id_fee_aplicado, annual_fee, tasa_proteccion, tasa_suracorp, fee_diario, fee_diario_proteccion, fee_diario_sura_corp, comision_devengada_diaria, ingreso_proteccion, usde_market_price, id_sub_sub_tipo_activo, id_sub_tipo_activo, id_tipo_activo, nombre_sub_sub_tipo_activo, tipo_identificador_cliente
+            FROM public.vw_maestro_saldos_pershing where process_date=_process_date;
+            GET DIAGNOSTICS _row_count = ROW_COUNT;
+            RETURN _row_count;
+        END IF;
+    END IF;
+
+
+    IF (_tipo_maestro='MOV') THEN
+        IF (_custodio ='PERSHING') THEN
+            DELETE FROM public.tbvw_maestro_movimientos_pershing WHERE process_date=_process_date;
+            INSERT INTO public.tbvw_maestro_movimientos_pershing
+                (custodian, client_id, office_id, account_no, name, process_date, tipo_reg, trade_date, settlement_date, activity, buy_sell_code, buy_sell_value, quantity, price, commission, fees, net_amount, usde_net_amount, principal, cusip, symbol, isin, currency, fx_rate, interest, currency_base, cash_margin, product_type, security_description, activity_description, activity_code, source_code, description_1, description_2, description_3, ticker, id_sub_sub_tipo, id_sub_tipo, id_tipo, nombre_sub_sub_tipo, flujo_neto, ingreso_egreso, retiro, recaudo, id_cuenta_custodio, tipo_identificador_cliente)
+                SELECT
+                    custodian, client_id, office_id, account_no, name, process_date, tipo_reg, trade_date, settlement_date, activity, buy_sell_code, buy_sell_value, quantity, price, commission, fees, net_amount, usde_net_amount, principal, cusip, symbol, isin, currency, fx_rate, interest, currency_base, cash_margin, product_type, security_description, activity_description, activity_code, source_code, description_1, description_2, description_3, ticker, id_sub_sub_tipo, id_sub_tipo, id_tipo, nombre_sub_sub_tipo, flujo_neto, ingreso_egreso, retiro, recaudo, id_cuenta_custodio, tipo_identificador_cliente
+                FROM public.vw_maestro_movimientos_pershing where process_date=_process_date;
+            GET DIAGNOSTICS _row_count = ROW_COUNT;
+            RETURN _row_count;
+        END IF;
+    END IF;
+
+    return NULL::BIGINT;
+    END;
+$$;
+
+--TODO: Re crear objetos pendientes con sincronización
 
 
 --========================================================================
@@ -129,219 +660,7 @@ select *, tipo_identificador_cliente from public.tbvw_maestro_movimientos_pershi
 --========================================================================
 --
 
-create or replace function rep_inv.fn_calcula_rentabilidad(_agregador_n1 character varying, _agregador_n2 character varying, _agregador_n3 character varying, _agregador_n4 character varying, _start_process_date character varying, _end_process_date character varying) returns SETOF rep_inv.rentabilidad_calculada
-    language plpgsql
-as
-$$
-BEGIN
-    /*
-    inioper     inicio operaciones
-    apercta		apertura cuenta = inicio operaciones
-    1mes		1 mes
-    3meses		3 meses
-    12meses		12 meses
-    ytd			acumulado en el año
-    20meses		20 meses
-     */
 
-    IF (trim(_agregador_n2)='') THEN
-        _agregador_n2:=NULL;
-    end if;
-
-    IF (trim(_agregador_n3)='') THEN
-        _agregador_n3:=NULL;
-    end if;
-
-    IF (trim(_agregador_n4)='') THEN
-        _agregador_n4:=NULL;
-    end if;
-
-
-    DROP TABLE IF EXISTS temptb_consolidado_agregado;
-
-    --TODO: Parametrizar query
-    CREATE TEMP TABLE temptb_consolidado_agregado AS
-    (
-        SELECT
-            'N1'::VARCHAR(100) as nivel,
-            rank() OVER (ORDER BY tbn.process_date, tbn.agregador_n1)::BIGINT as sub_nivel,
-            tbn.process_date, tbn.process_date_as_date,
-            tbn.agregador_n1, NULL::VARCHAR(100) as agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4,
-            tbn.saldo_dia_anterior, tbn.abonos_dia, tbn.retiros_dia, tbn.dividendos_dia, tbn.saldo_dia,
-            tbn.comision_devengada_dia,
-            tbn.utilidad, tbn.rentabilidad, tbn.rentabilidad_base_pitatoria, tbn.saldo_rentabilidad
-        FROM rep_inv.consolidado_agregado_n1 tbn
-        WHERE tbn.agregador_n1=COALESCE(_agregador_n1, tbn.agregador_n1)
-        AND tbn.process_date>=_start_process_date AND tbn.process_date<=_end_process_date
-    );
-    INSERT INTO temptb_consolidado_agregado
-    (
-        nivel, sub_nivel, process_date, process_date_as_date,
-        agregador_n1, agregador_n2, agregador_n3, agregador_n4,
-        saldo_dia_anterior, abonos_dia, retiros_dia, dividendos_dia, saldo_dia,
-        comision_devengada_dia, utilidad, rentabilidad, rentabilidad_base_pitatoria, saldo_rentabilidad
-    )
-    SELECT
-        'N2'::VARCHAR(100) as nivel,
-        rank() OVER (ORDER BY tbn.process_date, tbn.agregador_n1, tbn.agregador_n2)::BIGINT as sub_nivel,
-        tbn.process_date, tbn.process_date_as_date,
-        tbn.agregador_n1, tbn.agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4,
-        tbn.saldo_dia_anterior, tbn.abonos_dia, tbn.retiros_dia, tbn.dividendos_dia, tbn.saldo_dia,
-        tbn.comision_devengada_dia,
-        tbn.utilidad, tbn.rentabilidad, tbn.rentabilidad_base_pitatoria, tbn.saldo_rentabilidad
-    FROM rep_inv.consolidado_agregado_n2 tbn
-    WHERE tbn.agregador_n1=COALESCE(_agregador_n1, tbn.agregador_n1) AND tbn.agregador_n2=COALESCE(_agregador_n2, tbn.agregador_n2)
-    AND tbn.process_date>=_start_process_date AND tbn.process_date<=_end_process_date
-    ;
-
-
-    RETURN QUERY
-        SELECT
-            (rank() OVER (ORDER BY tb_calc.row_id, tb_calc.nivel, tb_calc.sub_nivel,tb_calc.process_date))::BIGINT as id,
-            tb_calc.row_id, tb_calc.nivel, tb_calc.sub_nivel,
-            tb_calc.process_date, tb_calc.process_date_as_date,
-            tb_calc.agregador_n1, tb_calc.agregador_n2, tb_calc.agregador_n3, tb_calc.agregador_n4,
-            tb_calc.saldo_dia_anterior, tb_calc.abonos_dia, tb_calc.retiros_dia, tb_calc.dividendos_dia, tb_calc.saldo_dia,
-            tb_calc.comision_devengada_dia,
-            tb_calc.utilidad, tb_calc.rentabilidad, tb_calc.rentabilidad_base_pitatoria, tb_calc.saldo_rentabilidad,
-            --Inicio Operaciones
-            tb_calc.start_date_inioper as base1_start_date,
-            (tb_calc.det_rent_inioper).fecha_desde as base1_fecha_desde,
-            (tb_calc.det_rent_inioper).fecha_hasta as base1_fecha_hasta,
-            (tb_calc.det_rent_inioper).rentabilidad_periodo as base1_rentabilidad,
-            (tb_calc.det_rent_inioper).dias_con_saldo as base1_dias_con_saldo,
-            (tb_calc.det_rent_inioper).suma_saldos_iniciales as base1_suma_saldos_iniciales,
-            (tb_calc.det_rent_inioper).suma_saldo_rentabilidad as base1_suma_saldo_rentabilidad,
-            (tb_calc.det_rent_inioper).rentabilidad_ponderada_cl as base1_rentabilidad_ponderada_cl,
-            (tb_calc.det_rent_inioper).rentabilidad_periodo_cl as base1_rentabilidad_periodo_cl,
-            (tb_calc.det_rent_inioper).cant_reg as base1_cant_reg,
-            --Apertura
-            tb_calc.start_date_aper as base2_start_date,
-            (tb_calc.det_rent_aper).fecha_desde as base2_fecha_desde,
-            (tb_calc.det_rent_aper).fecha_hasta as base2_fecha_hasta,
-            (tb_calc.det_rent_aper).rentabilidad_periodo as base2_rentabilidad,
-            (tb_calc.det_rent_aper).dias_con_saldo as base2_dias_con_saldo,
-            (tb_calc.det_rent_aper).suma_saldos_iniciales as base2_suma_saldos_iniciales,
-            (tb_calc.det_rent_aper).suma_saldo_rentabilidad as base2_suma_saldo_rentabilidad,
-            (tb_calc.det_rent_aper).rentabilidad_ponderada_cl as base2_rentabilidad_ponderada_cl,
-            (tb_calc.det_rent_aper).rentabilidad_periodo_cl as base2_rentabilidad_periodo_cl,
-            (tb_calc.det_rent_aper).cant_reg as base2_cant_reg,
-            --1 mes
-            tb_calc.start_date_1m as base3_start_date,
-            (tb_calc.det_rent_1m).fecha_desde as base3_fecha_desde,
-            (tb_calc.det_rent_1m).fecha_hasta as base3_fecha_hasta,
-            (tb_calc.det_rent_1m).rentabilidad_periodo as base3_rentabilidad,
-            (tb_calc.det_rent_1m).dias_con_saldo as base3_dias_con_saldo,
-            (tb_calc.det_rent_1m).suma_saldos_iniciales as base3_suma_saldos_iniciales,
-            (tb_calc.det_rent_1m).suma_saldo_rentabilidad as base3_suma_saldo_rentabilidad,
-            (tb_calc.det_rent_1m).rentabilidad_ponderada_cl as base3_rentabilidad_ponderada_cl,
-            (tb_calc.det_rent_1m).rentabilidad_periodo_cl as base3_rentabilidad_periodo_cl,
-            (tb_calc.det_rent_1m).cant_reg as base3_cant_reg,
-            --3 meses
-            tb_calc.start_date_3m as base4_start_date,
-            (tb_calc.det_rent_3m).fecha_desde as base4_fecha_desde,
-            (tb_calc.det_rent_3m).fecha_hasta as base4_fecha_hasta,
-            (tb_calc.det_rent_3m).rentabilidad_periodo as base4_rentabilidad,
-            (tb_calc.det_rent_3m).dias_con_saldo as base4_dias_con_saldo,
-            (tb_calc.det_rent_3m).suma_saldos_iniciales as base4_suma_saldos_iniciales,
-            (tb_calc.det_rent_3m).suma_saldo_rentabilidad as base4_suma_saldo_rentabilidad,
-            (tb_calc.det_rent_3m).rentabilidad_ponderada_cl as base4_rentabilidad_ponderada_cl,
-            (tb_calc.det_rent_3m).rentabilidad_periodo_cl as base4_rentabilidad_periodo_cl,
-            (tb_calc.det_rent_3m).cant_reg as base4_cant_reg,
-            --12 meses
-            tb_calc.start_date_12m as base5_start_date,
-            (tb_calc.det_rent_12m).fecha_desde as base5_fecha_desde,
-            (tb_calc.det_rent_12m).fecha_hasta as base5_fecha_hasta,
-            (tb_calc.det_rent_12m).rentabilidad_periodo as base5_rentabilidad,
-            (tb_calc.det_rent_12m).dias_con_saldo as base5_dias_con_saldo,
-            (tb_calc.det_rent_12m).suma_saldos_iniciales as base5_suma_saldos_iniciales,
-            (tb_calc.det_rent_12m).suma_saldo_rentabilidad as base5_suma_saldo_rentabilidad,
-            (tb_calc.det_rent_12m).rentabilidad_ponderada_cl as base5_rentabilidad_ponderada_cl,
-            (tb_calc.det_rent_12m).rentabilidad_periodo_cl as base5_rentabilidad_periodo_cl,
-            (tb_calc.det_rent_12m).cant_reg as base5_cant_reg,
-            --YTD
-            tb_calc.start_date_ytd as base6_start_date,
-            (tb_calc.det_rent_ytd).fecha_desde as base6_fecha_desde,
-            (tb_calc.det_rent_ytd).fecha_hasta as base6_fecha_hasta,
-            (tb_calc.det_rent_ytd).rentabilidad_periodo as base6_rentabilidad,
-            (tb_calc.det_rent_ytd).dias_con_saldo as base6_dias_con_saldo,
-            (tb_calc.det_rent_ytd).suma_saldos_iniciales as base6_suma_saldos_iniciales,
-            (tb_calc.det_rent_ytd).suma_saldo_rentabilidad as base6_suma_saldo_rentabilidad,
-            (tb_calc.det_rent_ytd).rentabilidad_ponderada_cl as base6_rentabilidad_ponderada_cl,
-            (tb_calc.det_rent_ytd).rentabilidad_periodo_cl as base6_rentabilidad_periodo_cl,
-            (tb_calc.det_rent_ytd).cant_reg as base6_cant_reg,
-            --20 meses
-            tb_calc.start_date_20m as base7_start_date,
-            (tb_calc.det_rent_20m).fecha_desde as base7_fecha_desde,
-            (tb_calc.det_rent_20m).fecha_hasta as base7_fecha_hasta,
-            (tb_calc.det_rent_20m).rentabilidad_periodo as base7_rentabilidad,
-            (tb_calc.det_rent_20m).dias_con_saldo as base7_dias_con_saldo,
-            (tb_calc.det_rent_20m).suma_saldos_iniciales as base7_suma_saldos_iniciales,
-            (tb_calc.det_rent_20m).suma_saldo_rentabilidad as base7_suma_saldo_rentabilidad,
-            (tb_calc.det_rent_20m).rentabilidad_ponderada_cl as base7_rentabilidad_ponderada_cl,
-            (tb_calc.det_rent_20m).rentabilidad_periodo_cl as base7_rentabilidad_periodo_cl,
-            (tb_calc.det_rent_20m).cant_reg as base7_cant_reg,
-            --No implementada
-            NULL::date as base8_start_date,
-            NULL::date as base8_fecha_desde,
-            NULL::date as base8_fecha_hasta,
-            NULL::NUMERIC(45,20) as base8_rentabilidad,
-            NULL::INTEGER as base8_dias_con_saldo,
-            NULL::NUMERIC(45,20) as base8_suma_saldos_iniciales,
-            NULL::NUMERIC(45,20) as base8_suma_saldo_rentabilidad,
-            NULL::NUMERIC(45,20) as base8_rentabilidad_ponderada_cl,
-            NULL::NUMERIC(45,20) as base8_rentabilidad_periodo_cl,
-            NULL::INTEGER as base8_cant_reg
-        FROM
-            (
-                SELECT
-                    (tb_base.nivel||'-'||tb_base.sub_nivel)::VARCHAR(100) as row_id,
-                    tb_base.nivel, tb_base.sub_nivel,
-                    tb_base.process_date, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4,
-                    tb_base.saldo_dia_anterior, tb_base.abonos_dia, tb_base.retiros_dia, tb_base.dividendos_dia, tb_base.saldo_dia,
-                    tb_base.comision_devengada_dia,
-                    tb_base.utilidad, tb_base.rentabilidad, tb_base.rentabilidad_base_pitatoria, tb_base.saldo_rentabilidad,
-                    tb_base.start_date_inioper,
-                    tb_base.start_date_aper,
-                    tb_base.start_date_1m,
-                    tb_base.start_date_3m,
-                    tb_base.start_date_12m,
-                    tb_base.start_date_ytd,
-                    tb_base.start_date_20m,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_inioper, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_inioper,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_aper, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_aper,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_1m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_1m,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_3m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_3m,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_12m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_12m,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_ytd, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_ytd,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_20m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_20m
-                FROM
-                    (
-                        SELECT
-                            tbn.nivel,
-                            tbn.sub_nivel,
-                            tbn.process_date, tbn.process_date_as_date,
-                            tbn.agregador_n1, tbn.agregador_n2, tbn.agregador_n3, tbn.agregador_n4,
-                            tbn.saldo_dia_anterior, tbn.abonos_dia, tbn.retiros_dia, tbn.dividendos_dia, tbn.saldo_dia,
-                            tbn.comision_devengada_dia,
-                            tbn.utilidad, tbn.rentabilidad, tbn.rentabilidad_base_pitatoria, tbn.saldo_rentabilidad,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, 'INI_OPER') as start_date_inioper,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, 'APER') as start_date_aper,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '1M') as start_date_1m,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '3M') as start_date_3m,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '12M') as start_date_12m,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, 'YTD') as start_date_ytd,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '20M') as start_date_20m
-                        FROM temptb_consolidado_agregado tbn
-                    ) as tb_base
-            ) as tb_calc
-    ;
-
-    DROP TABLE IF EXISTS temptb_consolidado_agregado;
-
-    RETURN;
-END;
-$$;
 
 --========================================================================
 --========================================================================

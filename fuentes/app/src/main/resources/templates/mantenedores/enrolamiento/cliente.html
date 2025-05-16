@@ -23,7 +23,7 @@
     </section>
     <!--/*@thymesVar id="clienteDto" type="cl.qande.mmii.app.models.dto.ClienteDto"*/-->
     <!--/*@thymesVar id="listaTiposId" type="java.util.List<cl.qande.mmii.app.models.dto.TipoIdentificadorDto>"*/-->
-    <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.dto.ClienteMaestroDto>"*/-->
+    <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro>"*/-->
     <!--/*@thymesVar id="lista_relacionados" type="java.util.List<cl.qande.mmii.app.models.dto.PersonaRelacionadaDto>"*/-->
 
 
@@ -88,6 +88,27 @@
               </div>
             </div>
 
+            <div class="form-group row">
+              <label for="fee" class="col-md-2 col-form-label">Fee</label>
+              <div class="col-md-2">
+                <input class="form-control" type="text" id="fee" name="fee"
+                       th:value="${(clienteDto.id != null and clienteDto.fee!=null and clienteDto.fee!=0) ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(clienteDto.fee): ''}" />
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-info" onclick="consultarFee()">Consultar Fee</button>
+              </div>
+              <div class="col-md-4">
+                <span id="mensajeFee"
+                      th:text="${#fields.hasErrors('fee') ? #fields.errors('fee') : ''}"
+                      class="text-danger"
+                      style="display:block;">
+                </span>
+
+
+              </div>
+            </div>
+            <input type="hidden" id="feeWs" name="feeWs" />
+
             <div id="div-relacionados">
               <div class="form-group row">
                 <div>
@@ -128,6 +149,7 @@
               <th>ID Cliente</th>
               <th>Tipo ID.</th>
               <th>Nombre</th>
+              <th>Fee</th>
               <th>Cuentas</th>
               <th>Modificar</th>
             </tr>
@@ -138,6 +160,7 @@
               <td th:text="${registro_actual.identificador}"></td>
               <td th:text="${registro_actual.tipoIdentificador+' - '+registro_actual.glosaIdentificador}"></td>
               <td th:text="${registro_actual.nombre}"></td>
+              <td th:text="${ (registro_actual.fee!=null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentWeb(registro_actual.fee) : '') }"></td>
               <td th:text="${registro_actual.listaCuentas}"></td>
               <td>
                 <a class="btn bg-info" th:href="@{/mantenedores/enrolamiento/cliente/editar/{id}(id=${registro_actual.id})}">Editar / Ver Detalle</a>
@@ -150,6 +173,7 @@
               <th>ID Cliente</th>
               <th>Tipo ID.</th>
               <th>Nombre</th>
+              <th>Fee</th>
               <th>Cuentas</th>
               <th>Modificar</th>
             </tr>
@@ -196,6 +220,8 @@
 
 
 <script th:inline="javascript">
+  var urlConsultaFee = /*[[@{/mantenedores/enrolamiento/cliente/consulta-fee}]]*/ '';
+
   $(document).ready(function() {
 
 
@@ -341,6 +367,58 @@
   document.addEventListener("DOMContentLoaded", function() {
     toggleDivRelacionados();
   });
+
+
+  function consultarFee() {
+    var cuenta = document.getElementById("cuenta").value;
+    var mensajeFee = document.getElementById("mensajeFee");
+
+    mensajeFee.style.display = "none";
+    mensajeFee.innerText = "";
+    mensajeFee.removeAttribute("data-origen"); // limpio cualquier origen previo
+    mensajeFee.classList.remove("text-success", "text-danger");
+
+    if (!cuenta || cuenta.trim() === "") {
+      mensajeFee.innerText = "Debe ingresar una cuenta antes de consultar el fee.";
+      mensajeFee.classList.add("text-danger");
+      mensajeFee.setAttribute("data-origen", "ws");
+      mensajeFee.style.display = "block";
+      return;
+    }
+
+    $.ajax({
+      url: urlConsultaFee,
+      type: 'GET',
+      data: { cuenta: cuenta },
+      success: function (response) {
+        if (response.fee != null) {
+          $('#feeWs').val(response.fee);
+          mensajeFee.classList.add("text-success");
+          mensajeFee.innerText = "Fee obtenido correctamente: " + response.fee + ". Por favor redigítelo.";
+          mensajeFee.style.display = "block";
+        } else {
+          $('#feeWs').val('');
+          mensajeFee.classList.add("text-danger");
+          mensajeFee.setAttribute("data-origen", "ws");
+          mensajeFee.innerText = response.mensajeError || "No se obtuvo fee. Debe consultar correctamente el valor antes de guardar.";
+          mensajeFee.style.display = "block";
+        }
+      },
+      error: function () {
+        $('#feeWs').val('');
+        mensajeFee.classList.add("text-danger");
+        mensajeFee.setAttribute("data-origen", "ws");
+        mensajeFee.innerText = "Error al consultar fee.";
+        mensajeFee.style.display = "block";
+      }
+    });
+  }
+
+
+
+
+
+
 </script>
 
 <div th:replace="layout/layout :: scripting_cierre"></div>

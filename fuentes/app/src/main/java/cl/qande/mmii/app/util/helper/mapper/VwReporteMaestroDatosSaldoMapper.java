@@ -1,6 +1,6 @@
 package cl.qande.mmii.app.util.helper.mapper;
 
-import cl.qande.mmii.app.models.api.MaestroSaldosApiDto;
+import cl.qande.mmii.app.models.api.reportes_maestros.MaestroSaldosApiDto;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

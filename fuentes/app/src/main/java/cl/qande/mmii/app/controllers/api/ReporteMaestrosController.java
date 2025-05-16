@@ -1,8 +1,8 @@
 package cl.qande.mmii.app.controllers.api;
 
 import cl.qande.mmii.app.models.api.ApiResponse;
-import cl.qande.mmii.app.models.api.ReporteMaestrosResponseError;
-import cl.qande.mmii.app.models.api.ReporteMaestrosResponseOk;
+import cl.qande.mmii.app.models.api.reportes_maestros.ReporteMaestrosResponseError;
+import cl.qande.mmii.app.models.api.reportes_maestros.ReporteMaestrosResponseOk;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ControlDiarioService;
 import cl.qande.mmii.app.models.service.ReporteMaestroDatosService;

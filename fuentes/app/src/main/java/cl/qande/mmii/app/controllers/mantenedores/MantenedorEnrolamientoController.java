@@ -1,8 +1,13 @@
 package cl.qande.mmii.app.controllers.mantenedores;
 
+import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
-import cl.qande.mmii.app.models.dto.*;
+import cl.qande.mmii.app.models.dto.ClienteDto;
+import cl.qande.mmii.app.models.dto.ComisionCuentaDto;
+import cl.qande.mmii.app.models.dto.ComisionMaestroDto;
+import cl.qande.mmii.app.models.dto.PersonaRelacionadaDto;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
+import cl.qande.mmii.app.models.service.ApiRestClientService;
 import cl.qande.mmii.app.models.service.EnrolamientoClientesService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CustomLog;
@@ -10,6 +15,7 @@ import cl.qande.mmii.app.util.navegacion.Menu;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +24,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 
 @Controller
@@ -46,14 +50,17 @@ public class MantenedorEnrolamientoController {
     private static final String URL_COMIS_CTA = "/mantenedores/enrolamiento/comision_cuenta";
     public static final String CONCAT_MSG_USER = "] por usuario [";
     public static final String CONCAT_MSG_VALOR = "]: Valor [";
+    public static final String ERROR_FEE = "error.fee";
 
     private final SesionWeb sesionWeb;
     private final EnrolamientoClientesService enrolamientoClientesService;
+    private final ApiRestClientService apiRestClientService;
 
     @Autowired
-    public MantenedorEnrolamientoController(SesionWeb sesionWeb, EnrolamientoClientesService enrolamientoClientesService) {
+    public MantenedorEnrolamientoController(SesionWeb sesionWeb, EnrolamientoClientesService enrolamientoClientesService, ApiRestClientService apiRestClientService) {
         this.sesionWeb = sesionWeb;
         this.enrolamientoClientesService = enrolamientoClientesService;
+        this.apiRestClientService = apiRestClientService;
     }
 
     //-----------------------------------------------------------------------------------------------------
@@ -98,7 +105,8 @@ public class MantenedorEnrolamientoController {
             BindingResult result,
             Model model,
             @RequestParam(value= "cuenta") String cuenta,
-            @RequestParam(value = "personasRelacionadas", required = false) String personasRelacionadasJson) throws QandeMmiiException {
+            @RequestParam(value = "personasRelacionadas", required = false) String personasRelacionadasJson,
+            @RequestParam(value = "feeWs", required = false) BigDecimal feeWs) throws QandeMmiiException {
         var estadoPeticion  = new EstadoPeticion();
         List<PersonaRelacionadaDto> personasRelacionadas = new ArrayList<>();
 
@@ -115,6 +123,14 @@ public class MantenedorEnrolamientoController {
         if (clienteDto.getIdentificador()==null || clienteDto.getIdentificador().isBlank()) {
             result.rejectValue("identificador", "error.clienteDto", "ID Cliente es obligatorio.");
         }
+        if (feeWs == null) {
+            result.rejectValue("fee", ERROR_FEE, "Debe consultar el fee antes de guardar.");
+        } else if (clienteDto.getFee() == null) {
+            result.rejectValue("fee", ERROR_FEE, "Debe redigitar el fee obtenido desde RIA.");
+        } else if (clienteDto.getFee().compareTo(feeWs) != 0) {
+            result.rejectValue("fee", ERROR_FEE, "El fee digitado no coincide con el obtenido desde RIA.");
+        }
+
         this.validateDto(personasRelacionadas, result);
 
         if (result.hasErrors()) {
@@ -163,7 +179,7 @@ public class MantenedorEnrolamientoController {
         model.addAttribute(CAMPO_SESION, sesionWeb);
 
         var listaClientes   = enrolamientoClientesService.listarClienteCuentaMaestro(true);
-        listaClientes.sort(Comparator.comparing(ClienteCuentaMaestroDto::getNombreCliente));
+        listaClientes.sort(Comparator.comparing(ClienteCuentaMaestro::getNombreCliente));
 
         model.addAttribute("lista_clientes", listaClientes);
         var listaComisiones = enrolamientoClientesService.listarComisionCuenta();
@@ -208,6 +224,32 @@ public class MantenedorEnrolamientoController {
     //-----------------------------------------------------------------------------------------------------
     //Auxiliares
     //-----------------------------------------------------------------------------------------------------
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CLIENTE))")
+    @GetMapping("/cliente/consulta-fee")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> consultarFee(@RequestParam String cuenta) {
+        Map<String, Object> result = new HashMap<>();
+        String keyError = "mensajeError";
+        try {
+            var respuesta = apiRestClientService.getClientFee(cuenta);
+            if (respuesta != null) {
+                if (respuesta.getCode() != null && respuesta.getCode() == 0 &&
+                        respuesta.getClientFee() != null && respuesta.getClientFee().getFee() != null) {
+                    result.put("fee", respuesta.getClientFee().getFee());
+                } else {
+                    result.put(keyError, respuesta.getMessage());
+                }
+            } else {
+                result.put(keyError, "Respuesta vacía del servicio externo.");
+            }
+        } catch (Exception e) {
+            CustomLog.getInstance().error("Error al consultar fee para cuenta [" + cuenta + "]: " + e.getMessage());
+            result.put(keyError, "Error al invocar el servicio externo.");
+        }
+        return ResponseEntity.ok(result);
+    }
+
 
     private void addNotificationsOfErrors(List<FieldError> listOfErrors) {
         for ( var error : listOfErrors ) {

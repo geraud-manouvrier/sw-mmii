@@ -2,9 +2,9 @@ package cl.qande.mmii.app.controllers.api;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.api.ApiResponse;
-import cl.qande.mmii.app.models.api.Archivo;
-import cl.qande.mmii.app.models.api.ArchivosMaestrosResponseError;
-import cl.qande.mmii.app.models.api.ArchivosMaestrosResponseOk;
+import cl.qande.mmii.app.models.api.archivos.Archivo;
+import cl.qande.mmii.app.models.api.archivos.ArchivosMaestrosResponseError;
+import cl.qande.mmii.app.models.api.archivos.ArchivosMaestrosResponseOk;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ControlDiarioService;
 import cl.qande.mmii.app.util.helper.ApiHelper;

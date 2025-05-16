@@ -1,4 +1,4 @@
-package cl.qande.mmii.app.models.api;
+package cl.qande.mmii.app.models.api.archivos;
 
 public class Archivo {
     private String nombreOriginal;

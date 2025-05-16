@@ -1,6 +1,8 @@
 package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.models.db.clientes.dao.*;
+import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
+import cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro;
 import cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection;
 import cl.qande.mmii.app.models.db.core.entity.UniversoCuentaProjection;
 import cl.qande.mmii.app.models.dto.*;
@@ -31,14 +33,12 @@ public class EnrolamientoClientesService {
     private final CuentaMapper cuentaMapper;
     private final TipoIdentificadorMapper tipoIdentificadorMapper;
     private final ClienteMapper clienteMapper;
-    private final ClienteMaestroMapper clienteMaestroMapper;
     private final ComisionCuentaMapper comisionCuentaMapper;
-    private final ClienteCuentaMaestroMapper clienteCuentaMaestroMapper;
     private final ComisionMaestroMapper comisionMaestroMapper;
     private final PersonaRelacionadaMapper personaRelacionadaMapper;
 
     @Autowired
-    public EnrolamientoClientesService(ITipoIdentificadorDao tipoIdentificadorDao, IClienteDao clienteDao, ICuentaDao cuentaDao, IComisionCuentaDao comisionCuentaDao, IComisionMaestroDao comisionMaestroDao, IClienteCuentaMaestroDao clienteCuentaMaestroDao, IPersonaRelacionadaDao personaRelacionadaDao, CuentaMapper cuentaMapper, TipoIdentificadorMapper tipoIdentificadorMapper, ClienteMapper clienteMapper, ClienteMaestroMapper clienteMaestroMapper, ComisionCuentaMapper comisionCuentaMapper, ClienteCuentaMaestroMapper clienteCuentaMaestroMapper, ComisionMaestroMapper comisionMaestroMapper, PersonaRelacionadaMapper personaRelacionadaMapper) {
+    public EnrolamientoClientesService(ITipoIdentificadorDao tipoIdentificadorDao, IClienteDao clienteDao, ICuentaDao cuentaDao, IComisionCuentaDao comisionCuentaDao, IComisionMaestroDao comisionMaestroDao, IClienteCuentaMaestroDao clienteCuentaMaestroDao, IPersonaRelacionadaDao personaRelacionadaDao, CuentaMapper cuentaMapper, TipoIdentificadorMapper tipoIdentificadorMapper, ClienteMapper clienteMapper, ComisionCuentaMapper comisionCuentaMapper, ComisionMaestroMapper comisionMaestroMapper, PersonaRelacionadaMapper personaRelacionadaMapper) {
         this.tipoIdentificadorDao = tipoIdentificadorDao;
         this.clienteDao = clienteDao;
         this.cuentaDao = cuentaDao;
@@ -49,9 +49,7 @@ public class EnrolamientoClientesService {
         this.cuentaMapper = cuentaMapper;
         this.tipoIdentificadorMapper = tipoIdentificadorMapper;
         this.clienteMapper = clienteMapper;
-        this.clienteMaestroMapper = clienteMaestroMapper;
         this.comisionCuentaMapper = comisionCuentaMapper;
-        this.clienteCuentaMaestroMapper = clienteCuentaMaestroMapper;
         this.comisionMaestroMapper = comisionMaestroMapper;
         this.personaRelacionadaMapper = personaRelacionadaMapper;
     }
@@ -100,22 +98,14 @@ public class EnrolamientoClientesService {
         return clienteMapper.toDto(clienteDao.listarClientePorId(id).orElse(null));
     }
     @Transactional(readOnly = true)
-    public List<ClienteMaestroDto> listaClienteMaestro() {
-        return clienteMaestroMapper.toDto(clienteDao.listarClientesMaestros());
+    public List<ClienteMaestro> listaClienteMaestro() {
+        return clienteDao.listarClientesMaestros();
     }
     @Transactional(readOnly = true)
-    public List<ClienteCuentaMaestroDto> listarClienteCuentaMaestro(boolean soloHabilitados) {
+    public List<ClienteCuentaMaestro> listarClienteCuentaMaestro(boolean soloHabilitados) {
         if (soloHabilitados)
-            return clienteCuentaMaestroMapper.toDto(clienteCuentaMaestroDao.findById_IdInternoClienteIsNotNullAndId_IdInternoCuentaIsNotNullAndHabilitadoIsTrue());
-        return clienteCuentaMaestroMapper.toDto(clienteCuentaMaestroDao.findAll());
-    }
-    @Transactional(readOnly = true)
-    public List<ClienteCuentaMaestroDto> listarClienteCuentaMaestro() {
-        return this.listarClienteCuentaMaestro(true);
-    }
-    @Transactional(readOnly = true)
-    public ClienteCuentaMaestroDto listarClienteCuentaMaestroPorIdCuenta(Integer idInternoCuenta) {
-        return clienteCuentaMaestroMapper.toDto(clienteCuentaMaestroDao.findById_IdInternoCuenta(idInternoCuenta));
+            return clienteCuentaMaestroDao.findById_IdInternoClienteIsNotNullAndId_IdInternoCuentaIsNotNullAndHabilitadoIsTrue();
+        return clienteCuentaMaestroDao.findAll();
     }
 
 

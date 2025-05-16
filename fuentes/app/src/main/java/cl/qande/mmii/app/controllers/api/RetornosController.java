@@ -1,7 +1,7 @@
 package cl.qande.mmii.app.controllers.api;
 
 import cl.qande.mmii.app.models.api.ApiResponse;
-import cl.qande.mmii.app.models.api.RetornosResponseError;
+import cl.qande.mmii.app.models.api.retornos.RetornosResponseError;
 import cl.qande.mmii.app.models.api.retornos.RetornosResponseOk;
 import cl.qande.mmii.app.models.db.rep_inv.ReporteInversionesService;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;

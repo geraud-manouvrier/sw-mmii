@@ -1,9 +1,9 @@
 package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.config.datasources.CoreDataSourceConfiguration;
-import cl.qande.mmii.app.models.api.MaestroCuentasApiDto;
-import cl.qande.mmii.app.models.api.MaestroMovimientosApiDto;
-import cl.qande.mmii.app.models.api.MaestroSaldosApiDto;
+import cl.qande.mmii.app.models.api.reportes_maestros.MaestroCuentasApiDto;
+import cl.qande.mmii.app.models.api.reportes_maestros.MaestroMovimientosApiDto;
+import cl.qande.mmii.app.models.api.reportes_maestros.MaestroSaldosApiDto;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosClientesDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;

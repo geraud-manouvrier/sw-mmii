@@ -1,4 +1,4 @@
-package cl.qande.mmii.app.models.api;
+package cl.qande.mmii.app.models.api.reportes_maestros;
 
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import com.fasterxml.jackson.annotation.JsonProperty;

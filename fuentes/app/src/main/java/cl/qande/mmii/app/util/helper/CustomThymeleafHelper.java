@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class CustomThymeleafHelper {
 
     private static final String DEFAULT_SEP_DEC =".";
-    private static final String DEFAULT_SEP_MIL =",";
+    private static final String DEFAULT_SEP_MIL ="";
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Para evitar que serialice como array numérico
@@ -27,13 +27,16 @@ public class CustomThymeleafHelper {
     private CustomThymeleafHelper() {
         throw new IllegalStateException("Helper class");
     }
-    public static String formatNumberWithDecimals(BigDecimal number, int decimals, BigDecimal defaultValue) {
-        return formatNumberWithDecimals(number, decimals, defaultValue, DEFAULT_SEP_DEC, DEFAULT_SEP_MIL);
+
+
+
+
+
+    private static String defaultFormat(BigDecimal number, int decimals) {
+        return formatNumberWithDecimals(number, decimals, BigDecimal.ZERO, DEFAULT_SEP_DEC, DEFAULT_SEP_MIL);
     }
-    public static String formatNumberWithDecimals(BigDecimal number, int decimals, BigDecimal defaultValue, String sepDec) {
-        return formatNumberWithDecimals(number, decimals, defaultValue, sepDec, DEFAULT_SEP_MIL);
-    }
-    public static String formatNumberWithDecimals(BigDecimal number, int decimals, BigDecimal defaultValue, String sepDec, String sepMil) {
+
+    private static String formatNumberWithDecimals(BigDecimal number, int decimals, BigDecimal defaultValue, String sepDec, String sepMil) {
 
         String ceroDecimal = "0".repeat(decimals);
         var valueMask   = "#".concat(sepMil).concat("###");
@@ -57,22 +60,16 @@ public class CustomThymeleafHelper {
         decimalFormat.setRoundingMode(MathHelper.DEFAULT_ROUNDING_MODE);
         return decimalFormat.format(valorRedondeado);
     }
-    public static String formatNumberDefault(BigDecimal number) {
-        return formatNumberWithDecimals(number, 4, BigDecimal.ZERO, DEFAULT_SEP_DEC, DEFAULT_SEP_MIL);
-    }
-    public static String formatMontoRepInvWeb(BigDecimal number) {
-        return formatNumberWithDecimals(number, 4, BigDecimal.ZERO, DEFAULT_SEP_DEC, "");
-    }
 
-    public static String formatRentRepInvWeb(BigDecimal number) {
-        return formatNumberWithDecimals(number, 10, BigDecimal.ZERO, DEFAULT_SEP_DEC, "");
+    public static String formatRentWeb(BigDecimal number) {
+        return defaultFormat(number, 4);
     }
     public static String formatMontoRepMaestrosWeb(BigDecimal number) {
-        return formatNumberWithDecimals(number, 4, BigDecimal.ZERO, DEFAULT_SEP_DEC, "");
+        return defaultFormat(number, 4);
     }
 
     public static String formatRentRepMaestrosWeb(BigDecimal number) {
-        return formatNumberWithDecimals(number, 10, BigDecimal.ZERO, DEFAULT_SEP_DEC, "");
+        return defaultFormat(number, 10);
     }
 
     public static String formatFechaRepMaestrosWeb(String fechaAsYmd) {
@@ -90,6 +87,8 @@ public class CustomThymeleafHelper {
         CalendarioHelper calendarioHelper = new CalendarioHelper();
         return calendarioHelper.convierteDateToStringWithFormat(CalendarioHelper.dateFromLocalDate(fechaAsYmd), CalendarioHelper.FORMATO_HTML);
     }
+
+
 
     public static String convertListToJson(List<?> lista) {
         try {

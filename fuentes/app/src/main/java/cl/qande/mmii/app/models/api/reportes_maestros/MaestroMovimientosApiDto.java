@@ -1,4 +1,4 @@
-package cl.qande.mmii.app.models.api;
+package cl.qande.mmii.app.models.api.reportes_maestros;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

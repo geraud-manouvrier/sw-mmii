@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 /**
  * Mapping for DB view
@@ -45,6 +46,14 @@ public class ClienteMaestro {
     @Column(name = "lista_cuentas", length = 100)
     private String listaCuentas;
 
+    @Column(name = "fee", precision = 45, scale = 20)
+    private BigDecimal fee;
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+
     public Integer getId() {
         return id;
     }
@@ -76,5 +85,6 @@ public class ClienteMaestro {
     public String getListaCuentas() {
         return listaCuentas;
     }
+
 
 }
