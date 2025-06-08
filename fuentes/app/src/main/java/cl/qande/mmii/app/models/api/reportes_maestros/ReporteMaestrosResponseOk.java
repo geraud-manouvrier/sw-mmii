@@ -12,10 +12,13 @@ public class ReporteMaestrosResponseOk extends ApiResponse {
     private List<MaestroMovimientosApiDto> maestroMovimientos;
     @JsonProperty("maestro-saldos")
     private List<MaestroSaldosApiDto> maestroSaldos;
+    @JsonProperty("maestro-relacionado-cuenta")
+    private List<MaestroRelacionadosApiDto> maestroRelacionados;
 
-    public ReporteMaestrosResponseOk(List<MaestroMovimientosApiDto> maestroMovimientos, List<MaestroSaldosApiDto> maestroSaldos) {
+    public ReporteMaestrosResponseOk(List<MaestroMovimientosApiDto> maestroMovimientos, List<MaestroSaldosApiDto> maestroSaldos, List<MaestroRelacionadosApiDto> maestroRelacionados) {
         this.maestroMovimientos = maestroMovimientos;
         this.maestroSaldos = maestroSaldos;
+        this.maestroRelacionados = maestroRelacionados;
         this.setCode(0);
         this.setMessage("Mensaje recibido correctamente");
     }
@@ -23,6 +26,7 @@ public class ReporteMaestrosResponseOk extends ApiResponse {
     public ReporteMaestrosResponseOk() {
         this.maestroMovimientos = new ArrayList<>();
         this.maestroSaldos = new ArrayList<>();
+        this.maestroRelacionados = new ArrayList<>();
         this.setCode(0);
         this.setMessage("Mensaje recibido correctamente");
     }
@@ -41,5 +45,13 @@ public class ReporteMaestrosResponseOk extends ApiResponse {
 
     public void setMaestroSaldos(List<MaestroSaldosApiDto> maestroSaldos) {
         this.maestroSaldos = maestroSaldos;
+    }
+
+    public List<MaestroRelacionadosApiDto> getMaestroRelacionados() {
+        return maestroRelacionados;
+    }
+
+    public void setMaestroRelacionados(List<MaestroRelacionadosApiDto> maestroRelacionados) {
+        this.maestroRelacionados = maestroRelacionados;
     }
 }

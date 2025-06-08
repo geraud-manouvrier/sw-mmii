@@ -29,6 +29,7 @@ public class EnrolamientoClientesService {
     private final IComisionMaestroDao comisionMaestroDao;
     private final IClienteCuentaMaestroDao clienteCuentaMaestroDao;
     private final IPersonaRelacionadaDao personaRelacionadaDao;
+    private final ParCargoDao parCargoDao;
     //Mappers
     private final CuentaMapper cuentaMapper;
     private final TipoIdentificadorMapper tipoIdentificadorMapper;
@@ -36,9 +37,10 @@ public class EnrolamientoClientesService {
     private final ComisionCuentaMapper comisionCuentaMapper;
     private final ComisionMaestroMapper comisionMaestroMapper;
     private final PersonaRelacionadaMapper personaRelacionadaMapper;
+    private final ParCargoMapper parCargoMapper;
 
     @Autowired
-    public EnrolamientoClientesService(ITipoIdentificadorDao tipoIdentificadorDao, IClienteDao clienteDao, ICuentaDao cuentaDao, IComisionCuentaDao comisionCuentaDao, IComisionMaestroDao comisionMaestroDao, IClienteCuentaMaestroDao clienteCuentaMaestroDao, IPersonaRelacionadaDao personaRelacionadaDao, CuentaMapper cuentaMapper, TipoIdentificadorMapper tipoIdentificadorMapper, ClienteMapper clienteMapper, ComisionCuentaMapper comisionCuentaMapper, ComisionMaestroMapper comisionMaestroMapper, PersonaRelacionadaMapper personaRelacionadaMapper) {
+    public EnrolamientoClientesService(ITipoIdentificadorDao tipoIdentificadorDao, IClienteDao clienteDao, ICuentaDao cuentaDao, IComisionCuentaDao comisionCuentaDao, IComisionMaestroDao comisionMaestroDao, IClienteCuentaMaestroDao clienteCuentaMaestroDao, IPersonaRelacionadaDao personaRelacionadaDao, ParCargoDao parCargoDao, CuentaMapper cuentaMapper, TipoIdentificadorMapper tipoIdentificadorMapper, ClienteMapper clienteMapper, ComisionCuentaMapper comisionCuentaMapper, ComisionMaestroMapper comisionMaestroMapper, PersonaRelacionadaMapper personaRelacionadaMapper, ParCargoMapper parCargoMapper) {
         this.tipoIdentificadorDao = tipoIdentificadorDao;
         this.clienteDao = clienteDao;
         this.cuentaDao = cuentaDao;
@@ -46,12 +48,14 @@ public class EnrolamientoClientesService {
         this.comisionMaestroDao = comisionMaestroDao;
         this.clienteCuentaMaestroDao = clienteCuentaMaestroDao;
         this.personaRelacionadaDao = personaRelacionadaDao;
+        this.parCargoDao = parCargoDao;
         this.cuentaMapper = cuentaMapper;
         this.tipoIdentificadorMapper = tipoIdentificadorMapper;
         this.clienteMapper = clienteMapper;
         this.comisionCuentaMapper = comisionCuentaMapper;
         this.comisionMaestroMapper = comisionMaestroMapper;
         this.personaRelacionadaMapper = personaRelacionadaMapper;
+        this.parCargoMapper = parCargoMapper;
     }
 
     @Transactional
@@ -179,6 +183,11 @@ public class EnrolamientoClientesService {
         personaRelacionadaDto.setModificacionUser(usuario);
         personaRelacionadaDto.setModificacionTs(ahora);
         return personaRelacionadaMapper.toDto(personaRelacionadaDao.save(personaRelacionadaMapper.toEntity(personaRelacionadaDto)));
+    }
+
+    @Transactional
+    public List<ParCargoDto> listaCargoRelacionados() {
+        return parCargoMapper.toDto(parCargoDao.findAllByFlagHabilitadoRelacionadoTrueOrderByGlosa());
     }
 
 

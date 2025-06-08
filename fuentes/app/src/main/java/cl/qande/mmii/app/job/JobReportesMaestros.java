@@ -24,9 +24,9 @@ public class JobReportesMaestros implements Runnable {
         this.notificacionEmail = notificacionEmail;
     }
 
-    public boolean generaReportesByProcessDate(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borrarArchivosExistentes) throws QandeMmiiException {
+    public boolean generaReportesByProcessDate(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean generarRelacionados, boolean borrarArchivosExistentes) throws QandeMmiiException {
 
-        if (reportesMaestrosService.generaReportesMaestros(processDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borrarArchivosExistentes)) {
+        if (reportesMaestrosService.generaReportesMaestros(processDate, materializaData, generarClientes, generarMovimientos, generarSaldos, generarRelacionados, borrarArchivosExistentes)) {
             CustomLog.getInstance().info("Generación Reportes Maestros Excel con fecha ["+processDate+"] finalizada OK");
             return true;
         } else {
@@ -41,7 +41,7 @@ public class JobReportesMaestros implements Runnable {
         CustomLog.getInstance().info("Iniciando tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
         var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
         try {
-            return this.generaReportesByProcessDate(processDate, true, true, true, true, true);
+            return this.generaReportesByProcessDate(processDate, true, true, true, true, true, true);
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
             return false;

@@ -33,11 +33,15 @@ public class PersonaRelacionadaDto implements Serializable {
     private Instant modificacionTs;
     @Size(max = 100)
     private String modificacionUser;
+    @Size(max = 100)
+    private String idCargo;
+
 
     public PersonaRelacionadaDto() {
     }
 
-    public PersonaRelacionadaDto(Integer id, String identificador, String nombre, Integer idTipoIdentificador, Integer idCliente, Boolean flagHabilitado, Instant creacionTs, String creacionUser, Instant modificacionTs, String modificacionUser) {
+    public PersonaRelacionadaDto(Integer id, String identificador, String nombre, Integer idTipoIdentificador, Integer idCliente, Boolean flagHabilitado, Instant creacionTs, String creacionUser, Instant modificacionTs, String modificacionUser,
+                                 String idCargo) {
         this.id = id;
         this.identificador = identificador;
         this.nombre = nombre;
@@ -48,6 +52,7 @@ public class PersonaRelacionadaDto implements Serializable {
         this.creacionUser = creacionUser;
         this.modificacionTs = modificacionTs;
         this.modificacionUser = modificacionUser;
+        this.idCargo = idCargo;
     }
 
     public Integer getId() {
@@ -130,40 +135,42 @@ public class PersonaRelacionadaDto implements Serializable {
         this.modificacionUser = modificacionUser;
     }
 
+
+        public String getIdCargo() {
+        return idCargo;
+    }
+
+    public void setIdCargo(String idCargo) {
+        this.idCargo = idCargo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersonaRelacionadaDto entity = (PersonaRelacionadaDto) o;
-        return Objects.equals(this.id, entity.id) &&
-                Objects.equals(this.identificador, entity.identificador) &&
-                Objects.equals(this.nombre, entity.nombre) &&
-                Objects.equals(this.idTipoIdentificador, entity.idTipoIdentificador) &&
-                Objects.equals(this.idCliente, entity.idCliente) &&
-                Objects.equals(this.flagHabilitado, entity.flagHabilitado) &&
-                Objects.equals(this.creacionTs, entity.creacionTs) &&
-                Objects.equals(this.creacionUser, entity.creacionUser) &&
-                Objects.equals(this.modificacionTs, entity.modificacionTs) &&
-                Objects.equals(this.modificacionUser, entity.modificacionUser);
+        PersonaRelacionadaDto that = (PersonaRelacionadaDto) o;
+        return Objects.equals(id, that.id) && Objects.equals(identificador, that.identificador) && Objects.equals(nombre, that.nombre) && Objects.equals(idTipoIdentificador, that.idTipoIdentificador) && Objects.equals(idCliente, that.idCliente) && Objects.equals(flagHabilitado, that.flagHabilitado) && Objects.equals(creacionTs, that.creacionTs) && Objects.equals(creacionUser, that.creacionUser) && Objects.equals(modificacionTs, that.modificacionTs) && Objects.equals(modificacionUser, that.modificacionUser) && Objects.equals(idCargo, that.idCargo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, identificador, nombre, idTipoIdentificador, idCliente, flagHabilitado, creacionTs, creacionUser, modificacionTs, modificacionUser);
+        return Objects.hash(id, identificador, nombre, idTipoIdentificador, idCliente, flagHabilitado, creacionTs, creacionUser, modificacionTs, modificacionUser, idCargo);
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "identificador = " + identificador + ", " +
-                "nombre = " + nombre + ", " +
-                "idTipoIdentificador = " + idTipoIdentificador + ", " +
-                "idCliente = " + idCliente + ", " +
-                "flagHabilitado = " + flagHabilitado + ", " +
-                "creacionTs = " + creacionTs + ", " +
-                "creacionUser = " + creacionUser + ", " +
-                "modificacionTs = " + modificacionTs + ", " +
-                "modificacionUser = " + modificacionUser + ")";
+        return "PersonaRelacionadaDto{" +
+                "id=" + id +
+                ", identificador='" + identificador + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", idTipoIdentificador=" + idTipoIdentificador +
+                ", idCliente=" + idCliente +
+                ", flagHabilitado=" + flagHabilitado +
+                ", creacionTs=" + creacionTs +
+                ", creacionUser='" + creacionUser + '\'' +
+                ", modificacionTs=" + modificacionTs +
+                ", modificacionUser='" + modificacionUser + '\'' +
+                ", idCargo='" + idCargo + '\'' +
+                '}';
     }
 }

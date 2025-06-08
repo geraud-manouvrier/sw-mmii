@@ -7,7 +7,7 @@ info:
     Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
   contact:
     email: contacto@qande.cl
-  version: 9.0.1
+  version: 9.0.2
 externalDocs:
   description: Acerca de OAS
   url: https://swagger.io/specification/
@@ -425,6 +425,9 @@ components:
           type: string
           maxLength: 100
         cargo-id-relacionado:
+          type: string
+          maxLength: 100
+        cargo-glosa-relacionado:
           type: string
           maxLength: 100
     ListaRelacionadoCuenta:

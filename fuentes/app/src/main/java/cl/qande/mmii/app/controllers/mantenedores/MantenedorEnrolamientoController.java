@@ -41,6 +41,7 @@ public class MantenedorEnrolamientoController {
     private static final String CAMPO_LISTA_CTAS_CTES    = "listaCuentasCliente";
     private static final String CAMPO_MODIFICAR_CLIENTE = "clienteDto";
     private static final String CAMPO_LISTA_TIPOS_ID = "listaTiposId";
+    private static final String CAMPO_LISTA_CARGOS_REL = "listaCargosRel";
     private static final String TITULO_CLIENTE = "Mantenedor Clientes";
     private static final String TITULO_COMIS_CTA = "Excepciones Comerciales a comisión";
     private static final String PREFIX_ERROR_VALID = "Error al modificar registro";
@@ -78,6 +79,7 @@ public class MantenedorEnrolamientoController {
 
         model.addAttribute(CAMPO_LISTA_REGISTROS, enrolamientoClientesService.listaClienteMaestro());
         model.addAttribute(CAMPO_LISTA_TIPOS_ID, enrolamientoClientesService.listarTiposIdentificador());
+        model.addAttribute(CAMPO_LISTA_CARGOS_REL, enrolamientoClientesService.listaCargoRelacionados());
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.MANT_ENROL_CLIENTE, false);
     }
 

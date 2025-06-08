@@ -27,11 +27,11 @@ public class ReportesMaestrosService {
     }
 
 
-    public boolean generaReportesMaestros(String startProcessDate, String endProcessDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borrarArchivosExistentes) {
+    public boolean generaReportesMaestros(String startProcessDate, String endProcessDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean generarRelacionados, boolean borrarArchivosExistentes) {
         try {
             var listaProcessDate = calendarioHelper.processDateRangeToList(startProcessDate, endProcessDate);
             for (var processDate : listaProcessDate) {
-                if (!generaReportesMaestros(processDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borrarArchivosExistentes)) {
+                if (!generaReportesMaestros(processDate, materializaData, generarClientes, generarMovimientos, generarSaldos, generarRelacionados, borrarArchivosExistentes)) {
                     CustomLog.getInstance().error("Error Reportes Maestros con rango de fechas ["+startProcessDate+" - "+endProcessDate+"]: en fecha: "+processDate);
                     return false;
                 }
@@ -42,7 +42,7 @@ public class ReportesMaestrosService {
         }
         return true;
     }
-    public boolean generaReportesMaestros(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borrarArchivosExistentes) throws QandeMmiiException {
+    public boolean generaReportesMaestros(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean generarRelacionados, boolean borrarArchivosExistentes) throws QandeMmiiException {
         boolean estadoGeneracion    = true;
         CustomLog.getInstance().info("Se generarán reportes Maestros con fecha proceso ["+processDate+"]");
         if (borrarArchivosExistentes) {
@@ -55,7 +55,7 @@ public class ReportesMaestrosService {
 
         try {
             CustomLog.getInstance().info("Iniciando generación reporte CSV con fecha proceso ["+processDate+"]");
-            maestroDatosCsv.generaReportesCsv(processDate, generarClientes, generarMovimientos, generarSaldos);
+            maestroDatosCsv.generaReportesCsv(processDate, generarClientes, generarMovimientos, generarSaldos, generarRelacionados);
             CustomLog.getInstance().info("Reporte CSV con fecha proceso ["+processDate+"] generado.");
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error al generar Reporte CSV con fecha ["+processDate+"]: "+e.getMessage());
@@ -72,6 +72,9 @@ public class ReportesMaestrosService {
         reporteMaestroDatosService.materializaDatosMovimiento(processDate);
         CustomLog.getInstance().info("Iniciando materialización de datos Saldos con fecha proceso ["+processDate+"]");
         reporteMaestroDatosService.materializaDatosSaldo(processDate);
+        CustomLog.getInstance().info("Materialización de datos finalizada");
+        CustomLog.getInstance().info("Iniciando materialización de datos Relacionados con fecha proceso ["+processDate+"]");
+        reporteMaestroDatosService.materializaDatosRelacionado(processDate);
         CustomLog.getInstance().info("Materialización de datos finalizada");
     }
 }

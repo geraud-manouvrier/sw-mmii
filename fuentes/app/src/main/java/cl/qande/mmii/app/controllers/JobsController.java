@@ -220,7 +220,9 @@ public class JobsController {
             "/process/reporte_maestros_movimientos/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
             "/process/reporte_maestros_movimientos_materializa/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
             "/process/reporte_maestros_saldos/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
-            "/process/reporte_maestros_saldos_materializa/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+            "/process/reporte_maestros_saldos_materializa/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_relacionados/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/reporte_maestros_relacionados/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
     })
     public String jobsReporteMaestros(
             @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
@@ -233,9 +235,14 @@ public class JobsController {
         var generarClientes         = request.getRequestURI().contains("reporte_maestros_cuentas") || generaTodos;
         var generarMovimientos      = request.getRequestURI().contains("reporte_maestros_movimientos") || generaTodos;
         var generarSaldos           = request.getRequestURI().contains("reporte_maestros_saldos") || generaTodos;
-        var borraArchivosExistentes = request.getRequestURI().contains("reporte_maestros_cuentas") || request.getRequestURI().contains("reporte_maestros_movimientos") || request.getRequestURI().contains("reporte_maestros_saldos");
+        var generarRelacionados     = request.getRequestURI().contains("reporte_maestros_relacionados") || generaTodos;
 
-        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, false, model, true);
+        var borraArchivosExistentes = request.getRequestURI().contains("reporte_maestros_cuentas") ||
+                                        request.getRequestURI().contains("reporte_maestros_movimientos") ||
+                                        request.getRequestURI().contains("reporte_maestros_saldos") ||
+                                        request.getRequestURI().contains("reporte_maestros_relacionados");
+
+        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, generarRelacionados, borraArchivosExistentes, false, model, true);
     }
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS_BY_USER))")
@@ -248,21 +255,22 @@ public class JobsController {
         var generarClientes     = true;
         var generarMovimientos  = true;
         var generarSaldos       = true;
+        var generarRelacionados       = true;
         var borraArchivosExistentes = true;
 
-        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes, true, model, false);
+        return jobMaestrosHandler(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, generarRelacionados, borraArchivosExistentes, true, model, false);
     }
 
     private String jobMaestrosHandler(
             String startProcessDate, String endProcessDate,
-            boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean borraArchivosExistentes,
+            boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean generarRelacionados, boolean borraArchivosExistentes,
             boolean mailControlDiario,
             Model model, boolean isAdmin) throws QandeMmiiException {
         var estadoPeticion          = new EstadoPeticion();
         try {
             CustomLog.getInstance().info("Iniciando Job Reportes Maestros y Control diario con rango fecha [" + startProcessDate + " - "+endProcessDate + MSG_APPEND_USER + sesionWeb.getUsuario() + "]...");
             if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {
-                if ( reportesMaestrosService.generaReportesMaestros(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, borraArchivosExistentes) ) {
+                if ( reportesMaestrosService.generaReportesMaestros(startProcessDate, endProcessDate, materializaData, generarClientes, generarMovimientos, generarSaldos, generarRelacionados, borraArchivosExistentes) ) {
                     sesionWeb.addNotification("Reportes Maestros re-procesados correctamente: ["+startProcessDate+" - "+endProcessDate+"]");
                     if (jobControlDiario.realizaControlDiario(startProcessDate, endProcessDate, sesionWeb.getUsuario(), mailControlDiario)) {
                         sesionWeb.addNotification("Control diario finalizado correctamente: ["+startProcessDate+" - "+endProcessDate+"]");

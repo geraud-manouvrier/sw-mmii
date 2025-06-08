@@ -131,6 +131,41 @@ public class MaestroDatosController {
     }
 
 
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_REL))")
+    @GetMapping({"/relacionados"})
+    public String relacionados(
+            Model model) {
+
+        return "redirect:/reportes/maestro_datos/relacionados/fecha_desde/"+calendarioHelper.defaultProcessDate()+"/fecha_hasta/"+calendarioHelper.defaultProcessDate();
+    }
+
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_REL))")
+    @GetMapping({"/relacionados/fecha_desde/{startProcessDate}/fecha_hasta/{endProcessDate}"})
+    public String relacionadosPorRangoDeFechas(
+            @PathVariable String startProcessDate,
+            @PathVariable String endProcessDate,
+            Model model) throws QandeMmiiException {
+        var estadoPeticion   = new EstadoPeticion();
+        try {
+            var salidaReporte   = reporteMaestroDatosService.findRelacionadosByProcessDateBetween(startProcessDate, endProcessDate);
+            estadoPeticion.setEstadoOk("Listado Relacionados OK", "Listado de Relacionados generado correctamente");
+            model.addAttribute(HTML_SALIDA_REPORTE, salidaReporte);
+        } catch (Exception e) {
+            CustomLog.getInstance().error("Error al listar reporte Maestro Relacionados con rango fechas [" + startProcessDate + " - "+endProcessDate+"]: "+e.getMessage());
+            estadoPeticion.setEstadoError("Error al listar Relacionados", "Se producjo un error al listar los saldos");
+            model.addAttribute(HTML_SALIDA_REPORTE, null);
+        }
+        model.addAttribute(CAMPO_TITULO, "Maestro Datos - Relacionados");
+        model.addAttribute(CAMPO_SESION, sesionWeb);
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        model.addAttribute("startProcessDate", startProcessDate);
+        model.addAttribute("endProcessDate", endProcessDate);
+        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.REP_MAESTRO_REL, false);
+    }
+
+
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).REP_MAESTRO_CONSOLIDADO))")
     @GetMapping({"/consolidados"})
     public String consolidados(

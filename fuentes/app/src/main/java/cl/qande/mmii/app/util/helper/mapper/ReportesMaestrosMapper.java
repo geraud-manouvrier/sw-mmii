@@ -2,6 +2,7 @@ package cl.qande.mmii.app.util.helper.mapper;
 
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
+import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosRelacionado;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
 import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +103,29 @@ public class ReportesMaestrosMapper {
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getFeeDiarioProteccion()));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getIngresoProteccion()));
+
+        return dataRow;
+    }
+
+    public List<String> getFromDbToCsvLine(VwReporteMaestroDatosRelacionado fila) {
+        ArrayList<String> dataRow = new ArrayList<>();
+
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getProcessDate()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getCustodian()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountNo()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));
+
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getGlosaIdentificadorCliente()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getOfficeId()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getName()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getIdentificadorRelacionado()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getNombreRelacionado()));
+
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorRelacionado()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getGlosaTipoIdentificadorRelacionado()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getIdCargo()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getCargo()));
 
         return dataRow;
     }

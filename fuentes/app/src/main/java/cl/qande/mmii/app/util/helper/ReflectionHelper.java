@@ -25,14 +25,15 @@ public class ReflectionHelper {
     private static Map<String, Object> convertObjectToMap(Object obj) {
         Map<String, Object> map = new LinkedHashMap<>();
 
-        for (Field field : obj.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                map.put(field.getName(), field.get(obj));
-            } catch (IllegalAccessException e) {
-                map.put(field.getName(), null); // Si hay error, pone null
-            }
-        }
+        CustomThymeleafHelper.streamInstanceFields(obj.getClass())
+                .peek(f -> f.setAccessible(true))
+                .forEach(f -> {
+                    try {
+                        map.put(f.getName(), f.get(obj));
+                    } catch (IllegalAccessException e) {
+                        map.put(f.getName(), null);
+                    }
+                });
 
         return map;
     }

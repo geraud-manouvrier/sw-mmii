@@ -389,7 +389,8 @@ create table public.tbvw_maestro_cuentas_pershing
     product_profile_code                          varchar(100),
     cents_per_share_discount                      integer,
     option_disclosure_date                        date,
-    country_acct_level_tax_residency              varchar(100)
+    country_acct_level_tax_residency              varchar(100),
+    fee                                           numeric(45, 20) default NULL::numeric
 );
 
 alter table public.tbvw_maestro_cuentas_pershing

@@ -10,6 +10,7 @@ create table clientes.persona_relacionada
     creacion_user         varchar(100)               not null,
     modificacion_ts       timestamp,
     modificacion_user     varchar(100) default NULL::character varying,
+    id_cargo              varchar(100),
     constraint persona_relacionada_pk
         primary key (id),
     constraint cliente_tipo_identificador_fk

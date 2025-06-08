@@ -61,6 +61,7 @@ public class ReporteMaestrosController {
         try {
             respuesta.setMaestroMovimientos( reporteMaestroDatosService.reporteMaestroMovimientosApi(processDate) );
             respuesta.setMaestroSaldos( reporteMaestroDatosService.reporteMaestroSaldosApi(processDate) );
+            respuesta.setMaestroRelacionados( reporteMaestroDatosService.reporteMaestroRelacionadosApi(processDate) );
         } catch (Exception e) {
             CustomLog.getInstance().error(ERROR_PREFIX+" Obtener registros Reportes Maestros para fecha proceso ["+processDate+"]: "+e.getMessage());
             return new ResponseEntity<>(new ReporteMaestrosResponseError(2, "Error al obtener registros Reportes Maestros"), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);

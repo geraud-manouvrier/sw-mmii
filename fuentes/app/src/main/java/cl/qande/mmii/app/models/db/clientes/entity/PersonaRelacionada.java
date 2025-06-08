@@ -51,6 +51,19 @@ public class PersonaRelacionada {
     @Column(name = "modificacion_user", length = 100)
     private String modificacionUser;
 
+    @Size(max = 100)
+    @Column(name = "id_cargo", length = 100)
+    private String idCargo;
+
+    public String getIdCargo() {
+        return idCargo;
+    }
+
+    public void setIdCargo(String idCargo) {
+        this.idCargo = idCargo;
+    }
+
+
     public Integer getId() {
         return id;
     }

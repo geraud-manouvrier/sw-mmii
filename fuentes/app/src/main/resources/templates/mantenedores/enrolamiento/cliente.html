@@ -25,6 +25,7 @@
     <!--/*@thymesVar id="listaTiposId" type="java.util.List<cl.qande.mmii.app.models.dto.TipoIdentificadorDto>"*/-->
     <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro>"*/-->
     <!--/*@thymesVar id="lista_relacionados" type="java.util.List<cl.qande.mmii.app.models.dto.PersonaRelacionadaDto>"*/-->
+    <!--/*@thymesVar id="listaCargosRel" type="java.util.List<cl.qande.mmii.app.models.dto.ParCargoDto>"*/-->
 
 
     <!-- Main content -->
@@ -226,9 +227,10 @@
 
 
 
-    var temporaryId = -1;
-    var defaultId   = null;
-    var idGrilla    = "PersonasGrid";
+    var temporaryId     = -1;
+    var defaultId       = null;
+    var defaultCargoRel = null;
+    var idGrilla        = "PersonasGrid";
 
     /*<![CDATA[*/
 
@@ -238,7 +240,8 @@
         id: ( ([[${objeto.getId}]] ==null || [[${objeto.getId}]]<0) ? (temporaryId--) : [[${objeto.getId}]] ),
         idTipoIdentificador: [[${objeto.getIdTipoIdentificador}]],
         identificador: [[${objeto.getIdentificador}]],
-        nombre: [[${objeto.getNombre}]]
+        nombre: [[${objeto.getNombre}]],
+        idCargo: [[${objeto.getIdCargo}]]
       },
       /*[/]*/
     ];
@@ -251,10 +254,23 @@
       },
       /*[/]*/
     ];
+
+    var listaCargosRelData = [
+      /*[# th:each="objeto : ${listaCargosRel}"]*/
+      {
+        id: [[${objeto.id}]],
+        name: [[${objeto.id}]] + ' - ' + [[${objeto.glosa}]]
+      },
+      /*[/]*/
+    ];
     /*]]>*/
 
     if (tipoIdentificadorData.length>0) {
       defaultId = tipoIdentificadorData[0].id;
+    }
+
+    if (listaCargosRelData.length>0) {
+      defaultCargoRel = listaCargosRelData[0].id;
     }
 
 
@@ -297,6 +313,20 @@
           template: function (data) {
             let tipoIdentificador = tipoIdentificadorData.find(item => item.id === data.idTipoIdentificador);
             return tipoIdentificador ? tipoIdentificador.name : '';
+          }
+        },
+        { field: 'idCargo', headerText: 'Cargo', validationRules: { required: true }, editType: 'dropdownedit', defaultValue: defaultCargoRel,
+          edit: {
+            params: {
+              dataSource: new ej.data.DataManager(listaCargosRelData),
+              fields: { text: 'name', value: 'id' },
+              query:  new ej.data.Query(),
+              actionComplete: () => false
+            }
+          },
+          template: function (data) {
+            let cargo = listaCargosRelData.find(item => item.id === data.idCargo);
+            return cargo ? cargo.name : '';
           }
         }
       ],

@@ -3,13 +3,16 @@ package cl.qande.mmii.app.models.service;
 import cl.qande.mmii.app.config.datasources.CoreDataSourceConfiguration;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroCuentasApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroMovimientosApiDto;
+import cl.qande.mmii.app.models.api.reportes_maestros.MaestroRelacionadosApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroSaldosApiDto;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosClientesDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
+import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosRelacionadoDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.core.entity.*;
 import cl.qande.mmii.app.util.helper.mapper.VwReporteMaestroDatosClienteMapper;
 import cl.qande.mmii.app.util.helper.mapper.VwReporteMaestroDatosMovimientoMapper;
+import cl.qande.mmii.app.util.helper.mapper.VwReporteMaestroDatosRelacionadoMapper;
 import cl.qande.mmii.app.util.helper.mapper.VwReporteMaestroDatosSaldoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,20 +29,25 @@ public class ReporteMaestroDatosService {
     private final IReporteMaestroDatosClientesDao reporteMaestroDatosClientesDao;
     private final IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao;
     private final IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao;
+    private final IReporteMaestroDatosRelacionadoDao reporteMaestroDatosRelacionadoDao;
     private final VwReporteMaestroDatosSaldoMapper vwReporteMaestroDatosSaldoMapper;
     private final VwReporteMaestroDatosMovimientoMapper vwReporteMaestroDatosMovimientoMapper;
     private final VwReporteMaestroDatosClienteMapper vwReporteMaestroDatosClienteMapper;
     private final EntityManager entityManager;
+    private final VwReporteMaestroDatosRelacionadoMapper vwReporteMaestroDatosRelacionadoMapper;
 
     @Autowired
-    public ReporteMaestroDatosService(IReporteMaestroDatosClientesDao reporteMaestroDatosClientesDao, IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao, IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao, VwReporteMaestroDatosSaldoMapper vwReporteMaestroDatosSaldoMapper, VwReporteMaestroDatosMovimientoMapper vwReporteMaestroDatosMovimientoMapper, VwReporteMaestroDatosClienteMapper vwReporteMaestroDatosClienteMapper, @Qualifier(CoreDataSourceConfiguration.ENTITY_MANAGER) EntityManager entityManager) {
+    public ReporteMaestroDatosService(IReporteMaestroDatosClientesDao reporteMaestroDatosClientesDao, IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao, IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao, IReporteMaestroDatosRelacionadoDao reporteMaestroDatosRelacionadoDao, VwReporteMaestroDatosSaldoMapper vwReporteMaestroDatosSaldoMapper, VwReporteMaestroDatosMovimientoMapper vwReporteMaestroDatosMovimientoMapper, VwReporteMaestroDatosClienteMapper vwReporteMaestroDatosClienteMapper, @Qualifier(CoreDataSourceConfiguration.ENTITY_MANAGER) EntityManager entityManager,
+                                      VwReporteMaestroDatosRelacionadoMapper vwReporteMaestroDatosRelacionadoMapper) {
         this.reporteMaestroDatosClientesDao = reporteMaestroDatosClientesDao;
         this.reporteMaestroDatosMovimientosDao = reporteMaestroDatosMovimientosDao;
         this.reporteMaestroDatosSaldoDao = reporteMaestroDatosSaldoDao;
+        this.reporteMaestroDatosRelacionadoDao = reporteMaestroDatosRelacionadoDao;
         this.vwReporteMaestroDatosSaldoMapper = vwReporteMaestroDatosSaldoMapper;
         this.vwReporteMaestroDatosMovimientoMapper = vwReporteMaestroDatosMovimientoMapper;
         this.vwReporteMaestroDatosClienteMapper = vwReporteMaestroDatosClienteMapper;
         this.entityManager = entityManager;
+        this.vwReporteMaestroDatosRelacionadoMapper = vwReporteMaestroDatosRelacionadoMapper;
     }
 
     @Transactional(readOnly = true)
@@ -59,9 +67,19 @@ public class ReporteMaestroDatosService {
         return vwReporteMaestroDatosMovimientoMapper.toDto(this.generaReporteMovimientos(processDate));
 
     }
+
+    @Transactional(readOnly = true)
+    public List<MaestroRelacionadosApiDto> reporteMaestroRelacionadosApi(String processDate) {
+        return vwReporteMaestroDatosRelacionadoMapper.toDto(this.generaReporteRelacionados(processDate));
+
+    }
     @Transactional(readOnly = true)
     public List<VwReporteMaestroDatosSaldo> generaReporteSaldos(String processDate) {
         return reporteMaestroDatosSaldoDao.generaReporte(processDate);
+    }
+    @Transactional(readOnly = true)
+    public List<VwReporteMaestroDatosRelacionado> generaReporteRelacionados(String processDate) {
+        return reporteMaestroDatosRelacionadoDao.generaReporte(processDate);
     }
 
     @Transactional(readOnly = true)
@@ -86,9 +104,17 @@ public class ReporteMaestroDatosService {
     public void materializaDatosSaldo(String processDate) {
         reporteMaestroDatosSaldoDao.materializaDatosSaldosPershing(processDate);
     }
+    @Transactional
+    public void materializaDatosRelacionado(String processDate) {
+        reporteMaestroDatosRelacionadoDao.materializaDatosRelacionadoPershing(processDate);
+    }
     @Transactional(readOnly = true)
     public List<VwReporteMaestroDatosCliente> findClientesByProcessDateBetween(String processDateFrom, String processDateTo) {
         return reporteMaestroDatosClientesDao.findByProcessDateBetween(processDateFrom, processDateTo);
+    }
+    @Transactional(readOnly = true)
+    public List<VwReporteMaestroDatosRelacionado> findRelacionadosByProcessDateBetween(String processDateFrom, String processDateTo) {
+        return reporteMaestroDatosRelacionadoDao.findByProcessDateBetween(processDateFrom, processDateTo);
     }
     @Transactional(readOnly = true)
     public List<VwReporteMaestroDatosSaldo> findSaldosByProcessDateBetween(String processDateFrom, String processDateTo) {

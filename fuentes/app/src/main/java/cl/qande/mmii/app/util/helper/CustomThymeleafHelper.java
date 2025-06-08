@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -14,7 +15,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CustomThymeleafHelper {
 
@@ -94,7 +97,7 @@ public class CustomThymeleafHelper {
         try {
             return objectMapper.writeValueAsString(ReflectionHelper.convertListToMap(lista));
         } catch (JsonProcessingException e) {
-            CustomLog.getInstance().error("Error covietiendo Objeto a lista ["+lista+"]: "+e.getMessage());
+            CustomLog.getInstance().error("Error covietiendo Objeto a lista ["+lista+"]: "+e.getMessage(), false);
             return "[]"; // En caso de error, devuelve un array vacío
         }
     }
@@ -104,9 +107,21 @@ public class CustomThymeleafHelper {
         if (clazz == null) {
             return Collections.emptyList(); // Si no se puede determinar la clase, devuelve una lista vacía
         }
-        return Arrays.stream(clazz.getDeclaredFields())
+        return streamInstanceFields(clazz)
                 .map(Field::getName)
                 .collect(Collectors.toList());
+    }
+
+
+    /** Predicado centralizado: solo campos de instancia y no serialVersionUID */
+    private static final Predicate<Field> IS_INSTANCE_FIELD = f ->
+            !Modifier.isStatic(f.getModifiers()) &&
+                    !"serialVersionUID".equals(f.getName());
+
+    /** Devuelve un Stream<Field> ya filtrado según IS_INSTANCE_FIELD */
+    public static Stream<Field> streamInstanceFields(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredFields())
+                .filter(IS_INSTANCE_FIELD);
     }
 
 

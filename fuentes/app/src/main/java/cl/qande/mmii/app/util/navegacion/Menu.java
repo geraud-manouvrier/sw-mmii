@@ -32,6 +32,7 @@ public class Menu {
     public static final String REP_MAESTRO_CLIENTE   ="REP_MAESTRO_CLIENTE";
     public static final String REP_MAESTRO_SALDOS   ="REP_MAESTRO_SALDOS";
     public static final String REP_MAESTRO_MOVTOS   ="REP_MAESTRO_MOVTOS";
+    public static final String REP_MAESTRO_REL   ="REP_MAESTRO_REL";
     public static final String REP_MAESTRO_CONSOLIDADO   ="REP_MAESTRO_CONSOLIDADO";
     //Mantenedores Instrumentos
     public static final String MANT_SRC_COD_PER ="MANT_SRC_COD_PER";
@@ -168,6 +169,7 @@ public class Menu {
         opcionesReportesMaestros.add(new OpcionMenu(REP_MAESTRO_CLIENTE, "Maestro de Cuentas", "/reportes/maestro_datos/clientes", false));
         opcionesReportesMaestros.add(new OpcionMenu(REP_MAESTRO_SALDOS, "Maestro de Saldos", "/reportes/maestro_datos/saldos", false));
         opcionesReportesMaestros.add(new OpcionMenu(REP_MAESTRO_MOVTOS, "Maestro Movimientos", "/reportes/maestro_datos/movimientos", false));
+        opcionesReportesMaestros.add(new OpcionMenu(REP_MAESTRO_REL, "Maestro Relacionados", "/reportes/maestro_datos/relacionados", false));
         opcionesReportesMaestros.add(new OpcionMenu(REP_MAESTRO_CONSOLIDADO, "Maestros Consolidados", "/reportes/maestro_datos/consolidados", false));
         categoriaReportesMaestros.setListaOpciones(opcionesReportesMaestros);
 

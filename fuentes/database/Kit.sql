@@ -1,14 +1,36 @@
 /*
-2025-05-15
-Actual: 11.0.0-COL
+2025-06-08
+Actual: 11.1.0-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_ADMINQANDE_LOGS_VIEWER' FROM public.users where username in ('admin-qye')
+SELECT id, 'ROLE_OP_REP_MAESTRO_REL' FROM public.users where username in ('admin-qye', 'daniel.gomez1', 'brayan.giraldom', 'santiago.isaza')
 ;
-
+--daniel.gomez1
 INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_NEGOCIO_COMDEV' FROM public.users where username in ('andres.fernandez', 'daniel.gomez1')
+SELECT id, 'ROLE_OP_REP_INV_BASE' FROM public.users where username in ('daniel.gomez1')
+;
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_REP_INV_PRECALC' FROM public.users where username in ('daniel.gomez1')
+;
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_REP_INV_RENT' FROM public.users where username in ('daniel.gomez1')
+;
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_REP_INV_CONTRL' FROM public.users where username in ('daniel.gomez1')
+;
+--brayan.giraldom
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_REP_INV_BASE' FROM public.users where username in ('brayan.giraldom')
+;
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_REP_INV_PRECALC' FROM public.users where username in ('brayan.giraldom')
+;
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_REP_INV_RENT' FROM public.users where username in ('brayan.giraldom')
+;
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_REP_INV_CONTRL' FROM public.users where username in ('brayan.giraldom')
 ;
 
 INSERT INTO public.parametro (id_parametro, sub_id_parametro, valor_parametro, comentario)
@@ -25,479 +47,101 @@ AND user_id not in (select id FROM public.users where username in ('admin-qye', 
 --========================================================================
 --========================================================================
 --========================================================================
--- Fee como dato del Cliente
+-- Cargos
+CREATE TABLE clientes.par_cargo (
+    id VARCHAR(100) NOT NULL,
+    glosa VARCHAR(100) NOT NULL,
+    flag_habilitado_relacionado boolean NOT NULL,
+    CONSTRAINT pk_par_cargo PRIMARY KEY (id)
+);
 
-ALTER TABLE clientes.cliente ADD COLUMN fee numeric(45,20) DEFAULT NULL;
-ALTER TABLE public.tbvw_maestro_cuentas_pershing ADD COLUMN fee numeric(45,20) DEFAULT NULL;
+INSERT INTO clientes.par_cargo (id, glosa, flag_habilitado_relacionado)
+VALUES
+    ('AC', 'Accionista > 5%', true),
+    ('CO', 'Controlante', true),
+    ('RL', 'Representante Legal', true),
+    ('FI', 'Fiduciante', true),
+    ('FM', 'Fideicomitente', true),
+    ('FR', 'Fiduciario', true),
+    ('CF', 'Comité fiduciario, financiero o equivalente', true),
+    ('FC', 'Fideicomisario', true),
+    ('BE', 'Beneficiario', true),
+    ('BC', 'Beneficiario condicionado', true),
+    ('CE', 'Beneficiario con control efectivo', true),
+    ('DA', 'Beneficiarios con derecho a los activos, beneficios, resultados o utilidades', true),
+    ('TA', 'Titular Conjunto Adicional', true);
 
---TODO: Agregar a maestro cuentas
+--Agregar columna a tabla persona_relacionada
+ALTER TABLE clientes.persona_relacionada
+ADD COLUMN id_cargo VARCHAR(100) NULL;
 
---TODO: Carga masiva histórica
+--Asignar valores a registros relacionados existentes
+/*
+32491846: Betty Cecilia Martínez Cardona – Accionista > 5% (AC)
+71380423: Andrés Felipe Cardona Martínez – Accionista > 5% (AC)
+71755403: Gabriel Jaime Cardona Martínez – Accionista > 5% (AC)
+98660781: Juan Esteban Cardona Martínez – Accionista > 5% (AC)
+Jaime Cardona Montoya (17192143) por favor ponerlo como Representante Legal (RL).
+*/
+SELECT * FROM clientes.persona_relacionada;
+SELECT * FROM clientes.par_cargo;
+
+UPDATE clientes.persona_relacionada
+SET id_cargo = 'AC'
+WHERE identificador IN ('32491846', '71380423', '71755403', '98660781');
+UPDATE clientes.persona_relacionada
+SET id_cargo = 'RL'
+WHERE identificador = '17192143';
+
+UPDATE clientes.persona_relacionada
+SET id_cargo = 'AC'
+where id_cargo IS NULL;
 
 
-drop view clientes.vw_maestro_clientes;
-create view clientes.vw_maestro_clientes as
-SELECT cte.id,
-       cte.identificador,
-       cte.nombre,
-       cte.id_tipo_identificador,
-       tid.tipo_identificador,
-       tid.glosa_identificador,
-       tid.habilitado,
-       (((SELECT string_agg(cta.id_cuenta_custodio::text, ','::text) AS string_agg
-          FROM clientes.cuenta cta
-          WHERE cta.id_cliente = cte.id)))::character varying(100) AS lista_cuentas,
-    cte.fee
-FROM clientes.cliente cte
-         LEFT JOIN clientes.tipo_identificador tid ON cte.id_tipo_identificador = tid.id;
+
+--========================================================================
+--========================================================================
+--========================================================================
+--Maestro Relacionados
+CREATE or REPLACE VIEW clientes.vw_maestro_relacionado AS
+    SELECT
+        tb_pr.id as id_relacionado, tb_pr.id_cliente as id_cliente_relacionado,
+        tb_pr.identificador as identificador_relacionado, tb_pr.nombre as nombre_relacionado,
+        tb_pr.id_tipo_identificador as tipo_identificador_relacionado, tipo_id.tipo_identificador, tipo_id.glosa_identificador as glosa_tipo_identificador,
+        tb_pr.id_cargo as id_cargo_relacionado, tb_cargo.glosa,
+        tb_pr.flag_habilitado as flag_habilitado_relacionado
+    FROM clientes.persona_relacionada tb_pr
+    LEFT JOIN clientes.tipo_identificador tipo_id
+    ON tb_pr.id_tipo_identificador = tipo_id.id
+    LEFT JOIN clientes.par_cargo tb_cargo
+    ON tb_pr.id_cargo = tb_cargo.id
+WHERE tb_pr.flag_habilitado = true
+;
+
+--TODO: Llevarse identificador cliente a maestro clientes
+--vw_reporte_maestro_datos_clientes
+SELECT * FROM public.vw_reporte_maestro_datos_clientes ORDER BY process_date DESC LIMIT 100;
 
 
+DROP function public.fn_reporte_maestro_datos_clientes;
 
-
-drop view public.vw_cuentas_no_mapeadas_pershing;
-drop view public.vw_maestro_cuentas_pershing;
-drop view clientes.vw_maestro_comision;
-drop view public.vw_maestro_movimientos_pershing;
-drop view public.vw_maestro_saldos_pershing;
-drop view clientes.vw_maestro_clientes_cuentas;
-drop function public.fn_reporte_maestro_datos_clientes;
 drop view public.vw_reporte_maestro_datos_clientes;
-
-
-
-
-create view clientes.vw_maestro_clientes_cuentas
-as
-SELECT c.id                    AS id_interno_cliente,
-       c.identificador         AS identificador_cliente,
-       c.nombre                AS nombre_cliente,
-       c.id_tipo_identificador AS id_tipo_identificador_cliente,
-       ti.tipo_identificador   AS tipo_identificador_cliente,
-       ti.glosa_identificador  AS glosa_identificador_cliente,
-       cu.id                   AS id_interno_cuenta,
-       cu.id_custodio,
-       cu.id_cuenta_custodio,
-       cu.habilitado,
-       c.fee
-FROM clientes.cliente c
-         JOIN clientes.tipo_identificador ti ON c.id_tipo_identificador = ti.id
-         LEFT JOIN clientes.cuenta cu ON c.id = cu.id_cliente;
-
-
-
-create view public.vw_maestro_cuentas_pershing
-as
-SELECT vw_act.id,
-       vw_act.custodian,
-       maestro_crm.id_interno_cliente,
-       maestro_crm.identificador_cliente AS client_id,
-       maestro_crm.nombre_cliente        AS name,
-       maestro_crm.id_tipo_identificador_cliente,
-       maestro_crm.tipo_identificador_cliente,
-       maestro_crm.glosa_identificador_cliente,
-       maestro_crm.id_interno_cuenta,
-       maestro_crm.id_custodio,
-       maestro_crm.id_cuenta_custodio,
-       maestro_crm.habilitado,
-       maestro_crm.fee,
-       vw_act.ibd_number,
-       vw_act.id_office,
-       vw_act.ip_number,
-       vw_act.account_number             AS account_no,
-       vw_act.id_proceso,
-       vw_act.process_date,
-       vw_act.record_id_sequence_number,
-       vw_act.account_short_name,
-       vw_act.full_name,
-       vw_act.full_address,
-       vw_act.transaction_type,
-       vw_act.autotitled_usertitled_account,
-       vw_act.account_type_code,
-       vw_act.registration_type,
-       vw_act.registration_type_value,
-       vw_act.number_of_account_title_lines,
-       vw_act.account_registration_line_1,
-       vw_act.account_registration_line_2,
-       vw_act.account_registration_line_3,
-       vw_act.account_registration_line_4,
-       vw_act.account_registration_line_5,
-       vw_act.account_registration_line_6,
-       vw_act.registration_type_detail,
-       vw_act.date_account_opened,
-       vw_act.date_account_information_updated,
-       vw_act.account_status_indicator,
-       vw_act.pending_closed_date,
-       vw_act.date_account_closed,
-       vw_act.closing_notice_date,
-       vw_act.account_reactivated_date,
-       vw_act.date_account_reopened,
-       vw_act.proceeds,
-       vw_act.transfer_instructions,
-       vw_act.income_isntructions,
-       vw_act.number_of_confirms_for_thi_account,
-       vw_act.number_of_statements_for_this_account,
-       vw_act.investment_objetive_trans_code,
-       vw_act.comments_act,
-       vw_act.employer_shotname,
-       vw_act.employers_cusip,
-       vw_act.employers_symbol,
-       vw_act.margin_privileges_revoked,
-       vw_act.statement_review_date,
-       vw_act.margin_papers_on_file,
-       vw_act.cash_margin_account,
-       vw_act.option_papers_on_file,
-       vw_act.good_faith_margin,
-       vw_act.ip_discretion_granted,
-       vw_act.invest_advisor_discretion_granted,
-       vw_act.invest_advisor_discretion_granted_value,
-       vw_act.third_party_discretion_granted,
-       vw_act.third_party_name,
-       vw_act.risk_factor_code,
-       vw_act.investment_objetive_code,
-       vw_act.option_equities,
-       vw_act.option_index,
-       vw_act.option_debt,
-       vw_act.option_currency,
-       vw_act.option_level_1,
-       vw_act.option_level_2,
-       vw_act.option_level_3,
-       vw_act.option_level_4,
-       vw_act.option_call_limits,
-       vw_act.option_put_limits,
-       vw_act.option_total_limits_of_puts_and_calls,
-       vw_act.non_us_dollar_trading,
-       vw_act.non_customer_indicator,
-       vw_act.third_party_fee_indicator,
-       vw_act.third_party_fee_approval_date,
-       vw_act.intermediary_account_ind,
-       vw_act.commission_schedule,
-       vw_act.group_index,
-       vw_act.money_manager_id,
-       vw_act.money_manager_objective_id,
-       vw_act.dtc_id_confirm_number,
-       vw_act.caps_master_mnemonic,
-       vw_act.employee_id,
-       vw_act.prime_broker_free_fund_indicator,
-       vw_act.fee_based_account_indicator,
-       vw_act.fee_based_termination_date,
-       vw_act.plan_name,
-       vw_act.self_directed_401_k_account_type,
-       vw_act.plan_type,
-       vw_act.plan_number,
-       vw_act.employee_or_employee_relative,
-       vw_act.commission_percent_discount,
-       vw_act.ind_12_b_1_fee_blocking,
-       vw_act.name_of_ip_signed_new_account_form,
-       vw_act.date_of_ip_signed_new_account_form,
-       vw_act.name_of_principal_signed_new_account_form,
-       vw_act.date_of_principal_signed_new_account_form,
-       vw_act.politically_exposed_person,
-       vw_act.private_banking_account,
-       vw_act.foreign_bank_account,
-       vw_act.initial_source_of_funds,
-       vw_act.usa_patriot_act_exempt_reason,
-       vw_act.country_of_citizenship_code,
-       vw_act.country_of_citizenship_value,
-       vw_act.country_of_residence_code,
-       vw_act.country_of_residence_value,
-       vw_act.birth_date,
-       vw_act.age_based_fund_roll_exempt,
-       vw_act.money_fundreform_retail,
-       vw_act.trusted_contact_status,
-       vw_act.regulatory_account_type_category,
-       vw_act.account_managed_by_trust_comp_id,
-       vw_act.voting_auth,
-       vw_act.customer_type,
-       vw_act.fulfillment_method,
-       vw_act.credit_interest_indicator,
-       vw_act.ama_indicator,
-       vw_act.ama_indicator_value,
-       vw_act.tax_id_type,
-       vw_act.tax_id_number,
-       vw_act.date_tax_id_applied_for,
-       vw_act.w_8_w_9_indicator,
-       vw_act.w_8_w_9_date_signed,
-       vw_act.w_8_w_9_effective_date,
-       vw_act.w_8_w_9_document_type,
-       vw_act.w_8_date_signed,
-       vw_act.w_8_effective_date,
-       vw_act.w_9_date_signed,
-       vw_act.w_9_effective_date,
-       vw_act.tax_status,
-       vw_act.b_notice_reason_code,
-       vw_act.first_b_notice_status,
-       vw_act.date_first_b_notice_status_issued_enforced,
-       vw_act.date_first_notice_status_satisfied,
-       vw_act.second_b_notice_status,
-       vw_act.date_second_b_notice_status_issued_enforced,
-       vw_act.date_second_b_notice_status_satisfied,
-       vw_act.c_notice_status,
-       vw_act.date_c_notice_status_issued_enforced,
-       vw_act.date_c_notice_status_satisfied,
-       vw_act.old_account_number,
-       vw_act.original_account_open_date,
-       vw_act.unidentified_large_trader_id,
-       vw_act.large_trader_type_code,
-       vw_act.large_trader_type_last_change_date,
-       vw_act.initial_source_of_funds_other,
-       vw_act.finance_away,
-       vw_act.account_funding_date,
-       vw_act.statement_currency_code,
-       vw_act.future_statement_currency_code,
-       vw_act.future_statement_currency_code_effective_date,
-       vw_act.account_level_routing_code_1,
-       vw_act.account_level_routing_code_2,
-       vw_act.account_level_routing_code_3,
-       vw_act.account_level_routing_code_4,
-       vw_act.self_directed_ind,
-       vw_act.digital_advice_ind,
-       vw_act.pte_account_ind,
-       vw_act.first_ip,
-       vw_act.second_ip,
-       vw_act.third_ip,
-       vw_act.fourth_ip,
-       vw_act.fifth_ip,
-       vw_act.sixth_ip,
-       vw_act.seventh_ip,
-       vw_act.eighth_ip,
-       vw_act.ninth_ip,
-       vw_act.tenth_ip,
-       vw_act.alert_im_acornym,
-       vw_act.alert_im_access_code,
-       vw_act.broker_acronym,
-       vw_act.cross_reference_indicator,
-       vw_act.bny_trust_indicator,
-       vw_act.source_of_asset_at_acct_opening,
-       vw_act.commission_doscount_code,
-       vw_act.external_account_number,
-       vw_act.confirmation_suppression_indicator,
-       vw_act.date_last_mail_sent,
-       vw_act.date_last_mail_sent_outside,
-       vw_act.fully_paid_lending_agreement_indicator,
-       vw_act.fully_paid_lending_agreement_date,
-       vw_act.custodian_account_type,
-       vw_act.mifid_customer_categorization,
-       vw_act.cash_management_tran_code,
-       vw_act.sweep_status_indicator,
-       vw_act.date_sweep_activated,
-       vw_act.date_sweep_details_changed,
-       vw_act.cober_margin_debit_indicator,
-       vw_act.first_fund_sweep_account_id,
-       vw_act.firstfund_sweep_account_percent,
-       vw_act.first_fundsweep_account_redemption_priority,
-       vw_act.second_fund_sweep_account_id,
-       vw_act.second_fund_sweep_account_percent,
-       vw_act.second_fundsweep_account_redemption_priority,
-       vw_act.type_of_bank_account,
-       vw_act.banklink_aba_number,
-       vw_act.banklink_dda_number,
-       vw_act.fund_bank_indicator,
-       vw_act.w_9_corp_tax_classification_code,
-       vw_act.combined_margin_acct_indicator,
-       vw_act.pledge_collateral_account_indicator,
-       vw_act.finra_institutional_account_code,
-       vw_act.proposed_account_reference_id,
-       vw_act.advisor_model_id,
-       vw_act.firm_model_style_id,
-       vw_act.dvp_restriction_code,
-       vw_act.dvp_restriction_exp_date,
-       vw_act.escheatment_withholding_ind,
-       vw_act.source_of_origination,
-       vw_act.source_of_persona,
-       vw_act.client_onboarding_method,
-       vw_act.tax_filing_code,
-       vw_act.nor_purpose_collateral_acct_ind,
-       vw_act.addr_1_trx_code,
-       vw_act.addr_1_special_handling_ind,
-       vw_act.addr_1_delivery_id,
-       vw_act.addr_1_attention_line_prefix,
-       vw_act.addr_1_attention_line_detail,
-       vw_act.addr_1_line_1,
-       vw_act.addr_1_line_2,
-       vw_act.addr_1_line_3,
-       vw_act.addr_1_line_4,
-       vw_act.addr_1_city_state,
-       vw_act.addr_1_country_code,
-       vw_act.addr_2_trx_code,
-       vw_act.addr_2_special_handling_ind,
-       vw_act.addr_2_delivery_id,
-       vw_act.addr_2_attention_line_prefix,
-       vw_act.addr_2_attention_line_detail,
-       vw_act.addr_2_line_1,
-       vw_act.addr_2_line_2,
-       vw_act.addr_2_line_3,
-       vw_act.addr_2_line_4,
-       vw_act.addr_2_city_state,
-       vw_act.addr_2_country_code,
-       vw_act.account_description,
-       vw_act.set_as_mail_addr_2_ind,
-       vw_act.principal_billing_allocation_pct,
-       vw_act.seasonal_addr_id_1,
-       vw_act.from_date_1,
-       vw_act.to_date_1,
-       vw_act.seasonal_addr_id_2,
-       vw_act.from_date_2,
-       vw_act.to_date_2,
-       vw_act.seasonal_addr_id_3,
-       vw_act.from_date_3,
-       vw_act.to_date_3,
-       vw_act.cost_basis_acct_system,
-       vw_act.disposition_method_mutual_funds,
-       vw_act.disposition_method_other,
-       vw_act.disposition_method_stocks,
-       vw_act.amortize_taxable_premium_bonds,
-       vw_act.accrue_market_disc_based_on,
-       vw_act.accrue_market_disc_income,
-       vw_act.addr_3_trx_code,
-       vw_act.addr_3_special_handling_ind,
-       vw_act.addr_3_delivery_id,
-       vw_act.addr_3_attention_line_prefix,
-       vw_act.addr_3_attention_line_detail,
-       vw_act.addr_3_line_1,
-       vw_act.addr_3_line_2,
-       vw_act.addr_3_line_3,
-       vw_act.addr_3_line_4,
-       vw_act.addr_3_city_state,
-       vw_act.addr_3_country_code,
-       vw_act.set_as_mail_addr_3_ind,
-       vw_act.addr_4_trx_code,
-       vw_act.addr_4_special_handling_ind,
-       vw_act.addr_4_delivery_id,
-       vw_act.addr_4_attention_line_prefix,
-       vw_act.addr_4_attention_line_detail,
-       vw_act.addr_4_line_1,
-       vw_act.addr_4_line_2,
-       vw_act.addr_4_line_3,
-       vw_act.addr_4_line_4,
-       vw_act.addr_4_city_state,
-       vw_act.addr_4_country_code,
-       vw_act.set_as_mail_addr_4_ind,
-       vw_act.addr_5_trx_code,
-       vw_act.addr_5_special_handling_ind,
-       vw_act.addr_5_delivery_id,
-       vw_act.addr_5_attention_line_prefix,
-       vw_act.addr_5_attention_line_detail,
-       vw_act.addr_5_line_1,
-       vw_act.addr_5_line_2,
-       vw_act.addr_5_line_3,
-       vw_act.addr_5_line_4,
-       vw_act.addr_5_city_state,
-       vw_act.addr_5_country_code,
-       vw_act.set_as_mail_addr_5_ind,
-       vw_act.addr_6_trx_code,
-       vw_act.addr_6_special_handling_ind,
-       vw_act.addr_6_delivery_id,
-       vw_act.addr_6_attention_line_prefix,
-       vw_act.addr_6_attention_line_detail,
-       vw_act.addr_6_line_1,
-       vw_act.addr_6_line_2,
-       vw_act.addr_6_line_3,
-       vw_act.addr_6_line_4,
-       vw_act.addr_6_city_state,
-       vw_act.addr_6_country_code,
-       vw_act.set_as_mail_addr_6_ind,
-       vw_act.addr_7_trx_code,
-       vw_act.addr_7_special_handling_ind,
-       vw_act.addr_7_delivery_id,
-       vw_act.addr_7_attention_line_prefix,
-       vw_act.addr_7_attention_line_detail,
-       vw_act.addr_7_line_1,
-       vw_act.addr_7_line_2,
-       vw_act.addr_7_line_3,
-       vw_act.addr_7_line_4,
-       vw_act.addr_7_city_state,
-       vw_act.addr_7_country_code,
-       vw_act.set_as_mail_addr_7_ind,
-       vw_act.record_transaction_code,
-       vw_act.base_currency,
-       vw_act.income_currency,
-       vw_act.statement_language,
-       vw_act.statement_format_code,
-       vw_act.msrb_statement_ind,
-       vw_act.pep,
-       vw_act.first_name_pep,
-       vw_act.last_name_pep,
-       vw_act.suffix_pep,
-       vw_act.political_office_held,
-       vw_act.country_of_office,
-       vw_act.foreign_bank_account_ind,
-       vw_act.foreign_bank_cert_date,
-       vw_act.foreign_bank_cert_exp_date,
-       vw_act.central_bank_ind,
-       vw_act.acct_foreign_financial_inst,
-       vw_act.foreign_bank_acct_oper_1,
-       vw_act.foreign_bank_acct_oper_2,
-       vw_act.foreign_bank_acct_oper_3,
-       vw_act.number_people_own,
-       vw_act.proprietary_acct_owned,
-       vw_act.tel_1_transaction_code,
-       vw_act.tel_1_us_ind,
-       vw_act.tel_1_type_id,
-       vw_act.tel_1_number,
-       vw_act.tel_1_extension,
-       vw_act.tel_2_transaction_code,
-       vw_act.tel_2_us_ind,
-       vw_act.tel_2_type_id,
-       vw_act.tel_2_number,
-       vw_act.tel_2_extension,
-       vw_act.tel_3_transaction_code,
-       vw_act.tel_3_us_ind,
-       vw_act.tel_3_type_id,
-       vw_act.tel_3_number,
-       vw_act.tel_3_extension,
-       vw_act.tel_4_transaction_code,
-       vw_act.tel_4_us_ind,
-       vw_act.tel_4_type_id,
-       vw_act.tel_4_number,
-       vw_act.tel_4_extension,
-       vw_act.tel_5_transaction_code,
-       vw_act.tel_5_us_ind,
-       vw_act.tel_5_type_id,
-       vw_act.tel_5_number,
-       vw_act.tel_5_extension,
-       vw_act.tel_6_transaction_code,
-       vw_act.tel_6_us_ind,
-       vw_act.tel_6_type_id,
-       vw_act.tel_6_number,
-       vw_act.tel_6_extension,
-       vw_act.tel_7_transaction_code,
-       vw_act.tel_7_us_ind,
-       vw_act.tel_7_type_id,
-       vw_act.tel_7_number,
-       vw_act.tel_7_extension,
-       vw_act.tel_8_transaction_code,
-       vw_act.tel_8_us_ind,
-       vw_act.tel_8_type_id,
-       vw_act.tel_8_number,
-       vw_act.tel_8_extension,
-       vw_act.email_address,
-       vw_act.external_position_ind,
-       vw_act.purge_eligible_ind,
-       vw_act.advisory_acct_ind,
-       vw_act.product_profile_code,
-       vw_act.cents_per_share_discount,
-       vw_act.option_disclosure_date,
-       vw_act.country_acct_level_tax_residency
-FROM pershing.vw_maestro_cuenta vw_act
-         LEFT JOIN clientes.vw_maestro_clientes_cuentas maestro_crm
-                   ON vw_act.id_custodian::text = maestro_crm.id_custodio::text AND
-                      vw_act.account_number::text = maestro_crm.id_cuenta_custodio::text;
-
-
-create view public.vw_reporte_maestro_datos_clientes
+create or replace view public.vw_reporte_maestro_datos_clientes
 as
 SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
        id_reg,
+       id_interno_cliente,
        custodian,
        client_id,
        tipo_identificador_cliente,
+       glosa_identificador_cliente,
        firm_no,
        sub_no,
        rep_no,
        office_id,
        account_no,
        name,
-       vw_union.fee,
+       fee,
        full_name,
        address,
        short_name,
@@ -526,9 +170,11 @@ FROM (SELECT 'B'::text                                                          
              rank()
              OVER (ORDER BY vw_acct.id, vw_acct.process_date, vw_acct.custodian, vw_acct.account_no)                    AS row_id,
              vw_acct.id                                                                                                 AS id_reg,
+             vw_acct.id_interno_cliente                                                                                 as id_interno_cliente,
              upper(vw_acct.custodian::text)::character varying(100)                                                     AS custodian,
              upper(vw_acct.client_id::text)::character varying(100)                                                     AS client_id,
              vw_acct.tipo_identificador_cliente,
+             vw_acct.glosa_identificador_cliente,
              vw_acct.ibd_number                                                                                         AS firm_no,
              vw_acct.id_office::character varying(100)                                                                  AS sub_no,
              upper(vw_acct.ip_number::text)::character varying(100)                                                     AS rep_no,
@@ -581,11 +227,73 @@ FROM (SELECT 'B'::text                                                          
              true                                                                                                       AS is_last_info,
              true                                                                                                       AS is_last_schema_by_account_no,
              vw_acct.fee
-      FROM tbvw_maestro_cuentas_pershing vw_acct
-      ) vw_union
+      FROM tbvw_maestro_cuentas_pershing vw_acct) vw_union
 ORDER BY process_date, client_id, account_no;
 
 
+--TODO: Re crear objetos pendientes con sincronización
+
+CREATE OR REPLACE VIEW public.vw_reporte_maestro_datos_relacionados AS
+    SELECT
+        ROW_NUMBER() over (ORDER BY vw_cte.process_date, vw_cte.client_id, vw_cte.custodian, vw_cte.account_no, vw_rel.id_relacionado) as id,
+        vw_cte.process_date, vw_cte.id_interno_cliente,
+        vw_cte.custodian, vw_cte.client_id, vw_cte.account_no,
+        vw_cte.tipo_identificador_cliente, vw_cte.glosa_identificador_cliente, vw_cte.office_id, vw_cte.name,
+        vw_rel.id_relacionado, vw_rel.identificador_relacionado, vw_rel.nombre_relacionado,
+        vw_rel.tipo_identificador as tipo_identificador_relacionado, vw_rel.glosa_tipo_identificador as glosa_tipo_identificador_relacionado,
+        vw_rel.id_cargo_relacionado as id_cargo, vw_rel.glosa as cargo
+    FROM public.vw_reporte_maestro_datos_clientes vw_cte
+    INNER JOIN clientes.vw_maestro_relacionado vw_rel
+    ON vw_cte.id_interno_cliente = vw_rel.id_cliente_relacionado
+;
+
+create or replace function public.fn_reporte_maestro_datos_relacionados(_process_date character varying) returns SETOF public.vw_reporte_maestro_datos_relacionados
+    language plpgsql
+as
+$$
+    BEGIN
+
+
+    RETURN QUERY
+    SELECT
+        *
+    FROM public.vw_reporte_maestro_datos_relacionados vw_rel
+    WHERE vw_rel.process_date = _process_date
+
+    ;
+
+    RETURN;
+    END;
+$$;
+
+
+--========================================================================
+--========================================================================
+--========================================================================
+--
+
+create table public.tbvw_maestro_relacionados_pershing
+(
+    id              bigint generated always as identity
+        constraint tbvw_maestro_relacionados_pershing_pk
+            primary key,
+    process_date                         varchar(100),
+    id_interno_cliente                   integer,
+    custodian                            varchar(100),
+    client_id                            varchar(100),
+    account_no                           varchar(100),
+    tipo_identificador_cliente           varchar(100),
+    glosa_identificador_cliente          varchar(100),
+    office_id                            varchar(100),
+    name                                 varchar(100),
+    id_relacionado                       integer,
+    identificador_relacionado            varchar(100),
+    nombre_relacionado                   varchar(100),
+    tipo_identificador_relacionado       varchar(100),
+    glosa_tipo_identificador_relacionado varchar(100),
+    id_cargo                             varchar(100),
+    cargo                                varchar(100)
+);
 
 
 create or replace function public.fn_reporte_maestro_materializa_data(_process_date character varying, _tipo_maestro character varying, _custodio character varying) returns bigint
@@ -597,7 +305,7 @@ DECLARE _row_count  BIGINT;
 
     BEGIN
 
-    IF (_tipo_maestro NOT IN ('CTA', 'SLD', 'MOV') ) THEN
+    IF (_tipo_maestro NOT IN ('CTA', 'SLD', 'MOV', 'REL') ) THEN
         RAISE NOTICE 'Tipo de maestro no válido [%]', _tipo_maestro;
         return -1;
     end if;
@@ -648,32 +356,35 @@ DECLARE _row_count  BIGINT;
         END IF;
     END IF;
 
+
+
+    IF (_tipo_maestro='REL') THEN
+        IF (_custodio ='PERSHING') THEN
+            DELETE FROM public.tbvw_maestro_relacionados_pershing WHERE process_date=_process_date;
+            INSERT INTO public.tbvw_maestro_relacionados_pershing
+                (process_date, id_interno_cliente, custodian, client_id, account_no, tipo_identificador_cliente, glosa_identificador_cliente, office_id, name, id_relacionado, identificador_relacionado, nombre_relacionado, tipo_identificador_relacionado, glosa_tipo_identificador_relacionado, id_cargo, cargo)
+                SELECT
+                    process_date, id_interno_cliente, custodian, client_id, account_no, tipo_identificador_cliente, glosa_identificador_cliente, office_id, name, id_relacionado, identificador_relacionado, nombre_relacionado, tipo_identificador_relacionado, glosa_tipo_identificador_relacionado, id_cargo, cargo
+                FROM public.vw_reporte_maestro_datos_relacionados where process_date=_process_date;
+            GET DIAGNOSTICS _row_count = ROW_COUNT;
+            RETURN _row_count;
+        END IF;
+    END IF;
+
     return NULL::BIGINT;
     END;
 $$;
 
---TODO: Re crear objetos pendientes con sincronización
 
 
---========================================================================
---========================================================================
---========================================================================
---
-
-
-
---========================================================================
---========================================================================
---========================================================================
---
-
-
-
---========================================================================
---========================================================================
---========================================================================
---
-
+--Carga histórica
+INSERT INTO public.tbvw_maestro_relacionados_pershing
+(process_date, id_interno_cliente, custodian, client_id, account_no, tipo_identificador_cliente, glosa_identificador_cliente, office_id, name, id_relacionado, identificador_relacionado, nombre_relacionado, tipo_identificador_relacionado, glosa_tipo_identificador_relacionado, id_cargo, cargo)
+SELECT
+    process_date, id_interno_cliente, custodian, client_id, account_no, tipo_identificador_cliente, glosa_identificador_cliente, office_id, name, id_relacionado, identificador_relacionado, nombre_relacionado, tipo_identificador_relacionado, glosa_tipo_identificador_relacionado, id_cargo, cargo
+FROM public.vw_reporte_maestro_datos_relacionados --where process_date=_process_date
+ORDER BY process_date ASC
+;
 
 
 

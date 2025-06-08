@@ -29,11 +29,13 @@ public class ReportesMaestrosHelper {
     public static final String REPORTE_CLIENTES     = "MaestroCuentas";
     public static final String REPORTE_SALDOS       = "MaestroSaldos";
     public static final String REPORTE_MOV          = "MaestroMovimientos";
+    public static final String REPORTE_REL          = "MaestroRelacionados";
     public static final String FORMATO_FECHA_BD    = "yyyy-MM-dd";
     public static final String FORMATO_FECHA_EXCEL = "mm/dd/yyyy";
     private static final String FIELD_CUSTODIAN      = "custodian";
     private static final String FIELD_CLIENT_ID      = "client_id";
     private static final String FIELD_TIPO_CLIENT_ID      = "tipo_id";
+    private static final String FIELD_TIPO_CLIENT_GLOSA      = "glosa_tipo_id";
     private static final String FIELD_CLIENT_NAME      = "name";
     private static final String FIELD_OFFICE_ID      = "office_id";
     private static final String FIELD_ACCOUNT_NO      = "account_no";
@@ -69,6 +71,12 @@ public class ReportesMaestrosHelper {
     private static final String FIELD_SOURCE_CODE = "source_code";
     private static final String FIELD_RETIRO = "retiro";
     private static final String FIELD_RECAUDO = "recaudo";
+    private static final String FIELD_REL_ID = "id_relacionado";
+    private static final String FIELD_REL_NOMBRE = "nombre_relacionado";
+    private static final String FIELD_REL_TIPO_ID = "tipo_id_relacionado";
+    private static final String FIELD_REL_TIPO_ID_GLOSA = "glosa_tipo_id_relacionado";
+    private static final String FIELD_REL_CARGO_ID = "id_cargo_relacionado";
+    private static final String FIELD_REL_CARGO_GLOSA = "glosa_cargo_relacionado";
     @Autowired
     private AppConfig appConfig;
     @Autowired
@@ -130,6 +138,15 @@ public class ReportesMaestrosHelper {
         };
     }
 
+    public String[] encabezadoRelacionados(String tipoArchivo) throws QandeMmiiException {
+        isValidTipoArchivo(tipoArchivo, true);
+        return new String[]{
+            FIELD_PROCESS_DATE, FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_ACCOUNT_NO, FIELD_TIPO_CLIENT_ID,
+            FIELD_TIPO_CLIENT_GLOSA, FIELD_OFFICE_ID, FIELD_CLIENT_NAME, FIELD_REL_ID, FIELD_REL_NOMBRE,
+            FIELD_REL_TIPO_ID, FIELD_REL_TIPO_ID_GLOSA, FIELD_REL_CARGO_ID, FIELD_REL_CARGO_GLOSA
+        };
+    }
+
     public String[] encabezadoMovimientos(String tipoArchivo) throws QandeMmiiException {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
@@ -185,7 +202,8 @@ public class ReportesMaestrosHelper {
     private boolean isValidTipoReporte(String tipoReporte, boolean throwException) throws QandeMmiiException {
         if ( (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_CLIENTES)) ||
                 (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_SALDOS)) ||
-                (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_MOV))
+                (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_MOV)) ||
+                (tipoReporte.equals(ReportesMaestrosHelper.REPORTE_REL))
         ) {
             return true;
         }
