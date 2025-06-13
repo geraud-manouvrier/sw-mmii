@@ -2,9 +2,8 @@ package cl.qande.mmii.app.util.helper;
 
 import cl.qande.mmii.app.config.properties.AppApiProperties;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IParametroCoreService;
+import cl.qande.mmii.app.models.service.ParametroCoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,11 +25,11 @@ public class ApiHelper {
     public static final String HEADER_JSON_KEY = "Content-Type";
     public static final String HEADER_JSON_VAL = "application/json";
 
-    private final IParametroCoreService parametroCoreService;
+    private final ParametroCoreService parametroCoreService;
     private final AppApiProperties appApiProperties;
 
     @Autowired
-    public ApiHelper(IParametroCoreService parametroCoreService, AppApiProperties appApiProperties) {
+    public ApiHelper(ParametroCoreService parametroCoreService, AppApiProperties appApiProperties) {
         this.parametroCoreService = parametroCoreService;
         this.appApiProperties = appApiProperties;
     }

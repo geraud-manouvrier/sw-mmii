@@ -2,10 +2,10 @@ package cl.qande.mmii.app.controllers.mantenedores;
 
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
-import cl.qande.mmii.app.models.dto.ClienteDto;
-import cl.qande.mmii.app.models.dto.ComisionCuentaDto;
-import cl.qande.mmii.app.models.dto.ComisionMaestroDto;
-import cl.qande.mmii.app.models.dto.PersonaRelacionadaDto;
+import cl.qande.mmii.app.models.dto.clientes.ClienteDto;
+import cl.qande.mmii.app.models.dto.clientes.ComisionCuentaDto;
+import cl.qande.mmii.app.models.dto.clientes.ComisionMaestroDto;
+import cl.qande.mmii.app.models.dto.clientes.PersonaRelacionadaDto;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ApiRestClientService;
 import cl.qande.mmii.app.models.service.EnrolamientoClientesService;

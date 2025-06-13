@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Diferencias Fee</h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee>"*/-->
+
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${titulo}"></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div class="form-group row">
+                        <label for="processDate" class="col-md-1 col-form-label">Process Date</label>
+                        <div class="col-md-2">
+                            <input class="form-control" type="text" placeholder="yyyy-MM-dd" id="processDate" name="processDate" th:value="${processDate}">
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="buscar()"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Listado</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-reporte" th:if="${!#lists.isEmpty(lista_registros)}"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+
+        var dsReporte   = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_registros)}]]*/ '[]');
+        var colsReporte = createDefaultColumns(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).getClassFields(T(cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee))}]]*/ [], true);
+
+        updateColumnAttribute(colsReporte, ['processDate'], 'visible', false);
+        updateColumnAttribute(colsReporte, ['flagFee'], 'headerText', '¿Fee OK?');
+        updateColumnAttribute(colsReporte, ['glosa'], 'headerText', 'Tramo');
+        updateColumnAttribute(colsReporte, ['saldoDia', 'montoMin', 'montoMax', 'feeSeg', 'feeCte'], 'format', 'N4');
+        updateColumnAttribute(colsReporte, ['montoMin', 'montoMax'], 'format', 'N0');
+
+        var processDate     = $('#processDate').val().replaceAll('-','');
+        var suffixFileName  = '_'+processDate;
+        window.appPubGlobVar.gridRetornos     = createDefaultGridWithWrapper('grid-wrapper-reporte', dsReporte, colsReporte, 'DiferenciasFee' + suffixFileName, ';', 0, { columns: ['flagFee'] });
+
+    });
+
+    /*]]>*/
+</script>
+
+
+<script>
+    createCustomCalendarSingleHtml("processDate", getSingleRangesMaestros());
+
+    function buscar() {
+        var corteUrl = 'diferencias_fee';
+        var oldUrl = location.href;
+        var processDate = $('#processDate').val().replaceAll('-','');
+        var newUrl = oldUrl.substring(0, oldUrl.indexOf(corteUrl)) + corteUrl + '/' + processDate;
+        location.href = newUrl;
+    }
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

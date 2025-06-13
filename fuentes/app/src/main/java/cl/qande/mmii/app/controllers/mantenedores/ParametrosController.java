@@ -1,9 +1,9 @@
 package cl.qande.mmii.app.controllers.mantenedores;
 
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
-import cl.qande.mmii.app.models.dto.ParFeeSegmentoDto;
+import cl.qande.mmii.app.models.dto.clientes.ParFeeSegmentoDto;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IMantenedoresParametrosService;
+import cl.qande.mmii.app.models.service.MantenedoresParametrosService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
@@ -41,11 +41,11 @@ public class ParametrosController {
     private static final String TITULO_FEE_SEGMENTO = "Mantenedor Fee Segmentos";
     private static final String URL_FEE_SEGMENTO = "/mantenedores/parametros/fee_segmento";
 
-    private final IMantenedoresParametrosService mantenedoresParametrosService;
+    private final MantenedoresParametrosService mantenedoresParametrosService;
     private final SesionWeb sesionWeb;
 
     @Autowired
-    public ParametrosController(IMantenedoresParametrosService mantenedoresParametrosService, SesionWeb sesionWeb) {
+    public ParametrosController(MantenedoresParametrosService mantenedoresParametrosService, SesionWeb sesionWeb) {
         this.mantenedoresParametrosService = mantenedoresParametrosService;
         this.sesionWeb = sesionWeb;
     }

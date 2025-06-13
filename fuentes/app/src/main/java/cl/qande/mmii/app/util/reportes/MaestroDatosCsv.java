@@ -8,7 +8,7 @@ import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ReporteMaestroDatosService;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
-import cl.qande.mmii.app.util.helper.mapper.ReportesMaestrosMapper;
+import cl.qande.mmii.app.util.mapper.ReportesMaestrosMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

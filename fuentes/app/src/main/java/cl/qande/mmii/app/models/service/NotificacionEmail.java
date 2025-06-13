@@ -9,7 +9,7 @@ import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.mail.EmailDetails;
 import cl.qande.mmii.app.util.helper.CustomLog;
-import cl.qande.mmii.app.util.helper.mapper.EntityToHtml;
+import cl.qande.mmii.app.util.mapper.EntityToHtml;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +20,11 @@ public class NotificacionEmail {
 
     private static final String SUBJECT_OK = " - OK ";
     private static final String SUBJECT_ERROR = " - ERROR ";
-    private final IEmailService emailService;
+    private final EmailService emailService;
     private final AppNotificacionMailProperties appNotificacionMailProperties;
 
     @Autowired
-    public NotificacionEmail(IEmailService emailService, AppNotificacionMailProperties appNotificacionMailProperties) {
+    public NotificacionEmail(EmailService emailService, AppNotificacionMailProperties appNotificacionMailProperties) {
         this.emailService = emailService;
         this.appNotificacionMailProperties = appNotificacionMailProperties;
     }

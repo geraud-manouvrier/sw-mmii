@@ -1,10 +1,10 @@
 package cl.qande.mmii.app.controllers.mantenedores;
 
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
-import cl.qande.mmii.app.models.dto.ParSourceCodeDto;
+import cl.qande.mmii.app.models.dto.core.ParSourceCodeDto;
 import cl.qande.mmii.app.models.exception.DaoException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.IMantenedoresInstrumentosService;
+import cl.qande.mmii.app.models.service.MantenedoresInstrumentosService;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
@@ -36,10 +36,10 @@ public class ParametrosInstrumentosController {
     public static final String CONCAT_MSG_VALUE = "]: Valor registro [";
 
     private final SesionWeb sesionWeb;
-    private final IMantenedoresInstrumentosService mantenedoresInstrumentosService;
+    private final MantenedoresInstrumentosService mantenedoresInstrumentosService;
 
     @Autowired
-    public ParametrosInstrumentosController(SesionWeb sesionWeb, IMantenedoresInstrumentosService mantenedoresInstrumentosService) {
+    public ParametrosInstrumentosController(SesionWeb sesionWeb, MantenedoresInstrumentosService mantenedoresInstrumentosService) {
         this.sesionWeb = sesionWeb;
         this.mantenedoresInstrumentosService = mantenedoresInstrumentosService;
     }

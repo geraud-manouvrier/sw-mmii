@@ -4,7 +4,7 @@ import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.pershing.entity.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.helper.CustomLog;
-import cl.qande.mmii.app.util.helper.mapper.EntityTransform;
+import cl.qande.mmii.app.util.mapper.EntityTransform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

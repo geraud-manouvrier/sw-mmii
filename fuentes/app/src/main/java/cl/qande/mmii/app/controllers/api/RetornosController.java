@@ -9,7 +9,7 @@ import cl.qande.mmii.app.models.service.ControlDiarioService;
 import cl.qande.mmii.app.util.helper.ApiHelper;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.helper.CustomLog;
-import cl.qande.mmii.app.util.helper.mapper.RentabilidadCalculadaMapper;
+import cl.qande.mmii.app.util.mapper.rep_inv.RentabilidadCalculadaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -38,6 +38,7 @@ public class Menu {
     public static final String MANT_SRC_COD_PER ="MANT_SRC_COD_PER";
     //Control de operaciones
     public static final String CTRL_OPER_DIARIO   ="CTRL_OPER_DIARIO";
+    public static final String CTRL_DIFF_FEE   ="CTRL_DIFF_FEE";
     //Reportes SFL
     public static final String CONT_SFL_ACCT   ="CONT_SFL_ACCT";
     public static final String CONT_SFL_GACT   ="CONT_SFL_GACT";
@@ -179,6 +180,7 @@ public class Menu {
 
         ArrayList<OpcionMenu> opcionesControlOperaciones    = new ArrayList<>();
         opcionesControlOperaciones.add(new OpcionMenu(CTRL_OPER_DIARIO, "Control diario", "/reportes/controles/control_diario", false));
+        opcionesControlOperaciones.add(new OpcionMenu(CTRL_DIFF_FEE, "Tramos Fee", "/reportes/controles/diferencias_fee", false));
         categoriaControlOperaciones.setListaOpciones(opcionesControlOperaciones);
 
         ArrayList<OpcionMenu> opcionesReportesSfl    = new ArrayList<>();

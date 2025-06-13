@@ -16,7 +16,7 @@ public class UnzipPershing {
     @Autowired
     private ZipService zipService;
     @Autowired
-    private IProcesoFtpPershingService procesoFtpPershingService;
+    private ProcesoFtpPershingService procesoFtpPershingService;
     @Autowired
     private NotificacionEmail notificacionEmail;
     @Autowired

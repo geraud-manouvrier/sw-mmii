@@ -1,7 +1,24 @@
 --========================================================================
 --========================================================================
 --========================================================================
---
+-- Cruce de tramos de saldos diarios v/s tabla
+
+--Saldo diario (155)
+SELECT
+    process_date,
+    client_id, custodian, account_no,
+    sum(usde_market_value) AS usde_market_value
+FROM public.vw_reporte_maestro_datos_saldos
+GROUP BY process_date, client_id, custodian, account_no
+HAVING process_date = '20250605'
+;
+
+--Tabla de rangos
+select *
+FROM clientes.par_fee_segmento
+;
+
+
 
 --========================================================================
 --========================================================================

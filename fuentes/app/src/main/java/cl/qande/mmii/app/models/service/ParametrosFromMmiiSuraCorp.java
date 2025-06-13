@@ -14,10 +14,10 @@ import java.util.List;
 public class ParametrosFromMmiiSuraCorp {
 
     private final ApiRestClientService apiRestClientService;
-    private final IMantenedoresInstrumentosService mantenedoresInstrumentosService;
+    private final MantenedoresInstrumentosService mantenedoresInstrumentosService;
 
     @Autowired
-    public ParametrosFromMmiiSuraCorp(ApiRestClientService apiRestClientService, IMantenedoresInstrumentosService mantenedoresInstrumentosService) {
+    public ParametrosFromMmiiSuraCorp(ApiRestClientService apiRestClientService, MantenedoresInstrumentosService mantenedoresInstrumentosService) {
         this.apiRestClientService = apiRestClientService;
         this.mantenedoresInstrumentosService = mantenedoresInstrumentosService;
     }

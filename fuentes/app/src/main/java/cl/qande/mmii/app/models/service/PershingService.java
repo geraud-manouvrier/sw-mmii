@@ -2,7 +2,6 @@ package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
-import cl.qande.mmii.app.models.service.impl.SflImpl;
 import cl.qande.mmii.app.util.helper.ArchivosHelper;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.helper.CustomLog;
@@ -27,11 +26,11 @@ public class PershingService {
     @Autowired
     private CalendarioHelper calendarioHelper;
     @Autowired
-    private IProcesoFtpPershingService procesoFtpPershingService;
+    private ProcesoFtpPershingService procesoFtpPershingService;
     @Autowired
     private UnzipPershing unzipPershing;
     @Autowired
-    private ISflService sflService;
+    private SflService sflService;
     @Autowired
     private ArchivosHelper archivosHelper;
 
@@ -142,14 +141,14 @@ public class PershingService {
         try {
             var fullPathFile    = "DummyFilePath";
             procesoFtpPershingService.procesaFtp(processDate, processStamp, "Iniciando replicación de datos con id ["+idProceso+"] y fecha ["+processDate+"]");
-            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.ACCT_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.ACCT_SFL_EXT+ SUFFIX_REPLIC);
-            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.ISCA_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.ISCA_SFL_EXT+ SUFFIX_REPLIC);
-            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.GCUS_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.GCUS_SFL_EXT+ SUFFIX_REPLIC);
-            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflImpl.GMON_SFL_EXT);
-            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL +SflImpl.GMON_SFL_EXT+ SUFFIX_REPLIC);
+            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflService.ACCT_SFL_EXT);
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL + SflService.ACCT_SFL_EXT+ SUFFIX_REPLIC);
+            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflService.ISCA_SFL_EXT);
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL + SflService.ISCA_SFL_EXT+ SUFFIX_REPLIC);
+            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflService.GCUS_SFL_EXT);
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL + SflService.GCUS_SFL_EXT+ SUFFIX_REPLIC);
+            sflService.procesaSfl(idProceso, processDate, processStamp, fullPathFile, SflService.GMON_SFL_EXT);
+            procesoFtpPershingService.procesaFtp(processDate, processStamp, CONCAT_MSG_SFL + SflService.GMON_SFL_EXT+ SUFFIX_REPLIC);
         } catch (QandeMmiiException e) {
             throw new RuntimeException(e);
         }
