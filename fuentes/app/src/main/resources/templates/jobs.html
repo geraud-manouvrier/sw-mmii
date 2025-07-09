@@ -45,6 +45,8 @@
                             <p>3. Al reprocesar Maestros desde este panel, NO se enviará mail de control diario (aunque si se ejecutará).</p>
                             <p>4. Malla diaria NO CONSIDERA FECHA ingresada, usará siempre la fecha por defecto de cada job (T-1 normalmente). NO USAR para reprocesar fechas pasadas.</p>
                             <p>5. Cálculo Diario Retornos: Usar mismo Process Date Start/End y con el día <b>DESDE</b> el cual ejecutar el cálculo.</p>
+                            <p>6. Control Tramos Fee: No es necesario Process Date Start/End.</p>
+                            <p>7. Control Cuadre Fee: Usar mismo Process Date Start/End.</p>
                         </div>
                     </div>
 
@@ -94,6 +96,10 @@
                 </div>
                 <div class="card-footer">
                     <a class="btn btn-app" onclick="procesar('malla_diaria')"><i class="fas fa-tasks"></i>Malla Diaria</a>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-app" onclick="procesar('control_tramos_fee')"><i class="fas fa-tasks"></i>Control Tramos Fee</a>
+                    <a class="btn btn-app" onclick="procesar('control_cuadre_fee')"><i class="fas fa-tasks"></i>Control Cuadre Fee RIA</a>
                 </div>
                 <div class="card-footer">
                 </div>

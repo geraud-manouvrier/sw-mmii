@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.models.service;
 
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.AccountFee;
 import cl.qande.mmii.app.models.db.clientes.dao.*;
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro;
@@ -17,6 +18,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EnrolamientoClientesService {
@@ -39,9 +41,11 @@ public class EnrolamientoClientesService {
     private final ComisionMaestroMapper comisionMaestroMapper;
     private final PersonaRelacionadaMapper personaRelacionadaMapper;
     private final ParCargoMapper parCargoMapper;
+    private final ClienteCuentaMaestroMapperAccountFee clienteCuentaMaestroMapperAccountFee;
 
     @Autowired
-    public EnrolamientoClientesService(ITipoIdentificadorDao tipoIdentificadorDao, IClienteDao clienteDao, ICuentaDao cuentaDao, IComisionCuentaDao comisionCuentaDao, IComisionMaestroDao comisionMaestroDao, IClienteCuentaMaestroDao clienteCuentaMaestroDao, IPersonaRelacionadaDao personaRelacionadaDao, ParCargoDao parCargoDao, CuentaMapper cuentaMapper, TipoIdentificadorMapper tipoIdentificadorMapper, ClienteMapper clienteMapper, ComisionCuentaMapper comisionCuentaMapper, ComisionMaestroMapper comisionMaestroMapper, PersonaRelacionadaMapper personaRelacionadaMapper, ParCargoMapper parCargoMapper) {
+    public EnrolamientoClientesService(ITipoIdentificadorDao tipoIdentificadorDao, IClienteDao clienteDao, ICuentaDao cuentaDao, IComisionCuentaDao comisionCuentaDao, IComisionMaestroDao comisionMaestroDao, IClienteCuentaMaestroDao clienteCuentaMaestroDao, IPersonaRelacionadaDao personaRelacionadaDao, ParCargoDao parCargoDao, CuentaMapper cuentaMapper, TipoIdentificadorMapper tipoIdentificadorMapper, ClienteMapper clienteMapper, ComisionCuentaMapper comisionCuentaMapper, ComisionMaestroMapper comisionMaestroMapper, PersonaRelacionadaMapper personaRelacionadaMapper, ParCargoMapper parCargoMapper,
+                                       ClienteCuentaMaestroMapperAccountFee clienteCuentaMaestroMapperAccountFee) {
         this.tipoIdentificadorDao = tipoIdentificadorDao;
         this.clienteDao = clienteDao;
         this.cuentaDao = cuentaDao;
@@ -57,6 +61,7 @@ public class EnrolamientoClientesService {
         this.comisionMaestroMapper = comisionMaestroMapper;
         this.personaRelacionadaMapper = personaRelacionadaMapper;
         this.parCargoMapper = parCargoMapper;
+        this.clienteCuentaMaestroMapperAccountFee = clienteCuentaMaestroMapperAccountFee;
     }
 
     @Transactional
@@ -111,6 +116,15 @@ public class EnrolamientoClientesService {
         if (soloHabilitados)
             return clienteCuentaMaestroDao.findById_IdInternoClienteIsNotNullAndId_IdInternoCuentaIsNotNullAndHabilitadoIsTrue();
         return clienteCuentaMaestroDao.findAll();
+    }
+    @Transactional(readOnly = true)
+    public List<AccountFee> listarClienteCuentaMaestroAsAccountFee(String custodian, boolean soloHabilitados) {
+            var lista =  listarClienteCuentaMaestro(soloHabilitados);
+
+        return clienteCuentaMaestroMapperAccountFee.toDto(lista
+                .stream()
+                .filter(saldo -> custodian.equals(saldo.getIdCustodio().toUpperCase()))
+                .collect(Collectors.toList()));
     }
 
 

@@ -25,6 +25,9 @@ public class CustomScheduler {
     private final CronTrigger cronParametrosSuraCorp;
     private final CronTrigger cronReporteInversiones;
     private final CronTrigger cronReporteInversionesControles;
+    private final CronTrigger cronTramosFeeControl;
+    private final CronTrigger cronFeeControlCuadre;
+
     private final JobReportesMaestros jobReportesMaestros;
     private final JobControlDiario jobControlDiario;
     private final JobGetFromFtpPershing jobGetFromFtpPershing;
@@ -33,9 +36,11 @@ public class CustomScheduler {
     private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
     private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
     private final JobRepInvControl jobRepInvControl;
+    private final JobFeeControlTramos jobFeeControlTramos;
+    private final JobFeeControlValorRia jobFeeControlValorRia;
 
     @Autowired
-    public CustomScheduler(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronReportesMaestros, CronTrigger cronControlDiario, CronTrigger cronFtpPershing, CronTrigger cronMallaDiaria, CronTrigger cronCuentasNoMapeadas, CronTrigger cronParametrosSuraCorp, CronTrigger cronReporteInversiones, CronTrigger cronReporteInversionesControles, JobReportesMaestros jobReportesMaestros, JobControlDiario jobControlDiario, JobGetFromFtpPershing jobGetFromFtpPershing, JobMallaProcesos jobMallaProcesos, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl) {
+    public CustomScheduler(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronReportesMaestros, CronTrigger cronControlDiario, CronTrigger cronFtpPershing, CronTrigger cronMallaDiaria, CronTrigger cronCuentasNoMapeadas, CronTrigger cronParametrosSuraCorp, CronTrigger cronReporteInversiones, CronTrigger cronReporteInversionesControles, CronTrigger cronTramosFeeControl, CronTrigger cronFeeControlCuadre, JobReportesMaestros jobReportesMaestros, JobControlDiario jobControlDiario, JobGetFromFtpPershing jobGetFromFtpPershing, JobMallaProcesos jobMallaProcesos, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlValorRia jobFeeControlValorRia) {
         this.taskScheduler = taskScheduler;
         this.cronReportesMaestros = cronReportesMaestros;
         this.cronControlDiario = cronControlDiario;
@@ -45,6 +50,8 @@ public class CustomScheduler {
         this.cronParametrosSuraCorp = cronParametrosSuraCorp;
         this.cronReporteInversiones = cronReporteInversiones;
         this.cronReporteInversionesControles = cronReporteInversionesControles;
+        this.cronTramosFeeControl = cronTramosFeeControl;
+        this.cronFeeControlCuadre = cronFeeControlCuadre;
         this.jobReportesMaestros = jobReportesMaestros;
         this.jobControlDiario = jobControlDiario;
         this.jobGetFromFtpPershing = jobGetFromFtpPershing;
@@ -53,6 +60,8 @@ public class CustomScheduler {
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
         this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
         this.jobRepInvControl = jobRepInvControl;
+        this.jobFeeControlTramos = jobFeeControlTramos;
+        this.jobFeeControlValorRia = jobFeeControlValorRia;
     }
 
 
@@ -75,6 +84,10 @@ public class CustomScheduler {
 
         this.registraTarea(jobRepInvControl, cronReporteInversionesControles, jobRepInvControl.getJobName());
 
+        this.registraTarea(jobFeeControlTramos, cronTramosFeeControl);
+
+        this.registraTarea(jobFeeControlValorRia, cronFeeControlCuadre);
+
     }
 
     private void registraTarea(Runnable taskOrJob, Trigger triggerOrCron, String nombreTarea) {
@@ -84,6 +97,9 @@ public class CustomScheduler {
             taskScheduler.schedule(taskOrJob, triggerOrCron);
             CustomLog.getInstance().info("Tarea " + nombreTarea + " registrada");
         }
+    }
 
+    private void registraTarea(CustomJob taskOrJob, Trigger triggerOrCron) {
+        this.registraTarea(taskOrJob, triggerOrCron, taskOrJob.getJobName());
     }
 }

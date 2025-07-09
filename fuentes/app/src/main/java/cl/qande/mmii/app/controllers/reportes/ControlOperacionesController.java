@@ -67,26 +67,22 @@ public class ControlOperacionesController {
     }
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CTRL_DIFF_FEE))")
-    @GetMapping({"/diferencias_fee", "/diferencias_fee/{processDate}"})
+    @GetMapping({"/diferencias_fee"})
     public String diferenciasFeePorFecha(
-            @PathVariable(value = "processDate", required = false) String processDate,
             Model model) throws QandeMmiiException {
         var estadoPeticion   = new EstadoPeticion();
-        if (processDate == null || processDate.isEmpty())
-            processDate=calendarioHelper.defaultProcessDate();
 
         try {
-            model.addAttribute(CAMPO_LISTA_REGISTROS, coreDataService.reporteDiferenciasFee(processDate));
+            model.addAttribute(CAMPO_LISTA_REGISTROS, coreDataService.reporteDiferenciasFee());
             estadoPeticion.setEstadoOk("Listado OK", "Listado de Control Fee finalizado");
         } catch (Exception e) {
-            CustomLog.getInstance().error("Error al listar reporte Control Fee con fecha [" + processDate + "]: "+e.getMessage());
+            CustomLog.getInstance().error("Error al listar reporte Control Fee: "+e.getMessage());
             estadoPeticion.setEstadoError("Error al listar Clientes", "Se produjo un error al listar el reporte");
             model.addAttribute(CAMPO_LISTA_REGISTROS, null);
         }
         model.addAttribute(CAMPO_TITULO, "Reporte Tramos Fee");
         model.addAttribute(CAMPO_SESION, sesionWeb);
         model.addAttribute(CAMPO_STATUS, estadoPeticion);
-        model.addAttribute("processDate", processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CTRL_DIFF_FEE, false);
     }
 }

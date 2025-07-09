@@ -38,6 +38,9 @@ public class CustomThymeleafHelper {
     private static String defaultFormat(BigDecimal number, int decimals) {
         return formatNumberWithDecimals(number, decimals, BigDecimal.ZERO, DEFAULT_SEP_DEC, DEFAULT_SEP_MIL);
     }
+    private static String defaultFormat(BigDecimal number, int decimals, BigDecimal defaultValue) {
+        return formatNumberWithDecimals(number, decimals, defaultValue, DEFAULT_SEP_DEC, DEFAULT_SEP_MIL);
+    }
 
     private static String formatNumberWithDecimals(BigDecimal number, int decimals, BigDecimal defaultValue, String sepDec, String sepMil) {
 
@@ -73,6 +76,12 @@ public class CustomThymeleafHelper {
 
     public static String formatRentRepMaestrosWeb(BigDecimal number) {
         return defaultFormat(number, 10);
+    }
+    public static String formatNumber(BigDecimal number, int decimals, BigDecimal defaultValue) {
+        if (number==null && defaultValue==null) {
+            return "";
+        }
+        return defaultFormat(number, decimals, defaultValue);
     }
 
     public static String formatFechaRepMaestrosWeb(String fechaAsYmd) {

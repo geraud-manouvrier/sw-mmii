@@ -53,9 +53,11 @@ public class JobsController {
     private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
     private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
     private final JobRepInvControl jobRepInvControl;
+    private final JobFeeControlValorRia jobFeeControlValorRia;
+    private final JobFeeControlTramos jobFeeControlTramos;
 
     @Autowired
-    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl) {
+    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlValorRia jobFeeControlValorRia, JobFeeControlTramos jobFeeControlTramos) {
         this.sesionWeb = sesionWeb;
         this.calendarioHelper = calendarioHelper;
         this.reportesMaestrosService = reportesMaestrosService;
@@ -66,6 +68,8 @@ public class JobsController {
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
         this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
         this.jobRepInvControl = jobRepInvControl;
+        this.jobFeeControlValorRia = jobFeeControlValorRia;
+        this.jobFeeControlTramos = jobFeeControlTramos;
     }
 
     /****************************************************
@@ -339,6 +343,82 @@ public class JobsController {
                 } else {
                     sesionWeb.addNotification("Pre cálculo retornos finalizado correctamente: ["+startProcessDate+" en adelante]");
                     estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error en al ejecutar Pre cálculo retornos");
+                }
+            } else {
+                estadoPeticion.setEstadoError(ERROR_RANGO_FECHAS);
+            }
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError(MSG_JOB_ERR, PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
+    }
+
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
+    @GetMapping({"/process/control_tramos_fee/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+    })
+    public String jobsControlTramosFee(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+
+        return jobsControlTramosFeeHandler(startProcessDate, endProcessDate, model, true);
+    }
+
+    private String jobsControlTramosFeeHandler(
+            String startProcessDate, String endProcessDate,
+            Model model, boolean isAdmin) throws QandeMmiiException {
+        var estadoPeticion      = new EstadoPeticion();
+        var serviceJobHandler   = jobFeeControlTramos;
+        try {
+            CustomLog.getInstance().info("Iniciando Job "+serviceJobHandler.getJobName()+" con fecha [" + startProcessDate + " - "+ MSG_APPEND_USER + sesionWeb.getUsuario() + "]...", true);
+            if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {
+                if (serviceJobHandler.ejecutaJob(startProcessDate, endProcessDate, sesionWeb)) {
+                    CustomLog.getInstance().info("Job "+serviceJobHandler.getJobName()+" finalizado correctamente: ["+startProcessDate+" en adelante]", true);
+                    estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg(serviceJobHandler.getJobName(), "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
+                } else {
+                    CustomLog.getInstance().info(serviceJobHandler.getJobName()+" finalizado con errores", true);
+                    estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error al ejecutar "+serviceJobHandler.getJobName());
+                }
+            } else {
+                estadoPeticion.setEstadoError(ERROR_RANGO_FECHAS);
+            }
+        } catch (Exception e) {
+            estadoPeticion.setEstadoError(MSG_JOB_ERR, PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
+    }
+
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
+    @GetMapping({"/process/control_cuadre_fee/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+    })
+    public String jobsControlFee(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+
+        return jobsControlFeeHandler(startProcessDate, endProcessDate, model, true);
+    }
+
+    private String jobsControlFeeHandler(
+            String startProcessDate, String endProcessDate,
+            Model model, boolean isAdmin) throws QandeMmiiException {
+        var estadoPeticion      = new EstadoPeticion();
+        var serviceJobHandler   = jobFeeControlValorRia;
+        try {
+            CustomLog.getInstance().info("Iniciando Job "+serviceJobHandler.getJobName()+" con fecha [" + startProcessDate + " - "+ MSG_APPEND_USER + sesionWeb.getUsuario() + "]...", true);
+            if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {
+                if (serviceJobHandler.ejecutaJob(startProcessDate, endProcessDate, sesionWeb)) {
+                    CustomLog.getInstance().info("Job "+serviceJobHandler.getJobName()+" finalizado correctamente: ["+startProcessDate+" en adelante]", true);
+                    estadoPeticion.setEstadoOk(MSG_OK, this.setJobMsg(serviceJobHandler.getJobName(), "OK", sesionWeb.getUsuario(), startProcessDate, endProcessDate));
+                } else {
+                    CustomLog.getInstance().info(serviceJobHandler.getJobName()+" finalizado con errores", true);
+                    estadoPeticion.setEstadoError(MSG_JOB_ERR, "Error al ejecutar "+serviceJobHandler.getJobName());
                 }
             } else {
                 estadoPeticion.setEstadoError(ERROR_RANGO_FECHAS);

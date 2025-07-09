@@ -137,6 +137,19 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
 
     grid.appendTo(`#${gridElementId}`);
 
+    // Si el usuario pasó groupSettings.columns, agrupa y ajusta
+    if (groupSettings && Array.isArray(groupSettings.columns) && groupSettings.columns.length) {
+        // 1) Syncfusion ya agrupa por defecto al arrancar,
+        //    pero forzamos el hide/show para disparar el auto-fit
+        groupSettings.columns.forEach(field => {
+            const col = grid.columns.find(c => c.field === field);
+            if (col) {
+                grid.showColumns([col.headerText]);
+                grid.hideColumns([col.headerText]);
+            }
+        });
+    }
+
     function clickHandler(args, grid, fileName, csvSeparator) {
         switch (args.item.id) {
             case toolbarElementId + '-colapseall':

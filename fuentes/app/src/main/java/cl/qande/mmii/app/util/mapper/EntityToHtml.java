@@ -1,11 +1,16 @@
 package cl.qande.mmii.app.util.mapper;
 
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.FeeControlResponse;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
+import cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee;
 import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
+import cl.qande.mmii.app.util.helper.CustomThymeleafHelper;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface EntityToHtml {
 
@@ -134,6 +139,66 @@ public interface EntityToHtml {
         }
         if ( ! msg.isEmpty()) {
             bld.append(SALTO_CIERRE_HTML +msg+"</b>");
+        }
+        return bld.toString();
+    }
+
+    public static String resultadoJobToHtml(List<VwReporteDiferenciasFee> listaRegistros, String msg) {
+        StringBuilder bld = new StringBuilder();
+        if (listaRegistros==null || listaRegistros.isEmpty()) {
+            bld.append(NO_REG_HTML);
+        } else {
+            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Client Id", "Nombre Cliente", "Cuenta", "Fee Segmento", "Fee Asignado", "Saldo")).append(TABLE_BODY_BEGIN);
+            int rowIndex = 0;
+            for (var registro : listaRegistros) {
+                bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR)
+                        .append(ABRE_TD).append(registro.getClientId()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getNombre()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getAccountNo()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFeeSeg(), 4, null)).append(CIERRA_TD)
+                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFeeCte(), 4, null)).append(CIERRA_TD)
+                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getSaldoDia(), 4, null)).append(CIERRA_TD)
+                        .append(CIERRA_TR);
+            }
+            bld.append(TABLE_END);
+        }
+        if ( ! msg.isEmpty()) {
+            bld.append(SALTO_CIERRE_HTML +msg+"</b>");
+        }
+        return bld.toString();
+    }
+
+    public static String resultadoJobToHtml(FeeControlResponse listaRegistros, String msg) {
+        StringBuilder bld = new StringBuilder();
+        int omitidos    = 0;
+        if (listaRegistros==null || listaRegistros.getAccountsFeesValidated().isEmpty()) {
+            bld.append(NO_REG_HTML);
+        } else {
+            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Account N°", "Observaciones Control", "Fee (SW)", "Fee Contrato (RIA)")).append(TABLE_BODY_BEGIN);
+            int rowIndex = 0;
+            for (var registro : listaRegistros.getAccountsFeesValidated().stream()
+                    .sorted(Comparator.comparing(r -> r.getStatus() == null ? "" : r.getStatus()))
+                    .collect(Collectors.toList())
+                    ) {
+                var status = registro.getStatus();
+                if (status.isEmpty()) {
+                    omitidos++;
+                    continue;
+                }
+                bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR)
+                        .append(ABRE_TD).append(registro.getAccountNumber()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(status).append(CIERRA_TD)
+                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFee(), 4, null)).append(CIERRA_TD)
+                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFeeContract(), 4, null)).append(CIERRA_TD)
+                        .append(CIERRA_TR);
+            }
+            bld.append(TABLE_END);
+            if ( omitidos>0) {
+                bld.append(SALTO_CIERRE_HTML).append(omitidos).append(" registros omitidos por estar ok.").append("</b>");
+            }
+        }
+        if ( ! msg.isEmpty()) {
+            bld.append(SALTO_CIERRE_HTML).append(msg).append("</b>");
         }
         return bld.toString();
     }

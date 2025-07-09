@@ -56,4 +56,12 @@ public class SchedulingConfig {
     public CronTrigger cronReporteInversionesControles(AppSchedulingProperties appSchedulingProperties) {
         return new CronTrigger(appSchedulingProperties.getCronReporteInversionesControles());
     }
+    @Bean
+    public CronTrigger cronTramosFeeControl(AppSchedulingProperties appSchedulingProperties) {
+        return new CronTrigger(appSchedulingProperties.getCronTramosFeeControl());
+    }
+    @Bean
+    public CronTrigger cronFeeControlCuadre(AppSchedulingProperties appSchedulingProperties) {
+        return new CronTrigger(appSchedulingProperties.getCronFeeControlCuadre());
+    }
 }

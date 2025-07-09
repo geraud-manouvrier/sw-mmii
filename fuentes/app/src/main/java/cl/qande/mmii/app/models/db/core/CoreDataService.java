@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CoreDataService {
@@ -17,7 +18,14 @@ public class CoreDataService {
         this.entityManager = entityManager;
     }
 
-    public List<VwReporteDiferenciasFee> reporteDiferenciasFee(String processDate) {
-        return VwReporteDiferenciasFee.findByProcessDate(entityManager, processDate);
+    public List<VwReporteDiferenciasFee> reporteDiferenciasFee() {
+        return VwReporteDiferenciasFee.findByProcessDate(entityManager);
+    }
+
+    public List<VwReporteDiferenciasFee> reporteDiferenciasFee(boolean flagFee) {
+        return reporteDiferenciasFee()
+                .stream()
+                .filter(item -> item.getFlagFee() == flagFee)
+                .collect(Collectors.toList());
     }
 }

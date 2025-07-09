@@ -20,9 +20,11 @@ public class AppNotificacionMailProperties {
     private final NotificacionMailConfiguration mallaDiaria;
     private final NotificacionMailConfiguration precalculoRentabilidades;
     private final NotificacionMailConfiguration repinvControl;
+    private final NotificacionMailConfiguration tramosFeeControl;
+    private final NotificacionMailConfiguration feeControlCuadre;
 
 
-    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria, NotificacionMailConfiguration precalculoRentabilidades, NotificacionMailConfiguration repinvControl) {
+    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria, NotificacionMailConfiguration precalculoRentabilidades, NotificacionMailConfiguration repinvControl, NotificacionMailConfiguration tramosFeeControl, NotificacionMailConfiguration feeControlCuadre) {
         this.reportesMaestros = reportesMaestros;
         this.controlDiario = controlDiario;
         this.sflPershing = sflPershing;
@@ -31,6 +33,8 @@ public class AppNotificacionMailProperties {
         this.mallaDiaria = mallaDiaria;
         this.precalculoRentabilidades = precalculoRentabilidades;
         this.repinvControl = repinvControl;
+        this.tramosFeeControl = tramosFeeControl;
+        this.feeControlCuadre = feeControlCuadre;
     }
 
     public NotificacionMailConfiguration getReportesMaestros() {
@@ -65,6 +69,14 @@ public class AppNotificacionMailProperties {
 
     public NotificacionMailConfiguration getRepinvControl() {
         return repinvControl;
+    }
+
+    public NotificacionMailConfiguration getTramosFeeControl() {
+        return tramosFeeControl;
+    }
+
+    public NotificacionMailConfiguration getFeeControlCuadre() {
+        return feeControlCuadre;
     }
 
     public static class NotificacionMailConfiguration {

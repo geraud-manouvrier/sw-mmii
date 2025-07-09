@@ -6,7 +6,13 @@ create or replace view public.vw_reporte_maestro_datos_clientes
              debit_card_indicator, open_date, close_date, participant_type, last_statement_date, tax_id, process_date,
              is_last_info, is_last_schema_by_account_no)
 as
-SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
+SELECT row_id +
+       CASE src_vw
+           WHEN 'A'::text THEN 0
+           WHEN 'B'::text THEN 1000000000
+           WHEN 'C'::text THEN 2000000000
+           ELSE NULL::integer
+           END::bigint AS row_id,
        id_reg,
        id_interno_cliente,
        custodian,
@@ -45,8 +51,7 @@ SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
        is_last_info,
        is_last_schema_by_account_no
 FROM (SELECT 'B'::text                                                                                                  AS src_vw,
-             rank()
-             OVER (ORDER BY vw_acct.id, vw_acct.process_date, vw_acct.custodian, vw_acct.account_no)                    AS row_id,
+             vw_acct.row_no                                                                                             AS row_id,
              vw_acct.id                                                                                                 AS id_reg,
              vw_acct.id_interno_cliente,
              upper(vw_acct.custodian::text)::character varying(100)                                                     AS custodian,
@@ -105,8 +110,7 @@ FROM (SELECT 'B'::text                                                          
              true                                                                                                       AS is_last_info,
              true                                                                                                       AS is_last_schema_by_account_no,
              vw_acct.fee
-      FROM tbvw_maestro_cuentas_pershing vw_acct) vw_union
-ORDER BY process_date, client_id, account_no;
+      FROM tbvw_maestro_cuentas_pershing vw_acct) vw_union;
 
 alter table public.vw_reporte_maestro_datos_clientes
     owner to postgres;

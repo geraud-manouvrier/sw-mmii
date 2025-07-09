@@ -23,14 +23,17 @@ public class AppApiClientSuraCorpProperties {
     private final String methodSourceCode;
     @NotNull
     private final String methodClientFee;
+    @NotNull
+    private final String methodClientFeeControl;
 
-    public AppApiClientSuraCorpProperties(String xClientId, String xApiKey, String server, String path, String methodSourceCode, String methodClientFee) {
+    public AppApiClientSuraCorpProperties(String xClientId, String xApiKey, String server, String path, String methodSourceCode, String methodClientFee, String methodClientFeeControl) {
         this.xClientId = xClientId;
         this.xApiKey = xApiKey;
         this.server = server;
         this.path = path;
         this.methodSourceCode = methodSourceCode;
         this.methodClientFee = methodClientFee;
+        this.methodClientFeeControl = methodClientFeeControl;
     }
 
     public @NotNull String getxClientId() {
@@ -55,5 +58,9 @@ public class AppApiClientSuraCorpProperties {
 
     public @NotNull String getMethodClientFee() {
         return methodClientFee;
+    }
+
+    public @NotNull String getMethodClientFeeControl() {
+        return methodClientFeeControl;
     }
 }

@@ -1,9 +1,11 @@
 package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.FeeControlResponse;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
+import cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee;
 import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
 import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -111,13 +113,19 @@ public class NotificacionEmail {
         notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, msg, mailConfiguration);
 
     }
-    public void notificaJobPreCaulculoRentabilidadesDiario(boolean isOk, String startProcessDate, String jobName, String msg) throws QandeMmiiException {
+    public void notificaJobPreCaulculoRentabilidadesDiario(boolean isOk, String startProcessDate, String jobName, String msg) {
         var mailConfiguration   = appNotificacionMailProperties.getPrecalculoRentabilidades();
         notificacionGenerica(isOk, startProcessDate, startProcessDate, jobName, msg, mailConfiguration);
     }
-    public void notificaJobControlRepInv(boolean isOk, String startProcessDate, String endProcessDate, String jobName, List<ResultadoControl> resultado, String msg) throws QandeMmiiException {
+    public void notificaJobControlRepInv(boolean isOk, String startProcessDate, String endProcessDate, String jobName, List<ResultadoControl> resultado, String msg) {
         var mailConfiguration   = appNotificacionMailProperties.getRepinvControl();
         notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoControlRepInvToHtml(resultado, msg), mailConfiguration);
+    }
+    public void notificaJob(boolean isOk, String startProcessDate, String endProcessDate, String jobName, List<VwReporteDiferenciasFee> resultado, String msg, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration)  {
+        notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoJobToHtml(resultado, msg), mailConfiguration);
+    }
+    public void notificaJob(boolean isOk, String startProcessDate, String endProcessDate, String jobName, FeeControlResponse resultado, String msg, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration)  {
+        notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoJobToHtml(resultado, msg), mailConfiguration);
     }
 
 
@@ -131,6 +139,7 @@ public class NotificacionEmail {
         var asunto              = mailConfiguration.getDefaultSubject()+(isOk ? SUBJECT_OK : SUBJECT_ERROR)+"["+startProcessDate+" - "+endProcessDate+"]";
         try {
             this.enviaMail(mensaje, asunto, mailConfiguration, recipients);
+            CustomLog.getInstance().info("Mail para job ["+jobName+"] con fechas ["+startProcessDate+"-"+endProcessDate+"] procesado.");
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error enviando mail para job ["+jobName+"] con fechas ["+startProcessDate+"-"+endProcessDate+"]: "+e.getMessage());
             CustomLog.getInstance().info("Detalle mail para job ["+jobName+"] con fechas ["+startProcessDate+"-"+endProcessDate+"]: "+detalle);
