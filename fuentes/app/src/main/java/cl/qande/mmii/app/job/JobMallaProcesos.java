@@ -20,10 +20,12 @@ public class JobMallaProcesos implements Runnable {
     private final JobReportesMaestros jobReportesMaestros;
     private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
     private final JobRepInvControl jobRepInvControl;
+    private final JobFeeControlTramos jobFeeControlTramos;
+    private final JobFeeControlValorRia jobFeeControlValorRia;
     private final NotificacionEmail notificacionEmail;
 
     @Autowired
-    public JobMallaProcesos(CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, NotificacionEmail notificacionEmail) {
+    public JobMallaProcesos(CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlValorRia jobFeeControlValorRia, NotificacionEmail notificacionEmail) {
         this.calendarioHelper = calendarioHelper;
         this.jobGetFromFtpPershing = jobGetFromFtpPershing;
         this.jobControlDiario = jobControlDiario;
@@ -31,6 +33,8 @@ public class JobMallaProcesos implements Runnable {
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
         this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
         this.jobRepInvControl = jobRepInvControl;
+        this.jobFeeControlTramos = jobFeeControlTramos;
+        this.jobFeeControlValorRia = jobFeeControlValorRia;
         this.notificacionEmail = notificacionEmail;
     }
 
@@ -48,7 +52,11 @@ public class JobMallaProcesos implements Runnable {
                 //Job Rentabilidades
                 jobRepInvPrecalculoDiario.ejecutaJob() &&
                 //Controles rentabilidades
-                jobRepInvControl.ejecutaJob()
+                jobRepInvControl.ejecutaJob() &&
+                //Controles tramos Fee según ingresos/egresos
+                jobFeeControlTramos.ejecutaJob() &&
+                //Controles Fee versus Fee contrato RIA
+                jobFeeControlValorRia.ejecutaJob()
         ) {
                 CustomLog.getInstance().info("Malla Procesos finalizada OK");
                 return true;

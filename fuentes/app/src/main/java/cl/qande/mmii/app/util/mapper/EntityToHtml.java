@@ -157,7 +157,7 @@ public interface EntityToHtml {
                         .append(ABRE_TD).append(registro.getAccountNo()).append(CIERRA_TD)
                         .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFeeSeg(), 4, null)).append(CIERRA_TD)
                         .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFeeCte(), 4, null)).append(CIERRA_TD)
-                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getSaldoDia(), 4, null)).append(CIERRA_TD)
+                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getIngresoEgresoEfectivo(), 4, null)).append(CIERRA_TD)
                         .append(CIERRA_TR);
             }
             bld.append(TABLE_END);

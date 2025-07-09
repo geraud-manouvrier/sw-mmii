@@ -41,8 +41,8 @@ import java.util.Objects;
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "saldo_dia", nullable = false, precision = 20, scale = 6)
-    private BigDecimal saldoDia;
+    @Column(name = "ingreso_egreso_efectivo", nullable = false, precision = 20, scale = 6)
+    private BigDecimal ingresoEgresoEfectivo;
 
     @Column(name = "glosa", nullable = false)
     private String glosa;
@@ -79,8 +79,8 @@ import java.util.Objects;
         return nombre;
     }
 
-    public BigDecimal getSaldoDia() {
-        return saldoDia;
+    public BigDecimal getIngresoEgresoEfectivo() {
+        return ingresoEgresoEfectivo;
     }
 
     public String getGlosa() {
@@ -112,12 +112,12 @@ import java.util.Objects;
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VwReporteDiferenciasFee that = (VwReporteDiferenciasFee) o;
-        return Objects.equals(clientId, that.clientId) && Objects.equals(custodian, that.custodian) && Objects.equals(accountNo, that.accountNo) && Objects.equals(nombre, that.nombre) && Objects.equals(saldoDia, that.saldoDia) && Objects.equals(glosa, that.glosa) && Objects.equals(montoMin, that.montoMin) && Objects.equals(montoMax, that.montoMax) && Objects.equals(feeSeg, that.feeSeg) && Objects.equals(feeCte, that.feeCte) && Objects.equals(flagFee, that.flagFee);
+        return Objects.equals(clientId, that.clientId) && Objects.equals(custodian, that.custodian) && Objects.equals(accountNo, that.accountNo) && Objects.equals(nombre, that.nombre) && Objects.equals(ingresoEgresoEfectivo, that.ingresoEgresoEfectivo) && Objects.equals(glosa, that.glosa) && Objects.equals(montoMin, that.montoMin) && Objects.equals(montoMax, that.montoMax) && Objects.equals(feeSeg, that.feeSeg) && Objects.equals(feeCte, that.feeCte) && Objects.equals(flagFee, that.flagFee);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clientId, custodian, accountNo, nombre, saldoDia, glosa, montoMin, montoMax, feeSeg, feeCte, flagFee);
+        return Objects.hash(clientId, custodian, accountNo, nombre, ingresoEgresoEfectivo, glosa, montoMin, montoMax, feeSeg, feeCte, flagFee);
     }
 
     @Override
@@ -127,7 +127,7 @@ import java.util.Objects;
                 ", custodian='" + custodian + '\'' +
                 ", accountNo='" + accountNo + '\'' +
                 ", nombre='" + nombre + '\'' +
-                ", saldoDia=" + saldoDia +
+                ", saldoDia=" + ingresoEgresoEfectivo +
                 ", glosa='" + glosa + '\'' +
                 ", montoMin=" + montoMin +
                 ", montoMax=" + montoMax +
