@@ -148,7 +148,7 @@ public interface EntityToHtml {
         if (listaRegistros==null || listaRegistros.isEmpty()) {
             bld.append(NO_REG_HTML);
         } else {
-            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Client Id", "Nombre Cliente", "Cuenta", "Fee Segmento", "Fee Asignado", "Saldo")).append(TABLE_BODY_BEGIN);
+            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Client Id", "Nombre Cliente", "Cuenta", "Fee Segmento", "Fee Asignado", "Ingreso/Egreso Efectivo")).append(TABLE_BODY_BEGIN);
             int rowIndex = 0;
             for (var registro : listaRegistros) {
                 bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR)
