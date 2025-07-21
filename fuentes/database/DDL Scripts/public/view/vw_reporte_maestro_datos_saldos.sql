@@ -6,7 +6,11 @@ create or replace view public.vw_reporte_maestro_datos_saldos
              total_usde_market_value, ingreso_proteccion, annual_fee, tasa_proteccion, tasa_suracorp, fee_diario,
              fee_diario_proteccion, fee_diario_sura_corp)
 as
-SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
+SELECT CASE src_vw
+           WHEN 'A'::text THEN 0::bigint
+           WHEN 'B'::text THEN 1000000000::bigint
+           ELSE NULL::bigint
+           END AS row_id,
        id_reg,
        tipo_reg,
        custodian,
@@ -120,8 +124,7 @@ FROM (SELECT 'B'::text                                                          
              NULL::numeric(45, 20)        AS fee_diario_proteccion,
              NULL::numeric(45, 20)        AS fee_diario_sura_corp
       FROM rectificacion_saldos_no_informados sld_no_inf
-      WHERE sld_no_inf.id_estado_rectificacion = 0) vw_union
-ORDER BY process_date, client_id, account_no, product_type, cusip;
+      WHERE sld_no_inf.id_estado_rectificacion = 0) vw_union;
 
 alter table public.vw_reporte_maestro_datos_saldos
     owner to postgres;

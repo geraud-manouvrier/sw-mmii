@@ -37,10 +37,10 @@ public class CustomScheduler {
     private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
     private final JobRepInvControl jobRepInvControl;
     private final JobFeeControlTramos jobFeeControlTramos;
-    private final JobFeeControlValorRia jobFeeControlValorRia;
+    private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
 
     @Autowired
-    public CustomScheduler(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronReportesMaestros, CronTrigger cronControlDiario, CronTrigger cronFtpPershing, CronTrigger cronMallaDiaria, CronTrigger cronCuentasNoMapeadas, CronTrigger cronParametrosSuraCorp, CronTrigger cronReporteInversiones, CronTrigger cronReporteInversionesControles, CronTrigger cronTramosFeeControl, CronTrigger cronFeeControlCuadre, JobReportesMaestros jobReportesMaestros, JobControlDiario jobControlDiario, JobGetFromFtpPershing jobGetFromFtpPershing, JobMallaProcesos jobMallaProcesos, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlValorRia jobFeeControlValorRia) {
+    public CustomScheduler(ThreadPoolTaskScheduler taskScheduler, CronTrigger cronReportesMaestros, CronTrigger cronControlDiario, CronTrigger cronFtpPershing, CronTrigger cronMallaDiaria, CronTrigger cronCuentasNoMapeadas, CronTrigger cronParametrosSuraCorp, CronTrigger cronReporteInversiones, CronTrigger cronReporteInversionesControles, CronTrigger cronTramosFeeControl, CronTrigger cronFeeControlCuadre, JobReportesMaestros jobReportesMaestros, JobControlDiario jobControlDiario, JobGetFromFtpPershing jobGetFromFtpPershing, JobMallaProcesos jobMallaProcesos, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlCuadreRia jobFeeControlCuadreRia) {
         this.taskScheduler = taskScheduler;
         this.cronReportesMaestros = cronReportesMaestros;
         this.cronControlDiario = cronControlDiario;
@@ -61,7 +61,7 @@ public class CustomScheduler {
         this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
         this.jobRepInvControl = jobRepInvControl;
         this.jobFeeControlTramos = jobFeeControlTramos;
-        this.jobFeeControlValorRia = jobFeeControlValorRia;
+        this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
     }
 
 
@@ -86,7 +86,7 @@ public class CustomScheduler {
 
         this.registraTarea(jobFeeControlTramos, cronTramosFeeControl);
 
-        this.registraTarea(jobFeeControlValorRia, cronFeeControlCuadre);
+        this.registraTarea(jobFeeControlCuadreRia, cronFeeControlCuadre);
 
     }
 

@@ -113,9 +113,7 @@ public class EnrolamientoClientesService {
     }
     @Transactional(readOnly = true)
     public List<ClienteCuentaMaestro> listarClienteCuentaMaestro(boolean soloHabilitados) {
-        if (soloHabilitados)
-            return clienteCuentaMaestroDao.findById_IdInternoClienteIsNotNullAndId_IdInternoCuentaIsNotNullAndHabilitadoIsTrue();
-        return clienteCuentaMaestroDao.findAll();
+        return clienteCuentaMaestroDao.findClienteConSaldo(soloHabilitados);
     }
     @Transactional(readOnly = true)
     public List<AccountFee> listarClienteCuentaMaestroAsAccountFee(String custodian, boolean soloHabilitados) {

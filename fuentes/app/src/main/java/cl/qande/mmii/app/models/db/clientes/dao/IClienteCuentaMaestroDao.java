@@ -15,6 +15,17 @@ public interface IClienteCuentaMaestroDao extends JpaRepository<ClienteCuentaMae
     public List<ClienteCuentaMaestro> findById_IdInternoClienteIsNotNullAndId_IdInternoCuentaIsNotNullAndHabilitadoIsTrue();
     public ClienteCuentaMaestro findById_IdInternoCuenta(Integer idInternoCuenta);
 
+    //Para procesos de cuadre de fee contra RIA
+    @Query(value = "SELECT vw_cte_cta.* FROM clientes.vw_maestro_clientes_cuentas vw_cte_cta " +
+            "LEFT JOIN public.fn_clientes_con_saldo(null) vw_sld " +
+            "    ON vw_cte_cta.identificador_cliente = vw_sld.client_id " +
+            "   AND upper(vw_cte_cta.id_custodio) = vw_sld.custodian " +
+            "   AND vw_cte_cta.id_cuenta_custodio = vw_sld.account_no " +
+            "WHERE vw_sld.account_no is not null " +
+            "AND ( ( :_solo_habilitados=true and id_interno_cliente is not null and id_interno_cuenta is not null and habilitado = true ) OR :_solo_habilitados=false )", nativeQuery = true)
+    public List<ClienteCuentaMaestro> findClienteConSaldo(@Param("_solo_habilitados") boolean soloHabilitados);
+
+
     //Para combo box de clientes
     @Query(value = "SELECT mstr.identificador_cliente as id, mstr.tipo_identificador_cliente||'-'||mstr.identificador_cliente||' ('||mstr.nombre_cliente||')' as value, CAST('Clientes' as VARCHAR(100)) as grouper " +
             "    FROM clientes.vw_maestro_clientes_cuentas mstr WHERE mstr.habilitado " +

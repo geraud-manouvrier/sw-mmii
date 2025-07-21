@@ -53,11 +53,11 @@ public class JobsController {
     private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
     private final JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario;
     private final JobRepInvControl jobRepInvControl;
-    private final JobFeeControlValorRia jobFeeControlValorRia;
+    private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
     private final JobFeeControlTramos jobFeeControlTramos;
 
     @Autowired
-    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlValorRia jobFeeControlValorRia, JobFeeControlTramos jobFeeControlTramos) {
+    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlCuadreRia jobFeeControlCuadreRia, JobFeeControlTramos jobFeeControlTramos) {
         this.sesionWeb = sesionWeb;
         this.calendarioHelper = calendarioHelper;
         this.reportesMaestrosService = reportesMaestrosService;
@@ -68,7 +68,7 @@ public class JobsController {
         this.jobParametrosFromSuracorp = jobParametrosFromSuracorp;
         this.jobRepInvPrecalculoDiario = jobRepInvPrecalculoDiario;
         this.jobRepInvControl = jobRepInvControl;
-        this.jobFeeControlValorRia = jobFeeControlValorRia;
+        this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
         this.jobFeeControlTramos = jobFeeControlTramos;
     }
 
@@ -409,7 +409,7 @@ public class JobsController {
             String startProcessDate, String endProcessDate,
             Model model, boolean isAdmin) throws QandeMmiiException {
         var estadoPeticion      = new EstadoPeticion();
-        var serviceJobHandler   = jobFeeControlValorRia;
+        var serviceJobHandler   = jobFeeControlCuadreRia;
         try {
             CustomLog.getInstance().info("Iniciando Job "+serviceJobHandler.getJobName()+" con fecha [" + startProcessDate + " - "+ MSG_APPEND_USER + sesionWeb.getUsuario() + "]...", true);
             if (isValidDiffDiasProcessDate(startProcessDate, endProcessDate)) {

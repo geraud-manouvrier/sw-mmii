@@ -1,6 +1,6 @@
 /*
-2025-07-20
-Actual: 11.3.2-COL
+2025-07-21
+Actual: 11.3.3-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
@@ -18,193 +18,75 @@ SELECT id, 'ROLE_OP_CTRL_DIFF_FEE' FROM public.users where username in ('daniel.
 --========================================================================
 --========================================================================
 --
-SELECT *
-FROM clientes.cliente
-limit 100
+create or replace function public.get_max_process_date() returns character varying
+    stable
+    language sql
+as
+$$
+  SELECT greatest(
+    (SELECT process_date
+       FROM public.tbvw_maestro_cuentas_pershing
+      ORDER BY process_date DESC
+      LIMIT 1),
+    (SELECT process_date
+       FROM public.rectificacion_cuentas_no_informadas
+      WHERE id_estado_rectificacion = 0
+      ORDER BY process_date DESC
+      LIMIT 1)
+  );
+$$;
+
+
+create or replace function public.fn_clientes_con_saldo(_in_optional_process_date VARCHAR(100)) returns TABLE
+    (
+        client_id character varying, custodian character varying, account_no character varying
+    )
+    language sql
+as
+
+$$
+
+    SELECT DISTINCT vw_sld.client_id, upper(vw_sld.custodian)::VARCHAR(100), vw_sld.account_no
+    FROM public.vw_reporte_maestro_datos_saldos vw_sld
+    WHERE vw_sld.process_date = COALESCE(_in_optional_process_date, public.get_max_process_date())
+    ;
+$$;
+
+
+
+drop view vw_reporte_diferencias_fee;
+create or replace view public.vw_reporte_diferencias_fee
+as
+SELECT ie_neto.client_id,
+       tb_cte.nombre,
+       ie_neto.custodian,
+       ie_neto.account_no,
+       ie_neto.ingreso_egreso_efectivo,
+       seg_fee.id as id_segmento,
+       seg_fee.glosa,
+       seg_fee.monto_min,
+       seg_fee.monto_max,
+       seg_fee.annual_fee * 100::numeric                                 AS fee_seg,
+       tb_cte.fee                                                        AS fee_cte,
+       COALESCE((seg_fee.annual_fee * 100::numeric) = tb_cte.fee, false) AS flag_fee,
+       CASE WHEN vw_sld.client_id IS NOT NULL THEN true
+            ELSE false
+       END AS flag_tiene_saldo
+FROM (SELECT vw_ie.client_id,
+             vw_ie.custodian,
+             vw_ie.account_no,
+             sum(vw_ie.usde_net_amount) AS ingreso_egreso_efectivo
+      FROM vw_ingresos_egresos_diarios vw_ie
+      WHERE vw_ie.ingreso_egreso = true
+      GROUP BY vw_ie.client_id, vw_ie.custodian, vw_ie.account_no) ie_neto
+         JOIN clientes.par_fee_segmento seg_fee ON ie_neto.ingreso_egreso_efectivo >= seg_fee.monto_min AND
+                                                   ie_neto.ingreso_egreso_efectivo <= seg_fee.monto_max
+         JOIN clientes.cliente tb_cte ON ie_neto.client_id::text = tb_cte.identificador::text
+LEFT JOIN public.fn_clientes_con_saldo(null) vw_sld
+    ON ie_neto.client_id = vw_sld.client_id
+   AND ie_neto.custodian = vw_sld.custodian
+   AND ie_neto.account_no = vw_sld.account_no
 ;
-SELECT *
-FROM clientes.cuenta
-limit 100
-;
-
---SELECT id_cliente, id_cuenta_custodio FROM clientes.cuenta WHERE id_cuenta_custodio='' UNION
---UPDATE clientes.cliente set fee=0 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='');
-
-
-
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001523');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N002183');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N001656');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001838');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003628');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002869');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002638');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002273');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003214');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003537');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001374');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003339');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002901');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002505');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002893');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002133');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003024');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002679');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002315');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N002019');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001853');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002786');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003560');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002661');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002943');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003511');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002240');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002646');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002877');
-UPDATE clientes.cliente set fee=0.75 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N002225');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001952');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001804');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002562');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002158');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001911');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002224');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002588');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003545');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003131');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003420');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003032');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002414');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001705');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N001664');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002430');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001408');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003586');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003461');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001341');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002745');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003412');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002448');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001796');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002026');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002489');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001812');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003172');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001598');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002034');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001879');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003123');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003693');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003644');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002166');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002042');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003818');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002125');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002307');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002547');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002570');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001606');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002208');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002398');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002695');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002778');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003362');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003297');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001960');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003354');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002935');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003198');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001713');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002471');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003222');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001903');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003602');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001978');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002711');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002067');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002604');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003065');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002851');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002927');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002828');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002976');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001887');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001648');
-UPDATE clientes.cliente set fee=0.75 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N001631');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002497');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003305');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001945');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001192');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N001706');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003800');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002620');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003057');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001929');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001390');
-UPDATE clientes.cliente set fee=0.75 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001614');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002885');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001465');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002554');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003180');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001846');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003487');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001515');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003453');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002422');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003768');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002752');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003396');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001481');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002232');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002372');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001531');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002000');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003230');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003164');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003438');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002596');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001572');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003834');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002992');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002844');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002737');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001457');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002083');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003651');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002182');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002265');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002521');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002364');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003263');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003701');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002059');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001366');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001655');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001267');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001580');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002794');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9N001490');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003578');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003735');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003206');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002216');
-UPDATE clientes.cliente set fee=1.25 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002380');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003529');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002331');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003347');
-UPDATE clientes.cliente set fee=1 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001937');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O003669');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O002281');
-UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.cuenta WHERE id_cuenta_custodio='T9O001564');
-
-
-
-
-
-
-
-
-
-
 
 
 --========================================================================
@@ -213,28 +95,192 @@ UPDATE clientes.cliente set fee=1.5 WHERE id = (SELECT id_cliente FROM clientes.
 --Optimización vistas maestro saldos
 
 
-alter table public.tbvw_maestro_saldos_pershing
+alter table public.tbvw_maestro_movimientos_pershing
     add row_no bigint generated by default as identity;
 
 SELECT row_no, COUNT(*)
-  FROM public.tbvw_maestro_saldos_pershing
+  FROM public.tbvw_maestro_movimientos_pershing
  GROUP BY row_no
 HAVING COUNT(*) > 1;
 
-ALTER TABLE public.tbvw_maestro_saldos_pershing
-  ADD CONSTRAINT pk_tbvw_maestro_saldos_pershing_row_no
+ALTER TABLE public.tbvw_maestro_movimientos_pershing
+  ADD CONSTRAINT pk_tbvw_maestro_movimientos_pershing_row_no
   PRIMARY KEY (row_no);
 
-CREATE INDEX IF NOT EXISTS tbvw_maestro_saldos_pershing_client_index ON public.tbvw_maestro_saldos_pershing (client_id);
-CREATE INDEX IF NOT EXISTS tbvw_maestro_saldos_pershing_custodian_index ON public.tbvw_maestro_saldos_pershing (custodian);
-CREATE INDEX IF NOT EXISTS tbvw_maestro_saldos_pershing_account_index ON public.tbvw_maestro_saldos_pershing (account_no);
-CREATE INDEX IF NOT EXISTS tbvw_maestro_saldos_pershing_process_date_index ON public.tbvw_maestro_saldos_pershing (process_date);
-CREATE INDEX IF NOT EXISTS tbvw_maestro_saldos_pershing_cusip_index ON public.tbvw_maestro_saldos_pershing (cusip);
-CREATE INDEX IF NOT EXISTS tbvw_maestro_saldos_pershing_product_index ON public.tbvw_maestro_saldos_pershing (product_type);
+CREATE INDEX IF NOT EXISTS tbvw_maestro_movimientos_pershing_client_index ON public.tbvw_maestro_movimientos_pershing (client_id);
+CREATE INDEX IF NOT EXISTS tbvw_maestro_movimientos_pershing_custodian_index ON public.tbvw_maestro_movimientos_pershing (custodian);
+CREATE INDEX IF NOT EXISTS tbvw_maestro_movimientos_pershing_account_index ON public.tbvw_maestro_movimientos_pershing (account_no);
+CREATE INDEX IF NOT EXISTS tbvw_maestro_movimientos_pershing_process_date_index ON public.tbvw_maestro_movimientos_pershing (process_date);
+CREATE INDEX IF NOT EXISTS tbvw_maestro_movimientos_pershing_cusip_index ON public.tbvw_maestro_movimientos_pershing (cusip);
+CREATE INDEX IF NOT EXISTS tbvw_maestro_movimientos_pershing_product_index ON public.tbvw_maestro_movimientos_pershing (product_type);
 
+create or replace view public.vw_reporte_maestro_datos_movimientos
+as
+SELECT CASE vw_union.src_vw
+           WHEN 'A'::text THEN 0
+           WHEN 'B'::text THEN 1000000000
+           ELSE NULL::bigint
+           END::bigint AS row_id,
+       src_vw,
+       id_reg,
+       tipo_reg,
+       custodian,
+       client_id,
+       tipo_identificador_cliente,
+       account_no,
+       name,
+       process_date,
+       trade_date,
+       settlement_date,
+       activity,
+       buy_sell,
+       quantity,
+       price,
+       comission,
+       fees,
+       net_amount,
+       usde_net_amount,
+       principal,
+       cusip,
+       symbol,
+       isin,
+       currency,
+       fx_rate,
+       interest,
+       currency_base,
+       cash_margin_account,
+       product_type,
+       security_description,
+       activity_description,
+       activity_code,
+       source_code,
+       description1,
+       description2,
+       description3,
+       ticker,
+       id_sub_sub_tipo_activo,
+       id_sub_tipo_activo,
+       id_tipo_activo,
+       nombre_sub_sub_tipo_activo,
+       aplica_flujo_neto,
+       office_id,
+       id_cuenta_custodio,
+       ingreso_egreso,
+       retiro,
+       recaudo
+FROM (SELECT 'B'::text                                                                                                                                                                                                                                                                                                                                                                                  AS src_vw,
+             vw_mov.row_no AS row_id,
+             vw_mov.row_no AS id_reg,
+             upper(vw_mov.tipo_reg::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                       AS tipo_reg,
+             upper(vw_mov.custodian::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                      AS custodian,
+             upper(vw_mov.client_id::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                      AS client_id,
+             vw_mov.tipo_identificador_cliente,
+             vw_mov.account_no,
+             upper(vw_mov.name::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                           AS name,
+             upper(vw_mov.process_date::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                   AS process_date,
+             public.fn_fecha_date_to_string(vw_mov.trade_date, 'YYYYMMDD'::character varying,
+                                     '-'::character varying)::character varying(100)                                                                                                                                                                                                                                                                                                                    AS trade_date,
+             public.fn_fecha_date_to_string(vw_mov.settlement_date, 'YYYYMMDD'::character varying,
+                                     '-'::character varying)::character varying(100)                                                                                                                                                                                                                                                                                                                    AS settlement_date,
+             upper(vw_mov.activity::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                       AS activity,
+             upper(vw_mov.buy_sell_value::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                 AS buy_sell,
+             vw_mov.quantity,
+             vw_mov.price,
+             vw_mov.commission                                                                                                                                                                                                                                                                                                                                                                          AS comission,
+             vw_mov.fees,
+             vw_mov.net_amount,
+             vw_mov.usde_net_amount,
+             vw_mov.principal,
+             upper(vw_mov.cusip::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                          AS cusip,
+             upper(vw_mov.symbol::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                         AS symbol,
+             upper(vw_mov.isin::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                           AS isin,
+             upper(vw_mov.currency::text)::character varying(1000)                                                                                                                                                                                                                                                                                                                                      AS currency,
+             vw_mov.fx_rate,
+             vw_mov.interest,
+             upper(vw_mov.currency_base::text)::character varying(1000)                                                                                                                                                                                                                                                                                                                                 AS currency_base,
+             upper(vw_mov.cash_margin::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                    AS cash_margin_account,
+             upper(vw_mov.product_type::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                   AS product_type,
+             upper(vw_mov.security_description::text)::character varying(100)                                                                                                                                                                                                                                                                                                                           AS security_description,
+             upper(vw_mov.activity_description::text)::character varying(100)                                                                                                                                                                                                                                                                                                                           AS activity_description,
+             upper(vw_mov.activity_code::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                  AS activity_code,
+             upper(vw_mov.source_code::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                    AS source_code,
+             upper(vw_mov.description_1)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS description1,
+             upper(vw_mov.description_2)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS description2,
+             upper(vw_mov.description_3)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS description3,
+             upper(vw_mov.ticker::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                         AS ticker,
+             upper(vw_mov.id_sub_sub_tipo::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                AS id_sub_sub_tipo_activo,
+             upper(vw_mov.id_sub_tipo::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                    AS id_sub_tipo_activo,
+             upper(vw_mov.id_tipo::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                        AS id_tipo_activo,
+             upper(vw_mov.nombre_sub_sub_tipo::text)::character varying(100)                                                                                                                                                                                                                                                                                                                            AS nombre_sub_sub_tipo_activo,
+             vw_mov.flujo_neto                                                                                                                                                                                                                                                                                                                                                                          AS aplica_flujo_neto,
+             upper(vw_mov.office_id::text)::character varying(100)                                                                                                                                                                                                                                                                                                                                      AS office_id,
+             upper(vw_mov.id_cuenta_custodio::text)::character varying(100)                                                                                                                                                                                                                                                                                                                             AS id_cuenta_custodio,
+             vw_mov.ingreso_egreso,
+             vw_mov.retiro,
+             vw_mov.recaudo
+      FROM public.tbvw_maestro_movimientos_pershing vw_mov
+      UNION
+      SELECT 'C'::text                                                                  AS src_vw,
+             mov_no_inf.id                                       AS row_id,
+             mov_no_inf.id                                                              AS id_reg,
+             upper(mov_no_inf.tipo_reg::text)::character varying(100)                   AS tipo_reg,
+             upper(mov_no_inf.custodian::text)::character varying(100)                  AS custodian,
+             upper(mov_no_inf.client_id::text)::character varying(100)                  AS client_id,
+             NULL::character varying(100)                                               AS tipo_identificador_cliente,
+             mov_no_inf.account_no::character varying(100)                              AS account_no,
+             upper(mov_no_inf.name::text)::character varying(100)                       AS name,
+             upper(mov_no_inf.process_date::text)::character varying(100)               AS process_date,
+             upper(mov_no_inf.trade_date::text)::character varying(100)                 AS trade_date,
+             upper(mov_no_inf.settlement_date::text)::character varying(100)            AS settlement_date,
+             upper(mov_no_inf.activity::text)::character varying(100)                   AS activity,
+             upper(mov_no_inf.buy_sell::text)::character varying(100)                   AS buy_sell,
+             mov_no_inf.quantity,
+             mov_no_inf.price,
+             mov_no_inf.comission,
+             mov_no_inf.fees,
+             mov_no_inf.net_amount,
+             mov_no_inf.usde_net_amount,
+             mov_no_inf.principal,
+             upper(mov_no_inf.cusip::text)::character varying(100)                      AS cusip,
+             upper(mov_no_inf.symbol::text)::character varying(100)                     AS symbol,
+             upper(mov_no_inf.isin::text)::character varying(100)                       AS isin,
+             upper(mov_no_inf.currency::text)::character varying(1000)                  AS currency,
+             mov_no_inf.fx_rate,
+             mov_no_inf.interest,
+             upper(mov_no_inf.currency_base::text)::character varying(1000)             AS currency_base,
+             upper(mov_no_inf.cash_margin_account::text)::character varying(1000)       AS cash_margin_account,
+             upper(mov_no_inf.product_type::text)::character varying(100)               AS product_type,
+             upper(mov_no_inf.security_description::text)::character varying(100)       AS security_description,
+             upper(mov_no_inf.activity_description::text)::character varying(100)       AS activity_description,
+             upper(mov_no_inf.activity_code::text)::character varying(100)              AS activity_code,
+             upper(mov_no_inf.source_code::text)::character varying                     AS source_code,
+             upper(mov_no_inf.description1::text)::character varying(100)               AS description1,
+             upper(mov_no_inf.description2::text)::character varying(100)               AS description2,
+             upper(mov_no_inf.description3::text)::character varying(100)               AS description3,
+             upper(mov_no_inf.ticker::text)::character varying(100)                     AS ticker,
+             upper(mov_no_inf.id_sub_sub_tipo_activo::text)::character varying(100)     AS id_sub_sub_tipo_activo,
+             upper(mov_no_inf.id_sub_tipo_activo::text)::character varying(100)         AS id_sub_tipo_activo,
+             upper(mov_no_inf.id_tipo_activo::text)::character varying(100)             AS id_tipo_activo,
+             upper(mov_no_inf.nombre_sub_sub_tipo_activo::text)::character varying(100) AS nombre_sub_sub_tipo_activo,
+             mov_no_inf.aplica_flujo_neto,
+             upper(mov_no_inf.office_id::text)::character varying(100)                  AS office_id,
+             upper(mov_no_inf.id_cuenta_custodio::text)::character varying(100)         AS id_cuenta_custodio,
+             NULL::boolean                                                              AS ingreso_egreso,
+             NULL::numeric(45, 20)                                                      AS retiro,
+             NULL::numeric(45, 20)                                                      AS recaudo
+      FROM rectificacion_movimientos_no_informados mov_no_inf
+      WHERE mov_no_inf.id_estado_rectificacion = 0) vw_union
+;
+
+
+--Pendiente ordenamiento en saldos
 create or replace view public.vw_reporte_maestro_datos_saldos
 as
-SELECT rank() OVER (ORDER BY row_id, src_vw) AS row_id,
+SELECT CASE vw_union.src_vw
+           WHEN 'A'::text THEN 0
+           WHEN 'B'::text THEN 1000000000
+           ELSE NULL::bigint
+           END::bigint AS row_id,
        id_reg,
        tipo_reg,
        custodian,
@@ -349,7 +395,7 @@ FROM (SELECT 'B'::text                                                          
              NULL::numeric(45, 20)                AS fee_diario_sura_corp
       FROM public.rectificacion_saldos_no_informados sld_no_inf
       WHERE sld_no_inf.id_estado_rectificacion = 0) vw_union
-ORDER BY process_date, client_id, account_no, product_type, cusip;
+;
 
 
 
@@ -360,9 +406,28 @@ ORDER BY process_date, client_id, account_no, product_type, cusip;
 --========================================================================
 --========================================================================
 --========================================================================
---
+-- Eliminación cuenta mal creada
+--Respaldo
+
+SELECT * INTO zz_backup.cliente_20250721
+FROM clientes.cliente;
+SELECT * INTO zz_backup.cuenta_20250721
+FROM clientes.cuenta;
 
 
+
+DELETE
+--select *
+from
+clientes.cuenta where id_cliente=63;
+
+
+--id 63
+DELETE
+--select *
+from clientes.cliente
+where identificador='T9O002067'
+;
 
 
 --========================================================================

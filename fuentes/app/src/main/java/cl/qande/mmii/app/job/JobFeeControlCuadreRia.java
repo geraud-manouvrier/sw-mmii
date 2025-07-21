@@ -14,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JobFeeControlValorRia extends CustomJob {
+public class JobFeeControlCuadreRia extends CustomJob {
 
     private final ApiRestClientService mainService;
     private final EnrolamientoClientesService enrolamientoClientesService;
 
     @Autowired
-    public JobFeeControlValorRia(AppConfig appConfig, CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, ApiRestClientService apiRestClientService, EnrolamientoClientesService enrolamientoClientesService) {
+    public JobFeeControlCuadreRia(AppConfig appConfig, CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, ApiRestClientService apiRestClientService, EnrolamientoClientesService enrolamientoClientesService) {
         super("Control Cuadre Fee", appConfig, calendarioHelper, notificacionEmail);
         this.mainService        = apiRestClientService;
         this.enrolamientoClientesService = enrolamientoClientesService;

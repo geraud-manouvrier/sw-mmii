@@ -16,7 +16,7 @@ import java.util.Objects;
 @Table(name = "vw_reporte_diferencias_fee")
 @NamedNativeQuery(
         name = VwReporteDiferenciasFee.FIND_BY_PROCESS_DATE,
-        query = "SELECT * FROM public.vw_reporte_diferencias_fee",
+        query = "SELECT * FROM public.vw_reporte_diferencias_fee where flag_tiene_saldo = true",
         resultClass = VwReporteDiferenciasFee.class
 )public class VwReporteDiferenciasFee implements Serializable {
     public static final String FIND_BY_PROCESS_DATE = "VwReporteDiferenciasFee.findByProcessDate";
@@ -44,6 +44,9 @@ import java.util.Objects;
     @Column(name = "ingreso_egreso_efectivo", nullable = false, precision = 20, scale = 6)
     private BigDecimal ingresoEgresoEfectivo;
 
+    @Column(name = "id_segmento")
+    private Integer idSegmento;
+
     @Column(name = "glosa", nullable = false)
     private String glosa;
 
@@ -62,6 +65,17 @@ import java.util.Objects;
 
     @Column(name = "flag_fee", nullable = false)
     private Boolean flagFee;
+
+    @Column(name = "flag_tiene_saldo")
+    private Boolean flagTieneSaldo;
+
+    public Boolean getFlagTieneSaldo() {
+        return flagTieneSaldo;
+    }
+
+    public Integer getIdSegmento() {
+        return idSegmento;
+    }
 
     public String getClientId() {
         return clientId;
@@ -112,22 +126,24 @@ import java.util.Objects;
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VwReporteDiferenciasFee that = (VwReporteDiferenciasFee) o;
-        return Objects.equals(clientId, that.clientId) && Objects.equals(custodian, that.custodian) && Objects.equals(accountNo, that.accountNo) && Objects.equals(nombre, that.nombre) && Objects.equals(ingresoEgresoEfectivo, that.ingresoEgresoEfectivo) && Objects.equals(glosa, that.glosa) && Objects.equals(montoMin, that.montoMin) && Objects.equals(montoMax, that.montoMax) && Objects.equals(feeSeg, that.feeSeg) && Objects.equals(feeCte, that.feeCte) && Objects.equals(flagFee, that.flagFee);
+        return Objects.equals(idSegmento, that.idSegmento) && Objects.equals(flagTieneSaldo, that.flagTieneSaldo) && Objects.equals(clientId, that.clientId) && Objects.equals(custodian, that.custodian) && Objects.equals(accountNo, that.accountNo) && Objects.equals(nombre, that.nombre) && Objects.equals(ingresoEgresoEfectivo, that.ingresoEgresoEfectivo) && Objects.equals(glosa, that.glosa) && Objects.equals(montoMin, that.montoMin) && Objects.equals(montoMax, that.montoMax) && Objects.equals(feeSeg, that.feeSeg) && Objects.equals(feeCte, that.feeCte) && Objects.equals(flagFee, that.flagFee);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clientId, custodian, accountNo, nombre, ingresoEgresoEfectivo, glosa, montoMin, montoMax, feeSeg, feeCte, flagFee);
+        return Objects.hash(idSegmento, flagTieneSaldo, clientId, custodian, accountNo, nombre, ingresoEgresoEfectivo, glosa, montoMin, montoMax, feeSeg, feeCte, flagFee);
     }
 
     @Override
     public String toString() {
         return "VwReporteDiferenciasFee{" +
-                "clientId='" + clientId + '\'' +
+                "idSegmento=" + idSegmento +
+                ", flagTieneSaldo=" + flagTieneSaldo +
+                ", clientId='" + clientId + '\'' +
                 ", custodian='" + custodian + '\'' +
                 ", accountNo='" + accountNo + '\'' +
                 ", nombre='" + nombre + '\'' +
-                ", saldoDia=" + ingresoEgresoEfectivo +
+                ", ingresoEgresoEfectivo=" + ingresoEgresoEfectivo +
                 ", glosa='" + glosa + '\'' +
                 ", montoMin=" + montoMin +
                 ", montoMax=" + montoMax +
