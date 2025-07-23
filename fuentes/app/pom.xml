@@ -10,7 +10,7 @@
     </parent>
     <groupId>cl.qande.mmii</groupId>
     <artifactId>core-web-col</artifactId>
-    <version>11.3.3-COL</version>
+    <version>11.3.4-COL</version>
     <name>qande-mmii</name>
     <description>Software de Mercados Internacionales</description>
     <packaging>war</packaging>
