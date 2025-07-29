@@ -6,7 +6,8 @@ create or replace view public.vw_reporte_maestro_datos_saldos
              total_usde_market_value, ingreso_proteccion, annual_fee, tasa_proteccion, tasa_suracorp, fee_diario,
              fee_diario_proteccion, fee_diario_sura_corp)
 as
-SELECT CASE src_vw
+SELECT row_id +
+       CASE src_vw
            WHEN 'A'::text THEN 0::bigint
            WHEN 'B'::text THEN 1000000000::bigint
            ELSE NULL::bigint

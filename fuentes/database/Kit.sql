@@ -1,6 +1,6 @@
 /*
-2025-07-23
-Actual: 11.3.4-COL
+2025-07-29
+Actual: 11.3.5-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
@@ -305,7 +305,85 @@ FROM (SELECT 'B'::text                                                          
 --========================================================================
 --========================================================================
 --========================================================================
---
+--Corrección de ID cliente mal registrado
+
+
+--Id cliente 225
+SELECT *
+FROM clientes.cuenta
+WHERE id_cuenta_custodio='T9O003883'
+;
+
+--Identificador: 91473792; Nombre YESID RODRIGUEZ ARDILA TOD DTD 06/25/2025
+SELECT *
+FROM clientes.cliente
+WHERE id=225
+;
+
+--Maestros Clientes
+SELECT client_id, min(process_date), max(process_date), count(*)
+FROM public.vw_reporte_maestro_datos_clientes
+WHERE account_no='T9O003883'
+group by client_id;
+/*
+client_id,min,max,count
+1128269675,20250626,20250727,32
+91473792,20250728,20250728,1
+*/
+
+--Maestro Saldos
+SELECT client_id, min(process_date), max(process_date), count(*)
+FROM public.vw_reporte_maestro_datos_saldos
+WHERE account_no='T9O003883'
+group by client_id;
+/*
+client_id,min,max,count
+1128269675,20250707,20250727,122
+91473792,20250728,20250728,6
+*/
+
+--Maestro Movimientos
+SELECT client_id, min(process_date), max(process_date), count(*)
+FROM public.vw_reporte_maestro_datos_movimientos
+WHERE account_no='T9O003883'
+group by client_id;
+/*
+client_id,min,max,count
+1128269675,20250707,20250714,10
+*/
+
+
+
+SELECT *
+FROM clientes.cliente
+WHERE identificador='1128269675'
+;
+
+--Respaldamos
+SELECT * INTO zz_backup.tbvw_maestro_cuentas_pershing_20250729
+FROM public.tbvw_maestro_cuentas_pershing;
+SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20250729
+FROM public.tbvw_maestro_saldos_pershing;
+SELECT * INTO zz_backup.tbvw_maestro_movimientos_pershing_20250729
+FROM public.tbvw_maestro_movimientos_pershing;
+
+
+--Actualziamos data materialziada maestros: id cliente 1128269675 por 91473792
+UPDATE public.tbvw_maestro_cuentas_pershing
+SET client_id='91473792'
+--SELECT * FROM public.tbvw_maestro_cuentas_pershing
+WHERE client_id='1128269675'
+;
+UPDATE public.tbvw_maestro_saldos_pershing
+SET client_id='91473792'
+--SELECT * FROM public.tbvw_maestro_saldos_pershing
+WHERE client_id='1128269675'
+;
+UPDATE public.tbvw_maestro_movimientos_pershing
+SET client_id='91473792'
+--SELECT * FROM public.tbvw_maestro_movimientos_pershing
+WHERE client_id='1128269675'
+;
 
 
 

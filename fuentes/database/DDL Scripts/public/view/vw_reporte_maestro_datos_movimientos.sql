@@ -7,7 +7,8 @@ create or replace view public.vw_reporte_maestro_datos_movimientos
              id_tipo_activo, nombre_sub_sub_tipo_activo, aplica_flujo_neto, office_id, id_cuenta_custodio,
              ingreso_egreso, retiro, recaudo)
 as
-SELECT CASE src_vw
+SELECT row_id +
+       CASE src_vw
            WHEN 'A'::text THEN 0::bigint
            WHEN 'B'::text THEN 1000000000::bigint
            ELSE NULL::bigint
