@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.util.mapper;
 
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.AccountFeeValidated;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.FeeControlResponse;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
@@ -168,28 +169,75 @@ public interface EntityToHtml {
         return bld.toString();
     }
 
+    public static List<AccountFeeValidated> ordenaResultadoJobToHtml(List<AccountFeeValidated> desordenados) {
+        return desordenados.stream()
+                .sorted(
+                    Comparator
+                        .comparing( (AccountFeeValidated r) -> r.getStatus() == null ? "" : r.getStatus() )
+                        .thenComparingInt( r -> r.getFeeContract().compareTo(r.getFee()) )
+                        .thenComparing(AccountFeeValidated::getFee)
+                        .thenComparing(AccountFeeValidated::getFeeContract)
+                        .thenComparing(AccountFeeValidated::getAccountNumber)
+                )
+                .collect(Collectors.toList());
+    }
+
+    private static int getGroup(AccountFeeValidated accountFeeValidated) {
+        if (accountFeeValidated.getStatus() == null || accountFeeValidated.getStatus().isEmpty()) {
+            return 0; // grupo 0: sin estado
+        }
+        var comparacion = accountFeeValidated.getFeeContract().compareTo(accountFeeValidated.getFee());
+        if (comparacion==0)
+            return 1; // grupo 1: fees iguales
+        if (comparacion<0)
+            return 2; // grupo 2: fee contrato < fee
+        return 3; // grupo 3: fee contrato > fee
+    }
+
     public static String resultadoJobToHtml(FeeControlResponse listaRegistros, String msg) {
         StringBuilder bld = new StringBuilder();
         int omitidos    = 0;
         if (listaRegistros==null || listaRegistros.getAccountsFeesValidated().isEmpty()) {
             bld.append(NO_REG_HTML);
         } else {
-            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Account N°", "Observaciones Control", "Fee (SW)", "Fee Contrato (RIA)")).append(TABLE_BODY_BEGIN);
+            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Account N°", "Nombre Cliente", "Observaciones Control", "Fee (SW)", "Fee Contrato (RIA)", "Saldo Valorizado")).append(TABLE_BODY_BEGIN);
             int rowIndex = 0;
-            for (var registro : listaRegistros.getAccountsFeesValidated().stream()
-                    .sorted(Comparator.comparing(r -> r.getStatus() == null ? "" : r.getStatus()))
-                    .collect(Collectors.toList())
-                    ) {
-                var status = registro.getStatus();
+            var ordenados = ordenaResultadoJobToHtml(listaRegistros.getAccountsFeesValidated());
+
+            String[] groupColors = {
+                    "#F9F2FC",   //Púrpura
+                    "#FFFFFF",  //Gris
+                    "#F0FBF9",  //Verde Azulado
+                    "#F0F4FB"  //Azul
+            };
+            String[] groupColorsPar = {
+                    "#EEDCF9",   //Púrpura
+                    "#F2F2F2",  //Gris
+                    "#D9F4EF",  //Verde Azulado
+                    "#D9E4F9"  //Azul
+            };
+
+            for (var registro : ordenados) {
+                int group = getGroup(registro);
+                String status = registro.getStatus() == null ? "" : registro.getStatus();
                 if (status.isEmpty()) {
                     omitidos++;
                     continue;
                 }
-                bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR)
+                // calculamos el color de fila: blanco para pares, color de grupo para impares
+                String rowColor;
+                if (rowIndex++ % 2 == 0) {
+                    rowColor = groupColorsPar[group];
+                } else {
+                    rowColor = groupColors[group];
+                }
+                bld.append("<tr style=\"background-color:").append(rowColor).append(";\">")
                         .append(ABRE_TD).append(registro.getAccountNumber()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getName()!=null ? registro.getName() : "").append(CIERRA_TD)
                         .append(ABRE_TD).append(status).append(CIERRA_TD)
                         .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFee(), 4, null)).append(CIERRA_TD)
                         .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFeeContract(), 4, null)).append(CIERRA_TD)
+                        .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getSaldoDiario(), 4, null)).append(CIERRA_TD)
                         .append(CIERRA_TR);
             }
             bld.append(TABLE_END);

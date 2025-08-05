@@ -5,6 +5,8 @@ import cl.qande.mmii.app.models.api.reportes_maestros.MaestroCuentasApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroMovimientosApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroRelacionadosApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroSaldosApiDto;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.AccountFeeValidated;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.FeeControlResponse;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosClientesDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosRelacionadoDao;
@@ -21,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class ReporteMaestroDatosService {
@@ -139,5 +144,28 @@ public class ReporteMaestroDatosService {
     @Transactional(readOnly = true)
     public List<IndicadoresBasePeriodoProjection> indicadoresBasePorPeriodo(String processDate) {
         return reporteMaestroDatosSaldoDao.indicadoresBasePorPeriodo(processDate);
+    }
+
+    @Transactional(readOnly = true)
+    public FeeControlResponse populateNameAndSaldo(FeeControlResponse apiResponse, String processDate) {
+
+        List<String> accountNumbers = apiResponse.getAccountsFeesValidated().stream().map(AccountFeeValidated::getAccountNumber).collect(Collectors.toList());
+        var saldoDiario = reporteMaestroDatosSaldoDao.findSaldoDiarioByProcessDateAndAccountNoIn(processDate, accountNumbers);
+        // Mapa accountNo → SaldoDiarioProjection
+        Map<String, MaestroDatosSaldoDiarioProjection> saldoMap = saldoDiario.stream()
+                .collect(Collectors.toMap(
+                        MaestroDatosSaldoDiarioProjection::getAccountNumber,
+                        Function.identity()
+                ));
+
+        // Relleno name y saldoDiario en cada AccountFeeValidated
+        apiResponse.getAccountsFeesValidated().forEach(v -> {
+            var p = saldoMap.get(v.getAccountNumber());
+            if (p != null) {
+                v.setName        (p.getClientName());
+                v.setSaldoDiario(p.getSaldoDiario());
+            }
+        });
+        return apiResponse;
     }
 }

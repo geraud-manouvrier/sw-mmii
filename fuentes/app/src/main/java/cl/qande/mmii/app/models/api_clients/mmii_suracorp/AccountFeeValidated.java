@@ -1,9 +1,11 @@
 package cl.qande.mmii.app.models.api_clients.mmii_suracorp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountFeeValidated {
     @JsonProperty("custodian")
     private String custodian;
@@ -15,6 +17,10 @@ public class AccountFeeValidated {
     private String status;
     @JsonProperty("feeContract")
     private BigDecimal feeContract;
+    //Campos a poblar después de obtener salida
+
+    private String name;
+    private BigDecimal saldoDiario;
 
     public AccountFeeValidated() {
     }
@@ -73,6 +79,22 @@ public class AccountFeeValidated {
         this.feeContract = feeContract;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigDecimal getSaldoDiario() {
+        return saldoDiario;
+    }
+
+    public void setSaldoDiario(BigDecimal saldoDiario) {
+        this.saldoDiario = saldoDiario;
+    }
+
     @Override
     public String toString() {
         return "AccountFeeValidated{" +
@@ -81,6 +103,8 @@ public class AccountFeeValidated {
                 ", fee=" + fee +
                 ", status='" + status + '\'' +
                 ", feeContract=" + feeContract +
+                ", name='" + name + '\'' +
+                ", saldoDiario=" + saldoDiario +
                 '}';
     }
 }

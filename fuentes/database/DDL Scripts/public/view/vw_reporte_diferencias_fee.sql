@@ -26,7 +26,7 @@ FROM (SELECT vw_ie.client_id,
       WHERE vw_ie.ingreso_egreso = true
       GROUP BY vw_ie.client_id, vw_ie.custodian, vw_ie.account_no) ie_neto
          JOIN clientes.par_fee_segmento seg_fee ON ie_neto.ingreso_egreso_efectivo >= seg_fee.monto_min AND
-                                                   ie_neto.ingreso_egreso_efectivo <= seg_fee.monto_max
+                                                   ie_neto.ingreso_egreso_efectivo < seg_fee.monto_max
          JOIN clientes.cliente tb_cte ON ie_neto.client_id::text = tb_cte.identificador::text
          LEFT JOIN fn_clientes_con_saldo(NULL::character varying) vw_sld(client_id, custodian, account_no)
                    ON ie_neto.client_id::text = vw_sld.client_id::text AND
