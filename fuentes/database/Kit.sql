@@ -1,13 +1,13 @@
 /*
-2025-07-29
-Actual: 11.3.5-COL
+2025-08-05
+Actual: 11.4.0-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
 SELECT id, 'ROLE_OP_CTRL_DIFF_FEE' FROM public.users where username in ('admin-qye')
 ;
 INSERT INTO public.authorities(user_id, authority)
-SELECT id, 'ROLE_OP_REP_MAESTRO_REL' FROM public.users where username in ('daniel.gomez1', 'brayan.giraldom', 'santiago.isaza')
+SELECT id, 'ROLE_OP_ADMIN_JOBS_BY_USER' FROM public.users where username in ('brayan.giraldom')
 ;
 INSERT INTO public.authorities(user_id, authority)
 SELECT id, 'ROLE_OP_CTRL_DIFF_FEE' FROM public.users where username in ('daniel.gomez1', 'brayan.giraldom', 'santiago.isaza')
@@ -17,386 +17,40 @@ SELECT id, 'ROLE_OP_CTRL_DIFF_FEE' FROM public.users where username in ('daniel.
 --========================================================================
 --========================================================================
 --========================================================================
---Corrección de vistas que generaban id duplicado (que genera problemas en thymeleaf)
+--Corrección duplicados
 
-create or replace view public.vw_reporte_maestro_datos_movimientos
+create or replace view public.vw_reporte_diferencias_fee
 as
-SELECT vw_union.row_id +CASE src_vw
-           WHEN 'A'::text THEN 0::bigint
-           WHEN 'B'::text THEN 1000000000::bigint
-           ELSE NULL::bigint
-           END AS row_id,
-       src_vw,
-       id_reg,
-       tipo_reg,
-       custodian,
-       client_id,
-       tipo_identificador_cliente,
-       account_no,
-       name,
-       process_date,
-       trade_date,
-       settlement_date,
-       activity,
-       buy_sell,
-       quantity,
-       price,
-       comission,
-       fees,
-       net_amount,
-       usde_net_amount,
-       principal,
-       cusip,
-       symbol,
-       isin,
-       currency,
-       fx_rate,
-       interest,
-       currency_base,
-       cash_margin_account,
-       product_type,
-       security_description,
-       activity_description,
-       activity_code,
-       source_code,
-       description1,
-       description2,
-       description3,
-       ticker,
-       id_sub_sub_tipo_activo,
-       id_sub_tipo_activo,
-       id_tipo_activo,
-       nombre_sub_sub_tipo_activo,
-       aplica_flujo_neto,
-       office_id,
-       id_cuenta_custodio,
-       ingreso_egreso,
-       retiro,
-       recaudo
-FROM (SELECT 'B'::text                                                               AS src_vw,
-             vw_mov.row_no                                                           AS row_id,
-             vw_mov.row_no                                                           AS id_reg,
-             upper(vw_mov.tipo_reg::text)::character varying(100)                    AS tipo_reg,
-             upper(vw_mov.custodian::text)::character varying(100)                   AS custodian,
-             upper(vw_mov.client_id::text)::character varying(100)                   AS client_id,
-             vw_mov.tipo_identificador_cliente,
-             vw_mov.account_no,
-             upper(vw_mov.name::text)::character varying(100)                        AS name,
-             upper(vw_mov.process_date::text)::character varying(100)                AS process_date,
-             fn_fecha_date_to_string(vw_mov.trade_date, 'YYYYMMDD'::character varying,
-                                     '-'::character varying)::character varying(100) AS trade_date,
-             fn_fecha_date_to_string(vw_mov.settlement_date, 'YYYYMMDD'::character varying,
-                                     '-'::character varying)::character varying(100) AS settlement_date,
-             upper(vw_mov.activity::text)::character varying(100)                    AS activity,
-             upper(vw_mov.buy_sell_value::text)::character varying(100)              AS buy_sell,
-             vw_mov.quantity,
-             vw_mov.price,
-             vw_mov.commission                                                       AS comission,
-             vw_mov.fees,
-             vw_mov.net_amount,
-             vw_mov.usde_net_amount,
-             vw_mov.principal,
-             upper(vw_mov.cusip::text)::character varying(100)                       AS cusip,
-             upper(vw_mov.symbol::text)::character varying(100)                      AS symbol,
-             upper(vw_mov.isin::text)::character varying(100)                        AS isin,
-             upper(vw_mov.currency::text)::character varying(1000)                   AS currency,
-             vw_mov.fx_rate,
-             vw_mov.interest,
-             upper(vw_mov.currency_base::text)::character varying(1000)              AS currency_base,
-             upper(vw_mov.cash_margin::text)::character varying(100)                 AS cash_margin_account,
-             upper(vw_mov.product_type::text)::character varying(100)                AS product_type,
-             upper(vw_mov.security_description::text)::character varying(100)        AS security_description,
-             upper(vw_mov.activity_description::text)::character varying(100)        AS activity_description,
-             upper(vw_mov.activity_code::text)::character varying(100)               AS activity_code,
-             upper(vw_mov.source_code::text)::character varying(100)                 AS source_code,
-             upper(vw_mov.description_1)::character varying(100)                     AS description1,
-             upper(vw_mov.description_2)::character varying(100)                     AS description2,
-             upper(vw_mov.description_3)::character varying(100)                     AS description3,
-             upper(vw_mov.ticker::text)::character varying(100)                      AS ticker,
-             upper(vw_mov.id_sub_sub_tipo::text)::character varying(100)             AS id_sub_sub_tipo_activo,
-             upper(vw_mov.id_sub_tipo::text)::character varying(100)                 AS id_sub_tipo_activo,
-             upper(vw_mov.id_tipo::text)::character varying(100)                     AS id_tipo_activo,
-             upper(vw_mov.nombre_sub_sub_tipo::text)::character varying(100)         AS nombre_sub_sub_tipo_activo,
-             vw_mov.flujo_neto                                                       AS aplica_flujo_neto,
-             upper(vw_mov.office_id::text)::character varying(100)                   AS office_id,
-             upper(vw_mov.id_cuenta_custodio::text)::character varying(100)          AS id_cuenta_custodio,
-             vw_mov.ingreso_egreso,
-             vw_mov.retiro,
-             vw_mov.recaudo
-      FROM tbvw_maestro_movimientos_pershing vw_mov
-      UNION
-      SELECT 'C'::text                                                                  AS src_vw,
-             mov_no_inf.id                                                              AS row_id,
-             mov_no_inf.id                                                              AS id_reg,
-             upper(mov_no_inf.tipo_reg::text)::character varying(100)                   AS tipo_reg,
-             upper(mov_no_inf.custodian::text)::character varying(100)                  AS custodian,
-             upper(mov_no_inf.client_id::text)::character varying(100)                  AS client_id,
-             NULL::character varying(100)                                               AS tipo_identificador_cliente,
-             mov_no_inf.account_no::character varying(100)                              AS account_no,
-             upper(mov_no_inf.name::text)::character varying(100)                       AS name,
-             upper(mov_no_inf.process_date::text)::character varying(100)               AS process_date,
-             upper(mov_no_inf.trade_date::text)::character varying(100)                 AS trade_date,
-             upper(mov_no_inf.settlement_date::text)::character varying(100)            AS settlement_date,
-             upper(mov_no_inf.activity::text)::character varying(100)                   AS activity,
-             upper(mov_no_inf.buy_sell::text)::character varying(100)                   AS buy_sell,
-             mov_no_inf.quantity,
-             mov_no_inf.price,
-             mov_no_inf.comission,
-             mov_no_inf.fees,
-             mov_no_inf.net_amount,
-             mov_no_inf.usde_net_amount,
-             mov_no_inf.principal,
-             upper(mov_no_inf.cusip::text)::character varying(100)                      AS cusip,
-             upper(mov_no_inf.symbol::text)::character varying(100)                     AS symbol,
-             upper(mov_no_inf.isin::text)::character varying(100)                       AS isin,
-             upper(mov_no_inf.currency::text)::character varying(1000)                  AS currency,
-             mov_no_inf.fx_rate,
-             mov_no_inf.interest,
-             upper(mov_no_inf.currency_base::text)::character varying(1000)             AS currency_base,
-             upper(mov_no_inf.cash_margin_account::text)::character varying(1000)       AS cash_margin_account,
-             upper(mov_no_inf.product_type::text)::character varying(100)               AS product_type,
-             upper(mov_no_inf.security_description::text)::character varying(100)       AS security_description,
-             upper(mov_no_inf.activity_description::text)::character varying(100)       AS activity_description,
-             upper(mov_no_inf.activity_code::text)::character varying(100)              AS activity_code,
-             upper(mov_no_inf.source_code::text)::character varying                     AS source_code,
-             upper(mov_no_inf.description1::text)::character varying(100)               AS description1,
-             upper(mov_no_inf.description2::text)::character varying(100)               AS description2,
-             upper(mov_no_inf.description3::text)::character varying(100)               AS description3,
-             upper(mov_no_inf.ticker::text)::character varying(100)                     AS ticker,
-             upper(mov_no_inf.id_sub_sub_tipo_activo::text)::character varying(100)     AS id_sub_sub_tipo_activo,
-             upper(mov_no_inf.id_sub_tipo_activo::text)::character varying(100)         AS id_sub_tipo_activo,
-             upper(mov_no_inf.id_tipo_activo::text)::character varying(100)             AS id_tipo_activo,
-             upper(mov_no_inf.nombre_sub_sub_tipo_activo::text)::character varying(100) AS nombre_sub_sub_tipo_activo,
-             mov_no_inf.aplica_flujo_neto,
-             upper(mov_no_inf.office_id::text)::character varying(100)                  AS office_id,
-             upper(mov_no_inf.id_cuenta_custodio::text)::character varying(100)         AS id_cuenta_custodio,
-             NULL::boolean                                                              AS ingreso_egreso,
-             NULL::numeric(45, 20)                                                      AS retiro,
-             NULL::numeric(45, 20)                                                      AS recaudo
-      FROM rectificacion_movimientos_no_informados mov_no_inf
-      WHERE mov_no_inf.id_estado_rectificacion = 0) vw_union;
-
-
-create or replace view public.vw_reporte_maestro_datos_saldos
-as
-SELECT vw_union.row_id +CASE src_vw
-           WHEN 'A'::text THEN 0::bigint
-           WHEN 'B'::text THEN 1000000000::bigint
-           ELSE NULL::bigint
-           END AS row_id,
-       id_reg,
-       tipo_reg,
-       custodian,
-       client_id,
-       tipo_identificador_cliente,
-       office_id,
-       account_no,
-       name,
-       process_date,
-       symbol,
-       cusip,
-       isin,
-       product_type,
-       security_description,
-       cash_margin_account,
-       quantity,
-       market_price,
-       currency,
-       market_value,
-       fx_rate,
-       usde_market_value,
-       comision_devengada_diaria,
-       usde_market_price,
-       id_sub_sub_tipo_activo,
-       id_sub_tipo_activo,
-       id_tipo_activo,
-       nombre_sub_sub_tipo_activo,
-       total_usde_market_value,
-       ingreso_proteccion,
-       annual_fee,
-       tasa_proteccion,
-       tasa_suracorp,
-       fee_diario,
-       fee_diario_proteccion,
-       fee_diario_sura_corp
-FROM (SELECT 'B'::text                                                              AS src_vw,
-             vw_sld.row_no                                                          AS row_id,
-             vw_sld.row_no                                                          AS id_reg,
-             vw_sld.tipo_reg,
-             vw_sld.custodian,
-             vw_sld.client_id,
-             vw_sld.tipo_identificador_cliente,
-             vw_sld.office_id,
-             vw_sld.account_no,
-             upper(vw_sld.name::text)::character varying(100)                       AS name,
-             vw_sld.process_date,
-             upper(vw_sld.symbol::text)::character varying(100)                     AS symbol,
-             upper(vw_sld.cusip::text)::character varying(100)                      AS cusip,
-             upper(vw_sld.isin_code::text)::character varying(100)                  AS isin,
-             upper(vw_sld.product_type::text)::character varying(100)               AS product_type,
-             upper(vw_sld.security_description::text)::character varying(100)       AS security_description,
-             upper(vw_sld.cash_margin_account::text)::character varying(1000)       AS cash_margin_account,
-             vw_sld.quantity,
-             vw_sld.market_price,
-             vw_sld.currency,
-             vw_sld.market_value,
-             vw_sld.fx_rate,
-             vw_sld.usde_market_value,
-             vw_sld.comision_devengada_diaria,
-             vw_sld.usde_market_price,
-             upper(vw_sld.id_sub_sub_tipo_activo::text)::character varying(100)     AS id_sub_sub_tipo_activo,
-             upper(vw_sld.id_sub_tipo_activo::text)::character varying(100)         AS id_sub_tipo_activo,
-             upper(vw_sld.id_tipo_activo::text)::character varying(100)             AS id_tipo_activo,
-             upper(vw_sld.nombre_sub_sub_tipo_activo::text)::character varying(100) AS nombre_sub_sub_tipo_activo,
-             vw_sld.total_usde_market_value,
-             vw_sld.ingreso_proteccion,
-             vw_sld.annual_fee,
-             vw_sld.tasa_proteccion,
-             vw_sld.tasa_suracorp,
-             vw_sld.fee_diario,
-             vw_sld.fee_diario_proteccion,
-             vw_sld.fee_diario_sura_corp
-      FROM tbvw_maestro_saldos_pershing vw_sld
-      WHERE vw_sld.quantity <> 0::numeric
-      UNION
-      SELECT 'C'::text                    AS src_vw,
-             sld_no_inf.id                AS row_id,
-             sld_no_inf.id                AS id_reg,
-             sld_no_inf.tipo_reg,
-             sld_no_inf.custodian,
-             sld_no_inf.client_id,
-             NULL::character varying(100) AS tipo_identificador_cliente,
-             sld_no_inf.office_id,
-             sld_no_inf.account_no,
-             sld_no_inf.name,
-             sld_no_inf.process_date,
-             sld_no_inf.symbol,
-             sld_no_inf.cusip,
-             sld_no_inf.isin,
-             sld_no_inf.product_type,
-             sld_no_inf.security_description,
-             sld_no_inf.cash_margin_account,
-             sld_no_inf.quantity,
-             sld_no_inf.market_price,
-             sld_no_inf.currency,
-             sld_no_inf.market_value,
-             sld_no_inf.fx_rate,
-             sld_no_inf.usde_market_value,
-             sld_no_inf.comision_devengada_diaria,
-             sld_no_inf.usde_market_price,
-             sld_no_inf.id_sub_sub_tipo_activo,
-             sld_no_inf.id_sub_tipo_activo,
-             sld_no_inf.id_tipo_activo,
-             sld_no_inf.nombre_sub_sub_tipo_activo,
-             NULL::numeric(45, 20)        AS total_usde_market_value,
-             NULL::numeric(45, 20)        AS ingreso_proteccion,
-             NULL::numeric(45, 20)        AS annual_fee,
-             NULL::numeric(45, 20)        AS tasa_proteccion,
-             NULL::numeric(45, 20)        AS tasa_suracorp,
-             NULL::numeric(45, 20)        AS fee_diario,
-             NULL::numeric(45, 20)        AS fee_diario_proteccion,
-             NULL::numeric(45, 20)        AS fee_diario_sura_corp
-      FROM rectificacion_saldos_no_informados sld_no_inf
-      WHERE sld_no_inf.id_estado_rectificacion = 0) vw_union;
-
-
-
-
---========================================================================
---========================================================================
---========================================================================
---Corrección de ID cliente mal registrado
-
-
---Id cliente 225
-SELECT *
-FROM clientes.cuenta
-WHERE id_cuenta_custodio='T9O003883'
-;
-
---Identificador: 91473792; Nombre YESID RODRIGUEZ ARDILA TOD DTD 06/25/2025
-SELECT *
-FROM clientes.cliente
-WHERE id=225
-;
-
---Maestros Clientes
-SELECT client_id, min(process_date), max(process_date), count(*)
-FROM public.vw_reporte_maestro_datos_clientes
-WHERE account_no='T9O003883'
-group by client_id;
-/*
-client_id,min,max,count
-1128269675,20250626,20250727,32
-91473792,20250728,20250728,1
-*/
-
---Maestro Saldos
-SELECT client_id, min(process_date), max(process_date), count(*)
-FROM public.vw_reporte_maestro_datos_saldos
-WHERE account_no='T9O003883'
-group by client_id;
-/*
-client_id,min,max,count
-1128269675,20250707,20250727,122
-91473792,20250728,20250728,6
-*/
-
---Maestro Movimientos
-SELECT client_id, min(process_date), max(process_date), count(*)
-FROM public.vw_reporte_maestro_datos_movimientos
-WHERE account_no='T9O003883'
-group by client_id;
-/*
-client_id,min,max,count
-1128269675,20250707,20250714,10
-*/
-
-
-
-SELECT *
-FROM clientes.cliente
-WHERE identificador='1128269675'
-;
-
---Respaldamos
-SELECT * INTO zz_backup.tbvw_maestro_cuentas_pershing_20250729
-FROM public.tbvw_maestro_cuentas_pershing;
-SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20250729
-FROM public.tbvw_maestro_saldos_pershing;
-SELECT * INTO zz_backup.tbvw_maestro_movimientos_pershing_20250729
-FROM public.tbvw_maestro_movimientos_pershing;
-
-
---Actualziamos data materialziada maestros: id cliente 1128269675 por 91473792
-UPDATE public.tbvw_maestro_cuentas_pershing
-SET client_id='91473792'
---SELECT * FROM public.tbvw_maestro_cuentas_pershing
-WHERE client_id='1128269675'
-;
-UPDATE public.tbvw_maestro_saldos_pershing
-SET client_id='91473792'
---SELECT * FROM public.tbvw_maestro_saldos_pershing
-WHERE client_id='1128269675'
-;
-UPDATE public.tbvw_maestro_movimientos_pershing
-SET client_id='91473792'
---SELECT * FROM public.tbvw_maestro_movimientos_pershing
-WHERE client_id='1128269675'
-;
-
-
-
-
-
-
-
-
---========================================================================
---========================================================================
---========================================================================
---
-
+SELECT ie_neto.client_id,
+       tb_cte.nombre,
+       ie_neto.custodian,
+       ie_neto.account_no,
+       ie_neto.ingreso_egreso_efectivo,
+       seg_fee.id                                                        AS id_segmento,
+       seg_fee.glosa,
+       seg_fee.monto_min,
+       seg_fee.monto_max,
+       seg_fee.annual_fee * 100::numeric                                 AS fee_seg,
+       tb_cte.fee                                                        AS fee_cte,
+       COALESCE((seg_fee.annual_fee * 100::numeric) = tb_cte.fee, false) AS flag_fee,
+       CASE
+           WHEN vw_sld.client_id IS NOT NULL THEN true
+           ELSE false
+           END                                                           AS flag_tiene_saldo
+FROM (SELECT vw_ie.client_id,
+             vw_ie.custodian,
+             vw_ie.account_no,
+             sum(vw_ie.usde_net_amount) AS ingreso_egreso_efectivo
+      FROM vw_ingresos_egresos_diarios vw_ie
+      WHERE vw_ie.ingreso_egreso = true
+      GROUP BY vw_ie.client_id, vw_ie.custodian, vw_ie.account_no) ie_neto
+         JOIN clientes.par_fee_segmento seg_fee ON ie_neto.ingreso_egreso_efectivo >= seg_fee.monto_min AND
+                                                   ie_neto.ingreso_egreso_efectivo < seg_fee.monto_max
+         JOIN clientes.cliente tb_cte ON ie_neto.client_id::text = tb_cte.identificador::text
+         LEFT JOIN fn_clientes_con_saldo(NULL::character varying) vw_sld(client_id, custodian, account_no)
+                   ON ie_neto.client_id::text = vw_sld.client_id::text AND
+                      ie_neto.custodian::text = vw_sld.custodian::text AND
+                      ie_neto.account_no::text = vw_sld.account_no::text;
 
 
 
