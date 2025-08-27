@@ -1,4 +1,4 @@
-create or replace function clientes.fn_comision_cuenta(_process_date character varying, _cliente_id character varying, _custodian character varying, _account_no character varying, _defaul_comision numeric, _is_anual boolean) returns numeric
+create or replace function clientes.fn_comision_cuenta(_process_date character varying, _cliente_id character varying, _custodian character varying, _account_no character varying, _default_annual_comision numeric, _is_anual boolean) returns numeric
     language plpgsql
 as
 $$
@@ -26,7 +26,7 @@ BEGIN
         _comision_out := _comision_excepcion;
     end if;
 
-    RETURN COALESCE(_comision_out, _defaul_comision)::NUMERIC(45,20);
+    RETURN COALESCE(_comision_out, _default_annual_comision)::NUMERIC(45,20);
 END;
 $$;
 
