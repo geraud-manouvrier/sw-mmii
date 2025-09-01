@@ -68,6 +68,7 @@ public class RetornosController {
         }
 
         var respuesta = new RetornosResponseOk();
+        respuesta.setProcessDate(processDate);
 
         try {
             respuesta.setRetornoCuentas(rentabilidadCalculadaMapper.toDto(mainService.calculaRentabilidadPorCuentaUniversoClientes(processDate)));
@@ -80,7 +81,7 @@ public class RetornosController {
 
     }
 
-    public String buildProcessDate(Integer periodo, Integer dia) throws QandeMmiiException {
+    private String buildProcessDate(Integer periodo, Integer dia) throws QandeMmiiException {
         var processDate = String.valueOf(periodo);
         if (dia>9) {
             processDate = processDate.concat(String.valueOf(dia));

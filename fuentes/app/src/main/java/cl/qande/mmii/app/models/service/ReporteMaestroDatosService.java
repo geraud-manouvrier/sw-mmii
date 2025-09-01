@@ -1,7 +1,6 @@
 package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.config.datasources.CoreDataSourceConfiguration;
-import cl.qande.mmii.app.models.api.reportes_maestros.MaestroCuentasApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroMovimientosApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroRelacionadosApiDto;
 import cl.qande.mmii.app.models.api.reportes_maestros.MaestroSaldosApiDto;
@@ -12,7 +11,6 @@ import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosRelacionadoDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.core.entity.*;
-import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosClienteMapper;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosMovimientoMapper;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosRelacionadoMapper;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosSaldoMapper;
@@ -37,12 +35,11 @@ public class ReporteMaestroDatosService {
     private final IReporteMaestroDatosRelacionadoDao reporteMaestroDatosRelacionadoDao;
     private final VwReporteMaestroDatosSaldoMapper vwReporteMaestroDatosSaldoMapper;
     private final VwReporteMaestroDatosMovimientoMapper vwReporteMaestroDatosMovimientoMapper;
-    private final VwReporteMaestroDatosClienteMapper vwReporteMaestroDatosClienteMapper;
     private final EntityManager entityManager;
     private final VwReporteMaestroDatosRelacionadoMapper vwReporteMaestroDatosRelacionadoMapper;
 
     @Autowired
-    public ReporteMaestroDatosService(IReporteMaestroDatosClientesDao reporteMaestroDatosClientesDao, IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao, IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao, IReporteMaestroDatosRelacionadoDao reporteMaestroDatosRelacionadoDao, VwReporteMaestroDatosSaldoMapper vwReporteMaestroDatosSaldoMapper, VwReporteMaestroDatosMovimientoMapper vwReporteMaestroDatosMovimientoMapper, VwReporteMaestroDatosClienteMapper vwReporteMaestroDatosClienteMapper, @Qualifier(CoreDataSourceConfiguration.ENTITY_MANAGER) EntityManager entityManager,
+    public ReporteMaestroDatosService(IReporteMaestroDatosClientesDao reporteMaestroDatosClientesDao, IReporteMaestroDatosMovimientosDao reporteMaestroDatosMovimientosDao, IReporteMaestroDatosSaldoDao reporteMaestroDatosSaldoDao, IReporteMaestroDatosRelacionadoDao reporteMaestroDatosRelacionadoDao, VwReporteMaestroDatosSaldoMapper vwReporteMaestroDatosSaldoMapper, VwReporteMaestroDatosMovimientoMapper vwReporteMaestroDatosMovimientoMapper, @Qualifier(CoreDataSourceConfiguration.ENTITY_MANAGER) EntityManager entityManager,
                                       VwReporteMaestroDatosRelacionadoMapper vwReporteMaestroDatosRelacionadoMapper) {
         this.reporteMaestroDatosClientesDao = reporteMaestroDatosClientesDao;
         this.reporteMaestroDatosMovimientosDao = reporteMaestroDatosMovimientosDao;
@@ -50,15 +47,8 @@ public class ReporteMaestroDatosService {
         this.reporteMaestroDatosRelacionadoDao = reporteMaestroDatosRelacionadoDao;
         this.vwReporteMaestroDatosSaldoMapper = vwReporteMaestroDatosSaldoMapper;
         this.vwReporteMaestroDatosMovimientoMapper = vwReporteMaestroDatosMovimientoMapper;
-        this.vwReporteMaestroDatosClienteMapper = vwReporteMaestroDatosClienteMapper;
         this.entityManager = entityManager;
         this.vwReporteMaestroDatosRelacionadoMapper = vwReporteMaestroDatosRelacionadoMapper;
-    }
-
-    @Transactional(readOnly = true)
-    public List<MaestroCuentasApiDto> reporteMaestroCuentasApi(String processDate) {
-        return vwReporteMaestroDatosClienteMapper.toDto(this.generaReporteClientes(processDate));
-
     }
 
     @Transactional(readOnly = true)

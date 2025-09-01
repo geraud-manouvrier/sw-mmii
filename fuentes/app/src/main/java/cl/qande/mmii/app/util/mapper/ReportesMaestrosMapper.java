@@ -20,6 +20,7 @@ public class ReportesMaestrosMapper {
     public List<String> getFromDbToCsvLine(VwReporteMaestroDatosCliente fila){
         ArrayList<String> dataRow = new ArrayList<>();
 
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getProcessDate()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCustodian()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getClientId()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getTipoIdentificadorCliente()));

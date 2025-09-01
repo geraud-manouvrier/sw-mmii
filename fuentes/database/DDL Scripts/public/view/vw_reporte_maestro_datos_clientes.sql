@@ -4,7 +4,7 @@ create or replace view public.vw_reporte_maestro_datos_clientes
              short_name, date_of_birth, acct_status_value, email, country_code_value, country, w8_date, w9_date,
              w8_status_value, w9_status_value, discr_trading_code_value, account_type, cash_margin_account,
              debit_card_indicator, open_date, close_date, participant_type, last_statement_date, tax_id, process_date,
-             is_last_info, is_last_schema_by_account_no)
+             is_last_info, is_last_schema_by_account_no, estado_cuenta)
 as
 SELECT row_id +
        CASE src_vw
@@ -49,7 +49,8 @@ SELECT row_id +
        tax_id,
        process_date,
        is_last_info,
-       is_last_schema_by_account_no
+       is_last_schema_by_account_no,
+       estado_cuenta
 FROM (SELECT 'B'::text                                                                                                  AS src_vw,
              vw_acct.row_no                                                                                             AS row_id,
              vw_acct.id                                                                                                 AS id_reg,
@@ -106,10 +107,11 @@ FROM (SELECT 'B'::text                                                          
              NULL::date                                                                                                 AS last_statement_date,
              upper(pershing.fn_obtiene_valor_param_generic_pershing('tax_id_type'::character varying,
                                                                     vw_acct.tax_id_type)::text)::character varying(100) AS tax_id,
-             upper(vw_acct.process_date::text)::character varying(100)                                                  AS process_date,
+             vw_acct.process_date,
              true                                                                                                       AS is_last_info,
              true                                                                                                       AS is_last_schema_by_account_no,
-             vw_acct.fee
+             vw_acct.fee,
+             vw_acct.estado_cuenta
       FROM tbvw_maestro_cuentas_pershing vw_acct) vw_union;
 
 alter table public.vw_reporte_maestro_datos_clientes

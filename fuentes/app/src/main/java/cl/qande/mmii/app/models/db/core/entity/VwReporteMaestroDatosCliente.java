@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -144,6 +145,36 @@ public class VwReporteMaestroDatosCliente {
     @Size(max = 100)
     @Column(name = "tipo_identificador_cliente", length = 100)
     private String tipoIdentificadorCliente;
+
+    @Column(name = "id_interno_cliente")
+    private Integer idInternoCliente;
+
+    @Size(max = 100)
+    @Column(name = "glosa_identificador_cliente", length = 100)
+    private String glosaIdentificadorCliente;
+
+    @Column(name = "fee", precision = 45, scale = 20)
+    private BigDecimal fee;
+
+    @Size(max = 100)
+    @Column(name = "estado_cuenta", length = 100)
+    private String estadoCuenta;
+
+    public String getEstadoCuenta() {
+        return estadoCuenta;
+    }
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+    public String getGlosaIdentificadorCliente() {
+        return glosaIdentificadorCliente;
+    }
+
+    public Integer getIdInternoCliente() {
+        return idInternoCliente;
+    }
 
     public String getTipoIdentificadorCliente() {
         return tipoIdentificadorCliente;
