@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 @RequestMapping("/reportes/controles")
 public class ControlOperacionesController {
     private static final String TITULO_CTRL_DIARIO = "Control Diario";
@@ -39,12 +38,14 @@ public class ControlOperacionesController {
         this.calendarioHelper = calendarioHelper;
     }
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CTRL_OPER_DIARIO))")
     @GetMapping({"/control_diario"})
     public String controlDiario(
             Model model) {
 
         return "redirect:/reportes/controles/control_diario/"+calendarioHelper.defaultProcessDate();
     }
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CTRL_OPER_DIARIO))")
     @GetMapping({"/control_diario/{processDate}"})
     public String controlDiarioPorFecha(
             @PathVariable String processDate,

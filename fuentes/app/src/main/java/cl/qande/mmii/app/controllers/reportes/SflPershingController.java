@@ -1,6 +1,5 @@
 package cl.qande.mmii.app.controllers.reportes;
 
-import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
 import cl.qande.mmii.app.models.db.pershing.dao.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -8,7 +7,6 @@ import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,80 +23,80 @@ public class SflPershingController {
     private static final String CAMPO_STATUS    = "status";
     private static final String CAMPO_SESION    = "sesionWeb";
     private static final String CAMPO_PROCESS_DATE    = "processDate";
-    @Autowired
-    private SesionWeb sesionWeb;
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
-    @Autowired
-    private IStageAcctRegADao stageAcctRegADao;
-    @Autowired
-    private IStageAcctRegBDao stageAcctRegBDao;
-    @Autowired
-    private IStageAcctRegCDao stageAcctRegCDao;
-    @Autowired
-    private IStageAcctRegDDao stageAcctRegDDao;
-    @Autowired
-    private IStageAcctRegEDao stageAcctRegEDao;
-    @Autowired
-    private IStageAcctRegFDao stageAcctRegFDao;
-    @Autowired
-    private IStageAcctRegWDao stageAcctRegWDao;
-    @Autowired
-    private IStageGactRegADao stageGactRegADao;
-    @Autowired
-    private IStageGactRegBDao stageGactRegBDao;
-    @Autowired
-    private IStageGcusRegADao stageGcusRegADao;
-    @Autowired
-    private IStageGcusRegBDao stageGcusRegBDao;
-    @Autowired
-    private IStageGmonRegADao stageGmonRegADao;
-    @Autowired
-    private IStageGmonRegBDao stageGmonRegBDao;
-    @Autowired
-    private IStageIscaRegADao stageIscaRegADao;
-    @Autowired
-    private IStageIscaRegBDao stageIscaRegBDao;
-    @Autowired
-    private IStageIscaRegCDao stageIscaRegCDao;
-    @Autowired
-    private IStageIscaRegDDao stageIscaRegDDao;
-    @Autowired
-    private IStageIscaRegEDao stageIscaRegEDao;
-    @Autowired
-    private IStageIscaRegFDao stageIscaRegFDao;
-    @Autowired
-    private IStageIscaRegGDao stageIscaRegGDao;
-    @Autowired
-    private IStageIscaRegHDao stageIscaRegHDao;
-    @Autowired
-    private IStageIscaRegIDao stageIscaRegIDao;
-    @Autowired
-    private IStageIscaRegJDao stageIscaRegJDao;
-    @Autowired
-    private IStageIscaRegKDao stageIscaRegKDao;
-    @Autowired
-    private IStageIscaRegLDao stageIscaRegLDao;
-    @Autowired
-    private IStageIscaRegMDao stageIscaRegMDao;
-    @Autowired
-    private IStageIscaRegNDao stageIscaRegNDao;
-    @Autowired
-    private IStageIscaRegODao stageIscaRegODao;
-    @Autowired
-    private IStageIsrcRegADao stageIsrcRegADao;
+    private final SesionWeb sesionWeb;
+    private final CalendarioHelper calendarioHelper;
+    private final IStageAcctRegADao stageAcctRegADao;
+    private final IStageAcctRegBDao stageAcctRegBDao;
+    private final IStageAcctRegCDao stageAcctRegCDao;
+    private final IStageAcctRegDDao stageAcctRegDDao;
+    private final IStageAcctRegEDao stageAcctRegEDao;
+    private final IStageAcctRegFDao stageAcctRegFDao;
+    private final IStageAcctRegWDao stageAcctRegWDao;
+    private final IStageGactRegADao stageGactRegADao;
+    private final IStageGactRegBDao stageGactRegBDao;
+    private final IStageGcusRegADao stageGcusRegADao;
+    private final IStageGcusRegBDao stageGcusRegBDao;
+    private final IStageGmonRegADao stageGmonRegADao;
+    private final IStageGmonRegBDao stageGmonRegBDao;
+    private final IStageIscaRegADao stageIscaRegADao;
+    private final IStageIscaRegBDao stageIscaRegBDao;
+    private final IStageIscaRegCDao stageIscaRegCDao;
+    private final IStageIscaRegDDao stageIscaRegDDao;
+    private final IStageIscaRegEDao stageIscaRegEDao;
+    private final IStageIscaRegFDao stageIscaRegFDao;
+    private final IStageIscaRegGDao stageIscaRegGDao;
+    private final IStageIscaRegHDao stageIscaRegHDao;
+    private final IStageIscaRegIDao stageIscaRegIDao;
+    private final IStageIscaRegJDao stageIscaRegJDao;
+    private final IStageIscaRegKDao stageIscaRegKDao;
+    private final IStageIscaRegLDao stageIscaRegLDao;
+    private final IStageIscaRegMDao stageIscaRegMDao;
+    private final IStageIscaRegNDao stageIscaRegNDao;
+    private final IStageIscaRegODao stageIscaRegODao;
+    private final IStageIsrcRegADao stageIsrcRegADao;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public SflPershingController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, IStageAcctRegADao stageAcctRegADao, IStageAcctRegBDao stageAcctRegBDao, IStageAcctRegCDao stageAcctRegCDao, IStageAcctRegDDao stageAcctRegDDao, IStageAcctRegEDao stageAcctRegEDao, IStageAcctRegFDao stageAcctRegFDao, IStageAcctRegWDao stageAcctRegWDao, IStageGactRegADao stageGactRegADao, IStageGactRegBDao stageGactRegBDao, IStageGcusRegADao stageGcusRegADao, IStageGcusRegBDao stageGcusRegBDao, IStageGmonRegADao stageGmonRegADao, IStageGmonRegBDao stageGmonRegBDao, IStageIscaRegADao stageIscaRegADao, IStageIscaRegBDao stageIscaRegBDao, IStageIscaRegCDao stageIscaRegCDao, IStageIscaRegDDao stageIscaRegDDao, IStageIscaRegEDao stageIscaRegEDao, IStageIscaRegFDao stageIscaRegFDao, IStageIscaRegGDao stageIscaRegGDao, IStageIscaRegHDao stageIscaRegHDao, IStageIscaRegIDao stageIscaRegIDao, IStageIscaRegJDao stageIscaRegJDao, IStageIscaRegKDao stageIscaRegKDao, IStageIscaRegLDao stageIscaRegLDao, IStageIscaRegMDao stageIscaRegMDao, IStageIscaRegNDao stageIscaRegNDao, IStageIscaRegODao stageIscaRegODao, IStageIsrcRegADao stageIsrcRegADao) {
+        this.sesionWeb = sesionWeb;
+        this.calendarioHelper = calendarioHelper;
+        this.stageAcctRegADao = stageAcctRegADao;
+        this.stageAcctRegBDao = stageAcctRegBDao;
+        this.stageAcctRegCDao = stageAcctRegCDao;
+        this.stageAcctRegDDao = stageAcctRegDDao;
+        this.stageAcctRegEDao = stageAcctRegEDao;
+        this.stageAcctRegFDao = stageAcctRegFDao;
+        this.stageAcctRegWDao = stageAcctRegWDao;
+        this.stageGactRegADao = stageGactRegADao;
+        this.stageGactRegBDao = stageGactRegBDao;
+        this.stageGcusRegADao = stageGcusRegADao;
+        this.stageGcusRegBDao = stageGcusRegBDao;
+        this.stageGmonRegADao = stageGmonRegADao;
+        this.stageGmonRegBDao = stageGmonRegBDao;
+        this.stageIscaRegADao = stageIscaRegADao;
+        this.stageIscaRegBDao = stageIscaRegBDao;
+        this.stageIscaRegCDao = stageIscaRegCDao;
+        this.stageIscaRegDDao = stageIscaRegDDao;
+        this.stageIscaRegEDao = stageIscaRegEDao;
+        this.stageIscaRegFDao = stageIscaRegFDao;
+        this.stageIscaRegGDao = stageIscaRegGDao;
+        this.stageIscaRegHDao = stageIscaRegHDao;
+        this.stageIscaRegIDao = stageIscaRegIDao;
+        this.stageIscaRegJDao = stageIscaRegJDao;
+        this.stageIscaRegKDao = stageIscaRegKDao;
+        this.stageIscaRegLDao = stageIscaRegLDao;
+        this.stageIscaRegMDao = stageIscaRegMDao;
+        this.stageIscaRegNDao = stageIscaRegNDao;
+        this.stageIscaRegODao = stageIscaRegODao;
+        this.stageIsrcRegADao = stageIsrcRegADao;
+    }
+
     @GetMapping({"/{idSflLower}"})
-    public String gcus(
+    public String sflIndex(
             @PathVariable String idSflLower,
             Model model) {
 
         return "redirect:/reportes/sfl_pershing/"+idSflLower+"/"+calendarioHelper.defaultProcessDate();
     }
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CONT_SFL_ACCT))")
     @GetMapping({"/acct/{processDate}"})
     public String acctPorFecha(
             @PathVariable String processDate,
@@ -124,7 +122,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_ACCT, false);
     }
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CONT_SFL_GACT))")
     @GetMapping({"/gact/{processDate}"})
     public String gactPorFecha(
             @PathVariable String processDate,
@@ -145,7 +143,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_GACT, false);
     }
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CONT_SFL_GCUS))")
     @GetMapping({"/gcus/{processDate}"})
     public String gcusPorFecha(
             @PathVariable String processDate,
@@ -166,7 +164,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_GCUS, false);
     }
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CONT_SFL_GMON))")
     @GetMapping({"/gmon/{processDate}"})
     public String gmonPorFecha(
             @PathVariable String processDate,
@@ -187,7 +185,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_GMON, false);
     }
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CONT_SFL_ISCA))")
     @GetMapping({"/isca/{processDate}"})
     public String iscaPorFecha(
             @PathVariable String processDate,
@@ -221,7 +219,7 @@ public class SflPershingController {
         model.addAttribute(CAMPO_PROCESS_DATE, processDate);
         return sesionWeb.getAppMenu().cambiaNavegacion(Menu.CONT_SFL_ISCA, false);
     }
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).CONT_SFL_ISRC))")
     @GetMapping({"/isrc/{processDate}"})
     public String isrcPorFecha(
             @PathVariable String processDate,
