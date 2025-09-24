@@ -37,6 +37,9 @@ public class ReportesMaestrosHelper {
     private static final String FIELD_TIPO_CLIENT_ID      = "tipo_id";
     private static final String FIELD_TIPO_CLIENT_GLOSA      = "glosa_tipo_id";
     private static final String FIELD_CLIENT_NAME      = "name";
+    private static final String FIELD_OEPN_DATE      = "open_date";
+    private static final String FIELD_CLOSE_DATE      = "close_date";
+    private static final String FIELD_ESTDO_CTA      = "estado_cuenta";
     private static final String FIELD_OFFICE_ID      = "office_id";
     private static final String FIELD_ACCOUNT_NO      = "account_no";
     private static final String FIELD_CASH_MARGIN_ACC      = "cash_margin_account";
@@ -77,10 +80,15 @@ public class ReportesMaestrosHelper {
     private static final String FIELD_REL_TIPO_ID_GLOSA = "glosa_tipo_id_relacionado";
     private static final String FIELD_REL_CARGO_ID = "id_cargo_relacionado";
     private static final String FIELD_REL_CARGO_GLOSA = "glosa_cargo_relacionado";
+
+    private final AppConfig appConfig;
+    private final CalendarioHelper calendarioHelper;
+
     @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    private CalendarioHelper calendarioHelper;
+    public ReportesMaestrosHelper(AppConfig appConfig, CalendarioHelper calendarioHelper) {
+        this.appConfig = appConfig;
+        this.calendarioHelper = calendarioHelper;
+    }
 
     public String csvValue(Object cellValue) {
         String value;
@@ -122,7 +130,7 @@ public class ReportesMaestrosHelper {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
                 FIELD_PROCESS_DATE, FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID, FIELD_OFFICE_ID,
-            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME
+            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_OEPN_DATE, FIELD_ESTDO_CTA, FIELD_CLOSE_DATE
         };
     }
 

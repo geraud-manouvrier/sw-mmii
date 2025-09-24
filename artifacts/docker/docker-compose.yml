@@ -1,7 +1,7 @@
-version: '3.1'
-
+name: pg16_mmii_col
 services:
   postgres:
+    container_name: pg16-mmii-col
     image: postgres:16
     restart: always
     environment:
@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: qande-mmii
     volumes:
-      - ./postgresql16/postgres-data:/var/lib/postgresql/data
+      - ./postgresql16/postgres-data:/var/lib/postgresql/data:Z
 
     ports:
       - "5433:5432"

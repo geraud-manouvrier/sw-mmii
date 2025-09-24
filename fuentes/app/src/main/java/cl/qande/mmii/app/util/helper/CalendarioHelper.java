@@ -245,4 +245,9 @@ public class CalendarioHelper {
         return convierteDateToProcessDate(newProcessDate);
     }
 
+    public static String dateToString(Date fechaDate) {
+        DateFormat dateFormat   = new SimpleDateFormat(FORMATO_AAAA_MM_DD);
+        return dateFormat.format(fechaDate);
+    }
+
 }

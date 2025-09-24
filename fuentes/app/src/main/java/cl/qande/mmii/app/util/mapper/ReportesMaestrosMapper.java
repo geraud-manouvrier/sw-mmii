@@ -4,6 +4,7 @@ import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosRelacionado;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo;
+import cl.qande.mmii.app.util.helper.CalendarioHelper;
 import cl.qande.mmii.app.util.helper.ReportesMaestrosHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,13 @@ import java.util.List;
 @Component
 public class ReportesMaestrosMapper {
 
+
+    private final ReportesMaestrosHelper reportesMaestrosHelper;
+
     @Autowired
-    private ReportesMaestrosHelper reportesMaestrosHelper;
+    public ReportesMaestrosMapper(ReportesMaestrosHelper reportesMaestrosHelper) {
+        this.reportesMaestrosHelper = reportesMaestrosHelper;
+    }
 
     public List<String> getFromDbToCsvLine(VwReporteMaestroDatosCliente fila){
         ArrayList<String> dataRow = new ArrayList<>();
@@ -28,6 +34,9 @@ public class ReportesMaestrosMapper {
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountNo()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getName()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getOpenDate()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getEstadoCuenta()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getCloseDate()==null ? "" : CalendarioHelper.dateToString(fila.getCloseDate())));
 
         return dataRow;
     }
