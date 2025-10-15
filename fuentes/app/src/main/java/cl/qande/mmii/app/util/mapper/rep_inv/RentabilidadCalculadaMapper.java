@@ -12,7 +12,7 @@ public interface RentabilidadCalculadaMapper extends EntityMapper<RetornoCuenta,
 
 
   @Mapping(source = "agregadorN2", target = "accountNo", qualifiedByName = "accountFromAgregador")
-  @Mapping(target = "rentDia", ignore = true)
+  @Mapping(source = "base8Rentabilidad", target = "rentDia")
   @Mapping(source = "base3Rentabilidad", target = "rent1m")
   @Mapping(source = "base4Rentabilidad", target = "rent3m")
   @Mapping(source = "base5Rentabilidad", target = "rent12m")

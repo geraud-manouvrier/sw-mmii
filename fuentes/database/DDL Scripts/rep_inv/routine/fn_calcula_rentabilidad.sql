@@ -11,6 +11,7 @@ BEGIN
     12meses		12 meses
     ytd			acumulado en el año
     20meses		20 meses
+    1dia        1 día
      */
 
     IF (trim(_agregador_n2)='') THEN
@@ -150,17 +151,17 @@ BEGIN
             (tb_calc.det_rent_20m).rentabilidad_ponderada_cl as base7_rentabilidad_ponderada_cl,
             (tb_calc.det_rent_20m).rentabilidad_periodo_cl as base7_rentabilidad_periodo_cl,
             (tb_calc.det_rent_20m).cant_reg as base7_cant_reg,
-            --No implementada
-            NULL::date as base8_start_date,
-            NULL::date as base8_fecha_desde,
-            NULL::date as base8_fecha_hasta,
-            NULL::NUMERIC(45,20) as base8_rentabilidad,
-            NULL::INTEGER as base8_dias_con_saldo,
-            NULL::NUMERIC(45,20) as base8_suma_saldos_iniciales,
-            NULL::NUMERIC(45,20) as base8_suma_saldo_rentabilidad,
-            NULL::NUMERIC(45,20) as base8_rentabilidad_ponderada_cl,
-            NULL::NUMERIC(45,20) as base8_rentabilidad_periodo_cl,
-            NULL::INTEGER as base8_cant_reg
+            --1 día
+            tb_calc.start_date_1d as base8_start_date,
+            (tb_calc.det_rent_1d).fecha_desde as base8_fecha_desde,
+            (tb_calc.det_rent_1d).fecha_hasta as base8_fecha_hasta,
+            (tb_calc.det_rent_1d).rentabilidad_periodo as base8_rentabilidad,
+            (tb_calc.det_rent_1d).dias_con_saldo as base8_dias_con_saldo,
+            (tb_calc.det_rent_1d).suma_saldos_iniciales as base8_suma_saldos_iniciales,
+            (tb_calc.det_rent_1d).suma_saldo_rentabilidad as base8_suma_saldo_rentabilidad,
+            (tb_calc.det_rent_1d).rentabilidad_ponderada_cl as base8_rentabilidad_ponderada_cl,
+            (tb_calc.det_rent_1d).rentabilidad_periodo_cl as base8_rentabilidad_periodo_cl,
+            (tb_calc.det_rent_1d).cant_reg as base8_cant_reg
         FROM
             (
                 SELECT
@@ -177,13 +178,15 @@ BEGIN
                     tb_base.start_date_12m,
                     tb_base.start_date_ytd,
                     tb_base.start_date_20m,
+                    tb_base.start_date_1d,
                     (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_inioper, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_inioper,
                     (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_aper, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_aper,
                     (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_1m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_1m,
                     (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_3m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_3m,
                     (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_12m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_12m,
                     (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_ytd, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_ytd,
-                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_20m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_20m
+                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_20m, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_20m,
+                    (rep_inv.fn_calculo_rentabilidad_agregada(tb_base.start_date_1d, tb_base.process_date_as_date, tb_base.agregador_n1, tb_base.agregador_n2, tb_base.agregador_n3, tb_base.agregador_n4)) as det_rent_1d
                 FROM
                     (
                         SELECT
@@ -200,7 +203,8 @@ BEGIN
                             rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '3M') as start_date_3m,
                             rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '12M') as start_date_12m,
                             rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, 'YTD') as start_date_ytd,
-                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '20M') as start_date_20m
+                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '20M') as start_date_20m,
+                            rep_inv.fn_start_date_for_metric(tbn.process_date_as_date, '1D') as start_date_1d
                         FROM temptb_consolidado_agregado tbn
                     ) as tb_base
             ) as tb_calc

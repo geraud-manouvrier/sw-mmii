@@ -41,6 +41,10 @@ DECLARE _aux_date DATE;
         ELSE
             RETURN (_date_in - interval '20 month')+ interval '1 day';
         END IF;
+    ELSEIF _metric='1D' THEN
+        --RETURN (_date_in - interval '2 day')+ interval '1 day';
+        --RETURN (_date_in - interval '1 day');
+        RETURN (_date_in);
     END IF;
 
     RETURN null::date;

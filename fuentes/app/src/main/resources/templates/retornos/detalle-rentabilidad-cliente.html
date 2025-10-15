@@ -150,31 +150,22 @@
         columnClientes = columnClientes.filter(col => col.field !== 'base6RentabilidadPeriodoCl');
         columnClientes = columnClientes.filter(col => col.field !== 'base7RentabilidadPonderadaCl');
         columnClientes = columnClientes.filter(col => col.field !== 'base7RentabilidadPeriodoCl');
-        
-        columnClientes = columnClientes.filter(col => col.field !== 'base8StartDate');
-        columnClientes = columnClientes.filter(col => col.field !== 'base8FechaDesde');
-        columnClientes = columnClientes.filter(col => col.field !== 'base8FechaHasta');
-        columnClientes = columnClientes.filter(col => col.field !== 'base8Rentabilidad');
-        columnClientes = columnClientes.filter(col => col.field !== 'base8DiasConSaldo');
-        columnClientes = columnClientes.filter(col => col.field !== 'base8SumaSaldosIniciales');
-        columnClientes = columnClientes.filter(col => col.field !== 'base8SumaSaldoRentabilidad');
         columnClientes = columnClientes.filter(col => col.field !== 'base8RentabilidadPonderadaCl');
         columnClientes = columnClientes.filter(col => col.field !== 'base8RentabilidadPeriodoCl');
-        columnClientes = columnClientes.filter(col => col.field !== 'base8CantReg');
         
         columnClientes = columnClientes.filter(col => col.field !== 'agregadorN3');
         columnClientes = columnClientes.filter(col => col.field !== 'agregadorN4');
         updateColumnAttribute(columnClientes, ['rowId', 'id', 'subNivel', 'agregadorN1', 'processDateAsDate'], 'visible', false)
         updateColumnAttribute(columnClientes, ['agregadorN1'], 'headerText', 'Client ID')
         updateColumnAttribute(columnClientes, ['agregadorN2'], 'headerText', 'Account No')
-        updateColumnAttribute(columnClientes, ['base1StartDate', 'base2StartDate', 'base3StartDate', 'base4StartDate', 'base5StartDate', 'base6StartDate', 'base7StartDate'], 'visible', false)
-        updateColumnAttribute(columnClientes, ['base1SumaSaldosIniciales', 'base2SumaSaldosIniciales', 'base3SumaSaldosIniciales', 'base4SumaSaldosIniciales', 'base5SumaSaldosIniciales', 'base6SumaSaldosIniciales', 'base7SumaSaldosIniciales'], 'visible', false)
-        updateColumnAttribute(columnClientes, ['base1SumaSaldoRentabilidad', 'base2SumaSaldoRentabilidad', 'base3SumaSaldoRentabilidad', 'base4SumaSaldoRentabilidad', 'base5SumaSaldoRentabilidad', 'base6SumaSaldoRentabilidad', 'base7SumaSaldoRentabilidad'], 'visible', false)
-        updateColumnAttribute(columnClientes, ['base1DiasConSaldo', 'base2DiasConSaldo', 'base3DiasConSaldo', 'base4DiasConSaldo', 'base5DiasConSaldo', 'base6DiasConSaldo', 'base7DiasConSaldo'], 'visible', false)
-        updateColumnAttribute(columnClientes, ['base1CantReg', 'base2CantReg', 'base3CantReg', 'base4CantReg', 'base5CantReg', 'base6CantReg', 'base7CantReg'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1StartDate', 'base2StartDate', 'base3StartDate', 'base4StartDate', 'base5StartDate', 'base6StartDate', 'base7StartDate', 'base8StartDate'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1SumaSaldosIniciales', 'base2SumaSaldosIniciales', 'base3SumaSaldosIniciales', 'base4SumaSaldosIniciales', 'base5SumaSaldosIniciales', 'base6SumaSaldosIniciales', 'base7SumaSaldosIniciales', 'base8SumaSaldosIniciales'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1SumaSaldoRentabilidad', 'base2SumaSaldoRentabilidad', 'base3SumaSaldoRentabilidad', 'base4SumaSaldoRentabilidad', 'base5SumaSaldoRentabilidad', 'base6SumaSaldoRentabilidad', 'base7SumaSaldoRentabilidad', 'base8SumaSaldoRentabilidad'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1DiasConSaldo', 'base2DiasConSaldo', 'base3DiasConSaldo', 'base4DiasConSaldo', 'base5DiasConSaldo', 'base6DiasConSaldo', 'base7DiasConSaldo', 'base8DiasConSaldo'], 'visible', false)
+        updateColumnAttribute(columnClientes, ['base1CantReg', 'base2CantReg', 'base3CantReg', 'base4CantReg', 'base5CantReg', 'base6CantReg', 'base7CantReg', 'base8CantReg'], 'visible', false)
 
         updateColumnAttribute(columnClientes, ['saldoDia','abonosDia','retirosDia','dividendosDia','saldoDiaAnterior','utilidad'], 'format', 'N4');
-        updateColumnAttribute(columnClientes, ['comisionDevengadaDia','rentabilidadBasePitatoria','base1Rentabilidad','base2Rentabilidad','base3Rentabilidad','base4Rentabilidad','base5Rentabilidad','base6Rentabilidad','base7Rentabilidad'], 'format', 'N6');
+        updateColumnAttribute(columnClientes, ['comisionDevengadaDia','rentabilidadBasePitatoria','base1Rentabilidad','base2Rentabilidad','base3Rentabilidad','base4Rentabilidad','base5Rentabilidad','base6Rentabilidad','base7Rentabilidad','base8Rentabilidad'], 'format', 'N6');
 
 
         updateColumnAttribute(columnClientes, ['base1FechaDesde', 'base1FechaHasta'], 'visible', false);
@@ -184,6 +175,7 @@
         updateColumnAttribute(columnClientes, ['base5FechaDesde', 'base5FechaHasta'], 'visible', false);
         updateColumnAttribute(columnClientes, ['base6FechaDesde', 'base6FechaHasta'], 'visible', false);
         updateColumnAttribute(columnClientes, ['base7FechaDesde', 'base7FechaHasta'], 'visible', false);
+        updateColumnAttribute(columnClientes, ['base8FechaDesde', 'base8FechaHasta'], 'visible', false);
         updateColumnAttribute(columnClientes, ['base1Rentabilidad'], 'headerText', 'Base 1 [Ini. Oper.]');
         updateColumnAttribute(columnClientes, ['base2Rentabilidad'], 'headerText', 'Base 2 [Apertura Cta.]');
         updateColumnAttribute(columnClientes, ['base3Rentabilidad'], 'headerText', 'Base 3 [1 Mes]');
@@ -191,6 +183,7 @@
         updateColumnAttribute(columnClientes, ['base5Rentabilidad'], 'headerText', 'Base 5 [12 Meses]');
         updateColumnAttribute(columnClientes, ['base6Rentabilidad'], 'headerText', 'Base 6 [YTD]');
         updateColumnAttribute(columnClientes, ['base7Rentabilidad'], 'headerText', 'Base 7 [20 Meses]');
+        updateColumnAttribute(columnClientes, ['base8Rentabilidad'], 'headerText', 'Base 8 [1 Día]');
 
 
         updateColumnAttribute(columnClientes, ['base2Rentabilidad'], 'visible', false);
