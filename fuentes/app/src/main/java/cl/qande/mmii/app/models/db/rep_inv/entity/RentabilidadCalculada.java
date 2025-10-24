@@ -97,6 +97,9 @@ public class RentabilidadCalculada {
     @Column(name = "base1_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base1Rentabilidad;
 
+    @Column(name = "base1_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base1RentabilidadAnualizada;
+
     @Column(name = "base1_dias_con_saldo")
     private Integer base1DiasConSaldo;
 
@@ -126,6 +129,9 @@ public class RentabilidadCalculada {
 
     @Column(name = "base2_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base2Rentabilidad;
+
+    @Column(name = "base2_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base2RentabilidadAnualizada;
 
     @Column(name = "base2_dias_con_saldo")
     private Integer base2DiasConSaldo;
@@ -157,6 +163,9 @@ public class RentabilidadCalculada {
     @Column(name = "base3_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base3Rentabilidad;
 
+    @Column(name = "base3_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base3RentabilidadAnualizada;
+
     @Column(name = "base3_dias_con_saldo")
     private Integer base3DiasConSaldo;
 
@@ -186,6 +195,9 @@ public class RentabilidadCalculada {
 
     @Column(name = "base4_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base4Rentabilidad;
+
+    @Column(name = "base4_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base4RentabilidadAnualizada;
 
     @Column(name = "base4_dias_con_saldo")
     private Integer base4DiasConSaldo;
@@ -217,6 +229,9 @@ public class RentabilidadCalculada {
     @Column(name = "base5_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base5Rentabilidad;
 
+    @Column(name = "base5_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base5RentabilidadAnualizada;
+
     @Column(name = "base5_dias_con_saldo")
     private Integer base5DiasConSaldo;
 
@@ -246,6 +261,9 @@ public class RentabilidadCalculada {
 
     @Column(name = "base6_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base6Rentabilidad;
+
+    @Column(name = "base6_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base6RentabilidadAnualizada;
 
     @Column(name = "base6_dias_con_saldo")
     private Integer base6DiasConSaldo;
@@ -277,6 +295,9 @@ public class RentabilidadCalculada {
     @Column(name = "base7_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base7Rentabilidad;
 
+    @Column(name = "base7_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base7RentabilidadAnualizada;
+
     @Column(name = "base7_dias_con_saldo")
     private Integer base7DiasConSaldo;
 
@@ -307,6 +328,9 @@ public class RentabilidadCalculada {
     @Column(name = "base8_rentabilidad", precision = 45, scale = 20)
     private BigDecimal base8Rentabilidad;
 
+    @Column(name = "base8_rentabilidad_anualizada", precision = 45, scale = 20)
+    private BigDecimal base8RentabilidadAnualizada;
+
     @Column(name = "base8_dias_con_saldo")
     private Integer base8DiasConSaldo;
 
@@ -324,6 +348,70 @@ public class RentabilidadCalculada {
 
     @Column(name = "base8_cant_reg")
     private Integer base8CantReg;
+
+    public BigDecimal getBase1RentabilidadAnualizada() {
+        return base1RentabilidadAnualizada;
+    }
+
+    public void setBase1RentabilidadAnualizada(BigDecimal base1RentabilidadAnualizada) {
+        this.base1RentabilidadAnualizada = base1RentabilidadAnualizada;
+    }
+
+    public BigDecimal getBase2RentabilidadAnualizada() {
+        return base2RentabilidadAnualizada;
+    }
+
+    public void setBase2RentabilidadAnualizada(BigDecimal base2RentabilidadAnualizada) {
+        this.base2RentabilidadAnualizada = base2RentabilidadAnualizada;
+    }
+
+    public BigDecimal getBase3RentabilidadAnualizada() {
+        return base3RentabilidadAnualizada;
+    }
+
+    public void setBase3RentabilidadAnualizada(BigDecimal base3RentabilidadAnualizada) {
+        this.base3RentabilidadAnualizada = base3RentabilidadAnualizada;
+    }
+
+    public BigDecimal getBase4RentabilidadAnualizada() {
+        return base4RentabilidadAnualizada;
+    }
+
+    public void setBase4RentabilidadAnualizada(BigDecimal base4RentabilidadAnualizada) {
+        this.base4RentabilidadAnualizada = base4RentabilidadAnualizada;
+    }
+
+    public BigDecimal getBase5RentabilidadAnualizada() {
+        return base5RentabilidadAnualizada;
+    }
+
+    public void setBase5RentabilidadAnualizada(BigDecimal base5RentabilidadAnualizada) {
+        this.base5RentabilidadAnualizada = base5RentabilidadAnualizada;
+    }
+
+    public BigDecimal getBase6RentabilidadAnualizada() {
+        return base6RentabilidadAnualizada;
+    }
+
+    public void setBase6RentabilidadAnualizada(BigDecimal base6RentabilidadAnualizada) {
+        this.base6RentabilidadAnualizada = base6RentabilidadAnualizada;
+    }
+
+    public BigDecimal getBase7RentabilidadAnualizada() {
+        return base7RentabilidadAnualizada;
+    }
+
+    public void setBase7RentabilidadAnualizada(BigDecimal base7RentabilidadAnualizada) {
+        this.base7RentabilidadAnualizada = base7RentabilidadAnualizada;
+    }
+
+    public BigDecimal getBase8RentabilidadAnualizada() {
+        return base8RentabilidadAnualizada;
+    }
+
+    public void setBase8RentabilidadAnualizada(BigDecimal base8RentabilidadAnualizada) {
+        this.base8RentabilidadAnualizada = base8RentabilidadAnualizada;
+    }
 
     public Long getId() {
         return id;
@@ -1152,6 +1240,7 @@ public class RentabilidadCalculada {
                 ", base1FechaDesde=" + base1FechaDesde +
                 ", base1FechaHasta=" + base1FechaHasta +
                 ", base1Rentabilidad=" + base1Rentabilidad +
+                ", base1RentabilidadAnualizada=" + base1RentabilidadAnualizada +
                 ", base1DiasConSaldo=" + base1DiasConSaldo +
                 ", base1SumaSaldosIniciales=" + base1SumaSaldosIniciales +
                 ", base1SumaSaldoRentabilidad=" + base1SumaSaldoRentabilidad +
@@ -1162,6 +1251,7 @@ public class RentabilidadCalculada {
                 ", base2FechaDesde=" + base2FechaDesde +
                 ", base2FechaHasta=" + base2FechaHasta +
                 ", base2Rentabilidad=" + base2Rentabilidad +
+                ", base2RentabilidadAnualizada=" + base2RentabilidadAnualizada +
                 ", base2DiasConSaldo=" + base2DiasConSaldo +
                 ", base2SumaSaldosIniciales=" + base2SumaSaldosIniciales +
                 ", base2SumaSaldoRentabilidad=" + base2SumaSaldoRentabilidad +
@@ -1172,6 +1262,7 @@ public class RentabilidadCalculada {
                 ", base3FechaDesde=" + base3FechaDesde +
                 ", base3FechaHasta=" + base3FechaHasta +
                 ", base3Rentabilidad=" + base3Rentabilidad +
+                ", base3RentabilidadAnualizada=" + base3RentabilidadAnualizada +
                 ", base3DiasConSaldo=" + base3DiasConSaldo +
                 ", base3SumaSaldosIniciales=" + base3SumaSaldosIniciales +
                 ", base3SumaSaldoRentabilidad=" + base3SumaSaldoRentabilidad +
@@ -1182,6 +1273,7 @@ public class RentabilidadCalculada {
                 ", base4FechaDesde=" + base4FechaDesde +
                 ", base4FechaHasta=" + base4FechaHasta +
                 ", base4Rentabilidad=" + base4Rentabilidad +
+                ", base4RentabilidadAnualizada=" + base4RentabilidadAnualizada +
                 ", base4DiasConSaldo=" + base4DiasConSaldo +
                 ", base4SumaSaldosIniciales=" + base4SumaSaldosIniciales +
                 ", base4SumaSaldoRentabilidad=" + base4SumaSaldoRentabilidad +
@@ -1192,6 +1284,7 @@ public class RentabilidadCalculada {
                 ", base5FechaDesde=" + base5FechaDesde +
                 ", base5FechaHasta=" + base5FechaHasta +
                 ", base5Rentabilidad=" + base5Rentabilidad +
+                ", base5RentabilidadAnualizada=" + base5RentabilidadAnualizada +
                 ", base5DiasConSaldo=" + base5DiasConSaldo +
                 ", base5SumaSaldosIniciales=" + base5SumaSaldosIniciales +
                 ", base5SumaSaldoRentabilidad=" + base5SumaSaldoRentabilidad +
@@ -1202,6 +1295,7 @@ public class RentabilidadCalculada {
                 ", base6FechaDesde=" + base6FechaDesde +
                 ", base6FechaHasta=" + base6FechaHasta +
                 ", base6Rentabilidad=" + base6Rentabilidad +
+                ", base6RentabilidadAnualizada=" + base6RentabilidadAnualizada +
                 ", base6DiasConSaldo=" + base6DiasConSaldo +
                 ", base6SumaSaldosIniciales=" + base6SumaSaldosIniciales +
                 ", base6SumaSaldoRentabilidad=" + base6SumaSaldoRentabilidad +
@@ -1212,6 +1306,7 @@ public class RentabilidadCalculada {
                 ", base7FechaDesde=" + base7FechaDesde +
                 ", base7FechaHasta=" + base7FechaHasta +
                 ", base7Rentabilidad=" + base7Rentabilidad +
+                ", base7RentabilidadAnualizada=" + base7RentabilidadAnualizada +
                 ", base7DiasConSaldo=" + base7DiasConSaldo +
                 ", base7SumaSaldosIniciales=" + base7SumaSaldosIniciales +
                 ", base7SumaSaldoRentabilidad=" + base7SumaSaldoRentabilidad +
@@ -1222,6 +1317,7 @@ public class RentabilidadCalculada {
                 ", base8FechaDesde=" + base8FechaDesde +
                 ", base8FechaHasta=" + base8FechaHasta +
                 ", base8Rentabilidad=" + base8Rentabilidad +
+                ", base8RentabilidadAnualizada=" + base8RentabilidadAnualizada +
                 ", base8DiasConSaldo=" + base8DiasConSaldo +
                 ", base8SumaSaldosIniciales=" + base8SumaSaldosIniciales +
                 ", base8SumaSaldoRentabilidad=" + base8SumaSaldoRentabilidad +

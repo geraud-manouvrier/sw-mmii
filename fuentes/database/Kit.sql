@@ -1,6 +1,6 @@
 /*
-2025-10-15
-Actual: 12.2.0-COL
+2025-10-23
+Actual: 12.3.0-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
@@ -17,95 +17,132 @@ SELECT id, 'ROLE_OP_CTRL_OPER_DIARIO' FROM public.users where username in ('dani
 --========================================================================
 --========================================================================
 --========================================================================
---  Nueva Cuenta para Cliente con cuenta existente
-/*
-•	N°: T9O004691
-•	Fee: 1.5
-•	Asociada al Cliente ID "94418996"
-*/
+-- Rentabilidad Anualizada (Ejecutado)
+--Agregamos columns a tabla
 
-select id, * from clientes.cliente where identificador = '94418996';
+DROP function rep_inv.fn_calcula_rentabilidad;
+DROP table rep_inv.rentabilidad_calculada;
 
-select id as id_cliente, 'pershing' as id_custodio, 'T9O004691' as id_cuenta_custodio, true as habilitado
-from clientes.cliente where identificador = '94418996';
+create table rep_inv.rentabilidad_calculada
+(
+    id                              bigint generated always as identity
+        constraint rentabilidad_calculada_pk
+            primary key,
+    row_id                          varchar(100) not null,
+    nivel                           varchar(100),
+    sub_nivel                       bigint,
+    process_date                    varchar(100) not null,
+    process_date_as_date            date,
+    agregador_n1                    varchar(100) not null,
+    agregador_n2                    varchar(100) not null,
+    agregador_n3                    varchar(100) not null,
+    agregador_n4                    varchar(100) not null,
+    saldo_dia_anterior              numeric(45, 20),
+    abonos_dia                      numeric(45, 20),
+    retiros_dia                     numeric(45, 20),
+    dividendos_dia                  numeric(45, 20),
+    saldo_dia                       numeric(45, 20),
+    comision_devengada_dia          numeric(45, 20),
+    utilidad                        numeric(45, 20),
+    rentabilidad                    numeric(45, 20),
+    rentabilidad_base_pitatoria     numeric(45, 20),
+    saldo_rentabilidad              numeric(45, 20),
+    base1_start_date                date,
+    base1_fecha_desde               date,
+    base1_fecha_hasta               date,
+    base1_rentabilidad              numeric(45, 20),
+    base1_rentabilidad_anualizada   numeric(45, 20),
+    base1_dias_con_saldo            integer,
+    base1_suma_saldos_iniciales     numeric(45, 20),
+    base1_suma_saldo_rentabilidad   numeric(45, 20),
+    base1_rentabilidad_ponderada_cl numeric(45, 20),
+    base1_rentabilidad_periodo_cl   numeric(45, 20),
+    base1_cant_reg                  integer,
+    base2_start_date                date,
+    base2_fecha_desde               date,
+    base2_fecha_hasta               date,
+    base2_rentabilidad              numeric(45, 20),
+    base2_rentabilidad_anualizada   numeric(45, 20),
+    base2_dias_con_saldo            integer,
+    base2_suma_saldos_iniciales     numeric(45, 20),
+    base2_suma_saldo_rentabilidad   numeric(45, 20),
+    base2_rentabilidad_ponderada_cl numeric(45, 20),
+    base2_rentabilidad_periodo_cl   numeric(45, 20),
+    base2_cant_reg                  integer,
+    base3_start_date                date,
+    base3_fecha_desde               date,
+    base3_fecha_hasta               date,
+    base3_rentabilidad              numeric(45, 20),
+    base3_rentabilidad_anualizada   numeric(45, 20),
+    base3_dias_con_saldo            integer,
+    base3_suma_saldos_iniciales     numeric(45, 20),
+    base3_suma_saldo_rentabilidad   numeric(45, 20),
+    base3_rentabilidad_ponderada_cl numeric(45, 20),
+    base3_rentabilidad_periodo_cl   numeric(45, 20),
+    base3_cant_reg                  integer,
+    base4_start_date                date,
+    base4_fecha_desde               date,
+    base4_fecha_hasta               date,
+    base4_rentabilidad              numeric(45, 20),
+    base4_rentabilidad_anualizada   numeric(45, 20),
+    base4_dias_con_saldo            integer,
+    base4_suma_saldos_iniciales     numeric(45, 20),
+    base4_suma_saldo_rentabilidad   numeric(45, 20),
+    base4_rentabilidad_ponderada_cl numeric(45, 20),
+    base4_rentabilidad_periodo_cl   numeric(45, 20),
+    base4_cant_reg                  integer,
+    base5_start_date                date,
+    base5_fecha_desde               date,
+    base5_fecha_hasta               date,
+    base5_rentabilidad              numeric(45, 20),
+    base5_rentabilidad_anualizada   numeric(45, 20),
+    base5_dias_con_saldo            integer,
+    base5_suma_saldos_iniciales     numeric(45, 20),
+    base5_suma_saldo_rentabilidad   numeric(45, 20),
+    base5_rentabilidad_ponderada_cl numeric(45, 20),
+    base5_rentabilidad_periodo_cl   numeric(45, 20),
+    base5_cant_reg                  integer,
+    base6_start_date                date,
+    base6_fecha_desde               date,
+    base6_fecha_hasta               date,
+    base6_rentabilidad              numeric(45, 20),
+    base6_rentabilidad_anualizada   numeric(45, 20),
+    base6_dias_con_saldo            integer,
+    base6_suma_saldos_iniciales     numeric(45, 20),
+    base6_suma_saldo_rentabilidad   numeric(45, 20),
+    base6_rentabilidad_ponderada_cl numeric(45, 20),
+    base6_rentabilidad_periodo_cl   numeric(45, 20),
+    base6_cant_reg                  integer,
+    base7_start_date                date,
+    base7_fecha_desde               date,
+    base7_fecha_hasta               date,
+    base7_rentabilidad              numeric(45, 20),
+    base7_rentabilidad_anualizada   numeric(45, 20),
+    base7_dias_con_saldo            integer,
+    base7_suma_saldos_iniciales     numeric(45, 20),
+    base7_suma_saldo_rentabilidad   numeric(45, 20),
+    base7_rentabilidad_ponderada_cl numeric(45, 20),
+    base7_rentabilidad_periodo_cl   numeric(45, 20),
+    base7_cant_reg                  integer,
+    base8_start_date                date,
+    base8_fecha_desde               date,
+    base8_fecha_hasta               date,
+    base8_rentabilidad              numeric(45, 20),
+    base8_rentabilidad_anualizada   numeric(45, 20),
+    base8_dias_con_saldo            integer,
+    base8_suma_saldos_iniciales     numeric(45, 20),
+    base8_suma_saldo_rentabilidad   numeric(45, 20),
+    base8_rentabilidad_ponderada_cl numeric(45, 20),
+    base8_rentabilidad_periodo_cl   numeric(45, 20),
+    base8_cant_reg                  integer
+);
 
-SELECT * FROM clientes.cuenta where id_cliente=244;
 
-insert into clientes.cuenta (id_cliente, id_custodio, id_cuenta_custodio, habilitado)
-select id as id_cliente, 'pershing' as id_custodio, 'T9O004691' as id_cuenta_custodio, true as habilitado
-from clientes.cliente where identificador = '94418996'
-;
+create index rentabildiad_calculada_main_index
+    on rep_inv.rentabilidad_calculada (process_date, agregador_n1, agregador_n2, agregador_n3, agregador_n4);
 
 
-SELECT * FROM clientes.cuenta where id_cliente=244;
-
-
-
-
-
-
-
---========================================================================
---========================================================================
---========================================================================
---Nueva métrica retornos: 1 día (base 8)
-
-create or replace function rep_inv.fn_start_date_for_metric(_date_in date, _metric character varying) returns date
-    language plpgsql
-as
-$$
-DECLARE _aux_date DATE;
-    BEGIN
-
-    IF _metric='MTD' THEN
-        RETURN date_trunc('month', _date_in);
-    ELSEIF _metric='YTD' THEN
-        RETURN date_trunc('year', _date_in);
-    ELSEIF _metric='INI_OPER' THEN
-        RETURN '2022-01-01'::date;
-    ELSEIF _metric='APER' THEN
-        RETURN '2022-01-01'::date;
-    ELSEIF _metric='1M' THEN
-        _aux_date = public.fn_calendario_ult_dia_mes(_date_in);
-        IF _date_in=_aux_date THEN
-            RETURN date_trunc('month', _date_in);
-        ELSE
-            RETURN (_date_in - interval '1 month')+ interval '1 day';
-        END IF;
-    ELSEIF _metric='3M' THEN
-        _aux_date = public.fn_calendario_ult_dia_mes(_date_in);
-        IF _date_in=_aux_date THEN
-            RETURN date_trunc('month', _date_in - interval '2 month');
-        ELSE
-            RETURN (_date_in - interval '3 month')+ interval '1 day';
-        END IF;
-    ELSEIF _metric='12M' THEN
-        _aux_date = public.fn_calendario_ult_dia_mes(_date_in);
-        IF _date_in=_aux_date THEN
-            RETURN date_trunc('month', _date_in - interval '11 month');
-        ELSE
-            RETURN (_date_in - interval '12 month')+ interval '1 day';
-        END IF;
-    ELSEIF _metric='20M' THEN
-        _aux_date = public.fn_calendario_ult_dia_mes(_date_in);
-        IF _date_in=_aux_date THEN
-            RETURN date_trunc('month', _date_in - interval '19 month');
-        ELSE
-            RETURN (_date_in - interval '20 month')+ interval '1 day';
-        END IF;
-    ELSEIF _metric='1D' THEN
-        --RETURN (_date_in - interval '2 day')+ interval '1 day';
-        --RETURN (_date_in - interval '1 day');
-        RETURN (_date_in);
-    END IF;
-
-    RETURN null::date;
-
-    END;
-$$;
-
-
-
+--Agregamos columnas a salida FN
 create or replace function rep_inv.fn_calcula_rentabilidad(_agregador_n1 character varying, _agregador_n2 character varying, _agregador_n3 character varying, _agregador_n4 character varying, _start_process_date character varying, _end_process_date character varying) returns SETOF rep_inv.rentabilidad_calculada
     language plpgsql
 as
@@ -187,6 +224,7 @@ BEGIN
             (tb_calc.det_rent_inioper).fecha_desde as base1_fecha_desde,
             (tb_calc.det_rent_inioper).fecha_hasta as base1_fecha_hasta,
             (tb_calc.det_rent_inioper).rentabilidad_periodo as base1_rentabilidad,
+            (power((1+(tb_calc.det_rent_inioper).rentabilidad_periodo), (365/(tb_calc.det_rent_inioper).dias_con_saldo))-1)::NUMERIC(45,20) as base1_rentabilidad_anualizada,
             (tb_calc.det_rent_inioper).dias_con_saldo as base1_dias_con_saldo,
             (tb_calc.det_rent_inioper).suma_saldos_iniciales as base1_suma_saldos_iniciales,
             (tb_calc.det_rent_inioper).suma_saldo_rentabilidad as base1_suma_saldo_rentabilidad,
@@ -198,6 +236,7 @@ BEGIN
             (tb_calc.det_rent_aper).fecha_desde as base2_fecha_desde,
             (tb_calc.det_rent_aper).fecha_hasta as base2_fecha_hasta,
             (tb_calc.det_rent_aper).rentabilidad_periodo as base2_rentabilidad,
+            (power((1+(tb_calc.det_rent_aper).rentabilidad_periodo), (365/(tb_calc.det_rent_aper).dias_con_saldo))-1)::NUMERIC(45,20) as base2_rentabilidad_anualizada,
             (tb_calc.det_rent_aper).dias_con_saldo as base2_dias_con_saldo,
             (tb_calc.det_rent_aper).suma_saldos_iniciales as base2_suma_saldos_iniciales,
             (tb_calc.det_rent_aper).suma_saldo_rentabilidad as base2_suma_saldo_rentabilidad,
@@ -209,6 +248,7 @@ BEGIN
             (tb_calc.det_rent_1m).fecha_desde as base3_fecha_desde,
             (tb_calc.det_rent_1m).fecha_hasta as base3_fecha_hasta,
             (tb_calc.det_rent_1m).rentabilidad_periodo as base3_rentabilidad,
+            (power((1+(tb_calc.det_rent_1m).rentabilidad_periodo), (365/(tb_calc.det_rent_1m).dias_con_saldo))-1)::NUMERIC(45,20) as base3_rentabilidad_anualizada,
             (tb_calc.det_rent_1m).dias_con_saldo as base3_dias_con_saldo,
             (tb_calc.det_rent_1m).suma_saldos_iniciales as base3_suma_saldos_iniciales,
             (tb_calc.det_rent_1m).suma_saldo_rentabilidad as base3_suma_saldo_rentabilidad,
@@ -220,6 +260,7 @@ BEGIN
             (tb_calc.det_rent_3m).fecha_desde as base4_fecha_desde,
             (tb_calc.det_rent_3m).fecha_hasta as base4_fecha_hasta,
             (tb_calc.det_rent_3m).rentabilidad_periodo as base4_rentabilidad,
+            (power((1+(tb_calc.det_rent_3m).rentabilidad_periodo), (365/(tb_calc.det_rent_3m).dias_con_saldo))-1)::NUMERIC(45,20) as base4_rentabilidad_anualizada,
             (tb_calc.det_rent_3m).dias_con_saldo as base4_dias_con_saldo,
             (tb_calc.det_rent_3m).suma_saldos_iniciales as base4_suma_saldos_iniciales,
             (tb_calc.det_rent_3m).suma_saldo_rentabilidad as base4_suma_saldo_rentabilidad,
@@ -231,6 +272,7 @@ BEGIN
             (tb_calc.det_rent_12m).fecha_desde as base5_fecha_desde,
             (tb_calc.det_rent_12m).fecha_hasta as base5_fecha_hasta,
             (tb_calc.det_rent_12m).rentabilidad_periodo as base5_rentabilidad,
+            (power((1+(tb_calc.det_rent_12m).rentabilidad_periodo), (365/(tb_calc.det_rent_12m).dias_con_saldo))-1)::NUMERIC(45,20) as base5_rentabilidad_anualizada,
             (tb_calc.det_rent_12m).dias_con_saldo as base5_dias_con_saldo,
             (tb_calc.det_rent_12m).suma_saldos_iniciales as base5_suma_saldos_iniciales,
             (tb_calc.det_rent_12m).suma_saldo_rentabilidad as base5_suma_saldo_rentabilidad,
@@ -242,6 +284,7 @@ BEGIN
             (tb_calc.det_rent_ytd).fecha_desde as base6_fecha_desde,
             (tb_calc.det_rent_ytd).fecha_hasta as base6_fecha_hasta,
             (tb_calc.det_rent_ytd).rentabilidad_periodo as base6_rentabilidad,
+            (power((1+(tb_calc.det_rent_ytd).rentabilidad_periodo), (365/(tb_calc.det_rent_ytd).dias_con_saldo))-1)::NUMERIC(45,20) as base6_rentabilidad_anualizada,
             (tb_calc.det_rent_ytd).dias_con_saldo as base6_dias_con_saldo,
             (tb_calc.det_rent_ytd).suma_saldos_iniciales as base6_suma_saldos_iniciales,
             (tb_calc.det_rent_ytd).suma_saldo_rentabilidad as base6_suma_saldo_rentabilidad,
@@ -253,6 +296,7 @@ BEGIN
             (tb_calc.det_rent_20m).fecha_desde as base7_fecha_desde,
             (tb_calc.det_rent_20m).fecha_hasta as base7_fecha_hasta,
             (tb_calc.det_rent_20m).rentabilidad_periodo as base7_rentabilidad,
+            (power((1+(tb_calc.det_rent_20m).rentabilidad_periodo), (365/(tb_calc.det_rent_20m).dias_con_saldo))-1)::NUMERIC(45,20) as base7_rentabilidad_anualizada,
             (tb_calc.det_rent_20m).dias_con_saldo as base7_dias_con_saldo,
             (tb_calc.det_rent_20m).suma_saldos_iniciales as base7_suma_saldos_iniciales,
             (tb_calc.det_rent_20m).suma_saldo_rentabilidad as base7_suma_saldo_rentabilidad,
@@ -264,6 +308,7 @@ BEGIN
             (tb_calc.det_rent_1d).fecha_desde as base8_fecha_desde,
             (tb_calc.det_rent_1d).fecha_hasta as base8_fecha_hasta,
             (tb_calc.det_rent_1d).rentabilidad_periodo as base8_rentabilidad,
+            (power((1+(tb_calc.det_rent_1d).rentabilidad_periodo), (365/(tb_calc.det_rent_1d).dias_con_saldo))-1)::NUMERIC(45,20) as base8_rentabilidad_anualizada,
             (tb_calc.det_rent_1d).dias_con_saldo as base8_dias_con_saldo,
             (tb_calc.det_rent_1d).suma_saldos_iniciales as base8_suma_saldos_iniciales,
             (tb_calc.det_rent_1d).suma_saldo_rentabilidad as base8_suma_saldo_rentabilidad,
@@ -324,6 +369,126 @@ BEGIN
 END;
 $$;
 
+
+
+
+
+
+
+
+--========================================================================
+--========================================================================
+--========================================================================
+--Errores formato annual fee: Los valroes se guardan a nivel de cliente en formato % (por ej. 1,5) pero en saldos se muestran/usan en formato numérico (por ej 0,015)
+--Debe venir sin multiplicar (0,015)
+
+create or replace view public.vw_maestro_saldos_pershing
+as
+SELECT pos.custodian,
+       pos.tipo_reg,
+       pos.client_id,
+       pos.tipo_identificador_cliente,
+       pos.office_id,
+       pos.account_no,
+       pos.name,
+       pos.process_date,
+       pos.symbol,
+       pos.cusip,
+       pos.isin_code,
+       pos.product_type,
+       pos.security_description,
+       pos.cash_margin_account,
+       pos.quantity,
+       pos.market_price,
+       pos.id_currency,
+       pos.currency,
+       pos.market_value,
+       pos.fx_rate,
+       pos.usde_market_value,
+       pos.total_usde_market_value::numeric(45, 20)                                                             AS total_usde_market_value,
+       tb_fee.id                                                                                                AS id_fee_aplicado,
+       COALESCE(pos.comision_anual_excepcion, pos.annual_fee_client)::numeric(45, 20)                           AS annual_fee,
+       tb_fee.tasa_proteccion,
+       tb_fee.tasa_suracorp,
+       COALESCE(pos.comision_diaria_excepcion, pos.daily_fee_client)::numeric(45, 20)                           AS fee_diario,
+       tb_fee.fee_diario_proteccion,
+       tb_fee.fee_diario_sura_corp,
+       (pos.usde_market_value *
+        COALESCE(pos.comision_diaria_excepcion, pos.daily_fee_client))::numeric(45, 20)                         AS comision_devengada_diaria,
+       (pos.usde_market_value * tb_fee.fee_diario_proteccion)::numeric(45, 20)                                  AS ingreso_proteccion,
+       pos.usde_market_price,
+       pos.id_sub_sub_tipo_activo,
+       pos.id_sub_tipo_activo,
+       pos.id_tipo_activo,
+       pos.nombre_sub_sub_tipo_activo
+FROM (SELECT vw_pos_val.custodian,
+             vw_pos_val.tipo_reg,
+             maestro_crm.identificador_cliente                                                                        AS client_id,
+             maestro_crm.tipo_identificador_cliente,
+             vw_pos_val.office_id,
+             vw_pos_val.account_number                                                                                AS account_no,
+             COALESCE(maestro_crm.nombre_cliente, vw_act.full_name)                                                   AS name,
+             vw_pos_val.process_date,
+             vw_pos_val.symbol,
+             vw_pos_val.cusip,
+             vw_pos_val.isin_code,
+             vw_pos_val.product_type,
+             vw_pos_val.security_description,
+             vw_pos_val.cash_margin_account,
+             vw_pos_val.quantity,
+             vw_pos_val.market_price,
+             vw_pos_val.id_currency,
+             vw_pos_val.currency,
+             vw_pos_val.market_value,
+             vw_pos_val.fx_rate,
+             vw_pos_val.usde_market_value,
+             sum(vw_pos_val.usde_market_value)
+             OVER (PARTITION BY vw_pos_val.process_date, vw_pos_val.account_number)                                   AS total_usde_market_value,
+             vw_pos_val.usde_market_price,
+             vw_pos_val.id_sub_sub_tipo_activo,
+             vw_pos_val.id_sub_tipo_activo,
+             vw_pos_val.id_tipo_activo,
+             vw_pos_val.nombre_sub_sub_tipo_activo,
+             clientes.fn_comision_cuenta(vw_pos_val.process_date, maestro_crm.identificador_cliente,
+                                         vw_pos_val.custodian, vw_pos_val.account_number::character varying,
+                                         NULL::numeric(45, 20),
+                                         false)                                                                       AS comision_diaria_excepcion,
+             clientes.fn_comision_cuenta(vw_pos_val.process_date, maestro_crm.identificador_cliente,
+                                         vw_pos_val.custodian, vw_pos_val.account_number::character varying,
+                                         NULL::numeric(45, 20),
+                                         true)                                                                        AS comision_anual_excepcion,
+             maestro_crm.fee/100                                                                                          AS annual_fee_client,
+             fn_change_base_fee(maestro_crm.fee, 'ANNUAL'::character varying, 'DAILY'::character varying,
+                                'P'::character varying)                                                               AS daily_fee_client
+      FROM pershing.vw_maestro_posicion_valorizada vw_pos_val
+               LEFT JOIN clientes.vw_maestro_clientes_cuentas maestro_crm
+                         ON vw_pos_val.id_custodian::text = maestro_crm.id_custodio::text AND
+                            vw_pos_val.account_number = maestro_crm.id_cuenta_custodio::text
+               LEFT JOIN pershing.vw_maestro_cuenta vw_act
+                         ON vw_pos_val.account_number = vw_act.account_number::text AND
+                            vw_pos_val.process_date::text = vw_act.process_date::text) pos
+         LEFT JOIN clientes.par_fee_segmento tb_fee ON pos.total_usde_market_value >= tb_fee.monto_min AND
+                                                       pos.total_usde_market_value < tb_fee.monto_max;
+
+
+
+select distinct process_date, annual_fee, annual_fee/100 from public.tbvw_maestro_saldos_pershing
+where annual_fee>0.015
+order by 1, 2
+;
+--20240429  --> 20251022
+
+SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20251022 FROM public.tbvw_maestro_saldos_pershing
+;
+
+UPDATE public.tbvw_maestro_saldos_pershing
+set
+    annual_fee                  = annual_fee/100,
+    fee_diario                  = fn_change_base_fee(annual_fee, 'ANNUAL', 'DAILY', 'P'),
+    comision_devengada_diaria   = usde_market_value*fn_change_base_fee(annual_fee, 'ANNUAL', 'DAILY', 'P')
+--SELECT count(*) FROM public.tbvw_maestro_saldos_pershing
+where annual_fee>0.015
+;
 
 
 --========================================================================

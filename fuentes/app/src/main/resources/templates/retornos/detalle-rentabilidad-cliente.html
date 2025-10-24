@@ -166,6 +166,7 @@
 
         updateColumnAttribute(columnClientes, ['saldoDia','abonosDia','retirosDia','dividendosDia','saldoDiaAnterior','utilidad'], 'format', 'N4');
         updateColumnAttribute(columnClientes, ['comisionDevengadaDia','rentabilidadBasePitatoria','base1Rentabilidad','base2Rentabilidad','base3Rentabilidad','base4Rentabilidad','base5Rentabilidad','base6Rentabilidad','base7Rentabilidad','base8Rentabilidad'], 'format', 'N6');
+        updateColumnAttribute(columnClientes, ['base1RentabilidadAnualizada','base2RentabilidadAnualizada','base3RentabilidadAnualizada','base4RentabilidadAnualizada','base5RentabilidadAnualizada','base6RentabilidadAnualizada','base7RentabilidadAnualizada','base8RentabilidadAnualizada'], 'format', 'N6');
 
 
         updateColumnAttribute(columnClientes, ['base1FechaDesde', 'base1FechaHasta'], 'visible', false);
@@ -184,6 +185,14 @@
         updateColumnAttribute(columnClientes, ['base6Rentabilidad'], 'headerText', 'Base 6 [YTD]');
         updateColumnAttribute(columnClientes, ['base7Rentabilidad'], 'headerText', 'Base 7 [20 Meses]');
         updateColumnAttribute(columnClientes, ['base8Rentabilidad'], 'headerText', 'Base 8 [1 Día]');
+        updateColumnAttribute(columnClientes, ['base1RentabilidadAnualizada'], 'headerText', 'Base 1 Anualizada [Ini. Oper.]');
+        updateColumnAttribute(columnClientes, ['base2RentabilidadAnualizada'], 'headerText', 'Base 2 Anualizada [Apertura Cta.]');
+        updateColumnAttribute(columnClientes, ['base3RentabilidadAnualizada'], 'headerText', 'Base 3 Anualizada [1 Mes]');
+        updateColumnAttribute(columnClientes, ['base4RentabilidadAnualizada'], 'headerText', 'Base 4 Anualizada [3 Meses]');
+        updateColumnAttribute(columnClientes, ['base5RentabilidadAnualizada'], 'headerText', 'Base 5 Anualizada [12 Meses]');
+        updateColumnAttribute(columnClientes, ['base6RentabilidadAnualizada'], 'headerText', 'Base 6 Anualizada [YTD]');
+        updateColumnAttribute(columnClientes, ['base7RentabilidadAnualizada'], 'headerText', 'Base 7 Anualizada [20 Meses]');
+        updateColumnAttribute(columnClientes, ['base8RentabilidadAnualizada'], 'headerText', 'Base 8 Anualizada [1 Día]');
 
 
         updateColumnAttribute(columnClientes, ['base2Rentabilidad'], 'visible', false);

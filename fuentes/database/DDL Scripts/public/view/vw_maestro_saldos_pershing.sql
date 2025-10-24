@@ -79,7 +79,7 @@ FROM (SELECT vw_pos_val.custodian,
                                          vw_pos_val.custodian, vw_pos_val.account_number::character varying,
                                          NULL::numeric(45, 20),
                                          true)                                                                        AS comision_anual_excepcion,
-             maestro_crm.fee                                                                                          AS annual_fee_client,
+             maestro_crm.fee / 100::numeric                                                                           AS annual_fee_client,
              fn_change_base_fee(maestro_crm.fee, 'ANNUAL'::character varying, 'DAILY'::character varying,
                                 'P'::character varying)                                                               AS daily_fee_client
       FROM pershing.vw_maestro_posicion_valorizada vw_pos_val

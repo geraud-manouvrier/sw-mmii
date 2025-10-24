@@ -28,6 +28,15 @@ public class RetornoCuenta {
     @JsonProperty("rent-inicio")
     @JsonSerialize(using = BigDecimalPlainNumberSerializer.class)
     private BigDecimal rentInicio;
+    @JsonProperty("rent-12m-anualizada")
+    @JsonSerialize(using = BigDecimalPlainNumberSerializer.class)
+    private BigDecimal rent12mAnualizada;
+    @JsonProperty("rent-ytd-anualizada")
+    @JsonSerialize(using = BigDecimalPlainNumberSerializer.class)
+    private BigDecimal rentYtdAnualizada;
+    @JsonProperty("rent-inicio-anualizada")
+    @JsonSerialize(using = BigDecimalPlainNumberSerializer.class)
+    private BigDecimal rentInicioAnualizada;
 
     public String getAccountNo() {
         return accountNo;
@@ -83,5 +92,29 @@ public class RetornoCuenta {
 
     public void setRentInicio(BigDecimal rentInicio) {
         this.rentInicio = rentInicio;
+    }
+
+    public BigDecimal getRent12mAnualizada() {
+        return rent12mAnualizada;
+    }
+
+    public void setRent12mAnualizada(BigDecimal rent12mAnualizada) {
+        this.rent12mAnualizada = rent12mAnualizada;
+    }
+
+    public BigDecimal getRentYtdAnualizada() {
+        return rentYtdAnualizada;
+    }
+
+    public void setRentYtdAnualizada(BigDecimal rentYtdAnualizada) {
+        this.rentYtdAnualizada = rentYtdAnualizada;
+    }
+
+    public BigDecimal getRentInicioAnualizada() {
+        return rentInicioAnualizada;
+    }
+
+    public void setRentInicioAnualizada(BigDecimal rentInicioAnualizada) {
+        this.rentInicioAnualizada = rentInicioAnualizada;
     }
 }

@@ -7,7 +7,7 @@ info:
     Este documento puede ser visualizado y editado en el [Editor Swagger](https://editor.swagger.io), además de otras herramientas
   contact:
     email: contacto@qande.cl
-  version: 10.0.0
+  version: 10.1.0
 externalDocs:
   description: Acerca de OAS
   url: https://swagger.io/specification/
@@ -476,6 +476,15 @@ components:
           type: number
           format: float
         rent-inicio:
+          type: number
+          format: float
+        rent-12m-anualizada:
+          type: number
+          format: float
+        rent-ytd-anualizada:
+          type: number
+          format: float
+        rent-inicio-anualizada:
           type: number
           format: float
     ListaRetornos:

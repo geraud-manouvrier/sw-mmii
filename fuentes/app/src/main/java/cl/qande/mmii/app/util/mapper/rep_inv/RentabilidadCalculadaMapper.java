@@ -18,6 +18,9 @@ public interface RentabilidadCalculadaMapper extends EntityMapper<RetornoCuenta,
   @Mapping(source = "base5Rentabilidad", target = "rent12m")
   @Mapping(source = "base6Rentabilidad", target = "rentYtd")
   @Mapping(source = "base1Rentabilidad", target = "rentInicio")
+  @Mapping(source = "base5RentabilidadAnualizada", target = "rent12mAnualizada")
+  @Mapping(source = "base6RentabilidadAnualizada", target = "rentYtdAnualizada")
+  @Mapping(source = "base1RentabilidadAnualizada", target = "rentInicioAnualizada")
   public RetornoCuenta toDto(RentabilidadCalculada entity);
 
   @Named("accountFromAgregador")
