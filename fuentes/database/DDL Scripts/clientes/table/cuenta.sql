@@ -5,6 +5,7 @@ create table clientes.cuenta
     id_custodio        varchar(100)         not null,
     id_cuenta_custodio varchar(100)         not null,
     habilitado         boolean default true not null,
+    fee                numeric(45, 20)      not null,
     constraint cuenta_pk
         primary key (id),
     constraint cuenta_cliente_fk

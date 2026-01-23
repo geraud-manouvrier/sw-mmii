@@ -3,6 +3,7 @@ package cl.qande.mmii.app.models.dto.clientes;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -20,16 +21,21 @@ public class CuentaDto implements Serializable {
     private String idCuentaCustodio;
     @NotNull
     private Boolean habilitado = false;
+    @NotNull
+    private BigDecimal fee;
+
 
     public CuentaDto() {
     }
 
-    public CuentaDto(Integer id, Integer idCliente, String idCustodio, String idCuentaCustodio, Boolean habilitado) {
+    public CuentaDto(Integer id, Integer idCliente, String idCustodio, String idCuentaCustodio, Boolean habilitado,
+                     BigDecimal fee) {
         this.id = id;
         this.idCliente = idCliente;
         this.idCustodio = idCustodio;
         this.idCuentaCustodio = idCuentaCustodio;
         this.habilitado = habilitado;
+        this.fee = fee;
     }
 
     public Integer getId() {
@@ -76,26 +82,32 @@ public class CuentaDto implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CuentaDto entity = (CuentaDto) o;
-        return Objects.equals(this.id, entity.id) &&
-                Objects.equals(this.idCliente, entity.idCliente) &&
-                Objects.equals(this.idCustodio, entity.idCustodio) &&
-                Objects.equals(this.idCuentaCustodio, entity.idCuentaCustodio) &&
-                Objects.equals(this.habilitado, entity.habilitado);
+        CuentaDto cuentaDto = (CuentaDto) o;
+        return Objects.equals(id, cuentaDto.id) && Objects.equals(idCliente, cuentaDto.idCliente) && Objects.equals(idCustodio, cuentaDto.idCustodio) && Objects.equals(idCuentaCustodio, cuentaDto.idCuentaCustodio) && Objects.equals(habilitado, cuentaDto.habilitado) && Objects.equals(fee, cuentaDto.fee);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idCliente, idCustodio, idCuentaCustodio, habilitado);
+        return Objects.hash(id, idCliente, idCustodio, idCuentaCustodio, habilitado, fee);
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "idCliente = " + idCliente + ", " +
-                "idCustodio = " + idCustodio + ", " +
-                "idCuentaCustodio = " + idCuentaCustodio + ", " +
-                "habilitado = " + habilitado + ")";
+        return "CuentaDto{" +
+                "id=" + id +
+                ", idCliente=" + idCliente +
+                ", idCustodio='" + idCustodio + '\'' +
+                ", idCuentaCustodio='" + idCuentaCustodio + '\'' +
+                ", habilitado=" + habilitado +
+                ", fee=" + fee +
+                '}';
+    }
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
     }
 }

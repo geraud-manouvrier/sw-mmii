@@ -13,6 +13,6 @@ public interface ICuentaDao extends CrudRepository<Cuenta, Integer> {
 
     List<Cuenta> findByIdCliente(Integer idCliente);
     List<Cuenta> findByIdCuentaCustodio(String idCuentaCustodio);
-
+    Cuenta findByIdCuentaCustodioAndIdCustodio(String idCuentaCustodio, String idCustodio);
     Cuenta save(Cuenta cliente);
 }

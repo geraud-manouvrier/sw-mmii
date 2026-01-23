@@ -101,4 +101,10 @@ public class InicioController {
 				.body(archivosHelper.getFileAsResource(appConfig.appConfigProperties.getDownloadableFolder(), filename));
 	}
 
+	@GetMapping({"/clear"})
+	public String clearNotifications() {
+		sesionWeb.clearNotifications();
+		return "redirect:/home";
+	}
+
 }

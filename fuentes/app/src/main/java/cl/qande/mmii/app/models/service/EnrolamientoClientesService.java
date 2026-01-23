@@ -7,6 +7,7 @@ import cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro;
 import cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection;
 import cl.qande.mmii.app.models.db.core.entity.UniversoCuentaProjection;
 import cl.qande.mmii.app.models.dto.clientes.*;
+import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.mapper.TipoIdentificadorMapper;
 import cl.qande.mmii.app.util.mapper.clientes.*;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class EnrolamientoClientesService {
 
+    private static final String CUSTODIO_PERSHING    = "pershing";
 
     //DAOs
     private final ITipoIdentificadorDao tipoIdentificadorDao;
@@ -65,15 +68,11 @@ public class EnrolamientoClientesService {
     }
 
     @Transactional
-    public void guardarCliente(ClienteDto clienteDto, List<PersonaRelacionadaDto> personasRelacionadas, String cuenta, boolean esClienteNuevo, String user) {
+    public void guardarCliente(ClienteDto clienteDto, List<PersonaRelacionadaDto> personasRelacionadas, boolean esClienteNuevo, String user) {
 
         var clienteGuardado = this.guardarCliente(clienteDto);
         CustomLog.getInstance().info("Guardado Cliente ID  ["+clienteDto.toString()+"] ");
         boolean esNit   = this.tipoIdentificadorById(clienteGuardado.getIdTipoIdentificador()).getFlagTieneRelacionados().equals(Boolean.TRUE);
-        if (esClienteNuevo) {
-            var cuentaDto   = this.guardarCuentaDeCliente(clienteGuardado.getId(), cuenta);
-            CustomLog.getInstance().info("Guardada Cuenta Cliente ID  ["+cuentaDto+"] ");
-        }
         //Guardamos personas relacioandas
         if ( esNit &&  ( !personasRelacionadas.isEmpty() ) ) {
             this.guardarRelacionados(personasRelacionadas, clienteGuardado.getId(), user);
@@ -116,6 +115,10 @@ public class EnrolamientoClientesService {
         return clienteCuentaMaestroDao.findClienteConSaldo(soloHabilitados);
     }
     @Transactional(readOnly = true)
+    public List<ClienteCuentaMaestro> listarClienteCuentaMaestro() {
+        return clienteCuentaMaestroDao.findByHabilitadoOrderByIdentificadorCliente(true);
+    }
+    @Transactional(readOnly = true)
     public List<AccountFee> listarClienteCuentaMaestroAsAccountFee(String custodian, boolean soloHabilitados) {
             var lista =  listarClienteCuentaMaestro(soloHabilitados);
 
@@ -147,13 +150,30 @@ public class EnrolamientoClientesService {
     public CuentaDto guardarCuenta(CuentaDto cuentaDto) {
         return cuentaMapper.toDto(cuentaDao.save(cuentaMapper.toEntity(cuentaDto)));
     }
+
     @Transactional
-    public CuentaDto guardarCuentaDeCliente(Integer idCliente, String cuenta) {
-        var cuentaDto = new CuentaDto();
-        cuentaDto.setIdCliente(idCliente);
-        cuentaDto.setIdCuentaCustodio(cuenta);
-        cuentaDto.setIdCustodio("pershing");
-        cuentaDto.setHabilitado(true);
+    public CuentaDto guardarCuentaDeCliente(String cuenta, BigDecimal fee, String identificadorCliente) throws QandeMmiiException {
+        var cuentaDto  = cuentaMapper.toDto(cuentaDao.findByIdCuentaCustodioAndIdCustodio(cuenta, CUSTODIO_PERSHING));
+        //Obtenemos identificador a partir del idCliente
+        var clienteDto  = clienteMapper.toDto(clienteDao.findByIdentificador(identificadorCliente));
+        if ( clienteDto==null ) {
+            throw new QandeMmiiException("El cliente con identificador ["+identificadorCliente+"] no existe, la cuenta no puede ser guardada.");
+        }
+
+        if (cuentaDto!=null) {
+            //Si la cuenta existe, el ID del cliente al que pertenece debe ser igual al ID del cliente indicado apra guardar
+            if ( ! clienteDto.getId().equals((cuentaDto.getIdCliente())) ) {
+                throw new QandeMmiiException("La cuenta con ID de custodio ["+cuenta+"] ya existe pero está asociada a otro cliente.");
+            }
+        } else {
+            //Como la cuenta no existe, creamos una desde 0
+            cuentaDto = new CuentaDto();
+            cuentaDto.setIdCliente(clienteDto.getId());
+            cuentaDto.setIdCuentaCustodio(cuenta);
+            cuentaDto.setIdCustodio(CUSTODIO_PERSHING);
+            cuentaDto.setHabilitado(true);
+        }
+        cuentaDto.setFee(fee);
         return this.guardarCuenta(cuentaDto);
     }
 

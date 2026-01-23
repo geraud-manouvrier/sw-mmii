@@ -152,8 +152,12 @@ public interface EntityToHtml {
             bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Client Id", "Nombre Cliente", "Cuenta", "Fee Segmento", "Fee Asignado", "Ingreso/Egreso Efectivo")).append(TABLE_BODY_BEGIN);
             int rowIndex = 0;
             for (var registro : listaRegistros) {
-                bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR)
-                        .append(ABRE_TD).append(registro.getClientId()).append(CIERRA_TD)
+                if (registro.getFeeSeg().compareTo(registro.getFeeCte())<0) {
+                    bld.append("<tr style=\"background-color:").append("#D9F4EF").append(";\">");
+                } else {
+                    bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR);
+                }
+                bld.append(ABRE_TD).append(registro.getClientId()).append(CIERRA_TD)
                         .append(ABRE_TD).append(registro.getNombre()).append(CIERRA_TD)
                         .append(ABRE_TD).append(registro.getAccountNo()).append(CIERRA_TD)
                         .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getFeeSeg(), 4, null)).append(CIERRA_TD)

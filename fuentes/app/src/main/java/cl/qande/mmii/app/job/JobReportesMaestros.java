@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobReportesMaestros implements Runnable {
 
-    private static final int DESFASE_DIAS = -1;
-
     private final CalendarioHelper calendarioHelper;
     private final ReportesMaestrosService reportesMaestrosService;
     private final NotificacionEmail notificacionEmail;
@@ -39,7 +37,7 @@ public class JobReportesMaestros implements Runnable {
 
     public boolean ejecutaJob() {
         CustomLog.getInstance().info("Iniciando tarea Reportes Maestros: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(CustomScheduler.DESFASE_DIAS)).replace("-","");
         try {
             return this.generaReportesByProcessDate(processDate, true, true, true, true, true, true);
         } catch (QandeMmiiException e) {

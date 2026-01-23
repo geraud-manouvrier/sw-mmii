@@ -15,6 +15,8 @@ public interface IClienteDao extends CrudRepository<Cliente, Integer> {
     @Query(value = "SELECT cte FROM Cliente cte where cte.id = :id")
     public Optional<Cliente> listarClientePorId(@Param("id") Integer id);
 
+    public Cliente findByIdentificador(String identificadorCliente);
+
     public Cliente save(Cliente cliente);
 
     @Query(value = "SELECT cte FROM ClienteMaestro cte ")

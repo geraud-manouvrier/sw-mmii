@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+  <header th:replace="layout/layout :: header"></header>
+
+  <aside th:replace="layout/layout :: lateral"></aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 th:text="${titulo}"></h1>
+          </div>
+          <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <!--/*@thymesVar id="lista_clientes" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection>"*/-->
+    <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro>"*/-->
+
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card" th:classappend="${(cuentaDto.id != null or (status != null and status.codigo !=0) ) ? '' : ' collapsed-card'}">
+        <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+          <h3 class="card-title" th:text="${(cuentaDto.id != null or (status != null and status.codigo !=0) ) ? 'Modificar registro' : 'Nuevo registro'}"></h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas" th:classappend="${(cuentaDto.id != null or (status != null and status.codigo !=0) ) ? ' fa-minus' : ' fa-plus'}"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body login-card-body">
+          <form id="form_guardar_registro" th:action="@{/mantenedores/enrolamiento/cuenta/guardar}" method="post" th:object="${cuentaDto}">
+
+            <div class="form-group row">
+              <label for="cboListaClientes" class="col-md-2 col-form-label">Cliente</label>
+              <div class="col-md-4">
+                <input id="cboListaClientes" name="cboListaClientes" />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="idCuentaCustodio" class="col-md-2 col-form-label">Cuenta</label>
+              <div class="col-md-2">
+                <input class="form-control" type="text" id="idCuentaCustodio" name="idCuentaCustodio"
+                       th:value="${cuentaDto.idCuentaCustodio != null ? cuentaDto.idCuentaCustodio : ''}">
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-info" id="btnConsultarFee" onclick="consultarFee()">Consultar Fee</button>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="fee" class="col-md-2 col-form-label">Fee</label>
+              <div class="col-md-2">
+                <input class="form-control" type="text" id="fee" name="fee"
+                       th:value="${(cuentaDto.id != null and cuentaDto.fee!=null and cuentaDto.fee!=0) ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(cuentaDto.fee): ''}" />
+              </div>
+              <div class="col-md-4">
+                <span id="mensajeFee"
+                      th:text="${#fields.hasErrors('fee') ? #fields.errors('fee') : ''}"
+                      class="text-danger"
+                      style="display:block;">
+                </span>
+
+
+              </div>
+            </div>
+            <input type="hidden" id="feeWs" name="feeWs" />
+
+
+          </form>
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+          <a id="guardar-btn" class="btn btn-app disabled" ><i class="fas fa-save"></i>Guardar</a>
+        </div>
+        <!-- /.card-footer-->
+      </div>
+      <!-- /.card -->
+
+      <div class="card">
+        <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+          <h3 class="card-title">Listado de Cuentas <span th:text="'(' + ${#lists.size(lista_registros)} + ' registros)'"></span></h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body login-card-body">
+          <div id="grid-wrapper-cuentas" th:if="${!#lists.isEmpty(lista_registros)}"></div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+  <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+
+<script th:inline="javascript">
+  var urlConsultaFee = /*[[@{/mantenedores/enrolamiento/cliente/consulta-fee}]]*/ '';
+
+  $(document).ready(function() {
+
+    /*<![CDATA[*/
+
+    var dsReg           = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_registros)}]]*/ '[]');
+    var dsListaClientes = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_clientes)}]]*/ '[]');
+    var defaultClientId = /*[[${defaultClientId}]]*/ "";
+
+    /*]]>*/
+
+    var colsReg    = createDefaultColumns(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).getClassFields(T(cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro))}]]*/ [], true);
+    updateColumnAttribute(colsReg, ['id', 'idTipoIdentificador', 'habilitado', 'idTipoIdentificadorCliente', 'idCustodio'], 'visible', false);
+
+    var clientesComboBox = createDefaultComboBox('cboListaClientes', dsListaClientes, 'id', 'value', null);
+    clientesComboBox.setIndexForValue(defaultClientId, 0);
+
+    window.appPubGlobVar.clientesComboBox   = clientesComboBox;
+    window.appPubGlobVar.dsListaClientes   = dsListaClientes;
+
+    window.appPubGlobVar.dsReg           = dsReg;
+    window.appPubGlobVar.gridCuentas   = createDefaultGridWithWrapper('grid-wrapper-cuentas', dsReg, colsReg, 'CuentasClientes', ';', 0,  { columns: ['tipoIdentificadorCliente'] });
+
+
+
+
+
+
+    function guardar() {
+      var id      = $('#id').val();
+      var myForm  = document.getElementById('form_guardar_registro');
+      myForm.submit();
+    }
+
+
+  $('#guardar-btn').on('click', guardar);
+
+
+  $('#my-card').CardWidget('collapse');
+
+  });
+</script>
+
+<script>
+
+  function normalizeAccountNo(s) {
+    return (s ?? '')
+            .toString()
+            .trim()
+            .toUpperCase()
+            .replace(/\s+/g, ''); // quita espacios internos
+  }
+
+  function findAccountInDs(ds, accountNoNorm) {
+    if (!Array.isArray(ds) || !accountNoNorm) return null;
+
+    const fieldAccount = 'listaCuentas';
+
+    return ds.find(r => rowContainsAccount(r?.[fieldAccount], accountNoNorm)) ?? null;
+  }
+
+  function rowContainsAccount(rowAccountList, accountNoNorm) {
+    if (!rowAccountList || !accountNoNorm) return false;
+
+    const parts = rowAccountList.split(',');              // separa "a, b, c"
+    for (const p of parts) {
+      if (normalizeAccountNo(p) === accountNoNorm) return true;   // match exacto normalizado
+    }
+    return false;
+  }
+
+  function getGridRecords(gridObj) {
+    if (!gridObj) return [];
+    // Syncfusion Grid:
+    if (typeof gridObj.getCurrentViewRecords === 'function') return gridObj.getCurrentViewRecords();
+    // si tu wrapper tiene ej2 instance:
+    if (gridObj.ej2_instances?.[0]?.getCurrentViewRecords) return gridObj.ej2_instances[0].getCurrentViewRecords();
+    // fallback a datasource
+    return gridObj.dataSource ?? gridObj?.ej2_instances?.[0]?.dataSource ?? [];
+  }
+  function validateCuentaVsClienteSeleccionado() {
+    //const combo = window.appPubGlobVar.clientesComboBox;
+    const grid  = window.appPubGlobVar.gridCuentas;
+    const ds    = window.appPubGlobVar.dsReg; // si quieres usar dsReg directo
+
+    const selectedClientId = window.appPubGlobVar.clientesComboBox.getSelectedValue();
+
+    const accountInput = document.getElementById("idCuentaCustodio").value;
+    const accountNorm = normalizeAccountNo(accountInput);
+
+    if (!accountNorm) return { ok: true };
+
+    // 1) Busca la cuenta en lo ya cargado
+    const records = getGridRecords(grid);
+    const fieldAccount = 'listaCuentas';
+    const fieldClient  = 'identificador';
+
+    const found = records.find(r => rowContainsAccount(r?.[fieldAccount], accountNorm))
+            ?? findAccountInDs(ds, accountNorm);
+
+    // 2) Si no existe en grilla -> es nueva: OK
+    if (!found) return { ok: true };
+
+    // 3) Si existe, valida que sea del mismo cliente
+    const existingClientId = (found?.[fieldClient] ?? '').toString().trim();
+
+    if (!selectedClientId) {
+      return { ok: false, msg: `La cuenta ${accountInput} ya existe en la grilla. Debes seleccionar el cliente asociado.` };
+    }
+
+    if (existingClientId !== selectedClientId) {
+      return {
+        ok: false,
+        msg: `La cuenta ${accountInput} ya existe y está asociada a otro cliente (cliente actual: ${existingClientId}).`
+      };
+    }
+
+    return { ok: true };
+  }
+
+
+  function consultarFee() {
+    const btn = document.getElementById('btnConsultarFee');
+    var checkCuenta = validateCuentaVsClienteSeleccionado()
+    var cuenta = document.getElementById("idCuentaCustodio").value;
+    var mensajeFee = document.getElementById("mensajeFee");
+
+    mensajeFee.style.display = "none";
+    mensajeFee.innerText = "";
+    mensajeFee.removeAttribute("data-origen"); // limpio cualquier origen previo
+    mensajeFee.classList.remove("text-success", "text-danger");
+
+    toggleBtnGuardar(false);
+
+    if (!checkCuenta.ok) {
+      mensajeFee.innerText = checkCuenta.msg;
+      mensajeFee.classList.add("text-danger");
+      mensajeFee.setAttribute("data-origen", "validation");
+      mensajeFee.style.display = "block";
+      return;
+    }
+
+    if (!cuenta || cuenta.trim() === "") {
+      mensajeFee.innerText = "Debe ingresar una cuenta antes de consultar el fee.";
+      mensajeFee.classList.add("text-danger");
+      mensajeFee.setAttribute("data-origen", "ws");
+      mensajeFee.style.display = "block";
+      return;
+    }
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Consultando...';
+
+    $.ajax({
+      url: urlConsultaFee,
+      type: 'GET',
+      data: { cuenta: cuenta },
+      success: function (response) {
+        if (response.fee != null) {
+          $('#feeWs').val(response.fee);
+          mensajeFee.classList.add("text-success");
+          mensajeFee.innerText = "Fee obtenido correctamente: " + response.fee + ". Por favor redigítelo.";
+          mensajeFee.style.display = "block";
+          toggleBtnGuardar(true);
+        } else {
+          $('#feeWs').val('');
+          mensajeFee.classList.add("text-danger");
+          mensajeFee.setAttribute("data-origen", "ws");
+          mensajeFee.innerText = response.mensajeError || "No se obtuvo fee. Debe consultar correctamente el valor antes de guardar.";
+          mensajeFee.style.display = "block";
+        }
+      },
+      error: function () {
+        $('#feeWs').val('');
+        mensajeFee.classList.add("text-danger");
+        mensajeFee.setAttribute("data-origen", "ws");
+        mensajeFee.innerText = "Error al consultar fee.";
+        mensajeFee.style.display = "block";
+      },
+
+      complete: function () {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
+  }
+
+  function toggleBtnGuardar(enabled) {
+    const btnGuardar = document.getElementById('guardar-btn');
+    if (enabled) {
+      btnGuardar.classList.remove('disabled');
+    } else {
+      btnGuardar.classList.add('disabled');
+    }
+
+  }
+
+
+
+
+</script>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

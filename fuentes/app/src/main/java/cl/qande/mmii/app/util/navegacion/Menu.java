@@ -48,8 +48,8 @@ public class Menu {
     public static final String CONT_SFL_ISRC   ="CONT_SFL_ISRC";
     //Enrolamiento
     public static final String MANT_ENROL_CLIENTE ="MANT_ENROL_CLIENTE";
+    public static final String MANT_ENROL_CUENTA ="MANT_ENROL_CUENTA";
     public static final String MANT_FEE_SEGMENTO ="MANT_FEE_SEGMENTO";
-    public static final String MANT_COMIS_CTA ="MANT_COMIS_CTA";
 
     //Retornos
     public static final String REP_INV_BASE ="REP_INV_BASE";
@@ -86,18 +86,6 @@ public class Menu {
         perfilTodos.add(ROLE_BASIC);
         ArrayList<String> perfilAdminQye = new ArrayList<>();
         perfilAdminQye.add(ROLE_ADMIN);
-        ArrayList<String> perfilUsuario = new ArrayList<>();
-        perfilUsuario.add(ROLE_ADMIN);
-        perfilUsuario.add(ROLE_SUPER);
-        perfilUsuario.add(ROLE_USER);
-        ArrayList<String> perfilUsuarioLimitado = new ArrayList<>();
-        perfilUsuarioLimitado.add(ROLE_ADMIN);
-        perfilUsuarioLimitado.add(ROLE_SUPER);
-        perfilUsuarioLimitado.add(ROLE_USER);
-        perfilUsuarioLimitado.add(ROLE_BASIC);
-        ArrayList<String> perfilSupervisor = new ArrayList<>();
-        perfilSupervisor.add(ROLE_SUPER);
-        perfilSupervisor.add(ROLE_ADMIN);
 
         var categoriaAdminQande    = new CategoriaMenu("ADMINQANDE", "Administración", false, "nav-icon fas fa-home");
         categoriaAdminQande.setListaRoles(perfilAdminQye);
@@ -194,7 +182,7 @@ public class Menu {
 
         ArrayList<OpcionMenu> opcionesMantenedoresEnrolamiento    = new ArrayList<>();
         opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_CLIENTE, "Clientes", "/mantenedores/enrolamiento/cliente", false));
-        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_COMIS_CTA, "Excepciones Comisiones", "/mantenedores/enrolamiento/comision_cuenta", false));
+        opcionesMantenedoresEnrolamiento.add(new OpcionMenu(MANT_ENROL_CUENTA, "Cuentas", "/mantenedores/enrolamiento/cuenta", false));
         categoriaMantenedoresEnrolamiento.setListaOpciones(opcionesMantenedoresEnrolamiento);
 
         ArrayList<OpcionMenu> opcionesProcesosPorUsuario    = new ArrayList<>();

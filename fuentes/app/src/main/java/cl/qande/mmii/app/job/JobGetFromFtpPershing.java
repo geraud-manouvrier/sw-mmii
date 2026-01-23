@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobGetFromFtpPershing implements Runnable {
 
-    private static final int DESFASE_DIAS = -1;
-
     private final CalendarioHelper calendarioHelper;
     private final NotificacionEmail notificacionEmail;
     private final PershingService pershingService;
@@ -40,7 +38,7 @@ public class JobGetFromFtpPershing implements Runnable {
 
     public boolean ejecutaJob() {
         CustomLog.getInstance().info("Iniciando tarea FTP Pershing: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(CustomScheduler.DESFASE_DIAS)).replace("-","");
         try {
             return this.processByProcessDate(processDate, false);
         } catch (QandeMmiiException e) {
