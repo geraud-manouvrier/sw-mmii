@@ -1,19 +1,17 @@
 package cl.qande.mmii.app.job;
 
+import cl.qande.mmii.app.config.AppConfig;
+import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.NotificacionEmail;
+import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CalendarioHelper;
-import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JobMallaProcesos implements Runnable {
+public class JobMallaProcesos extends CustomJob {
 
-    private static final int DESFASE_DIAS = -1;
-    private static final String NOMBRE_JOB = "Malla Diaria";
-
-    private final CalendarioHelper calendarioHelper;
     private final JobControlDiario jobControlDiario;
     private final JobGetFromFtpPershing jobGetFromFtpPershing;
     private final JobParametrosFromSuracorp jobParametrosFromSuracorp;
@@ -22,11 +20,10 @@ public class JobMallaProcesos implements Runnable {
     private final JobRepInvControl jobRepInvControl;
     private final JobFeeControlTramos jobFeeControlTramos;
     private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
-    private final NotificacionEmail notificacionEmail;
 
     @Autowired
-    public JobMallaProcesos(CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlCuadreRia jobFeeControlCuadreRia, NotificacionEmail notificacionEmail) {
-        this.calendarioHelper = calendarioHelper;
+    public JobMallaProcesos(AppConfig appConfig, CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlCuadreRia jobFeeControlCuadreRia, NotificacionEmail notificacionEmail) {
+        super("Malla Procesos Diarios", appConfig, calendarioHelper, notificacionEmail);
         this.jobGetFromFtpPershing = jobGetFromFtpPershing;
         this.jobControlDiario = jobControlDiario;
         this.jobReportesMaestros = jobReportesMaestros;
@@ -35,51 +32,51 @@ public class JobMallaProcesos implements Runnable {
         this.jobRepInvControl = jobRepInvControl;
         this.jobFeeControlTramos = jobFeeControlTramos;
         this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
-        this.notificacionEmail = notificacionEmail;
     }
 
-    public boolean mallaProcesosByProcessDate() throws QandeMmiiException {
-        CustomLog.getInstance().info("Ejecutando Malla Procesos");
-        if (
+    public boolean ejecutaJob(String processDate, SesionWeb sesionWeb) throws QandeMmiiException {
+        logInfoJob("Iniciando job");
+        try {
+            if (
                 //Job Parametros Sura Corp
                 jobParametrosFromSuracorp.ejecutaJob() &&
                 //Job Pershing
-                jobGetFromFtpPershing.ejecutaJob() &&
+                jobGetFromFtpPershing.processByProcessDate(processDate, false) &&
                 //Job Reportes Maestros
-                jobReportesMaestros.ejecutaJob() &&
+                jobReportesMaestros.generaReportesByProcessDate(processDate, true, true, true, true, true, true) &&
                 //Job Control Diario
-                jobControlDiario.ejecutaJob() &&
+                jobControlDiario.realizaControlDiario(processDate, CustomScheduler.USUARIO_JOB, true) &&
                 //Job Rentabilidades
-                jobRepInvPrecalculoDiario.ejecutaJob() &&
+                jobRepInvPrecalculoDiario.ejecutaJob(processDate) &&
                 //Controles rentabilidades
-                jobRepInvControl.ejecutaJob() &&
+                jobRepInvControl.ejecutaJob(processDate, processDate, sesionWeb) &&
                 //Controles tramos Fee según ingresos/egresos
-                jobFeeControlTramos.ejecutaJob() &&
+                jobFeeControlTramos.ejecutaJob(processDate, processDate, sesionWeb) &&
                 //Controles Fee versus Fee contrato RIA
-                jobFeeControlCuadreRia.ejecutaJob()
-        ) {
-                CustomLog.getInstance().info("Malla Procesos finalizada OK");
+                jobFeeControlCuadreRia.ejecutaJob(processDate, processDate, sesionWeb)
+            ) {
+                logInfoJob("Malla Procesos finalizada OK");
+                getNotificacionEmail().notificarJobMallaDiaria(true, processDate, processDate, this.getJobName(), "");
                 return true;
             }
-        CustomLog.getInstance().info("Malla Procesos finalizada con errores");
-        return false;
+            logInfoJob("Malla Procesos finalizada con errores");
+            getNotificacionEmail().notificarJobMallaDiaria(false, processDate, processDate, this.getJobName(), "Error en Malla Diaria");
+            return false;
+        } catch (Exception e) {
+            logErrorJob("Error generando Malla Procesos:" + e.getMessage());
+            getNotificacionEmail().notificarJobMallaDiaria(false, processDate, processDate, this.getJobName(), "Error no controlado en Malla Diaria: "+e.getMessage());
+            return false;
+        }
     }
 
-    public void ejecutaJob() {
-        CustomLog.getInstance().info("Iniciando tarea Malla Procesos: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
-        try {
-            var resultado   = this.mallaProcesosByProcessDate();
-            notificacionEmail.notificarJobMallaDiaria(resultado, processDate, processDate, NOMBRE_JOB, "");
-        } catch (QandeMmiiException e) {
-            CustomLog.getInstance().error("Error tarea Malla Procesos: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]");
-            notificacionEmail.notificarJobMallaDiaria(false, processDate, processDate, NOMBRE_JOB, "Error no controlado en Malla Diaria: "+e.getMessage());
-        }
-        CustomLog.getInstance().info("Finalizando tarea Malla Procesos: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
+
+    @Override
+    protected void validateProcessDates(String startProcessDate, String endProcessDate) throws QandeMmiiException {
+        //Sin validaciones para este job
     }
 
     @Override
-    public void run() {
-        this.ejecutaJob();
+    protected AppNotificacionMailProperties.NotificacionMailConfiguration getMailConfiguration() {
+        return getNotificacionEmail().getAppNotificacionMailProperties().getMallaDiaria();
     }
 }

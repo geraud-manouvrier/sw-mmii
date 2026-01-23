@@ -13,7 +13,6 @@ public class JobControlDiario implements Runnable {
 
     public static final Integer ID_JOB = 1;
     private static final String NOMBRE_JOB = "Control Diario";
-    private static final int DESFASE_DIAS = -1;
 
     private final CalendarioHelper calendarioHelper;
     private final NotificacionEmail notificacionEmail;
@@ -66,7 +65,7 @@ public class JobControlDiario implements Runnable {
 
     public boolean ejecutaJob() {
         CustomLog.getInstance().info("Iniciando tarea Control Diario: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName());
-        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+        var processDate		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(CustomScheduler.DESFASE_DIAS)).replace("-","");
         try {
             return this.realizaControlDiario(processDate, CustomScheduler.USUARIO_JOB, true);
         } catch (QandeMmiiException e) {

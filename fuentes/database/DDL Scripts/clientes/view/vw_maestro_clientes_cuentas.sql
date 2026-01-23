@@ -13,7 +13,7 @@ SELECT c.id                    AS id_interno_cliente,
        cu.id_custodio,
        cu.id_cuenta_custodio,
        cu.habilitado,
-       c.fee
+       cu.fee
 FROM clientes.cliente c
          JOIN clientes.tipo_identificador ti ON c.id_tipo_identificador = ti.id
          LEFT JOIN clientes.cuenta cu ON c.id = cu.id_cliente;

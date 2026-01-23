@@ -62,7 +62,7 @@
 
             <div class="form-group row">
               <label for="nombre" class="col-md-2 col-form-label">Nombre</label>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <input class="form-control" type="text" th:field="*{nombre}" id="nombre" name="nombre" th:value="${clienteDto.id != null ? clienteDto.nombre: ''}">
               </div>
               <span class="text-danger" th:if="${#fields.hasErrors('nombre') and (clienteDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{nombre}"></span>
@@ -70,7 +70,7 @@
 
             <div class="form-group row">
               <label for="idTipoIdentificador" class="col-md-2 col-form-label">Tipo Identificador</label>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <select class="form-control" th:field="*{idTipoIdentificador}" id="idTipoIdentificador" name="idTipoIdentificador" onchange="toggleDivRelacionados()">
                   <option th:each="tipoIdentificador : ${listaTiposId}"
                           th:value="${tipoIdentificador.id}"
@@ -82,33 +82,12 @@
               <span class="text-danger" th:if="${#fields.hasErrors('idTipoIdentificador') and (clienteDto.id != null or (status != null and status.codigo !=0) )}" th:errors="*{idTipoIdentificador}"></span>
             </div>
 
-            <div class="form-group row">
-              <label for="cuenta" class="col-md-2 col-form-label">Cuenta</label>
-              <div class="col-md-2">
-                <input class="form-control" type="text" id="cuenta" name="cuenta" th:value="${(listaCuentasCliente!=null) ? listaCuentasCliente: ''}" th:readonly="${(clienteDto.id!=null && clienteDto.id!=0)}">
+            <div class="form-group row" th:if="${(clienteDto.id!=null && clienteDto.id!=0)}">
+              <label for="cuenta" class="col-md-2 col-form-label">Cuentas</label>
+              <div class="col-md-3">
+                <input class="form-control" type="text" id="cuenta" name="cuenta" th:value="${(listaCuentasCliente!=null) ? listaCuentasCliente: ''}" th:readonly="true">
               </div>
             </div>
-
-            <div class="form-group row">
-              <label for="fee" class="col-md-2 col-form-label">Fee</label>
-              <div class="col-md-2">
-                <input class="form-control" type="text" id="fee" name="fee"
-                       th:value="${(clienteDto.id != null and clienteDto.fee!=null and clienteDto.fee!=0) ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentRepMaestrosWeb(clienteDto.fee): ''}" />
-              </div>
-              <div class="col-md-1">
-                <button type="button" class="btn btn-info" onclick="consultarFee()">Consultar Fee</button>
-              </div>
-              <div class="col-md-4">
-                <span id="mensajeFee"
-                      th:text="${#fields.hasErrors('fee') ? #fields.errors('fee') : ''}"
-                      class="text-danger"
-                      style="display:block;">
-                </span>
-
-
-              </div>
-            </div>
-            <input type="hidden" id="feeWs" name="feeWs" />
 
             <div id="div-relacionados">
               <div class="form-group row">
@@ -132,9 +111,10 @@
         <!-- /.card-footer-->
       </div>
       <!-- /.card -->
+
       <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Listado registros existentes</h3>
+        <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+          <h3 class="card-title">Listado registros existentes <span th:text="'(' + ${#lists.size(lista_registros)} + ' registros)'"></span></h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -143,44 +123,7 @@
           </div>
         </div>
         <div class="card-body login-card-body">
-          <table id="tabla_valores" class="table table-bordered table-striped table-hover">
-            <thead>
-            <tr>
-              <th>ID Interno</th>
-              <th>ID Cliente</th>
-              <th>Tipo ID.</th>
-              <th>Nombre</th>
-              <th>Fee</th>
-              <th>Cuentas</th>
-              <th>Modificar</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="registro_actual: ${lista_registros}">
-              <td th:text="${registro_actual.id}"></td>
-              <td th:text="${registro_actual.identificador}"></td>
-              <td th:text="${registro_actual.tipoIdentificador+' - '+registro_actual.glosaIdentificador}"></td>
-              <td th:text="${registro_actual.nombre}"></td>
-              <td th:text="${ (registro_actual.fee!=null ? T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatRentWeb(registro_actual.fee) : '') }"></td>
-              <td th:text="${registro_actual.listaCuentas}"></td>
-              <td>
-                <a class="btn bg-info" th:href="@{/mantenedores/enrolamiento/cliente/editar/{id}(id=${registro_actual.id})}">Editar / Ver Detalle</a>
-              </td>
-            </tr>
-            </tbody>
-            <tfoot>
-            <tr>
-              <th>ID Interno</th>
-              <th>ID Cliente</th>
-              <th>Tipo ID.</th>
-              <th>Nombre</th>
-              <th>Fee</th>
-              <th>Cuentas</th>
-              <th>Modificar</th>
-            </tr>
-            </tfoot>
-          </table>
-
+          <div id="grid-wrapper-clientes" th:if="${!#lists.isEmpty(lista_registros)}"></div>
         </div>
         <!-- /.card-body -->
       </div>
@@ -198,30 +141,17 @@
 <!-- ./wrapper -->
 
 
-<!-- DataTables  & Plugins -->
-<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
-<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
-<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
-<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
-<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
-
-<!-- InputMask -->
-<script th:src="@{/plugins/moment/moment.min.js}"></script>
-<!-- date-range-picker -->
-<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
-
 
 <script th:inline="javascript">
-  var urlConsultaFee = /*[[@{/mantenedores/enrolamiento/cliente/consulta-fee}]]*/ '';
+  const contextPath = /*[[${#httpServletRequest.contextPath}]]*/ '';
+
+  function editarTemplate(row) {
+    const url = `${contextPath}/mantenedores/enrolamiento/cliente/editar/${encodeURIComponent(row.id)}`;
+    return `
+      <a class="btn bg-info btn-sm" href="${url}" rel="noopener">
+        <i class="fa fa-edit"></i> Editar
+      </a>`;
+  }
 
   $(document).ready(function() {
 
@@ -233,6 +163,8 @@
     var idGrilla        = "PersonasGrid";
 
     /*<![CDATA[*/
+
+    var dsReg           = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_registros)}]]*/ '[]');
 
     var relacionadosData = [
       /*[# th:each="objeto : ${lista_relacionados}"]*/
@@ -272,6 +204,23 @@
     if (listaCargosRelData.length>0) {
       defaultCargoRel = listaCargosRelData[0].id;
     }
+
+    var colsReg    = createDefaultColumns(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).getClassFields(T(cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro))}]]*/ [], true);
+    updateColumnAttribute(colsReg, ['id', 'idTipoIdentificador', 'habilitado'], 'visible', false);
+
+
+    colsReg.push({
+      field: '__acciones',
+      headerText: 'Modificar',
+      visible: true,
+      template: editarTemplate,
+      allowSorting: false,
+      allowGrouping: false,
+      allowFiltering: false,
+      showInColumnChooser: false
+    });
+
+    createDefaultGridWithWrapper('grid-wrapper-clientes', dsReg, colsReg, 'CuentasClientes', ';', 0,  { columns: ['tipoIdentificador'] });
 
 
     ej.grids.Grid.Inject(ej.grids.Page, ej.grids.Edit,  ej.grids.Toolbar);
@@ -399,50 +348,6 @@
   });
 
 
-  function consultarFee() {
-    var cuenta = document.getElementById("cuenta").value;
-    var mensajeFee = document.getElementById("mensajeFee");
-
-    mensajeFee.style.display = "none";
-    mensajeFee.innerText = "";
-    mensajeFee.removeAttribute("data-origen"); // limpio cualquier origen previo
-    mensajeFee.classList.remove("text-success", "text-danger");
-
-    if (!cuenta || cuenta.trim() === "") {
-      mensajeFee.innerText = "Debe ingresar una cuenta antes de consultar el fee.";
-      mensajeFee.classList.add("text-danger");
-      mensajeFee.setAttribute("data-origen", "ws");
-      mensajeFee.style.display = "block";
-      return;
-    }
-
-    $.ajax({
-      url: urlConsultaFee,
-      type: 'GET',
-      data: { cuenta: cuenta },
-      success: function (response) {
-        if (response.fee != null) {
-          $('#feeWs').val(response.fee);
-          mensajeFee.classList.add("text-success");
-          mensajeFee.innerText = "Fee obtenido correctamente: " + response.fee + ". Por favor redigítelo.";
-          mensajeFee.style.display = "block";
-        } else {
-          $('#feeWs').val('');
-          mensajeFee.classList.add("text-danger");
-          mensajeFee.setAttribute("data-origen", "ws");
-          mensajeFee.innerText = response.mensajeError || "No se obtuvo fee. Debe consultar correctamente el valor antes de guardar.";
-          mensajeFee.style.display = "block";
-        }
-      },
-      error: function () {
-        $('#feeWs').val('');
-        mensajeFee.classList.add("text-danger");
-        mensajeFee.setAttribute("data-origen", "ws");
-        mensajeFee.innerText = "Error al consultar fee.";
-        mensajeFee.style.display = "block";
-      }
-    });
-  }
 
 
 

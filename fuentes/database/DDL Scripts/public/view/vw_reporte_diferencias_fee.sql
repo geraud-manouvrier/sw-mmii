@@ -12,8 +12,8 @@ SELECT ie_neto.client_id,
        seg_fee.monto_min,
        seg_fee.monto_max,
        seg_fee.annual_fee * 100::numeric                                 AS fee_seg,
-       tb_cte.fee                                                        AS fee_cte,
-       COALESCE((seg_fee.annual_fee * 100::numeric) = tb_cte.fee, false) AS flag_fee,
+       tb_cta.fee                                                        AS fee_cte,
+       COALESCE((seg_fee.annual_fee * 100::numeric) = tb_cta.fee, false) AS flag_fee,
        CASE
            WHEN vw_sld.client_id IS NOT NULL THEN true
            ELSE false
@@ -28,6 +28,8 @@ FROM (SELECT vw_ie.client_id,
          JOIN clientes.par_fee_segmento seg_fee ON ie_neto.ingreso_egreso_efectivo >= seg_fee.monto_min AND
                                                    ie_neto.ingreso_egreso_efectivo < seg_fee.monto_max
          JOIN clientes.cliente tb_cte ON ie_neto.client_id::text = tb_cte.identificador::text
+         JOIN clientes.cuenta tb_cta
+              ON tb_cte.id = tb_cta.id_cliente AND ie_neto.account_no::text = tb_cta.id_cuenta_custodio::text
          LEFT JOIN fn_clientes_con_saldo(NULL::character varying) vw_sld(client_id, custodian, account_no)
                    ON ie_neto.client_id::text = vw_sld.client_id::text AND
                       ie_neto.custodian::text = vw_sld.custodian::text AND

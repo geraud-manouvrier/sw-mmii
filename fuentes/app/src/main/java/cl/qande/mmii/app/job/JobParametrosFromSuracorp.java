@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 public class JobParametrosFromSuracorp implements Runnable {
 
 
-    private static final int DESFASE_DIAS = -1;
     public static final String JOB_NAME = "Tarea Parámetros From SuraCorp";
     private final CalendarioHelper calendarioHelper;
     private final NotificacionEmail notificacionEmail;
@@ -27,7 +26,7 @@ public class JobParametrosFromSuracorp implements Runnable {
     }
 
     public boolean ejecutaJob(String usuario, boolean flagSendMail) throws QandeMmiiException {
-        var processDate	= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(DESFASE_DIAS)).replace("-","");
+        var processDate	= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(CustomScheduler.DESFASE_DIAS)).replace("-","");
         var resultado   = false;
         var msg         = "";
         ParSourceCode[][] resultadoCarga    = null;

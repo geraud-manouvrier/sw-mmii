@@ -3,6 +3,7 @@ package cl.qande.mmii.app.models.db.clientes.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "cuenta", schema = "clientes")
@@ -29,6 +30,18 @@ public class Cuenta {
     @NotNull
     @Column(name = "habilitado", nullable = false)
     private Boolean habilitado = false;
+
+    @NotNull
+    @Column(name = "fee", nullable = false, precision = 45, scale = 20)
+    private BigDecimal fee;
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
+    }
 
     public Integer getId() {
         return id;

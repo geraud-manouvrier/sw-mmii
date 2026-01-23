@@ -2,10 +2,7 @@ package cl.qande.mmii.app.controllers.mantenedores;
 
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
-import cl.qande.mmii.app.models.dto.clientes.ClienteDto;
-import cl.qande.mmii.app.models.dto.clientes.ComisionCuentaDto;
-import cl.qande.mmii.app.models.dto.clientes.ComisionMaestroDto;
-import cl.qande.mmii.app.models.dto.clientes.PersonaRelacionadaDto;
+import cl.qande.mmii.app.models.dto.clientes.*;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ApiRestClientService;
 import cl.qande.mmii.app.models.service.EnrolamientoClientesService;
@@ -35,7 +32,6 @@ public class MantenedorEnrolamientoController {
 
     private static final String CAMPO_TITULO    = "titulo";
     private static final String CAMPO_STATUS    = "status";
-    private static final String CAMPO_SESION    = "sesionWeb";
     private static final String CAMPO_LISTA_REGISTROS    = "lista_registros";
     private static final String CAMPO_LISTA_RELACIONADOS    = "lista_relacionados";
     private static final String CAMPO_LISTA_CTAS_CTES    = "listaCuentasCliente";
@@ -43,15 +39,19 @@ public class MantenedorEnrolamientoController {
     private static final String CAMPO_LISTA_TIPOS_ID = "listaTiposId";
     private static final String CAMPO_LISTA_CARGOS_REL = "listaCargosRel";
     private static final String TITULO_CLIENTE = "Mantenedor Clientes";
+    private static final String TITULO_CUENTA = "Mantenedor Cuentas";
     private static final String TITULO_COMIS_CTA = "Excepciones Comerciales a comisión";
     private static final String PREFIX_ERROR_VALID = "Error al modificar registro";
     private static final String PREFIX_ERROR_SAVE = "Error al guardar registro";
     private static final String REDIRECT = "redirect:";
     private static final String URL_CLIENTE = "/mantenedores/enrolamiento/cliente";
+    private static final String URL_CUENTA = "/mantenedores/enrolamiento/cuenta";
     private static final String URL_COMIS_CTA = "/mantenedores/enrolamiento/comision_cuenta";
     public static final String CONCAT_MSG_USER = "] por usuario [";
     public static final String CONCAT_MSG_VALOR = "]: Valor [";
     public static final String ERROR_FEE = "error.fee";
+
+    private static final String CAMPO_LISTA_CLIENTES = "lista_clientes";
 
     private final SesionWeb sesionWeb;
     private final EnrolamientoClientesService enrolamientoClientesService;
@@ -65,6 +65,67 @@ public class MantenedorEnrolamientoController {
     }
 
     //-----------------------------------------------------------------------------------------------------
+    //Cuentas
+    //-----------------------------------------------------------------------------------------------------
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CUENTA))")
+    @GetMapping({"/cuenta"})
+    public String listaCuenta(
+            @Valid CuentaDto cuentaDto,
+            BindingResult result,
+            Model model) throws QandeMmiiException {
+        model.addAttribute(CAMPO_TITULO, TITULO_CUENTA);
+        model.addAttribute(CAMPO_LISTA_CLIENTES, enrolamientoClientesService.listaUniversoClientes(null));
+        model.addAttribute(CAMPO_LISTA_REGISTROS, enrolamientoClientesService.listarClienteCuentaMaestro());
+
+        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.MANT_ENROL_CUENTA, false);
+    }
+
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CUENTA))")
+    @PostMapping({"/cuenta/guardar"})
+    public String modificaCuenta(
+            @Valid CuentaDto cuentaDto,
+            BindingResult result,
+            Model model,
+            @RequestParam(value = "cboListaClientes", required = true) String cboListaClientes,
+            @RequestParam(value = "feeWs", required = false) BigDecimal feeWs) throws QandeMmiiException {
+        var estadoPeticion  = new EstadoPeticion();
+
+        if (cboListaClientes==null || cboListaClientes.isBlank()) {
+            result.rejectValue("cboListaClientes", "error.cuentaDto", "ID Cliente es obligatorio.");
+        }
+
+        model.addAttribute("defaultClientId", cboListaClientes);
+
+
+
+        if ( ! validateDto(result, cuentaDto, feeWs)) {
+            estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID);
+            CustomLog.getInstance().error(PREFIX_ERROR_VALID +" ID Cliente  ["+cboListaClientes+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
+            this.addNotificationsOfErrors(result.getFieldErrors());
+            model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            return listaCuenta(cuentaDto, result, model);
+        }
+
+        CustomLog.getInstance().info("Actualizando registro ID Cuenta  ["+cboListaClientes+"] cliente por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +cuentaDto.toString()+"] ");
+        try {
+            var cuentaGuardada  = enrolamientoClientesService.guardarCuentaDeCliente(cuentaDto.getIdCuentaCustodio(), cuentaDto.getFee(), cboListaClientes);
+            CustomLog.getInstance().info("Guardado Cuenta ID  ["+cuentaGuardada.getIdCuentaCustodio()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +cuentaGuardada.toString()+"] ");
+
+        } catch (Exception e) {
+            if (e instanceof IllegalArgumentException) {
+                estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE+": "+e.getMessage());
+            } else {
+                estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
+            }
+            CustomLog.getInstance().error(PREFIX_ERROR_SAVE+" ID Cliente  ["+cboListaClientes+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
+            model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            return sesionWeb.getAppMenu().cambiaNavegacion(Menu.MANT_ENROL_CUENTA, false);
+        }
+        return REDIRECT+ URL_CUENTA;
+    }
+
+    //-----------------------------------------------------------------------------------------------------
     //Clientes
     //-----------------------------------------------------------------------------------------------------
 
@@ -75,7 +136,6 @@ public class MantenedorEnrolamientoController {
             BindingResult result,
             Model model) throws QandeMmiiException {
         model.addAttribute(CAMPO_TITULO, TITULO_CLIENTE);
-        model.addAttribute(CAMPO_SESION, sesionWeb);
 
         model.addAttribute(CAMPO_LISTA_REGISTROS, enrolamientoClientesService.listaClienteMaestro());
         model.addAttribute(CAMPO_LISTA_TIPOS_ID, enrolamientoClientesService.listarTiposIdentificador());
@@ -106,9 +166,7 @@ public class MantenedorEnrolamientoController {
             @Valid ClienteDto clienteDto,
             BindingResult result,
             Model model,
-            @RequestParam(value= "cuenta") String cuenta,
-            @RequestParam(value = "personasRelacionadas", required = false) String personasRelacionadasJson,
-            @RequestParam(value = "feeWs", required = false) BigDecimal feeWs) throws QandeMmiiException {
+            @RequestParam(value = "personasRelacionadas", required = false) String personasRelacionadasJson) throws QandeMmiiException {
         var estadoPeticion  = new EstadoPeticion();
         List<PersonaRelacionadaDto> personasRelacionadas = new ArrayList<>();
 
@@ -125,13 +183,6 @@ public class MantenedorEnrolamientoController {
         if (clienteDto.getIdentificador()==null || clienteDto.getIdentificador().isBlank()) {
             result.rejectValue("identificador", "error.clienteDto", "ID Cliente es obligatorio.");
         }
-        if (feeWs == null) {
-            result.rejectValue("fee", ERROR_FEE, "Debe consultar el fee antes de guardar.");
-        } else if (clienteDto.getFee() == null) {
-            result.rejectValue("fee", ERROR_FEE, "Debe redigitar el fee obtenido desde RIA.");
-        } else if (clienteDto.getFee().compareTo(feeWs) != 0) {
-            result.rejectValue("fee", ERROR_FEE, "El fee digitado no coincide con el obtenido desde RIA.");
-        }
 
         this.validateDto(personasRelacionadas, result);
 
@@ -143,17 +194,10 @@ public class MantenedorEnrolamientoController {
             model.addAttribute(CAMPO_LISTA_RELACIONADOS, personasRelacionadas);
             return formularioEditarCliente(id, clienteDto, result, model);
         }
-        if ( (cuenta==null || cuenta.isBlank()) && (esClienteNuevo) ) {
-            estadoPeticion.setEstadoError(PREFIX_ERROR_VALID, PREFIX_ERROR_VALID+": Cuenta obligatoria.");
-            CustomLog.getInstance().error(PREFIX_ERROR_VALID +": Cuenta no ingresada ID Cliente  ["+id+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
-            model.addAttribute(CAMPO_STATUS, estadoPeticion);
-            model.addAttribute(CAMPO_LISTA_RELACIONADOS, personasRelacionadas);
-            return formularioEditarCliente(id, clienteDto, result, model);
-        }
 
         CustomLog.getInstance().info("Actualizando registro ID Cliente  ["+id+"] cliente por usuario ["+sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +clienteDto.toString()+"] ");
         try {
-            enrolamientoClientesService.guardarCliente(clienteDto, personasRelacionadas, cuenta, esClienteNuevo, sesionWeb.getUsuario());
+            enrolamientoClientesService.guardarCliente(clienteDto, personasRelacionadas, esClienteNuevo, sesionWeb.getUsuario());
         } catch (Exception e) {
             if (e instanceof IllegalArgumentException) {
                 estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE+": "+e.getMessage());
@@ -169,65 +213,10 @@ public class MantenedorEnrolamientoController {
     }
 
     //-----------------------------------------------------------------------------------------------------
-    //Comision Cuenta
-    //-----------------------------------------------------------------------------------------------------
-
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_COMIS_CTA))")
-    @GetMapping({"/comision_cuenta"})
-    public String listarComisionCuenta(@Valid ComisionCuentaDto comisionCuentaDto,
-                                       BindingResult result,
-                                       Model model) throws QandeMmiiException {
-        model.addAttribute(CAMPO_TITULO, TITULO_COMIS_CTA);
-        model.addAttribute(CAMPO_SESION, sesionWeb);
-
-        var listaClientes   = enrolamientoClientesService.listarClienteCuentaMaestro(true);
-        listaClientes.sort(Comparator.comparing(ClienteCuentaMaestro::getNombreCliente));
-
-        model.addAttribute("lista_clientes", listaClientes);
-        var listaComisiones = enrolamientoClientesService.listarComisionCuenta();
-        listaComisiones.sort(Comparator.comparing(ComisionMaestroDto::getNombreCliente)
-                               .thenComparing(Comparator.comparing(ComisionMaestroDto::getFechaInicioVigencia).reversed()));
-        model.addAttribute(CAMPO_LISTA_REGISTROS, listaComisiones);
-
-        return sesionWeb.getAppMenu().cambiaNavegacion(Menu.MANT_COMIS_CTA, false);
-    }
-
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_COMIS_CTA))")
-    @PostMapping({"/comision_cuenta"})
-    public String guardarComisionCuenta(@Valid ComisionCuentaDto comisionCuentaDto,
-                                       BindingResult result,
-                                       Model model) throws QandeMmiiException {
-        var estadoPeticion  = new EstadoPeticion();
-        if (result.hasErrors()) {
-            estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
-            CustomLog.getInstance().error(PREFIX_ERROR_SAVE +" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+result.getAllErrors()+"] ");
-            this.addNotificationsOfErrors(result.getFieldErrors());
-            model.addAttribute(CAMPO_STATUS, estadoPeticion);
-            return listarComisionCuenta(comisionCuentaDto, result, model);
-        }
-        //Siempre es nuevo registro
-        comisionCuentaDto.setId(null);
-        comisionCuentaDto.setLogUsuarioCreacion(sesionWeb.getUsuario());
-        comisionCuentaDto.setLogFechaCreacion(Instant.now());
-        try {
-            var resultado   = enrolamientoClientesService.guardarComisionCuenta(comisionCuentaDto);
-            CustomLog.getInstance().info("Guardado Comisión Cuenta ID  ["+resultado.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+ CONCAT_MSG_VALOR +resultado.toString()+"] ");
-            estadoPeticion.setEstadoOk("Registro guardado correctamente (ID: "+resultado.getId()+")");
-        } catch (Exception e) {
-            estadoPeticion.setEstadoError(PREFIX_ERROR_SAVE, PREFIX_ERROR_SAVE);
-            CustomLog.getInstance().error(PREFIX_ERROR_SAVE+" ID cuenta  ["+comisionCuentaDto.getIdCuenta()+ CONCAT_MSG_USER +sesionWeb.getUsuario()+"]: ["+e.getMessage()+"] ");
-            model.addAttribute(CAMPO_STATUS, estadoPeticion);
-            return listarComisionCuenta(comisionCuentaDto, result, model);
-        }
-        return REDIRECT+ URL_COMIS_CTA;
-    }
-
-
-    //-----------------------------------------------------------------------------------------------------
     //Auxiliares
     //-----------------------------------------------------------------------------------------------------
 
-    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CLIENTE))")
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).MANT_ENROL_CUENTA))")
     @GetMapping("/cliente/consulta-fee")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> consultarFee(@RequestParam String cuenta) {
@@ -300,5 +289,29 @@ public class MantenedorEnrolamientoController {
         return result;
     }
 
+
+
+
+    private boolean validateDto(BindingResult result, CuentaDto cuentaDto, BigDecimal feeWs) {
+        if (feeWs == null) {
+            result.rejectValue("fee", ERROR_FEE, "Debe consultar el fee antes de guardar.");
+        } else if (cuentaDto.getFee() == null) {
+            result.rejectValue("fee", ERROR_FEE, "Debe redigitar el fee obtenido desde RIA.");
+        } else if (cuentaDto.getFee().compareTo(feeWs) != 0) {
+            result.rejectValue("fee", ERROR_FEE, "El fee digitado no coincide con el obtenido desde RIA.");
+        }
+
+        if (result.hasErrors()) {
+            for (var fieldError : result.getFieldErrors()) {
+                switch (fieldError.getField()) {
+                    case "idCuentaCustodio":
+                    case "fee":
+                        return false;
+                    default:
+                }
+            }
+        }
+        return true;
+    }
 
 }

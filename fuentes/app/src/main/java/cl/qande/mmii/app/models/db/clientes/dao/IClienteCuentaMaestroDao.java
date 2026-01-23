@@ -14,6 +14,7 @@ public interface IClienteCuentaMaestroDao extends JpaRepository<ClienteCuentaMae
     public List<ClienteCuentaMaestro> findAll();
     public List<ClienteCuentaMaestro> findById_IdInternoClienteIsNotNullAndId_IdInternoCuentaIsNotNullAndHabilitadoIsTrue();
     public ClienteCuentaMaestro findById_IdInternoCuenta(Integer idInternoCuenta);
+    public List<ClienteCuentaMaestro> findByHabilitadoOrderByIdentificadorCliente(boolean habilitado);
 
     //Para procesos de cuadre de fee contra RIA
     @Query(value = "SELECT vw_cte_cta.* FROM clientes.vw_maestro_clientes_cuentas vw_cte_cta " +
@@ -27,9 +28,9 @@ public interface IClienteCuentaMaestroDao extends JpaRepository<ClienteCuentaMae
 
 
     //Para combo box de clientes
-    @Query(value = "SELECT mstr.identificador_cliente as id, mstr.tipo_identificador_cliente||'-'||mstr.identificador_cliente||' ('||mstr.nombre_cliente||')' as value, CAST('Clientes' as VARCHAR(100)) as grouper " +
-            "    FROM clientes.vw_maestro_clientes_cuentas mstr WHERE mstr.habilitado " +
-            "    ORDER BY mstr.nombre_cliente", nativeQuery = true)
+    @Query(value = "SELECT mstr.identificador as id, mstr.tipo_identificador||'-'||mstr.identificador||' ('||mstr.nombre||')' as value, CAST('Clientes' as VARCHAR(100)) as grouper" +
+            "    FROM clientes.vw_maestro_clientes mstr WHERE mstr.habilitado " +
+            "    ORDER BY mstr.nombre", nativeQuery = true)
     public List<UniversoClienteProjection> listaUniversoClientes(@Param("_process_date") String processDate);
     //Para combo box de cuentas
     @Query(value = "SELECT mstr.identificador_cliente as parent, CAST(UPPER( mstr.id_custodio) as VARCHAR(100))||'||'||mstr.id_cuenta_custodio as id, mstr.id_cuenta_custodio as value, CAST(UPPER( mstr.id_custodio) as VARCHAR(100)) as grouper " +

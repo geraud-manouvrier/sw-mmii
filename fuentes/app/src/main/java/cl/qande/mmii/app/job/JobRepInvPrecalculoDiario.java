@@ -44,7 +44,7 @@ public class JobRepInvPrecalculoDiario implements Runnable {
         var processDateFrom		= calendarioHelper.convierteDateToString(calendarioHelper.hoyConDesfaseDias(CustomScheduler.DESFASE_DIAS)).replace("-","");
         if ( processDateFrom.substring((processDateFrom.length() - 2)).equals("01") ) {
             try {
-                processDateFrom = CalendarioHelper.processDateConDesfase(processDateFrom, -1).substring(0, 6).concat("01");
+                processDateFrom = CalendarioHelper.processDateConDesfase(processDateFrom, CustomScheduler.DESFASE_DIAS).substring(0, 6).concat("01");
                 CustomLog.getInstance().info("Inicio de mes, calculando desde mes anterior con process date: "+processDateFrom, false);
             } catch (Exception e) {
                 CustomLog.getInstance().error("Error al obtener inicio mes anterior: "+this.getClass().getName()+" - "+Thread.currentThread().getName()+" - "+Thread.currentThread().getContextClassLoader().getName()+". Error ["+e.getMessage()+"]", false);

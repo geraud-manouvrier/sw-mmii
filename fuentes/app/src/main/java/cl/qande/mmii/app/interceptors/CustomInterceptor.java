@@ -38,33 +38,31 @@ public class CustomInterceptor implements HandlerInterceptor {
             Object handler,
             ModelAndView modelAndView) throws Exception {
 
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
-            Method method = handlerMethod.getMethod();
-            Class<?> controllerClass = method.getDeclaringClass();
-            if (modelAndView!=null && controllerClass.isAnnotationPresent(RequestMapping.class)) {
-                this.auxSetStatus(modelAndView.getModelMap());
-            }
-        }
         if (modelAndView!=null) {
             String viewName = modelAndView.getViewName();
-            if (viewName != null) {
-                if (!viewName.startsWith("redirect:")) {
-                    modelAndView.getModelMap().addAttribute("projectVersion", appConfig.appConfigProperties.getProjectVersion());
-                    var tituloPagina=modelAndView.getModelMap().getAttribute(ATTR_TITTLE);
-                    if (tituloPagina==null) {
-                        tituloPagina="";
-                    }
-                    sesionWeb.addNotification("Página "+tituloPagina+" cargada correctamente");
-                    modelAndView.getModelMap().addAttribute("notifications", sesionWeb.getNotifications());
+            if (viewName != null && !viewName.startsWith("redirect:")) {
+                modelAndView.getModelMap().addAttribute("projectVersion", appConfig.appConfigProperties.getProjectVersion());
+                var tituloPagina=modelAndView.getModelMap().getAttribute(ATTR_TITTLE);
+                if (tituloPagina==null) {
+                    tituloPagina="";
                 }
-                this.auxSetOnError(modelAndView.getModelMap(), viewName);
+                sesionWeb.addNotification("Página "+tituloPagina+" cargada correctamente");
+                modelAndView.getModelMap().addAttribute("notifications", sesionWeb.getNotifications());
             }
+            if (handler instanceof HandlerMethod) {
+                HandlerMethod handlerMethod = (HandlerMethod) handler;
+                Method method = handlerMethod.getMethod();
+                Class<?> controllerClass = method.getDeclaringClass();
+                if (controllerClass.isAnnotationPresent(RequestMapping.class)) {
+                    this.auxSetStatus(modelAndView.getModelMap());
+                }
+            }
+            this.auxSetOnError(modelAndView.getModelMap(), viewName);
         }
     }
     private ModelMap auxSetOnError(ModelMap modelMap, String viewName) {
-        if (viewName.startsWith("errores/error_403")) {
-            CustomLog.getInstance().error("Error de acceso denegado para usuario: [" + sesionWeb.getUsuario() + "] Roles: [" + sesionWeb.listaDeRoles().toString() + "]");
+        if (viewName!=null && viewName.startsWith("errores/error_403")) {
+            CustomLog.getInstance().error("Error de acceso denegado para usuario: [" + sesionWeb.getUsuario() + "] Roles: [" + sesionWeb.listaDeRoles().toString() + "]", false);
             modelMap.addAttribute(ATTR_SESION, sesionWeb);
             modelMap.addAttribute(ATTR_TITTLE, "Acceso denegado");
         }
@@ -73,6 +71,12 @@ public class CustomInterceptor implements HandlerInterceptor {
     private ModelMap auxSetStatus(ModelMap modelMap) {
         if (modelMap.getAttribute(ATTR_STATUS)==null) {
             modelMap.addAttribute(ATTR_STATUS, new EstadoPeticion(0, "Página cargada", "Proceso terminado correctamente."));
+        }
+        if (modelMap.getAttribute(ATTR_SESION)==null) {
+            modelMap.addAttribute(ATTR_SESION, sesionWeb);
+        }
+        if (modelMap.getAttribute(ATTR_TITTLE)==null) {
+            modelMap.addAttribute(ATTR_TITTLE, "Inicio");
         }
         return modelMap;
     }
@@ -88,8 +92,7 @@ public class CustomInterceptor implements HandlerInterceptor {
             Class<?> controllerClass = method.getDeclaringClass();
 
             if (controllerClass.isAnnotationPresent(RequestMapping.class)) {
-                CustomLog.getInstance().info("Intercepted request to controller for user: ["+sesionWeb.getUsuario()+"] to RequestURI: ["+request.getRequestURI()+"]-["+request.getMethod()+"]");
-                sesionWeb.clearNotifications();
+                CustomLog.getInstance().info("Intercepted request to controller for user: ["+sesionWeb.getUsuario()+"] to RequestURI: ["+request.getRequestURI()+"]-["+request.getMethod()+"]", false);
             }
         }
         return true;

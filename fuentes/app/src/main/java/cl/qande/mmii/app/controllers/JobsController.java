@@ -42,6 +42,9 @@ public class JobsController {
     private static final String MSG_JOB_ERR         = "Error Job";
     private static final String MSG_APPEND_USER     = "]; usuario: [";
     private static final String MSG_APPEND_ERROR_CTRL_DIARIO = "Errores al realizar control diario con fecha [";
+    private static final String MSG_APPEND_END_OK = "] finalizado OK";
+
+    public static final String MALLA_DIARIA = "malla_diaria";
 
     private final SesionWeb sesionWeb;
     private final CalendarioHelper calendarioHelper;
@@ -55,9 +58,10 @@ public class JobsController {
     private final JobRepInvControl jobRepInvControl;
     private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
     private final JobFeeControlTramos jobFeeControlTramos;
+    private final JobMallaProcesos jobMallaProcesos;
 
     @Autowired
-    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlCuadreRia jobFeeControlCuadreRia, JobFeeControlTramos jobFeeControlTramos) {
+    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlCuadreRia jobFeeControlCuadreRia, JobFeeControlTramos jobFeeControlTramos, JobMallaProcesos jobMallaProcesos) {
         this.sesionWeb = sesionWeb;
         this.calendarioHelper = calendarioHelper;
         this.reportesMaestrosService = reportesMaestrosService;
@@ -70,6 +74,7 @@ public class JobsController {
         this.jobRepInvControl = jobRepInvControl;
         this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
         this.jobFeeControlTramos = jobFeeControlTramos;
+        this.jobMallaProcesos = jobMallaProcesos;
     }
 
     /****************************************************
@@ -431,6 +436,40 @@ public class JobsController {
     }
 
 
+    @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
+    @GetMapping({
+            "/process/"+ MALLA_DIARIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+    })
+    public String jobMallasHandlerByAdmin(
+            @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
+            @PathVariable(value = CAMPO_END_PROCESS_DATE) String endProcessDate,
+            Model model,
+            HttpServletRequest request) throws QandeMmiiException {
+        var metodo              = getMethodFromUrl(request.getRequestURI());
+        return mallasJobHandler(startProcessDate, endProcessDate, metodo, model, true);
+    }
+    private String mallasJobHandler(
+            String startProcessDate, String endProcessDate,
+            String option,
+            Model model, boolean isAdmin) throws QandeMmiiException {
+        var estadoPeticion          = new EstadoPeticion();
+        var jobHandler = jobMallaProcesos;
+        if ( ! option.equals(MALLA_DIARIA)) {
+            estadoPeticion.setEstadoError("Error Job Mallas", "Opción de job inválida: "+option);
+            model.addAttribute(CAMPO_STATUS, estadoPeticion);
+            return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
+        }
+        try {
+            jobHandler.ejecutaJob(startProcessDate, endProcessDate, sesionWeb);
+            CustomLog.getInstance().info("Job "+jobHandler.getJobName()+" con fecha [" + startProcessDate+" - "+endProcessDate + MSG_APPEND_END_OK, true);
+            estadoPeticion.setEstadoOk("Job "+jobHandler.getJobName()+" OK", MSG_OK);
+        } catch (Exception e) {
+            CustomLog.getInstance().error(PRE_DET_ERROR + startProcessDate+" - "+endProcessDate, true);
+            estadoPeticion.setEstadoError(MSG_JOB_ERR, PRE_DET_ERROR +e.getMessage());
+        }
+        model.addAttribute(CAMPO_STATUS, estadoPeticion);
+        return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
+    }
 
     /****************************************************
      * Panel de Estado procesos FTP Custodios

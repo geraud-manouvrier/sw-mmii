@@ -135,7 +135,7 @@ _fn_realiza_respaldo() {
 
 _fn_set_schemas_to_truncate() {
   # Lista de schemas a limpiar
-  SCHEMAS_TO_TRUNCATE="'pershing', 'public', 'stage_pershing', 'clientes'"
+  SCHEMAS_TO_TRUNCATE="'pershing', 'public', 'stage_pershing', 'clientes', 'rep_inv'"
   # Mostrar Schemas a truncar por pantall
   echo "Schemas por defecto a procesar: $SCHEMAS_TO_TRUNCATE"
 

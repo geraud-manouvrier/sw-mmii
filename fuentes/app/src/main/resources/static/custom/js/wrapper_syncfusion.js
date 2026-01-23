@@ -27,6 +27,43 @@ function createDefaultComboBox(wrapperElementId, dataSource, fieldValue, fieldTe
         return index;
     };
 
+    /**
+     * Selecciona un elemento del ComboBox buscando por su `value`.
+     *
+     * <p>
+     * Recorre los ítems del DropDownList y selecciona el primero cuyo
+     * `dataset.value` coincida con el valor entregado.
+     * </p>
+     *
+     * <p><b>Comportamiento cuando el valor NO existe:</b></p>
+     * <ul>
+     *   <li>Si no se encuentra el `value`, se utilizará el índice indicado
+     *       por <code>defaultIndex</code>.</li>
+     *   <li>Si <code>defaultIndex</code> es <code>-1</code>, el ComboBox
+     *       quedará sin selección.</li>
+     * </ul>
+     *
+     * @param {string|number} value
+     *        Valor a buscar (corresponde al campo configurado como <code>value</code> en el datasource).
+     *
+     * @param {number} defaultIndex
+     *        Índice a utilizar si el valor no se encuentra.
+     *        <ul>
+     *          <li><code>0</code> → selecciona el primer elemento</li>
+     *          <li><code>-1</code> → no selecciona ningún elemento</li>
+     *        </ul>
+     *
+     * @returns {number}
+     *          Índice finalmente aplicado al ComboBox.
+     *
+     * @example
+     * // Selecciona el cliente si existe, o deja el combo sin selección
+     * combo.setIndexForValue(idCliente, -1);
+     *
+     * @example
+     * // Selecciona el cliente si existe, o el primer elemento si no existe
+     * combo.setIndexForValue(idCliente, 0);
+     */
     ddlObj.setIndexForValue = function(value, defaultValue) {
         var index = this.getIndexForValue(value, defaultValue);
         this.index  = index;
