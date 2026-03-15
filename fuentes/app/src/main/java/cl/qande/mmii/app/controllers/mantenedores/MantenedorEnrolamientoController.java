@@ -1,8 +1,9 @@
 package cl.qande.mmii.app.controllers.mantenedores;
 
-import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
-import cl.qande.mmii.app.models.dto.clientes.*;
+import cl.qande.mmii.app.models.dto.clientes.ClienteDto;
+import cl.qande.mmii.app.models.dto.clientes.CuentaDto;
+import cl.qande.mmii.app.models.dto.clientes.PersonaRelacionadaDto;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ApiRestClientService;
 import cl.qande.mmii.app.models.service.EnrolamientoClientesService;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.*;
 
 
