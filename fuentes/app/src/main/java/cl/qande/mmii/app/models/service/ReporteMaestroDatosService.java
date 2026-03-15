@@ -11,6 +11,7 @@ import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosRelacionadoDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.core.entity.*;
+import cl.qande.mmii.app.models.dto.core.SaldoCuentaResumenDto;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosMovimientoMapper;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosRelacionadoMapper;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosSaldoMapper;
@@ -157,5 +158,21 @@ public class ReporteMaestroDatosService {
             }
         });
         return apiResponse;
+    }
+
+    public List<VwReporteMaestroDatosSaldo> saldoCliente(String processDate, String clientId, String accountNo) {
+        return reporteMaestroDatosSaldoDao.saldoCliente(processDate, clientId, accountNo);
+    }
+
+    public List<SaldoCuentaResumenDto> resumenSaldoPorCuenta(String processDate, String clientId, String accountNo) {
+        return reporteMaestroDatosSaldoDao.resumenSaldoPorCuenta(processDate, clientId, accountNo);
+    }
+
+    public List<VwReporteMaestroDatosCliente> datosCliente(String processDate, String clientId, String accountNo) {
+        return reporteMaestroDatosClientesDao.datosCliente(processDate, clientId, accountNo);
+    }
+
+    public List<VwReporteMaestroDatosMovimiento> movimientosCliente(String startProcessDate, String endProcessDate, String clientId, String accountNo) {
+        return reporteMaestroDatosMovimientosDao.movimientosCliente(startProcessDate, endProcessDate, clientId, accountNo);
     }
 }

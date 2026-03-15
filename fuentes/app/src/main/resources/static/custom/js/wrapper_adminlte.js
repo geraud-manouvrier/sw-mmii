@@ -85,7 +85,7 @@ function createCustomCalendarSingleHtml(calendarName, customRanges, multiple=fal
             ranges: customRanges,
             "locale": {
                 "format": "YYYY-MM-DD",
-                "separator": " - ",
+                "separator": separator,
                 "applyLabel": "Aceptar",
                 "cancelLabel": "Cancelar",
                 "fromLabel": "From",
@@ -132,6 +132,7 @@ function createCustomCalendarRangeHtml(calendarName, customRanges) {
             "autoApply": true,
             "alwaysShowCalendars" : true,
             "showCustomRangeLabel" : false,
+            "showDropdowns": true,
             "minDate": dateOfStart,
             maxDate: moment().subtract(1, 'days'),
             ranges: customRanges,

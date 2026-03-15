@@ -39,6 +39,7 @@ public class ReportesMaestrosHelper {
     private static final String FIELD_CLIENT_NAME      = "name";
     private static final String FIELD_OEPN_DATE      = "open_date";
     private static final String FIELD_CLOSE_DATE      = "close_date";
+    private static final String FIELD_ACCOUNT_TYPE      = "account_type";
     private static final String FIELD_ESTDO_CTA      = "estado_cuenta";
     private static final String FIELD_OFFICE_ID      = "office_id";
     private static final String FIELD_ACCOUNT_NO      = "account_no";
@@ -130,7 +131,8 @@ public class ReportesMaestrosHelper {
         isValidTipoArchivo(tipoArchivo, true);
         return new String[]{
                 FIELD_PROCESS_DATE, FIELD_CUSTODIAN, FIELD_CLIENT_ID, FIELD_TIPO_CLIENT_ID, FIELD_OFFICE_ID,
-            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_OEPN_DATE, FIELD_ESTDO_CTA, FIELD_CLOSE_DATE
+            FIELD_ACCOUNT_NO, FIELD_CLIENT_NAME, FIELD_OEPN_DATE, FIELD_ESTDO_CTA, FIELD_CLOSE_DATE,
+                FIELD_ACCOUNT_TYPE
         };
     }
 

@@ -357,6 +357,37 @@ function createDataSource(jsonString) {
     }
 }
 
+function fixDateForDataSource(dataSource, fields) {
+    const f = Array.isArray(fields) ? fields : [fields];
+
+    return dataSource.map(row => {
+        const out = { ...row };
+
+        for (const field of f) {
+            const v = row[field];
+
+            if (v == null || v === '') {
+                out[field] = null;
+                continue;
+            }
+
+            // ya es Date
+            if (v instanceof Date) {
+                out[field] = v;
+                continue;
+            }
+
+            // si viene como número (epoch)
+            const d = (typeof v === 'number') ? new Date(v) : new Date(String(v));
+
+            // si no parsea, lo dejo tal cual para no romper
+            out[field] = isNaN(d.getTime()) ? v : d;
+        }
+
+        return out;
+    });
+}
+
 function updateColumnAttribute(columns, fieldName, attribute, value) {
     if (Array.isArray(fieldName)) {
         // Si es un array, iteramos y aplicamos la función a cada elemento

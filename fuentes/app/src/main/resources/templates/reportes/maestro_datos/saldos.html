@@ -15,7 +15,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Maestro Saldos</h1>
+                        <h1 th:text="${titulo}"></h1>
                     </div>
                     <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
                 </div>
@@ -29,7 +29,7 @@
             <!-- Default box -->
             <div class="card">
                 <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
-                    <h3 class="card-title" th:text="${titulo}"></h3>
+                    <h3 class="card-title">Ingrese criterios de búsqueda</h3>
 
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -56,102 +56,24 @@
                 <!-- /.card-footer-->
             </div>
             <!-- /.card -->
+
             <div class="card">
                 <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
-                    <h3 class="card-title">Listado</h3>
+                    <h3 class="card-title">Listado Saldos <span th:text="'(' + ${#lists.size(salidaReporte)} + ' registros)'"></span></h3>
 
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
                         </button>
-                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-                            <i class="fas fa-times"></i>
-                        </button>
                     </div>
                 </div>
                 <div class="card-body login-card-body">
-                    <table id="tabla_valores" class="table table-bordered table-striped">
-                        <thead>
-                        <tr>
-                            <th>Custodian</th>
-                            <th>Office ID</th>
-                            <th>Client ID</th>
-                            <th>Tipo ID</th>
-                            <th>Account N°</th>
-                            <th>Name</th>
-                            <th>Process Date</th>
-                            <th>Cusip</th>
-                            <th>Sec. Descr.</th>
-                            <th>Quantity</th>
-                            <th>Mkt. Price</th>
-                            <th>Currency</th>
-                            <th>Mkt. Value</th>
-                            <th>FX Rate</th>
-                            <th>USDE Mkt. Value</th>
-                            <th>USDE Mkt. Price</th>
-                            <th>Nombre Sub Sub Tipo Activo</th>
-                            <th>FEE Anual</th>
-                            <th>FEE Protección</th>
-                            <th>FEE Protección Diario</th>
-                            <th>Ingreso Protección</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="lineaSalidaReporte: ${salidaReporte}">
-                            <td th:text="${lineaSalidaReporte.custodian}"></td>
-                            <td th:text="${lineaSalidaReporte.officeId}"></td>
-                            <td th:text="${lineaSalidaReporte.clientId}"></td>
-                            <td th:text="${lineaSalidaReporte.tipoIdentificadorCliente}"></td>
-                            <td th:text="${lineaSalidaReporte.accountNo}"></td>
-                            <td th:text="${lineaSalidaReporte.name}"></td>
-                            <td th:text="${lineaSalidaReporte.processDate}"></td>
-                            <td th:text="${lineaSalidaReporte.cusip}"></td>
-                            <td th:text="${lineaSalidaReporte.securityDescription}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.quantity)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.marketPrice)}"></td>
-                            <td th:text="${lineaSalidaReporte.currency}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.marketValue)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.fxRate)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.usdeMarketValue)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.usdeMarketPrice)}"></td>
-                            <td th:text="${lineaSalidaReporte.nombreSubSubTipoActivo}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.annualFee)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.tasaProteccion)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.feeDiarioProteccion)}"></td>
-                            <td th:text="${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).formatMontoRepMaestrosWeb(lineaSalidaReporte.ingresoProteccion)}"></td>
-                        </tr>
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th>Custodian</th>
-                            <th>Office ID</th>
-                            <th>Client ID</th>
-                            <th>Tipo ID</th>
-                            <th>Account N°</th>
-                            <th>Name</th>
-                            <th>Process Date</th>
-                            <th>Cusip</th>
-                            <th>Sec. Descr.</th>
-                            <th>Quantity</th>
-                            <th>Mkt. Price</th>
-                            <th>Currency</th>
-                            <th>Mkt. Value</th>
-                            <th>FX Rate</th>
-                            <th>USDE Mkt. Value</th>
-                            <th>USDE Mkt. Price</th>
-                            <th>Nombre Sub Sub Tipo Activo</th>
-                            <th>FEE Anual</th>
-                            <th>FEE Protección</th>
-                            <th>FEE Protección Diario</th>
-                            <th>Ingreso Protección</th>
-                        </tr>
-                        </tfoot>
-                    </table>
-
+                    <div id="grid-wrapper-saldos" th:if="${!#lists.isEmpty(salidaReporte)}"></div>
                 </div>
                 <!-- /.card-body -->
             </div>
             <!-- /.card -->
+
 
         </section>
         <!-- /.content -->
@@ -164,21 +86,6 @@
 </div>
 <!-- ./wrapper -->
 
-
-<!-- DataTables  & Plugins -->
-<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
-<script th:src="@{/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/datatables-responsive/js/dataTables.responsive.min.js}"></script>
-<script th:src="@{/plugins/datatables-responsive/js/responsive.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/dataTables.buttons.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.bootstrap4.min.js}"></script>
-<script th:src="@{/plugins/jszip/jszip.min.js}"></script>
-<script th:src="@{/plugins/pdfmake/pdfmake.js}"></script>
-<script th:src="@{/plugins/pdfmake/vfs_fonts.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.html5.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.print.min.js}"></script>
-<script th:src="@{/plugins/datatables-buttons/js/buttons.colVis.min.js}"></script>
-
 <!-- InputMask -->
 <script th:src="@{/plugins/moment/moment.min.js}"></script>
 <!-- date-range-picker -->
@@ -186,74 +93,43 @@
 <!-- Tempusdominus Bootstrap 4 -->
 <script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
 
-<script>
-    $(function () {
 
-        //Date range picker
-        $('#rango_fechas').daterangepicker(
-            {
-                "alwaysShowCalendars" : true,
-                "showCustomRangeLabel" : false,
-                ranges: {
-                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')],
-                    'Últ. 3 días': [moment().subtract(3, 'days'), moment().subtract(1, 'days')],
-                    'Últ. 7 días': [moment().subtract(7, 'days'), moment().subtract(1, 'days')],
-                    'Últ. 10 días': [moment().subtract(10, 'days'), moment().subtract(1, 'days')],
-                    'Mes Actual': [moment().startOf('month'), moment().subtract(1, 'days')],
-                    'Mes Anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                },
-                "locale": {
-                    "format": "YYYY-MM-DD",
-                    "separator": " -> ",
-                    "applyLabel": "Aceptar",
-                    "cancelLabel": "Cancelar",
-                    "fromLabel": "From",
-                    "toLabel": "To",
-                    "customRangeLabel": "Custom",
-                    "weekLabel": "W",
-                    "daysOfWeek": [
-                        "Do",
-                        "Lu",
-                        "Ma",
-                        "Mi",
-                        "Ju",
-                        "Vi",
-                        "Sa"
-                    ],
-                    "monthNames": [
-                        "Enero",
-                        "Febrero",
-                        "Marzo",
-                        "Abril",
-                        "Mayo",
-                        "Junio",
-                        "Julio",
-                        "Agosto",
-                        "Septiembre",
-                        "Octubre",
-                        "Noviembre",
-                        "Diciembre"
-                    ],
-                    "firstDay": 1
-                }
-            }
-        )
+<script th:inline="javascript">
+    /*<![CDATA[*/
 
-    })
+    $(document).ready(function() {
 
-</script>
+        var dsReg           = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(salidaReporte)}]]*/ '[]');
 
-<script>
-    $(function () {
-        $("#tabla_valores").DataTable({
-            dom: 'Bfrtip',"responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "print", "colvis"]
-        }).buttons().container().appendTo('#tabla_valores_wrapper .col-md-6:eq(0)');
+        /*]]>*/
+
+        var colsReg    = createDefaultColumns(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).getClassFields(T(cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo))}]]*/ [], true);
+
+
+        updateColumnAttribute(colsReg, ['rowId'], 'isPrimaryKey', true);
+
+        updateColumnAttribute(colsReg, ['rowId', 'symbol', 'isin', 'productType', 'cashMarginAccount', 'comisioneDevengadaDiaria', 'idSubSubTipoActivo', 'idSubTipoActivo', 'idTipoActivo', 'tipoReg', 'idReg', 'totalUsdeMarketValue', 'tasaSuraCorp', 'feeDiario', 'feeDiarioSuraCorp'], 'visible', false);
+
+        updateColumnAttribute(colsReg, ['quantity', 'marketPrice', 'marketValue', 'fxRate', 'usdeMarketValue', 'usdeMarketPrice', 'annualFee', 'tasaProteccion', 'feeDiarioProteccion', 'ingresoProteccion'], 'format', 'N4');
+
+        var formatoHtml         = 'YYYYMMDD';
+        var dataCal             = $('#rango_fechas').data('daterangepicker');
+        var startProcessDate    = dataCal.startDate.format(formatoHtml);
+        var endProcessDate      = dataCal.endDate.format(formatoHtml);
+
+        var suffixFileName      = '_'+startProcessDate+'_'+endProcessDate;
+
+
+        createDefaultGridWithWrapper('grid-wrapper-saldos', dsReg, colsReg, 'MaestroSaldos' + suffixFileName, ';', 30);
+
     });
+
 </script>
 
+
 <script>
+    createCustomCalendarRangeHtml("rango_fechas", getRangesMaestros());
+
     function buscar() {
         var formatoHtml = 'YYYYMMDD';
         var dataCal     = $('#rango_fechas').data('daterangepicker');

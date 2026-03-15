@@ -14,6 +14,14 @@ public interface IReporteMaestroDatosMovimientosDao extends CrudRepository<VwRep
 
     public List<VwReporteMaestroDatosMovimiento> findByProcessDateBetween(String processDateFrom, String processDateTo);
 
+    @Query(value = "SELECT *" +
+            "FROM public.vw_reporte_maestro_datos_movimientos vw_mov " +
+            "where vw_mov.process_date>=:_start_process_date AND vw_mov.process_date<=:_end_process_date " +
+            "and vw_mov.client_id=:_client_id " +
+            "and vw_mov.account_no=COALESCE(:_account_no, vw_mov.account_no) " +
+            "ORDER BY vw_mov.account_no, vw_mov.cusip", nativeQuery = true)
+    public List<VwReporteMaestroDatosMovimiento> movimientosCliente(@Param("_start_process_date") String startProcessDate, @Param("_end_process_date") String endProcessDate, @Param("_client_id") String clientId, @Param("_account_no") String accountNo);
+
     @Query(value = "SELECT * FROM public.fn_reporte_maestro_materializa_data(:_process_date, 'MOV', 'PERSHING')", nativeQuery = true)
     public Long materializaDatosMovimientosPershing(@Param("_process_date") String processDate);
 }

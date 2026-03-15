@@ -30,14 +30,18 @@ SELECT pos.custodian,
        pos.total_usde_market_value::numeric(45, 20)                                                             AS total_usde_market_value,
        tb_fee.id                                                                                                AS id_fee_aplicado,
        COALESCE(pos.comision_anual_excepcion, pos.annual_fee_client)::numeric(45, 20)                           AS annual_fee,
-       tb_fee.tasa_proteccion,
-       tb_fee.tasa_suracorp,
+       (fn_dist.fee_perc_proteccion / 100::numeric)::numeric(45, 20)                                            AS tasa_proteccion,
+       (fn_dist.fee_perc_ria / 100::numeric)::numeric(45, 20)                                                   AS tasa_suracorp,
        COALESCE(pos.comision_diaria_excepcion, pos.daily_fee_client)::numeric(45, 20)                           AS fee_diario,
-       tb_fee.fee_diario_proteccion,
-       tb_fee.fee_diario_sura_corp,
+       fn_change_base_fee(fn_dist.fee_perc_proteccion, 'ANNUAL'::character varying, 'DAILY'::character varying,
+                          'P'::character varying)::numeric(45, 20)                                              AS fee_diario_proteccion,
+       fn_change_base_fee(fn_dist.fee_perc_ria, 'ANNUAL'::character varying, 'DAILY'::character varying,
+                          'P'::character varying)::numeric(45, 20)                                              AS fee_diario_sura_corp,
        (pos.usde_market_value *
         COALESCE(pos.comision_diaria_excepcion, pos.daily_fee_client))::numeric(45, 20)                         AS comision_devengada_diaria,
-       (pos.usde_market_value * tb_fee.fee_diario_proteccion)::numeric(45, 20)                                  AS ingreso_proteccion,
+       (pos.usde_market_value *
+        fn_change_base_fee(fn_dist.fee_perc_proteccion, 'ANNUAL'::character varying, 'DAILY'::character varying,
+                           'P'::character varying))::numeric(45, 20)                                            AS ingreso_proteccion,
        pos.usde_market_price,
        pos.id_sub_sub_tipo_activo,
        pos.id_sub_tipo_activo,
@@ -89,6 +93,9 @@ FROM (SELECT vw_pos_val.custodian,
                LEFT JOIN pershing.vw_maestro_cuenta vw_act
                          ON vw_pos_val.account_number = vw_act.account_number::text AND
                             vw_pos_val.process_date::text = vw_act.process_date::text) pos
+         CROSS JOIN LATERAL fn_distribucion_ingresos(
+        COALESCE(pos.comision_anual_excepcion, pos.annual_fee_client) * 100::numeric,
+        pos.process_date) fn_dist(fee_perc_proteccion, fee_perc_ria)
          LEFT JOIN clientes.par_fee_segmento tb_fee ON pos.total_usde_market_value >= tb_fee.monto_min AND
                                                        pos.total_usde_market_value < tb_fee.monto_max;
 

@@ -38,6 +38,8 @@ public class ReportesMaestrosMapper {
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getEstadoCuenta()));
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCloseDate()==null ? "" : CalendarioHelper.dateToString(fila.getCloseDate())));
 
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountType()));
+
         return dataRow;
     }
     public List<String> getFromDbToCsvLine(VwReporteMaestroDatosMovimiento fila) {

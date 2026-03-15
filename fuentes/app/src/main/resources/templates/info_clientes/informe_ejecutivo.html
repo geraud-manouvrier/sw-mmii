@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="saldo_inicial" type="java.util.List<cl.qande.mmii.app.models.dto.core.SaldoCuentaResumenDto>"*/-->
+        <!--/*@thymesVar id="saldo_final" type="java.util.List<cl.qande.mmii.app.models.dto.core.SaldoCuentaResumenDto>"*/-->
+        <!--/*@thymesVar id="lista_movimientos" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento>"*/-->
+        <!--/*@thymesVar id="detalle_saldo" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo>"*/-->
+        <!--/*@thymesVar id="detalle_cliente" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente>"*/-->
+        <!--/*@thymesVar id="lista_clientes" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection>"*/-->
+        <!--/*@thymesVar id="lista_cuentas" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.UniversoCuentaProjection>"*/-->
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Ingrese criterios de búsqueda</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <form id="main_form" th:action="@{/info_clientes/informe_ejecutivo}" method="post">
+                        <div class="form-group row">
+                            <label for="rango_fechas" class="col-md-1 col-form-label">Process Dates</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" placeholder="yyyy-MM-dd -> yyyy-MM-dd" id="rango_fechas" name="rango_fechas" th:value="${startProcessDate+ ' -> '+endProcessDate}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cliente" class="col-md-1 col-form-label">Lista Cliente</label>
+                            <div class="col-md-3">
+                                <input type="text" id="cliente" name="cliente" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="cuenta" class="col-md-1 col-form-label">Lista Cuenta</label>
+                            <div class="col-md-3">
+                                <input type="text" id="cuenta" name="cuenta" disabled="disabled" />
+                            </div>
+                        </div>
+                        <input type="hidden" id="fecha_desde" name="fecha_desde">
+                        <input type="hidden" id="fecha_hasta" name="fecha_hasta">
+
+
+
+                    </form>
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <a class="btn btn-app" onclick="postByRangeProcessDate('rango_fechas', 'main_form')"><i class="fas fa-search"></i>Buscar</a>
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+
+            <!-- Card detalles -->
+            <div class="card card-outline card-primary">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Cuentas / Consolidado</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid_resumen_cuentas" th:if="${!#lists.isEmpty(detalle_cliente)}"></div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-primary">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Detalles</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="nav-tabs-custom mb-0">
+                        <ul class="nav nav-tabs" id="tabs_detalle">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#tab_detalle_saldo" data-toggle="tab" th:text="${'Detalle saldo actual' + (detalle_saldo!=null ? ' ('+#lists.size(detalle_saldo)+' reg.)' : '')}"></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tab_movimientos" data-toggle="tab" th:text="${'Movimientos del periodo' + (lista_movimientos!=null ? ' ('+#lists.size(lista_movimientos)+' reg.)' : '')}"></a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content p-3">
+                            <div class="tab-pane active" id="tab_detalle_saldo">
+                                <div id="grid_detalle_saldo" th:if="${!#lists.isEmpty(detalle_saldo)}"></div>
+                            </div>
+
+                            <div class="tab-pane" id="tab_movimientos">
+                                <div id="grid_movimientos" th:if="${!#lists.isEmpty(lista_movimientos)}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(document).ready(function() {
+
+        createComboWithSourceClienteCuenta(/*[[${lista_clientes}]]*/ [], /*[[${lista_cuentas}]]*/ [], /*[[${clienteDefault}]]*/ "", /*[[${cuentaDefault}]]*/ "");
+
+        const dsDetalleCliente    = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_cliente)}]]*/ '[]');
+        const dsSaldoInicial      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(saldo_inicial)}]]*/ '[]');
+        const dsSaldoFinal        = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(saldo_final)}]]*/ '[]');
+        const dsDetalleSaldo      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_saldo)}]]*/ '[]');
+        const dsListaMovimientos  = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_movimientos)}]]*/ '[]');
+
+        const colsResumenCuentas = [
+            { field: 'accountNo', headerText: 'Account No' },
+            { field: 'estado', headerText: 'Estado' },
+            { field: 'fee', headerText: 'Fee' },
+            { field: 'accountType', headerText: 'Account Type' },
+            { field: 'saldoInicial', headerText: 'Saldo inicial', format: 'N4'},
+            { field: 'saldoFinal', headerText: 'Saldo final', format: 'N4' }
+        ];
+
+        const colsDetalleSaldo = [
+            { field: 'accountNo', headerText: 'Account No' },
+            { field: 'processDate', headerText: 'Fecha' },
+            { field: 'cusip', headerText: 'CUSIP' },
+            { field: 'quantity', headerText: 'Quantity', format: 'N4'},
+            { field: 'usdeMarketPrice', headerText: 'USDE Mkt Price', format: 'N4'},
+            { field: 'usdeMarketValue', headerText: 'USDE Mkt Value', format: 'N4' }
+        ];
+
+        const colsMovimientos = [
+            { field: 'accountNo', headerText: 'Account No' },
+            { field: 'processDate', headerText: 'Fecha' },
+            { field: 'cusip', headerText: 'CUSIP' },
+            { field: 'quantity', headerText: 'Quantity', format: 'N4'},
+            { field: 'price', headerText: 'Price', format: 'N4'},
+            { field: 'usdeNetAmount', headerText: 'USDE Net Amount', format: 'N4'},
+            { field: 'securityDescription', headerText: 'Security Description' },
+            { field: 'activityDescription', headerText: 'Activity Description' }
+        ];
+
+        const dsResumenCuentas = createDataSource(JSON.stringify(buildResumenCuentasData(dsDetalleCliente, dsSaldoInicial, dsSaldoFinal)));
+        createDefaultGridWithWrapper('grid_resumen_cuentas', dsResumenCuentas, colsResumenCuentas, 'ResumenCuentas', ';', 0);
+        createDefaultGridWithWrapper('grid_detalle_saldo', dsDetalleSaldo, colsDetalleSaldo, 'DetalleSaldo', ';', 0, { columns: ['accountNo'] });
+        createDefaultGridWithWrapper('grid_movimientos', dsListaMovimientos, colsMovimientos, 'DetalleMovimientos', ';', 0, { columns: ['accountNo'] });
+
+    });
+
+    function buildResumenCuentasData(detalleCliente, saldoInicial, saldoFinal) {
+        const saldoInicialMap = {};
+        const saldoFinalMap = {};
+        const clienteMap = {};
+
+        (saldoInicial || []).forEach(function(item) {
+            if (item && item.accountNo) {
+                saldoInicialMap[item.accountNo] = item;
+            }
+        });
+
+        (saldoFinal || []).forEach(function(item) {
+            if (item && item.accountNo) {
+                saldoFinalMap[item.accountNo] = item;
+            }
+        });
+
+        (detalleCliente || []).forEach(function(item) {
+            if (item && item.accountNo && !clienteMap[item.accountNo]) {
+                clienteMap[item.accountNo] = item;
+            }
+        });
+
+        return Object.keys(clienteMap).map(function(accountNo) {
+            const item = clienteMap[accountNo];
+            const saldoIni = saldoInicialMap[accountNo];
+            const saldoFin = saldoFinalMap[accountNo];
+
+            return {
+                accountNo: item.accountNo,
+                estado: item.estadoCuenta,
+                fee: item.fee,
+                accountType: item.accountType,
+                saldoInicial: saldoIni ? saldoIni.sumUsdeMarketValue : 0,
+                saldoFinal: saldoFin ? saldoFin.sumUsdeMarketValue : 0
+            };
+        });
+    }
+
+    /*]]>*/
+</script>
+
+<script>
+
+    createCustomCalendarRangeHtml("rango_fechas", getRangesRentabilidades());
+
+</script>
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>
