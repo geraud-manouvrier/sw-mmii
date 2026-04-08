@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.util;
 
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.navegacion.Menu;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 import org.springframework.web.context.annotation.SessionScope;
 
+import javax.annotation.PreDestroy;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,7 +26,12 @@ public class SesionWeb {
     private Collection<? extends GrantedAuthority> appRoles;
 
     private Menu appMenu;
-    private List<String> notifications = new ArrayList<>();
+    private final List<Notification> notifications = new ArrayList<>();
+
+    @PreDestroy
+    public void onSessionDestroy() {
+        clearNotifications();
+    }
 
 
     public void setAutenticacion(String username, Collection<? extends GrantedAuthority> roles) {
@@ -77,20 +84,24 @@ public class SesionWeb {
         return false;
 
     }
-    public List<String> getNotifications() {
+    public List<Notification> getNotifications() {
         return notifications;
     }
     public void clearNotifications() {
         getNotifications().clear();
     }
+    //TODO: Migrar notififaciones por Log (Log agregará notififcación)
     public void addNotification(String message) {
-        if (getNotifications().size() >= MAX_CANT_NOTIF) {
-            getNotifications().remove(0);
+        addNotification(message, NotificationType.INFO);
+    }
+    // Nuevo método: acepta tipo
+    public void addNotification(String message, NotificationType type) {
+        if (notifications.size() >= MAX_CANT_NOTIF) {
+            notifications.remove(0);
         }
-        LocalTime horaActual = LocalTime.now();
-        DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String horaFormateada = horaActual.format(formatoHora);
-        getNotifications().add(horaFormateada+" - "+message);
+        Notification n = new Notification(message, type);
+        notifications.add(n);
+        CustomLog.getInstance().info("[" + type + "]: " + message, false);
     }
 
     public void addNotification(List<FieldError> listOfErrors) {

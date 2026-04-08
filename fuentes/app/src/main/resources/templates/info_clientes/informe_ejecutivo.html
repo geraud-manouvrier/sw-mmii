@@ -24,10 +24,15 @@
         <!--/*@thymesVar id="saldo_inicial" type="java.util.List<cl.qande.mmii.app.models.dto.core.SaldoCuentaResumenDto>"*/-->
         <!--/*@thymesVar id="saldo_final" type="java.util.List<cl.qande.mmii.app.models.dto.core.SaldoCuentaResumenDto>"*/-->
         <!--/*@thymesVar id="lista_movimientos" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento>"*/-->
+        <!--/*@thymesVar id="ultimos_recaudos" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento>"*/-->
+        <!--/*@thymesVar id="fechas_recaudos" type="java.util.List<cl.qande.mmii.app.models.dto.core.FechasRecaudosFromMaestroMovDto>"*/-->
         <!--/*@thymesVar id="detalle_saldo" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo>"*/-->
+        <!--/*@thymesVar id="detalle_saldo_periodo" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosSaldo>"*/-->
         <!--/*@thymesVar id="detalle_cliente" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente>"*/-->
         <!--/*@thymesVar id="lista_clientes" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection>"*/-->
         <!--/*@thymesVar id="lista_cuentas" type="java.util.List<cl.qande.mmii.app.models.db.core.entity.UniversoCuentaProjection>"*/-->
+        <!--/*@thymesVar id="detalle_retornos" type="java.util.List<cl.qande.mmii.app.models.db.rep_inv.entity.RentabilidadCalculada>"*/-->
+        <!--/*@thymesVar id="retorno_actual" type="java.util.List<cl.qande.mmii.app.models.db.rep_inv.entity.RentabilidadCalculada>"*/-->
 
         <!-- Main content -->
         <section class="content">
@@ -111,7 +116,16 @@
                                 <a class="nav-link active" href="#tab_detalle_saldo" data-toggle="tab" th:text="${'Detalle saldo actual' + (detalle_saldo!=null ? ' ('+#lists.size(detalle_saldo)+' reg.)' : '')}"></a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="#tab_detalle_saldo_periodo" data-toggle="tab" th:text="${'Detalle saldo inicio/término del periodo' + (detalle_saldo_periodo!=null ? ' ('+#lists.size(detalle_saldo_periodo)+' reg.)' : '')}"></a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="#tab_movimientos" data-toggle="tab" th:text="${'Movimientos del periodo' + (lista_movimientos!=null ? ' ('+#lists.size(lista_movimientos)+' reg.)' : '')}"></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tab_ult_recaudos" data-toggle="tab" th:text="${'Últimos recaudos' + (ultimos_recaudos!=null ? ' ('+#lists.size(ultimos_recaudos)+' reg.)' : '')}"></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#tab_retornos" data-toggle="tab" th:text="${'Retornos cierre del periodo' + (detalle_retornos!=null ? ' ('+#lists.size(detalle_retornos)+' reg.)' : '')}"></a>
                             </li>
                         </ul>
 
@@ -120,8 +134,20 @@
                                 <div id="grid_detalle_saldo" th:if="${!#lists.isEmpty(detalle_saldo)}"></div>
                             </div>
 
+                            <div class="tab-pane" id="tab_detalle_saldo_periodo">
+                                <div id="grid_detalle_saldo_periodo" th:if="${!#lists.isEmpty(detalle_saldo_periodo)}"></div>
+                            </div>
+
                             <div class="tab-pane" id="tab_movimientos">
                                 <div id="grid_movimientos" th:if="${!#lists.isEmpty(lista_movimientos)}"></div>
+                            </div>
+
+                            <div class="tab-pane" id="tab_ult_recaudos">
+                                <div id="grid_ult_recaudos" th:if="${!#lists.isEmpty(ultimos_recaudos)}"></div>
+                            </div>
+
+                            <div class="tab-pane" id="tab_retornos">
+                                <div id="grid_retornos" th:if="${!#lists.isEmpty(detalle_retornos)}"></div>
                             </div>
                         </div>
                     </div>
@@ -154,52 +180,137 @@
 
         createComboWithSourceClienteCuenta(/*[[${lista_clientes}]]*/ [], /*[[${lista_cuentas}]]*/ [], /*[[${clienteDefault}]]*/ "", /*[[${cuentaDefault}]]*/ "");
 
-        const dsDetalleCliente    = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_cliente)}]]*/ '[]');
-        const dsSaldoInicial      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(saldo_inicial)}]]*/ '[]');
-        const dsSaldoFinal        = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(saldo_final)}]]*/ '[]');
-        const dsDetalleSaldo      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_saldo)}]]*/ '[]');
-        const dsListaMovimientos  = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_movimientos)}]]*/ '[]');
+        let dsDetalleCliente      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_cliente)}]]*/ '[]');
+        let dsSaldoInicial        = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(saldo_inicial)}]]*/ '[]');
+        let dsSaldoFinal          = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(saldo_final)}]]*/ '[]');
+        let dsDetalleSaldo        = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_saldo)}]]*/ '[]');
+        let dsDetalleSaldoPeriodo = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_saldo_periodo)}]]*/ '[]');
+        let dsListaMovimientos    = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_movimientos)}]]*/ '[]');
+        let dsUltRecaudos         = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(ultimos_recaudos)}]]*/ '[]');
+        let dsRetornos            = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(detalle_retornos)}]]*/ '[]');
+        let dsRetornoActual       = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(retorno_actual)}]]*/ '[]');
+        let dsFechasRecaudos      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(fechas_recaudos)}]]*/ '[]');
 
-        const colsResumenCuentas = [
+        //Actualziar el valor del processDate de dsSaldoFinal con el valor de la llamada formatProcessDate, que recibe como parámetro el valor original de processDate
+        dsDetalleSaldo.forEach(item => {
+            item.processDate = formatProcessDate(item.processDate);
+        });
+        dsDetalleSaldoPeriodo.forEach(item => {
+            item.processDate = formatProcessDate(item.processDate);
+        });
+        dsListaMovimientos.forEach(item => {
+            item.processDate = formatProcessDate(item.processDate);
+        });
+        dsUltRecaudos.forEach(item => {
+            item.processDate = formatProcessDate(item.processDate);
+        });
+        dsRetornos.forEach(item => {
+            item.processDate = formatProcessDate(item.processDate);
+
+            item.base2Rentabilidad = (item.base2Rentabilidad * 100).toFixed(4);
+            item.base2RentabilidadAnualizada = (item.base2RentabilidadAnualizada * 100).toFixed(4);
+            item.base3Rentabilidad = (item.base3Rentabilidad * 100).toFixed(4);
+            item.base3RentabilidadAnualizada = (item.base3RentabilidadAnualizada * 100).toFixed(4);
+            item.base4Rentabilidad = (item.base4Rentabilidad * 100).toFixed(4);
+            item.base4RentabilidadAnualizada = (item.base4RentabilidadAnualizada * 100).toFixed(4);
+            item.base5Rentabilidad = (item.base5Rentabilidad * 100).toFixed(4);
+            item.base5RentabilidadAnualizada = (item.base5RentabilidadAnualizada * 100).toFixed(4);
+            item.base6Rentabilidad = (item.base6Rentabilidad * 100).toFixed(4);
+            item.base6RentabilidadAnualizada = (item.base6RentabilidadAnualizada * 100).toFixed(4);
+        });
+
+
+        let colsResumenCuentas = [
             { field: 'accountNo', headerText: 'Account No' },
             { field: 'estado', headerText: 'Estado' },
             { field: 'fee', headerText: 'Fee' },
             { field: 'accountType', headerText: 'Account Type' },
-            { field: 'saldoInicial', headerText: 'Saldo inicial', format: 'N4'},
-            { field: 'saldoFinal', headerText: 'Saldo final', format: 'N4' }
+            { field: 'firtsRecaudo', headerText: 'Primer Recaudo' },
+            { field: 'lastRecaudo', headerText: 'Último Recaudo' },
+            { field: 'saldoInicial', headerText: 'Saldo inicio Periodo', format: 'N2'},
+            { field: 'saldoFinal', headerText: 'Saldo final Periodo', format: 'N2' },
+            { field: 'base2Rentabilidad', headerText: '% Apertura', format: 'N4'},
+            { field: 'base2RentabilidadAnualizada', headerText: '% Apertura Anual.', format: 'N4'}
         ];
 
-        const colsDetalleSaldo = [
+        let colsDetalleSaldo = [
             { field: 'accountNo', headerText: 'Account No' },
-            { field: 'processDate', headerText: 'Fecha' },
+            { field: 'processDate', headerText: 'Fecha'},
             { field: 'cusip', headerText: 'CUSIP' },
-            { field: 'quantity', headerText: 'Quantity', format: 'N4'},
-            { field: 'usdeMarketPrice', headerText: 'USDE Mkt Price', format: 'N4'},
-            { field: 'usdeMarketValue', headerText: 'USDE Mkt Value', format: 'N4' }
+            { field: 'securityDescription', headerText: 'Security Description' },
+            { field: 'nombreSubSubTipoActivo', headerText: 'Sub Sub Tipo Activo' },
+            { field: 'quantity', headerText: 'Quantity', format: 'N2'},
+            { field: 'usdeMarketPrice', headerText: 'USDE Mkt Price', format: 'N2'},
+            { field: 'usdeMarketValue', headerText: 'USDE Mkt Value', format: 'N2' }
         ];
 
-        const colsMovimientos = [
+        let colsDetalleSaldoPeriodo = [
             { field: 'accountNo', headerText: 'Account No' },
-            { field: 'processDate', headerText: 'Fecha' },
+            { field: 'processDate', headerText: 'Fecha'},
             { field: 'cusip', headerText: 'CUSIP' },
-            { field: 'quantity', headerText: 'Quantity', format: 'N4'},
-            { field: 'price', headerText: 'Price', format: 'N4'},
-            { field: 'usdeNetAmount', headerText: 'USDE Net Amount', format: 'N4'},
+            { field: 'securityDescription', headerText: 'Security Description' },
+            { field: 'nombreSubSubTipoActivo', headerText: 'Sub Sub Tipo Activo' },
+            { field: 'quantity', headerText: 'Quantity', format: 'N2'},
+            { field: 'usdeMarketPrice', headerText: 'USDE Mkt Price', format: 'N2'},
+            { field: 'usdeMarketValue', headerText: 'USDE Mkt Value', format: 'N2' }
+        ];
+
+        let colsMovimientos = [
+            { field: 'accountNo', headerText: 'Account No' },
+            { field: 'processDate', headerText: 'Fecha'},
+            { field: 'cusip', headerText: 'CUSIP' },
+            { field: 'quantity', headerText: 'Quantity', format: 'N2'},
+            { field: 'price', headerText: 'Price', format: 'N2'},
+            { field: 'usdeNetAmount', headerText: 'USDE Net Amount', format: 'N2'},
             { field: 'securityDescription', headerText: 'Security Description' },
             { field: 'activityDescription', headerText: 'Activity Description' }
         ];
 
-        const dsResumenCuentas = createDataSource(JSON.stringify(buildResumenCuentasData(dsDetalleCliente, dsSaldoInicial, dsSaldoFinal)));
+        let colsUltRecaudos = [
+            { field: 'accountNo', headerText: 'Account No' },
+            { field: 'processDate', headerText: 'Fecha'},
+            { field: 'cusip', headerText: 'CUSIP' },
+            { field: 'quantity', headerText: 'Quantity', format: 'N2'},
+            { field: 'price', headerText: 'Price', format: 'N2'},
+            { field: 'usdeNetAmount', headerText: 'USDE Net Amount', format: 'N2'},
+            { field: 'securityDescription', headerText: 'Security Description' },
+            { field: 'activityDescription', headerText: 'Activity Description' }
+        ];
+
+        let colsRetornos = [
+            //YTD, Inicio operaciones, 1 mes, 3 meses y 12 meses
+            { field: 'processDate', headerText: 'Process Date'},
+            { field: 'agregadorN1', headerText: 'Client ID' },
+            { field: 'agregadorN2', headerText: 'Account No' },
+            { field: 'base2Rentabilidad', headerText: 'Apertura' },
+            { field: 'base2RentabilidadAnualizada', headerText: 'Apertura Anual.' },
+            { field: 'base3Rentabilidad', headerText: '1M' },
+            { field: 'base3RentabilidadAnualizada', headerText: '1M Anual.' },
+            { field: 'base4Rentabilidad', headerText: '3M' },
+            { field: 'base4RentabilidadAnualizada', headerText: '3M Anual.' },
+            { field: 'base5Rentabilidad', headerText: '12M' },
+            { field: 'base5RentabilidadAnualizada', headerText: '12M Anual.' },
+            { field: 'base6Rentabilidad', headerText: 'YTD' },
+            { field: 'base6RentabilidadAnualizada', headerText: 'YTD Anual.' }
+        ];
+
+        let dsResumenCuentas = createDataSource(JSON.stringify(buildResumenCuentasData(dsDetalleCliente, dsSaldoInicial, dsSaldoFinal, dsRetornoActual, dsFechasRecaudos)));
         createDefaultGridWithWrapper('grid_resumen_cuentas', dsResumenCuentas, colsResumenCuentas, 'ResumenCuentas', ';', 0);
         createDefaultGridWithWrapper('grid_detalle_saldo', dsDetalleSaldo, colsDetalleSaldo, 'DetalleSaldo', ';', 0, { columns: ['accountNo'] });
-        createDefaultGridWithWrapper('grid_movimientos', dsListaMovimientos, colsMovimientos, 'DetalleMovimientos', ';', 0, { columns: ['accountNo'] });
+        createDefaultGridWithWrapper('grid_detalle_saldo_periodo', dsDetalleSaldoPeriodo, colsDetalleSaldoPeriodo, 'DetalleSaldoPeriodo', ';', 0, { columns: ['accountNo', 'processDate'] });
+        
+        createDefaultGridWithWrapper('grid_movimientos', dsListaMovimientos, colsMovimientos, 'DetalleMovimientos', ';', 0, { columns: ['accountNo', 'processDate'] });
+        createDefaultGridWithWrapper('grid_ult_recaudos', dsUltRecaudos, colsUltRecaudos, 'UltimosRecaudos', ';', 0, { columns: ['accountNo'] });
+        createDefaultGridWithWrapper('grid_retornos', dsRetornos, colsRetornos, 'Retornos', ';', 0);
 
     });
 
-    function buildResumenCuentasData(detalleCliente, saldoInicial, saldoFinal) {
-        const saldoInicialMap = {};
-        const saldoFinalMap = {};
-        const clienteMap = {};
+    function buildResumenCuentasData(detalleCliente, saldoInicial, saldoFinal, retornoActual, fechasRecaudos) {
+        let saldoInicialMap = {};
+        let saldoFinalMap = {};
+        let clienteMap = {};
+        let retornoMap = {};
+        let fechasRecaudosMap = {};
 
         (saldoInicial || []).forEach(function(item) {
             if (item && item.accountNo) {
@@ -219,18 +330,44 @@
             }
         });
 
+        (retornoActual || []).forEach(function(item) {
+            let raw = item && item.agregadorN2;
+            let key = null;
+            if (raw) {
+                let parts = raw.split('||');
+                key = parts.length > 1 ? parts[1] : raw;
+                if (typeof key === 'string') key = key.trim();
+            }
+            if (!key && item && item.agregadorN2) key = String(item.agregadorN2).trim();
+            if (key) {
+                retornoMap[key] = item;
+            }
+        });
+
+        (fechasRecaudos || []).forEach(function(item) {
+            if (item && item.accountNo) {
+                fechasRecaudosMap[item.accountNo] = item;
+            }
+        });
+
         return Object.keys(clienteMap).map(function(accountNo) {
-            const item = clienteMap[accountNo];
-            const saldoIni = saldoInicialMap[accountNo];
-            const saldoFin = saldoFinalMap[accountNo];
+            let item = clienteMap[accountNo];
+            let saldoIni = saldoInicialMap[accountNo];
+            let saldoFin = saldoFinalMap[accountNo];
+            let retorno = retornoMap[accountNo];
+            let fechasRecaudos = fechasRecaudosMap[accountNo];
 
             return {
                 accountNo: item.accountNo,
                 estado: item.estadoCuenta,
                 fee: item.fee,
                 accountType: item.accountType,
+                firtsRecaudo: fechasRecaudos ? formatProcessDate(fechasRecaudos.firstMovDate) : '',
+                lastRecaudo: fechasRecaudos ? formatProcessDate(fechasRecaudos.lastMovDate) : '',
                 saldoInicial: saldoIni ? saldoIni.sumUsdeMarketValue : 0,
-                saldoFinal: saldoFin ? saldoFin.sumUsdeMarketValue : 0
+                saldoFinal: saldoFin ? saldoFin.sumUsdeMarketValue : 0,
+                base2Rentabilidad: retorno ? retorno.base2Rentabilidad*100 : 0,
+                base2RentabilidadAnualizada: retorno ? retorno.base2RentabilidadAnualizada*100 : 0
             };
         });
     }

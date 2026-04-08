@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    <header th:replace="layout/layout :: header"></header>
+
+    <aside th:replace="layout/layout :: lateral"></aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 th:text="${titulo}"></h1>
+                    </div>
+                    <div  th:replace="layout/layout :: 'breadcrumbApp'"></div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!--/*@thymesVar id="parFeriadoDto" type="cl.qande.mmii.app.models.dto.core.ParFeriadoDto"*/-->
+        <!--/*@thymesVar id="lista_registros" type="java.util.List<cl.qande.mmii.app.models.dto.core.ParFeriadoDto>"*/-->
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Default box -->
+            <div class="card" th:classappend="${(parFeriadoDto.id != null or (status != null and status.codigo != 0)) ? '' : ' collapsed-card'}">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title" th:text="${(parFeriadoDto.id != null or (status != null and status.codigo != 0)) ? 'Modificar registro' : 'Nuevo registro'}"></h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas" th:classappend="${(parFeriadoDto.id != null or (status != null and status.codigo != 0)) ? ' fa-minus' : ' fa-plus'}"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body login-card-body">
+                    <form id="form_guardar_feriado" th:action="@{/mantenedores/parametros-sistema/feriados/guardar}" method="post" th:object="${parFeriadoDto}">
+                        <div class="form-group row">
+                            <label for="id" class="col-md-2 col-form-label">Fecha (YYYY-MM-DD)</label>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" placeholder="yyyy-MM-dd" th:field="*{id}" id="id" name="id" th:value="${parFeriadoDto.id != null ? parFeriadoDto.id : ''}" />
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('id') and (parFeriadoDto.id != null or (status != null and status.codigo != 0))}" th:errors="*{id}"></span>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label">Habilitado Pershing</label>
+                            <div class="col-md-2">
+                                <input type="checkbox" th:field="*{esHabilPershing}" id="esHabilPershing" name="esHabilPershing" th:checked="${parFeriadoDto.esHabilPershing}" />
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('esHabilPershing') and (parFeriadoDto.id != null or (status != null and status.codigo != 0))}" th:errors="*{esHabilPershing}"></span>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label">Habilitado Stonex</label>
+                            <div class="col-md-2">
+                                <input type="checkbox" th:field="*{esHabilStonex}" id="esHabilStonex" name="esHabilStonex" th:checked="${parFeriadoDto.esHabilStonex}" />
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('esHabilStonex') and (parFeriadoDto.id != null or (status != null and status.codigo != 0))}" th:errors="*{esHabilStonex}"></span>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="observaciones" class="col-md-2 col-form-label">Observaciones</label>
+                            <div class="col-md-6">
+                                <input class="form-control" type="text" th:field="*{observaciones}" id="observaciones" name="observaciones" maxlength="100" th:value="${parFeriadoDto.observaciones != null ? parFeriadoDto.observaciones : ''}" />
+                            </div>
+                            <span class="text-danger" th:if="${#fields.hasErrors('observaciones') and (parFeriadoDto.id != null or (status != null and status.codigo != 0))}" th:errors="*{observaciones}"></span>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer">
+                    <a class="btn btn-app" th:onclick="guardarFeriado()"><i class="fas fa-save"></i>Guardar</a>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="card">
+                <div class="card-header" onclick="$(this).parent().CardWidget('toggle')">
+                    <h3 class="card-title">Feriados Registrados <span th:text="'(' + ${#lists.size(lista_registros)} + ' registros)'"></span></h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body login-card-body">
+                    <div id="grid-wrapper-feriados" th:if="${!#lists.isEmpty(lista_registros)}"></div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer th:replace="layout/layout :: 'footerCustom'"></footer>
+
+    <aside th:replace="layout/layout :: lateral_control"></aside>
+</div>
+<!-- ./wrapper -->
+
+
+
+<!-- InputMask -->
+<script th:src="@{/plugins/moment/moment.min.js}"></script>
+<!-- date-range-picker -->
+<script th:src="@{/plugins/daterangepicker/daterangepicker.js}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script th:src="@{/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script th:inline="javascript">
+
+    const contextPath   = window.appConfig.contextPath;
+    const csrfParam     = window.appConfig.csrfParam;
+    const csrfToken     = window.appConfig.csrfToken;
+
+    $(document).ready(function() {
+        /*<![CDATA[*/
+
+        var resultadoDataSource      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(lista_registros)}]]*/ '[]');
+
+        /*]]>*/
+        var resultadoColumn          = createDefaultColumns(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).getClassFields(T(cl.qande.mmii.app.models.dto.core.ParFeriadoDto))}]]*/ [], true);
+
+
+
+        // Añadir columnas de acción al final
+        updateColumnAttribute(resultadoColumn, ['esHabilPershing'], 'template', data => templateToggle(data.esHabilPershing, contextPath + '/mantenedores/parametros-sistema/feriados/toggle-pershing/'+data.id, '#4f83cc'));
+        updateColumnAttribute(resultadoColumn, ['esHabilStonex'], 'template', data => templateToggle(data.esHabilStonex, contextPath + '/mantenedores/parametros-sistema/feriados/toggle-stonex/'+data.id, '#6c757d'));
+        createDefaultGridWithWrapper('grid-wrapper-feriados', resultadoDataSource, resultadoColumn, 'Feriados', ';', 40);
+
+        function templateToggle(value, action, bgColor) {
+            const iconoEstado = value
+                ? '<i class="fa fa-check" style="color:#28a745; font-size:14px;"></i>'
+                : '<i class="fa fa-times" style="color:#dc3545; font-size:14px;"></i>';
+
+            const form = '<form method="post" action="' + action + '" style="margin:0;">' +
+                '<input type="hidden" name="' + csrfParam + '" value="' + csrfToken + '"/>' +
+                '<button type="submit" ' +
+                'style="' +
+                'background-color:' + bgColor + ';' +
+                'border:1px solid ' + bgColor + ';' +
+                'color:#ffffff;' +
+                'padding:4px 8px;' +
+                'border-radius:4px;' +
+                'cursor:pointer;' +
+                'line-height:1;' +
+                'display:flex;' +
+                'align-items:center;' +
+                'justify-content:center;' +
+                '">' +
+                '<i class="fa fa-exchange-alt" style="font-size:12px;"></i>' +
+                '</button>' +
+                '</form>';
+
+            return '<div style="display:flex; align-items:center; justify-content:center; gap:10px;">' +
+                '<span style="width:14px; text-align:center; display:inline-flex; align-items:center; justify-content:center;">' + iconoEstado + '</span>' +
+                form +
+                '</div>';
+        }
+
+    });
+</script>
+
+<script>
+    createCustomCalendarSingleHtml("id", getSingleRangesMaestros(), false, null, moment().add(1, 'year'));
+
+    function guardarFeriado() {
+        var id = $('#id').val();
+        var myForm  = document.getElementById('form_guardar_feriado');
+        if (id != null && id !== "") {
+            var oldAction   = myForm.action.replace(/\/+$/,'');
+            myForm.action = oldAction +'/'+ encodeURIComponent(id);
+        }
+        myForm.submit();
+    }
+
+</script>
+
+
+
+<div th:replace="layout/layout :: customCalendarHtml"></div>
+
+<div th:replace="layout/layout :: scripting_cierre"></div>
+</body>
+</html>

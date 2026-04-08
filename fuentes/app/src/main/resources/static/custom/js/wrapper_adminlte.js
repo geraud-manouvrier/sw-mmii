@@ -8,8 +8,6 @@ function createCustomCalendarHtml(calendarName, customRanges, multiple=false, mi
     if (minDate == null || moment(minDate).isBefore(dateOfStart)) {
         minDate = dateOfStart;
     }
-    if (maxDate==null)
-        maxDate=moment().subtract(1, 'days');
 
     return $(idCalendar).daterangepicker(
         {
@@ -19,8 +17,8 @@ function createCustomCalendarHtml(calendarName, customRanges, multiple=false, mi
             "alwaysShowCalendars" : true,
             "showCustomRangeLabel" : false,
             ranges: customRanges,
-            "minDate": minDate,
-            "maxDate": maxDate,
+            minDate: minDate,
+            maxDate: (maxDate == null ? moment().subtract(1, 'days') : maxDate),
             "locale": {
                 "format": "YYYY-MM-DD",
                 "separator": separator,
@@ -122,8 +120,8 @@ function createCustomCalendarSingleHtml(calendarName, customRanges, multiple=fal
 }
 
 function createCustomCalendarRangeHtml(calendarName, customRanges) {
-    var idCalendar         = '#'+calendarName;
-    var dateOfStart         = moment('2024-04-29', 'YYYY-MM-DD');
+    const idCalendar         = '#'+calendarName;
+    const dateOfStart         = moment('2024-04-22', 'YYYY-MM-DD');
     if (customRanges==null) {
         customRanges= getRangesRentabilidades();
     }

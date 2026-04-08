@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.util.helper;
 
+import cl.qande.mmii.app.util.NotificationType;
 import cl.qande.mmii.app.util.SesionWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ public class CustomLog implements ApplicationContextAware {
     private static final String MSG_INFO    = "INFO";
     private static final String MSG_DEBUG    = "DEBUG";
     private static final String MSG_ERROR    = "ERROR";
+    private static final String MSG_WARN    = "WARNING";
     private static final String MSG_PATTERN    = "[{}] - {} - [{}]";
     private static final int INDEX_STACK    = 3;
 
@@ -51,12 +53,18 @@ public class CustomLog implements ApplicationContextAware {
         var className   = Thread.currentThread().getStackTrace()[INDEX_STACK].getClassName();
         var methodName  = Thread.currentThread().getStackTrace()[INDEX_STACK].getMethodName();
         Logger log = LoggerFactory.getLogger(className);
+        NotificationType nt = NotificationType.INFO;
         switch (typeLog) {
             case MSG_INFO:
                 log.info(MSG_PATTERN, methodName, msg, getLogUuid());
                 break;
             case MSG_ERROR:
                 log.error(MSG_PATTERN, methodName, msg, getLogUuid());
+                nt = NotificationType.ERROR;
+                break;
+            case MSG_WARN:
+                log.warn(MSG_PATTERN, methodName, msg, getLogUuid());
+                nt = NotificationType.WARNING;
                 break;
             case MSG_DEBUG:
             default:
@@ -64,7 +72,7 @@ public class CustomLog implements ApplicationContextAware {
                 break;
         }
         if (withUserNotif)
-            addWebNotification(msg);
+            addWebNotification(msg, nt);
     }
     private UUID getLogUuid() {
         var sesionWeb   = getSesionWeb();
@@ -73,10 +81,10 @@ public class CustomLog implements ApplicationContextAware {
         return this.uuid;
     }
 
-    private void addWebNotification(String msg) {
+    private void addWebNotification(String msg, NotificationType type) {
         var sesionWeb   = getSesionWeb();
         if (sesionWeb!=null && sesionWeb.getUuid()!=null)
-            sesionWeb.addNotification(msg);
+            sesionWeb.addNotification(msg, type);
     }
 
     private SesionWeb getSesionWeb() {
