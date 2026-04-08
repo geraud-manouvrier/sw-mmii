@@ -11,6 +11,7 @@ import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosMovimientosDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosRelacionadoDao;
 import cl.qande.mmii.app.models.db.core.dao.IReporteMaestroDatosSaldoDao;
 import cl.qande.mmii.app.models.db.core.entity.*;
+import cl.qande.mmii.app.models.dto.core.FechasRecaudosFromMaestroMovDto;
 import cl.qande.mmii.app.models.dto.core.SaldoCuentaResumenDto;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosMovimientoMapper;
 import cl.qande.mmii.app.util.mapper.core.VwReporteMaestroDatosRelacionadoMapper;
@@ -160,8 +161,8 @@ public class ReporteMaestroDatosService {
         return apiResponse;
     }
 
-    public List<VwReporteMaestroDatosSaldo> saldoCliente(String processDate, String clientId, String accountNo) {
-        return reporteMaestroDatosSaldoDao.saldoCliente(processDate, clientId, accountNo);
+    public List<VwReporteMaestroDatosSaldo> saldoCliente(String startProcessDate, String endProcessDate, String clientId, String accountNo, boolean onlyStartEndDates) {
+        return reporteMaestroDatosSaldoDao.saldoCliente(startProcessDate, endProcessDate, clientId, accountNo, onlyStartEndDates);
     }
 
     public List<SaldoCuentaResumenDto> resumenSaldoPorCuenta(String processDate, String clientId, String accountNo) {
@@ -174,5 +175,13 @@ public class ReporteMaestroDatosService {
 
     public List<VwReporteMaestroDatosMovimiento> movimientosCliente(String startProcessDate, String endProcessDate, String clientId, String accountNo) {
         return reporteMaestroDatosMovimientosDao.movimientosCliente(startProcessDate, endProcessDate, clientId, accountNo);
+    }
+
+    public List<VwReporteMaestroDatosMovimiento> ultimosRecaudos(String clientId, String accountNo, int limit) {
+        return reporteMaestroDatosMovimientosDao.ultimosRecaudos(clientId, accountNo, limit);
+    }
+
+    public List<FechasRecaudosFromMaestroMovDto> fechasFirstLastRecaudos(String clientId, String accountNo) {
+        return reporteMaestroDatosMovimientosDao.fechasFirstLastRecaudos(clientId, accountNo);
     }
 }

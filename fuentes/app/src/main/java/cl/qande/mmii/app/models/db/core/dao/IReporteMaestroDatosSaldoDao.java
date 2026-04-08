@@ -19,11 +19,18 @@ public interface IReporteMaestroDatosSaldoDao extends CrudRepository<VwReporteMa
 
     @Query(value = "SELECT *" +
             "FROM public.vw_reporte_maestro_datos_saldos vw_sld " +
-            "where vw_sld.process_date=:_process_date " +
+            "WHERE vw_sld.process_date >= :_start_process_date " +
+            "AND vw_sld.process_date <= :_end_process_date " +
+            "AND CASE WHEN :_only_start_end_dates THEN vw_sld.process_date IN (:_start_process_date, :_end_process_date) ELSE true END  " +
             "and vw_sld.client_id=:_client_id " +
             "and vw_sld.account_no=COALESCE(:_account_no, vw_sld.account_no) " +
-            "ORDER BY vw_sld.account_no, vw_sld.cusip", nativeQuery = true)
-    public List<VwReporteMaestroDatosSaldo> saldoCliente(@Param("_process_date") String processDate, @Param("_client_id") String clientId, @Param("_account_no") String accountNo);
+            "ORDER BY vw_sld.process_date, vw_sld.account_no, vw_sld.cusip", nativeQuery = true)
+    public List<VwReporteMaestroDatosSaldo> saldoCliente(
+            @Param("_start_process_date") String startProcessDate,
+            @Param("_end_process_date") String endProcessDate,
+            @Param("_client_id") String clientId,
+            @Param("_account_no") String accountNo,
+            @Param("_only_start_end_dates") boolean onlyStartEndDates);
 
     @Query(
             "SELECT new cl.qande.mmii.app.models.dto.core.SaldoCuentaResumenDto(" +

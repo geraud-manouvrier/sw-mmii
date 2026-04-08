@@ -33,7 +33,7 @@ $$
         tb_calc.agregador_n1, tb_calc.agregador_n2, tb_calc.agregador_n3, tb_calc.agregador_n4,
         tb_calc.cant_reg, tb_calc.dias_con_saldo,
         tb_calc.pitatoria::NUMERIC(45,20) as rentabilidad_periodo,
-        tb_calc.suma_saldos_iniciales, tb_calc.suma_saldo_rentabilidad,
+        tb_calc.suma_saldos_iniciales::NUMERIC(45,20), tb_calc.suma_saldo_rentabilidad::NUMERIC(45,20),
         (CASE
             WHEN tb_calc.suma_saldos_iniciales=0 THEN NULL
             ELSE tb_calc.suma_saldo_rentabilidad/tb_calc.suma_saldos_iniciales

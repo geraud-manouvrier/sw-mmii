@@ -90,16 +90,16 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
         ej.grids.ExcelExport, ej.grids.Reorder, ej.grids.ColumnChooser
     );
 
-    const gridElementId = `${wrapperElementId}-grid`;
-    const toolbarElementId = `${wrapperElementId}-toolbar`;
-    const wrapperElement = document.getElementById(wrapperElementId);
+    let gridElementId = `${wrapperElementId}-grid`;
+    let toolbarElementId = `${wrapperElementId}-toolbar`;
+    let wrapperElement = document.getElementById(wrapperElementId);
 
     if (!wrapperElement) {
         console.info(`No se encontró el elemento con ID: ${wrapperElementId}`);
         return;
     }
     wrapperElement.innerHTML = `<div id="${toolbarElementId}"></div><div id="${gridElementId}"></div>`;
-    const defaultPageSizes = [10, 20, 50, 100, "All"];
+    let defaultPageSizes = [10, 20, 50, 100, "All"];
     if (!defaultPageSizes.includes(pageSize) && typeof pageSize === 'number' && pageSize!=0) {
         defaultPageSizes.push(pageSize);
         defaultPageSizes.sort((a, b) => a - b); // Ordena los números en orden ascendente
@@ -127,7 +127,7 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
         'ColumnChooser'
     );
 
-    const grid = new ej.grids.Grid({
+    let grid = new ej.grids.Grid({
         dataSource: dataSource,
         columns: columnsObject,
         gridLines: 'Both',
@@ -179,7 +179,7 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
         // 1) Syncfusion ya agrupa por defecto al arrancar,
         //    pero forzamos el hide/show para disparar el auto-fit
         groupSettings.columns.forEach(field => {
-            const col = grid.columns.find(c => c.field === field);
+            let col = grid.columns.find(c => c.field === field);
             if (col) {
                 grid.showColumns([col.headerText]);
                 grid.hideColumns([col.headerText]);
@@ -188,6 +188,15 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
     }
 
     function clickHandler(args, grid, fileName, csvSeparator) {
+
+        let excelExportProperties = {
+            fileName: fileName+'.xlsx'
+        };
+        let csvExportProperties = {
+            fileName: fileName+'.csv',
+            separator: csvSeparator
+        };
+
         switch (args.item.id) {
             case toolbarElementId + '-colapseall':
                 grid.groupModule.collapseAll();
@@ -196,16 +205,9 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
                 grid.groupModule.expandAll();
                 break;
             case toolbarElementId + '-excel':
-                var excelExportProperties = {
-                    fileName: fileName+'.xlsx'
-                };
                 grid.excelExport(excelExportProperties);
                 break;
             case toolbarElementId + '-csv':
-                var csvExportProperties = {
-                    fileName: fileName+'.csv',
-                    separator: csvSeparator
-                };
                 grid.csvExport(csvExportProperties);
                 break;
             default:
@@ -220,7 +222,7 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
 
 function customNotificationSyncFusion(tipoMensaje, titulo, mensaje) {
     ej.base.enableRipple(true);
-    var cssNotif = 'e-toast-info';
+    let cssNotif = 'e-toast-info';
     switch(tipoMensaje) {
         case "OK":
             cssNotif='e-toast-success';
@@ -237,12 +239,11 @@ function customNotificationSyncFusion(tipoMensaje, titulo, mensaje) {
         default:
             cssNotif= 'e-toast-info';
     }
-    var toast = new ej.notifications.Toast({
+    let toast = new ej.notifications.Toast({
         cssClass: cssNotif,
         title: titulo,
         content: mensaje,
-        target: document.body,  //TODO: Revisar
-        timeOut: 0,
+        target: document.body,
         showCloseButton: true,
         position: { X: 'Right', Y: 'Bottom' },
         showProgressBar: true,
@@ -270,7 +271,7 @@ function booleanTemplateForColumnByValue(value) {
 function generateDataSourcesClienteCuenta(listaClientes, listaCuentas, includeTodosClientes) {
     // Construir DataSource de clientes
 
-    var clientDataSource = [];
+    let clientDataSource = [];
 
     if (includeTodosClientes) {
         clientDataSource.push({
@@ -289,7 +290,7 @@ function generateDataSourcesClienteCuenta(listaClientes, listaCuentas, includeTo
     });
 
     // Construir DataSource de cuentas
-    var cuentaDataSource = [];
+    let cuentaDataSource = [];
 
     listaClientes.forEach(obj => {
         cuentaDataSource.push({
@@ -313,8 +314,8 @@ function generateDataSourcesClienteCuenta(listaClientes, listaCuentas, includeTo
 }
 
 function createComboBoxClienteCuenta(clientDataSource, cuentaDataSource, clienteDefault, cuentaDefault) {
-    var clienteComboBox = createDefaultComboBox('cliente', clientDataSource, 'ClientFieldValue', 'ClientText', 'ClientFieldGroup');
-    var cuentaComboBox = createDefaultComboBox('cuenta', cuentaDataSource, 'AccountFieldValue', 'AccountFieldText', 'AccountFieldGroup');
+    let clienteComboBox = createDefaultComboBox('cliente', clientDataSource, 'ClientFieldValue', 'ClientText', 'ClientFieldGroup');
+    let cuentaComboBox = createDefaultComboBox('cuenta', cuentaDataSource, 'AccountFieldValue', 'AccountFieldText', 'AccountFieldGroup');
 
     cuentaComboBox.enabled = false;
     clienteComboBox.setIndexForValue(clienteDefault, 0);
@@ -337,15 +338,15 @@ function createComboBoxClienteCuenta(clientDataSource, cuentaDataSource, cliente
 }
 
 function createComboWithSourceClienteCuenta(listaClientes, listaCuentas, clienteDefault, cuentaDefault) {
-    var dataSources     = generateDataSourcesClienteCuenta(listaClientes, listaCuentas, false);
+    let dataSources     = generateDataSourcesClienteCuenta(listaClientes, listaCuentas, false);
     return createComboBoxClienteCuenta(dataSources.clientDataSource, dataSources.cuentaDataSource, clienteDefault, cuentaDefault);
 }
 
 function createDataSource(jsonString) {
     try {
-        var lista = JSON.parse(jsonString);
+        let lista = JSON.parse(jsonString);
         return lista.map(item => {
-            var obj = {};
+            let obj = {};
             Object.entries(item).forEach(([key, value]) => {
                 obj[key] = value;
             });
@@ -358,13 +359,13 @@ function createDataSource(jsonString) {
 }
 
 function fixDateForDataSource(dataSource, fields) {
-    const f = Array.isArray(fields) ? fields : [fields];
+    let f = Array.isArray(fields) ? fields : [fields];
 
     return dataSource.map(row => {
-        const out = { ...row };
+        let out = { ...row };
 
-        for (const field of f) {
-            const v = row[field];
+        for (let field of f) {
+            let v = row[field];
 
             if (v == null || v === '') {
                 out[field] = null;
@@ -378,7 +379,7 @@ function fixDateForDataSource(dataSource, fields) {
             }
 
             // si viene como número (epoch)
-            const d = (typeof v === 'number') ? new Date(v) : new Date(String(v));
+            let d = (typeof v === 'number') ? new Date(v) : new Date(String(v));
 
             // si no parsea, lo dejo tal cual para no romper
             out[field] = isNaN(d.getTime()) ? v : d;

@@ -2,6 +2,7 @@ package cl.qande.mmii.app.interceptors;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.models.db.core.entity.EstadoPeticion;
+import cl.qande.mmii.app.util.NotificationType;
 import cl.qande.mmii.app.util.SesionWeb;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,7 @@ public class CustomInterceptor implements HandlerInterceptor {
                 }
             }
             this.auxSetOnError(modelAndView.getModelMap(), viewName);
+            modelAndView.getModelMap().addAttribute("NotificationType", NotificationType.class);
         }
     }
     private ModelMap auxSetOnError(ModelMap modelMap, String viewName) {

@@ -143,7 +143,7 @@
 
 
 <script th:inline="javascript">
-  const contextPath = /*[[${#httpServletRequest.contextPath}]]*/ '';
+  const contextPath = window.appConfig.contextPath;
 
   function editarTemplate(row) {
     const url = `${contextPath}/mantenedores/enrolamiento/cliente/editar/${encodeURIComponent(row.id)}`;

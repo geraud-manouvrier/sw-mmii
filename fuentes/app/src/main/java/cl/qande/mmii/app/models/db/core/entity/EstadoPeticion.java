@@ -2,16 +2,6 @@ package cl.qande.mmii.app.models.db.core.entity;
 
 public class EstadoPeticion {
 
-    /*
-    * TODO: Modificar para que:
-    *   0 es OK
-    *   1 es Warning
-    *   2 es error
-    *   4 es info
-    * Pueden usarse códigos "miles": 1XXX, 2XXX, 3XXX, 4XXX.
-    * Al signar código se asigna mtipo automático.
-    * Crear métodos "setError", "setOk", etc. para encapsular
-    */
     private Integer codigo;
     private String mensaje;
     private String detalle;
@@ -19,6 +9,20 @@ public class EstadoPeticion {
     private String tipo;
 
     public EstadoPeticion() {
+    }
+
+    public EstadoPeticion(boolean isError, String mensaje, String detalle) {
+        if (isError)
+            this.setEstadoError(mensaje, detalle);
+        else
+            this.setEstadoOk(mensaje, detalle);
+    }
+
+    public EstadoPeticion(boolean isError, String mensaje) {
+        if (isError)
+            this.setEstadoError(mensaje);
+        else
+            this.setEstadoOk(mensaje);
     }
 
     public EstadoPeticion(Integer codigo, String mensaje, String detalle, String tipo) {

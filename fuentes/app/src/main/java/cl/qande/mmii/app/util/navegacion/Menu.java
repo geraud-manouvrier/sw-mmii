@@ -21,6 +21,7 @@ public class Menu {
     //Parámetros
     public static final String PARAMETROS_GLOBALES ="PARAMETROS_GLOBALES";
     public static final String PARAMETROS_PERSHING ="PARAMETROS_PERSHING";
+    public static final String PARAMETROS_FERIADOS ="PARAMETROS_FERIADOS";
     //Usuarios
     public static final String USUARIOS_CUENTAS   ="USUARIOS_CUENTAS";
     public static final String USUARIOS_ROLES   ="USUARIOS_ROLES";
@@ -128,6 +129,7 @@ public class Menu {
         opcionesInicio.add(new OpcionMenu(ADMINQANDE_LOGS, "Logs App", "/logs", false));
         opcionesInicio.add(new OpcionMenu(ADMINQANDE_LOGS_VIEWER, "Logs Viewer (RAW)", "/admin/logs/listar", false));
         opcionesInicio.add(new OpcionMenu(ADMIN_JOBS, "Ejecutar Jobs", "/jobs", false));
+        opcionesInicio.add(new OpcionMenu(PARAMETROS_FERIADOS, "Feriados", "/mantenedores/parametros-sistema/feriados", false));
         categoriaAdminQande.setListaOpciones(opcionesInicio);
 
         ArrayList<OpcionMenu> opcionesFtp    = new ArrayList<>();
