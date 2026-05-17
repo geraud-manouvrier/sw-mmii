@@ -1,6 +1,6 @@
 /*
-2026-04-08
-Actual: 14.0.0-COL
+2026-05-17
+Actual: 14.1.0-COL
 */
 
 INSERT INTO public.authorities(user_id, authority)
@@ -11,6 +11,14 @@ SELECT id, 'ROLE_OP_CTES_INFOREJEC' FROM public.users where username in ('daniel
 ;
 INSERT INTO public.authorities(user_id, authority)
 SELECT id, 'ROLE_OP_MANT_ENROL_CUENTA' FROM public.users where username in ('daniel.gomez1', 'brayan.giraldom')
+;
+--Nuevo usuario lisdey.velasquez con mismos accesos brayan.giraldom
+INSERT INTO public.users (enabled, password, username) VALUES (true, '', 'lisdey.velasquez');
+INSERT INTO public.authorities(user_id, authority)
+SELECT
+    (SELECT id FROM public.users where username='lisdey.velasquez'),
+    authorities.authority
+FROM public.authorities WHERE authorities.user_id = (SELECT id FROM public.users where username='brayan.giraldom')
 ;
 
 

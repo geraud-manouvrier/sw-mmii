@@ -187,6 +187,76 @@ function createDefaultGridWithWrapper(wrapperElementId, dataSource, columnsObjec
         });
     }
 
+
+    /**
+     * Añade un agregado al Grid de Syncfusion, acumulándolo internamente
+     * y refrescando la grilla para aplicar los cambios.
+     *
+     * @method addAggregate
+     * @memberof ej.grids.Grid
+     * @param {Object}   options
+     * @param {string}   options.field
+     *   Nombre del campo en el dataSource sobre el que aplicar la agregación.
+     * @param {'sum'|'average'|'min'|'max'|'count'|'truecount'|'falsecount'|'custom'} options.type
+     *   Tipo de operación de agregación:
+     *   - 'sum': suma de valores
+     *   - 'average': promedio
+     *   - 'min': valor mínimo
+     *   - 'max': valor máximo
+     *   - 'count': conteo de registros
+     *   - 'truecount': conteo de registros true
+     *   - 'falsecount': conteo de registros false
+     *   - 'custom': agregado custom (https://ej2.syncfusion.com/javascript/documentation/grid/aggregates/custom-aggregate)
+     * @param {string}   options.format
+     *   Formato numérico heredado de la definición de la columna
+     *   (ej. 'N4' para 4 decimales). Si la columna no define format,
+     *   no se aplica.
+     * @param {string}   options.caption
+     *   Plantilla de texto para el caption de grupo y footer.
+     *   Utiliza placeholders `${sum}`, `${average}`, `${min}`, `${max}`, `${count}`.
+     *   Ej: 'Total: ${sum}'.
+     * @returns {ej.grids.Grid}
+     *   La propia instancia del grid, para encadenar llamadas.
+     *
+     * @example
+     * // Agrupo antes de añadir agregados
+     * customGrid.groupColumn('quarter');
+     *
+     * // Suma de usdeNetAmount y conteo de accountNo
+     * customGrid
+     *   .addAggregate({
+     *      field:   'usdeNetAmount',
+     *      type:    'sum',
+     *      format:  'N4',
+     *      caption: 'Total USD: ${sum}'
+     *   })
+     *   .addAggregate({
+     *      field:   'accountNo',
+     *      type:    'count',
+     *      format:  'N0',
+     *      caption: 'Total Ctas: ${count}'
+     *   });
+     */
+    grid._groupedAggregates = [];
+    grid.addAggregate = function({ field, type, format, caption }) {
+        console.debug(`(11) Añadiendo agregado: ${field}, tipo: ${type}, formato: ${format}, caption: ${caption}`);
+        var newColumn= {
+            field: field,
+            type: type,
+            format: format,
+            groupCaptionTemplate: caption,
+            footerTemplate:       caption
+        };
+        this._groupedAggregates.push(newColumn);
+
+        this.aggregates = [{
+            columns: this._groupedAggregates
+        }];
+
+        this.refresh();
+        return this; // para encadenar
+    };
+
     function clickHandler(args, grid, fileName, csvSeparator) {
 
         let excelExportProperties = {

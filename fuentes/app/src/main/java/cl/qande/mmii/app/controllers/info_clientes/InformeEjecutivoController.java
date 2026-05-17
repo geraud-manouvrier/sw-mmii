@@ -85,11 +85,10 @@ public class InformeEjecutivoController {
     ) throws QandeMmiiException {
         var estadoPeticion      = new EstadoPeticion(0, "Página cargada correctamente", "Datos consultados correctamente");
         var currentProceesDate  = calendarioHelper.defaultProcessDate();
-        var cuentaNormalizada   = normalizarCuenta(cuenta);
         model.addAttribute(CAMPO_STATUS, estadoPeticion);
 
         try {
-            cargaDatosCliente(model, currentProceesDate, startProcessDate, endProcessDate, cliente, cuentaNormalizada);
+            cargaDatosCliente(model, currentProceesDate, startProcessDate, endProcessDate, cliente, cuenta);
         } catch (Exception e) {
             estadoPeticion.setEstadoError( "Error al cargar datos del cliente");
             cargaDatosCliente(model, null, null, null, null, null);
@@ -130,7 +129,7 @@ public class InformeEjecutivoController {
         model.addAttribute(CAMPO_CUENTA_DEFAULT, defaultCuenta);
     }
 
-    private void cargaDatosCliente(Model model, String currentProceesDate, String startProcessDate, String endProcessDate, String clientId, String accountNo) {
+    private void cargaDatosCliente(Model model, String currentProceesDate, String startProcessDate, String endProcessDate, String clientId, String accountNoWithCustodian) {
         if (currentProceesDate==null || startProcessDate==null || endProcessDate==null || clientId==null) {
             model.addAttribute(SALDO_INICIAL, null);
             model.addAttribute(SALDO_FINAL, null);
@@ -140,6 +139,7 @@ public class InformeEjecutivoController {
             model.addAttribute(DETALLE_CLIENTE, null);
             return;
         }
+        var accountNo   = normalizarCuenta(accountNoWithCustodian);
 
         //Saldo consolidado inicial a la fecha start por cada cuenta
         safeAddToModel(() -> reporteMaestroDatosService.resumenSaldoPorCuenta(startProcessDate, clientId, accountNo), "saldo inicial", model, SALDO_INICIAL);
@@ -159,8 +159,8 @@ public class InformeEjecutivoController {
         safeAddToModel(() -> reporteMaestroDatosService.datosCliente(currentProceesDate, clientId, accountNo), "información del cliente", model, DETALLE_CLIENTE);
 
         //Obtenemos Retornos
-        safeAddToModel(() -> reporteInversionesService.calculaRentabilidad(clientId, accountNo, null, null, endProcessDate, endProcessDate, true), "retornos del periodo", model, DETALLE_RETORNOS);
-        safeAddToModel(() -> reporteInversionesService.calculaRentabilidad(clientId, accountNo, null, null, currentProceesDate, currentProceesDate, true), "retorno actual", model, RETORNO_ACTUAL);
+        safeAddToModel(() -> reporteInversionesService.calculaRentabilidad(clientId, accountNoWithCustodian, null, null, endProcessDate, endProcessDate, true), "retornos del periodo", model, DETALLE_RETORNOS);
+        safeAddToModel(() -> reporteInversionesService.calculaRentabilidad(clientId, accountNoWithCustodian, null, null, currentProceesDate, currentProceesDate, true), "retorno actual", model, RETORNO_ACTUAL);
 
     }
 
