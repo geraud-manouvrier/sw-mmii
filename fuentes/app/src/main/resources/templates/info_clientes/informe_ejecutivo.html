@@ -191,7 +191,7 @@
         let dsRetornoActual       = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(retorno_actual)}]]*/ '[]');
         let dsFechasRecaudos      = createDataSource(/*[[${T(cl.qande.mmii.app.util.helper.CustomThymeleafHelper).convertListToJson(fechas_recaudos)}]]*/ '[]');
 
-        //Actualziar el valor del processDate de dsSaldoFinal con el valor de la llamada formatProcessDate, que recibe como parámetro el valor original de processDate
+        //Actualizar el valor del processDate de dsSaldoFinal con el valor de la llamada formatProcessDate, que recibe como parámetro el valor original de processDate
         dsDetalleSaldo.forEach(item => {
             item.processDate = formatProcessDate(item.processDate);
         });
@@ -274,8 +274,26 @@
             { field: 'price', headerText: 'Price', format: 'N2'},
             { field: 'usdeNetAmount', headerText: 'USDE Net Amount', format: 'N2'},
             { field: 'securityDescription', headerText: 'Security Description' },
-            { field: 'activityDescription', headerText: 'Activity Description' }
+            { field: 'activityDescription', headerText: 'Activity Description' },
+            {
+                field: 'recaudoRetiro',
+                headerText: 'Recaudo/Retiro',
+                valueAccessor: function(field, data, column) {
+                    if (data.usdeNetAmount > 0) {
+                        return 'Recaudo';
+                    }
+                    if (data.usdeNetAmount < 0) {
+                        return 'Retiro';
+                    }
+                    return '';
+                }
+            }
         ];
+
+        dsRetornos = dsRetornos.filter(item =>
+            item.agregadorN2 != null &&
+            item.agregadorN2.toString().trim() !== ''
+        );
 
         let colsRetornos = [
             //YTD, Inicio operaciones, 1 mes, 3 meses y 12 meses
@@ -296,12 +314,22 @@
 
         let dsResumenCuentas = createDataSource(JSON.stringify(buildResumenCuentasData(dsDetalleCliente, dsSaldoInicial, dsSaldoFinal, dsRetornoActual, dsFechasRecaudos)));
         createDefaultGridWithWrapper('grid_resumen_cuentas', dsResumenCuentas, colsResumenCuentas, 'ResumenCuentas', ';', 0);
-        createDefaultGridWithWrapper('grid_detalle_saldo', dsDetalleSaldo, colsDetalleSaldo, 'DetalleSaldo', ';', 0, { columns: ['accountNo'] });
-        createDefaultGridWithWrapper('grid_detalle_saldo_periodo', dsDetalleSaldoPeriodo, colsDetalleSaldoPeriodo, 'DetalleSaldoPeriodo', ';', 0, { columns: ['accountNo', 'processDate'] });
+        var gridSaldo           = createDefaultGridWithWrapper('grid_detalle_saldo', dsDetalleSaldo, colsDetalleSaldo, 'DetalleSaldo', ';', 0, { columns: ['accountNo'] });
+        var gridSaldoPeriodo    = createDefaultGridWithWrapper('grid_detalle_saldo_periodo', dsDetalleSaldoPeriodo, colsDetalleSaldoPeriodo, 'DetalleSaldoPeriodo', ';', 0, { columns: ['accountNo', 'processDate'] });
         
         createDefaultGridWithWrapper('grid_movimientos', dsListaMovimientos, colsMovimientos, 'DetalleMovimientos', ';', 0, { columns: ['accountNo', 'processDate'] });
         createDefaultGridWithWrapper('grid_ult_recaudos', dsUltRecaudos, colsUltRecaudos, 'UltimosRecaudos', ';', 0, { columns: ['accountNo'] });
         createDefaultGridWithWrapper('grid_retornos', dsRetornos, colsRetornos, 'Retornos', ';', 0);
+
+        //Campos agregados
+        if (gridSaldo) {
+            gridSaldo.addAggregate({     field:  'usdeMarketValue',     type:   'sum',     format: 'N2',     caption: 'Sum: ${sum}'   });
+            gridSaldo.addAggregate({     field:  'usdeMarketPrice',     type:   'count',     format: 'N0',     caption: 'Total Reg.: ${count}'   });
+        }
+        if (gridSaldoPeriodo) {
+            gridSaldoPeriodo.addAggregate({     field:  'usdeMarketValue',     type:   'sum',     format: 'N2',     caption: 'Sum: ${sum}'   });
+            gridSaldoPeriodo.addAggregate({     field:  'usdeMarketPrice',     type:   'count',     format: 'N0',     caption: 'Total Reg.: ${count}'   });
+        }
 
     });
 

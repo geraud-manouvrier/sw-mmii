@@ -43,14 +43,19 @@ public class ReportesMaestrosService {
         return true;
     }
     public boolean generaReportesMaestros(String processDate, boolean materializaData, boolean generarClientes, boolean generarMovimientos, boolean generarSaldos, boolean generarRelacionados, boolean borrarArchivosExistentes) throws QandeMmiiException {
-        boolean estadoGeneracion    = true;
         CustomLog.getInstance().info("Se generarán reportes Maestros con fecha proceso ["+processDate+"]");
         if (borrarArchivosExistentes) {
             archivosHelper.borraListadoDeArchivosMaestros(processDate);
             CustomLog.getInstance().info("Archivos existentes borrados");
         }
         if (materializaData) {
-            this.materializaDatos(processDate);
+            try {
+                this.materializaDatos(processDate);
+            } catch (QandeMmiiException e) {
+                CustomLog.getInstance().error("Error al materializar datos fecha ["+processDate+"]: "+e.getMessage());
+                notificacionEmail.notificarErrorReportesMaestros(processDate, "Error Materialización de datos Maestro");
+                return false;
+            }
         }
 
         try {
@@ -60,21 +65,49 @@ public class ReportesMaestrosService {
         } catch (QandeMmiiException e) {
             CustomLog.getInstance().error("Error al generar Reporte CSV con fecha ["+processDate+"]: "+e.getMessage());
             notificacionEmail.notificarErrorReportesMaestros(processDate, "Error generación Maestro CSV");
-            estadoGeneracion    = false;
+            return false;
         }
-        return estadoGeneracion;
+        return true;
     }
 
-    public void materializaDatos(String processDate) {
-        CustomLog.getInstance().info("Iniciando materialización de datos Clientes con fecha proceso ["+processDate+"]");
-        reporteMaestroDatosService.materializaDatosCliente(processDate);
-        CustomLog.getInstance().info("Iniciando materialización de datos Movimientos con fecha proceso ["+processDate+"]");
-        reporteMaestroDatosService.materializaDatosMovimiento(processDate);
-        CustomLog.getInstance().info("Iniciando materialización de datos Saldos con fecha proceso ["+processDate+"]");
-        reporteMaestroDatosService.materializaDatosSaldo(processDate);
+    public void materializaDatos(String processDate) throws QandeMmiiException {
+        var estadoMaterialziacion=true;
+        try {
+            CustomLog.getInstance().info("Iniciando materialización de datos Clientes con fecha proceso [" + processDate + "]");
+            reporteMaestroDatosService.materializaDatosCliente(processDate);
+        } catch (Exception e) {
+            CustomLog.getInstance().error("Error al materializar datos Clientes con fecha proceso [" + processDate + "]: " + e.getMessage());
+            estadoMaterialziacion = false;
+        }
+
+        try {
+            CustomLog.getInstance().info("Iniciando materialización de datos Movimientos con fecha proceso ["+processDate+"]");
+            reporteMaestroDatosService.materializaDatosMovimiento(processDate);
+        } catch (Exception e) {
+            CustomLog.getInstance().error("Error al materializar datos Movimientos con fecha proceso [" + processDate + "]: " + e.getMessage());
+            estadoMaterialziacion = false;
+        }
+
+        try {
+            CustomLog.getInstance().info("Iniciando materialización de datos Saldos con fecha proceso ["+processDate+"]");
+            reporteMaestroDatosService.materializaDatosSaldo(processDate);
+        } catch (Exception e) {
+            CustomLog.getInstance().error("Error al materializar datos Saldos con fecha proceso [" + processDate + "]: " + e.getMessage());
+            estadoMaterialziacion = false;
+        }
+
+        try {
+            CustomLog.getInstance().info("Iniciando materialización de datos Relacionados con fecha proceso ["+processDate+"]");
+            reporteMaestroDatosService.materializaDatosRelacionado(processDate);
+        } catch (Exception e) {
+            CustomLog.getInstance().error("Error al materializar datos Relacionados con fecha proceso [" + processDate + "]: " + e.getMessage());
+            estadoMaterialziacion = false;
+        }
+
+
         CustomLog.getInstance().info("Materialización de datos finalizada");
-        CustomLog.getInstance().info("Iniciando materialización de datos Relacionados con fecha proceso ["+processDate+"]");
-        reporteMaestroDatosService.materializaDatosRelacionado(processDate);
-        CustomLog.getInstance().info("Materialización de datos finalizada");
+        if (!estadoMaterialziacion) {
+            throw new QandeMmiiException("Error al materializar datos Clientes con fecha proceso [" + processDate + "]");
+        }
     }
 }

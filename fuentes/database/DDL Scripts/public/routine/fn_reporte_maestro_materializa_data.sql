@@ -3,6 +3,9 @@ create or replace function public.fn_reporte_maestro_materializa_data(_process_d
 as
 $$
 DECLARE _row_count  BIGINT;
+/*Por clientes mal cargados en Custodio, mal proceso de SFL o similares (se modifica info del custodio)*/
+DECLARE black_list_sld character varying[] := ARRAY['20251013', '20251219', '20251224', '20251225', '20251226', '20251227', '20251228', '20251229', '20251230', '20251231', '20260101', '20260102', '20260103', '20260104', '20260105', '20260306', '20260307', '20260308'];
+DECLARE black_list_mov character varying[] := ARRAY['20251111', '20251013', '20260306'];
 
 
     BEGIN
@@ -39,6 +42,10 @@ DECLARE _row_count  BIGINT;
 
     IF (_tipo_maestro='SLD') THEN
         IF (_custodio ='PERSHING') THEN
+            IF _process_date = ANY(black_list_sld) THEN
+                RAISE EXCEPTION 'La fecha [%] está en la lista no permitida de procesos para saldos. No se realizará la materialización.', _process_date
+                using errcode = '22023';
+            END IF;
             DELETE FROM public.tbvw_maestro_saldos_pershing WHERE process_date=_process_date;
             INSERT INTO public.tbvw_maestro_saldos_pershing
             (custodian, tipo_reg, client_id, office_id, account_no, name, process_date, symbol, cusip, isin_code, product_type, security_description, cash_margin_account, quantity, market_price, id_currency, currency, market_value, fx_rate, usde_market_value, total_usde_market_value, id_fee_aplicado, annual_fee, tasa_proteccion, tasa_suracorp, fee_diario, fee_diario_proteccion, fee_diario_sura_corp, comision_devengada_diaria, ingreso_proteccion, usde_market_price, id_sub_sub_tipo_activo, id_sub_tipo_activo, id_tipo_activo, nombre_sub_sub_tipo_activo, tipo_identificador_cliente)
@@ -46,6 +53,8 @@ DECLARE _row_count  BIGINT;
                 custodian, tipo_reg, client_id, office_id, account_no, name, process_date, symbol, cusip, isin_code, product_type, security_description, cash_margin_account, quantity, market_price, id_currency, currency, market_value, fx_rate, usde_market_value, total_usde_market_value, id_fee_aplicado, annual_fee, tasa_proteccion, tasa_suracorp, fee_diario, fee_diario_proteccion, fee_diario_sura_corp, comision_devengada_diaria, ingreso_proteccion, usde_market_price, id_sub_sub_tipo_activo, id_sub_tipo_activo, id_tipo_activo, nombre_sub_sub_tipo_activo, tipo_identificador_cliente
             FROM public.vw_maestro_saldos_pershing where process_date=_process_date;
             GET DIAGNOSTICS _row_count = ROW_COUNT;
+
+
             RETURN _row_count;
         END IF;
     END IF;
@@ -53,6 +62,10 @@ DECLARE _row_count  BIGINT;
 
     IF (_tipo_maestro='MOV') THEN
         IF (_custodio ='PERSHING') THEN
+            IF _process_date = ANY(black_list_mov) THEN
+                RAISE EXCEPTION 'La fecha [%] está en la lista no permitida de procesos para movimientos. No se realizará la materialización.', _process_date
+                using errcode = '22023';
+            END IF;
             DELETE FROM public.tbvw_maestro_movimientos_pershing WHERE process_date=_process_date;
             INSERT INTO public.tbvw_maestro_movimientos_pershing
                 (custodian, client_id, office_id, account_no, name, process_date, tipo_reg, trade_date, settlement_date, activity, buy_sell_code, buy_sell_value, quantity, price, commission, fees, net_amount, usde_net_amount, principal, cusip, symbol, isin, currency, fx_rate, interest, currency_base, cash_margin, product_type, security_description, activity_description, activity_code, source_code, description_1, description_2, description_3, ticker, id_sub_sub_tipo, id_sub_tipo, id_tipo, nombre_sub_sub_tipo, flujo_neto, ingreso_egreso, retiro, recaudo, id_cuenta_custodio, tipo_identificador_cliente)
