@@ -1,0 +1,15 @@
+create index tbvw_maestro_saldos_pershing_from_ria_20260518_process_date_idx
+    on zz_backup.tbvw_maestro_saldos_pershing_from_ria_20260518 (process_date);
+
+create index tbvw_maestro_saldos_pershing_from_ria_20260518_quantity_index
+    on zz_backup.tbvw_maestro_saldos_pershing_from_ria_20260518 (quantity);
+
+create index tbvw_maestro_saldos_pershing_from_ria_20260518_isin_index
+    on zz_backup.tbvw_maestro_saldos_pershing_from_ria_20260518 (isin_code);
+
+create index tbvw_maestro_saldos_pershing_from_ria_20260518_account_index
+    on zz_backup.tbvw_maestro_saldos_pershing_from_ria_20260518 (account_no);
+
+create index tbvw_maestro_saldos_pershing_from_ria_20260518_client_index
+    on zz_backup.tbvw_maestro_saldos_pershing_from_ria_20260518 (client_id);
+
