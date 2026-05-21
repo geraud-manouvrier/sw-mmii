@@ -1,155 +1,207 @@
 --========================================================================
 --========================================================================
 --========================================================================
+-- Carga SFL pendientes 20251013 (670), 20251111(706)   -> OK cargados y listos en DEV y PROD!!!!!!! (TODO: pendientes GCUS/GMON)
+
+--20251013      20251111
+select * from pershing.proceso_sfl where proceso_sfl.process_date in ('20251013', '20251111') or id in (670, 706, 667);
+/*
+id,process_date,process_stamp,start_timestamp,last_step_timestamp
+670,20251013,20251013_2025.10.14.05.45.02.117.-0300,2025-10-14 05:50:58.180930,2025-10-14 05:51:02.189237
+706,20251111,20251111_2025.11.12.05.45.02.314.-0300,2025-11-12 05:51:58.668694,2025-11-12 05:52:02.431512
+*/
+
+select * from stage_pershing.stage_isca_file where process_date='20251013' or id_proceso in (670, 667);   --0 reg
+select * from pershing.sfl_isca_historica where process_date='20251013' or id_proceso in (670, 667);      --47 reg, pero con id 667
+
+--670 es el reg en isca; 667 en el hist.
+CALL pershing.pa_procesa_isca(670);
+
+
+select * from stage_pershing.stage_isca_file where process_date='20251111' or id_proceso in (706, 705);
+select * from pershing.sfl_isca_historica where process_date='20251111' or id_proceso in (706, 705);
+
+CALL pershing.pa_procesa_isca(706);
+
+
+
+--========================================================================
+--========================================================================
+--========================================================================
 --
-select min(process_date) from public.vw_reporte_maestro_datos_clientes;
-select min(process_date) from public.vw_reporte_maestro_datos_saldos;
-select min(process_date) from public.vw_reporte_maestro_datos_movimientos;
-
---========================================================================
---========================================================================
---========================================================================
--- Reporte Clientes
---Saldo diario detallado
-SELECT max(process_date)
-FROM public.vw_reporte_maestro_datos_saldos vw_sld
-;
-SELECT *
-FROM public.vw_reporte_maestro_datos_saldos vw_sld
-where vw_sld.process_date='20260204'
-and vw_sld.client_id='51828522'
-and vw_sld.account_no=COALESCE(null, vw_sld.account_no)
-ORDER BY vw_sld.account_no, vw_sld.cusip
-;
-
---saldo consolidado por fechas
-SELECT sum(vw_sld.usde_market_value), vw_sld.account_no
-FROM public.vw_reporte_maestro_datos_saldos vw_sld
-where vw_sld.process_date='20251229'
-and vw_sld.client_id='51828522'
-and vw_sld.account_no=COALESCE(null, vw_sld.account_no)
-group by vw_sld.account_no
-ORDER BY vw_sld.account_no
-;
-SELECT sum(vw_sld.usde_market_value), vw_sld.account_no
-FROM public.vw_reporte_maestro_datos_saldos vw_sld
-where vw_sld.process_date='20260314'
-and vw_sld.client_id='51828522'
-and vw_sld.account_no=COALESCE(null, vw_sld.account_no)
-group by vw_sld.account_no
-ORDER BY vw_sld.account_no
-;
-
+select *
+from public.vw_reporte_maestro_datos_saldos vw_sld
+where vw_sld.process_date like '202603%'
+and vw_sld.account_no in ('T9N001490', 'T9O001366')
+order by process_date, account_no
+;   --311 reg
 select *
 from public.vw_reporte_maestro_datos_movimientos vw_mov
-where vw_mov.process_date>='20260201' and vw_mov.process_date<='20260207'
-and vw_mov.client_id='51828522'
-and vw_mov.account_no=COALESCE(null, vw_mov.account_no)
-order by vw_mov.process_date, vw_mov.account_no, vw_mov.cusip
-;
+where vw_mov.process_date like '202603%'
+and vw_mov.account_no in ('T9N001490', 'T9O001366')
+order by process_date, account_no
+;   --17 reg
 
---Últimos recaudos
-select *
-from public.vw_reporte_maestro_datos_movimientos vw_mov
-where vw_mov.client_id='51828522'
-and vw_mov.account_no=COALESCE(null, vw_mov.account_no)
-and (vw_mov.ingreso_egreso or vw_mov.aplica_flujo_neto=1)
-ORDER BY account_no, process_date desc, cusip desc
-limit 10
-;
---Últimos recaudos
-select
-    vw_mov.client_id, vw_mov.account_no,
-    min(vw_mov.process_date) as first_mov_date, max(vw_mov.process_date) as last_mov_date
-from public.vw_reporte_maestro_datos_movimientos vw_mov
-where vw_mov.client_id='51828522'
-and vw_mov.account_no=COALESCE(null, vw_mov.account_no)
-and (vw_mov.ingreso_egreso or vw_mov.aplica_flujo_neto=1)
-group by vw_mov.client_id, vw_mov.account_no
-;
-
---info de cliente
-SELECT *
-FROM public.vw_reporte_maestro_datos_clientes vw_cte
-where vw_cte.process_date='20260314'
-and vw_cte.client_id='51828522'
-and vw_cte.account_no=COALESCE(null, vw_cte.account_no)
-ORDER BY vw_cte.account_no
-;
-
-/*
-client_id
-43076439
-T9N001599
-T9O001606
-
-*/
-SELECT * FROM public.vw_reporte_maestro_datos_clientes vw_cte
-where vw_cte.process_date='20260314'
-;
---saldo consolidado por fechas
-SELECT sum(vw_sld.usde_market_value), client_id, vw_sld.account_no, vw_sld.process_date, count(*)
-FROM public.vw_reporte_maestro_datos_saldos vw_sld
-where vw_sld.process_date='20260314'
-group by process_date,client_id,vw_sld.account_no
-ORDER BY count(*), vw_sld.account_no
-;
-
---Retornos que fallan por redondeo?
-SELECT * FROM rep_inv.fn_calcula_rentabilidad
-('51828522', null, null, null, '20260101', '20260331') fn_rent
-WHERE CASE WHEN true then true ELSE fn_rent.agregador_n1='51828522' and COALESCE(fn_rent.agregador_n2,'')=COALESCE(null,'') END
-order by fn_rent.nivel, fn_rent.process_date, fn_rent.agregador_n1, fn_rent.agregador_n2, fn_rent.agregador_n3, fn_rent.agregador_n4
-;
-
-SELECT *
-FROM rep_inv.fn_calculo_rentabilidad_agregada('20260101', '20260331', '51828522',null, null, null)
-;
-
-
-SELECT
-    'N1'::VARCHAR(100) as nivel,
-    rank() OVER (ORDER BY tbn.process_date, tbn.agregador_n1)::BIGINT as sub_nivel,
-    tbn.process_date, tbn.process_date_as_date,
-    tbn.agregador_n1, NULL::VARCHAR(100) as agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4,
-    tbn.saldo_dia_anterior, tbn.abonos_dia, tbn.retiros_dia, tbn.dividendos_dia, tbn.saldo_dia,
-    tbn.comision_devengada_dia,
-    tbn.utilidad, tbn.rentabilidad, tbn.rentabilidad_base_pitatoria, tbn.saldo_rentabilidad
-FROM rep_inv.consolidado_agregado_n1 tbn
-WHERE tbn.agregador_n1=COALESCE('51828522', tbn.agregador_n1)
-AND tbn.process_date>='20260101' AND tbn.process_date<='20260331'
+SELECT distinct account_no from public.vw_reporte_maestro_datos_clientes vw_cte
 UNION
-SELECT
-    'N2'::VARCHAR(100) as nivel,
-    rank() OVER (ORDER BY tbn.process_date, tbn.agregador_n1, tbn.agregador_n2)::BIGINT as sub_nivel,
-    tbn.process_date, tbn.process_date_as_date,
-    tbn.agregador_n1, tbn.agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4,
-    tbn.saldo_dia_anterior, tbn.abonos_dia, tbn.retiros_dia, tbn.dividendos_dia, tbn.saldo_dia,
-    tbn.comision_devengada_dia,
-    tbn.utilidad, tbn.rentabilidad, tbn.rentabilidad_base_pitatoria, tbn.saldo_rentabilidad
-FROM rep_inv.consolidado_agregado_n2 tbn
-WHERE tbn.agregador_n1=COALESCE('51828522', tbn.agregador_n1) AND tbn.agregador_n2=COALESCE(null, tbn.agregador_n2)
-AND tbn.process_date>='20260101' AND tbn.process_date<='20260331'
+SELECT distinct account_no from public.vw_reporte_maestro_datos_saldos vw_sld
+UNION
+SELECT distinct account_no from public.vw_reporte_maestro_datos_movimientos vw_mov
+;--352 cuentas en total
+
+
+
+
+
+
+
+
+--Consolidado
+
+select vw_cte.process_date, vw_cte.account_no, count(*)
+from public.vw_reporte_maestro_datos_clientes vw_cte
+where vw_cte.process_date like '202603%'
+and vw_cte.account_no in
+('T9N001490', 'T9N001508', 'T9N001599', 'T9N001631', 'T9N001649', 'T9N001656', 'T9N001664', 'T9N001706', 'T9N002019', 'T9N002076',
+'T9N002134', 'T9N002167', 'T9N002183', 'T9N002225', 'T9N002324', 'T9N002407', 'T9N002423', 'T9N002431', 'T9N002456', 'T9N002514',
+'T9N002589', 'T9O001192', 'T9O001267', 'T9O001275', 'T9O001341', 'T9O001366', 'T9O001374', 'T9O001382', 'T9O001390', 'T9O001408',
+'T9O001457', 'T9O001465', 'T9O001473', 'T9O001481', 'T9O001507', 'T9O001515', 'T9O001523', 'T9O001531', 'T9O001556', 'T9O001564',
+'T9O001572', 'T9O001580', 'T9O001598', 'T9O001606', 'T9O001614', 'T9O001648', 'T9O001655', 'T9O001705', 'T9O001713', 'T9O001754',
+'T9O001796', 'T9O001804', 'T9O001812', 'T9O001820', 'T9O001838', 'T9O001846', 'T9O001853', 'T9O001879', 'T9O001887', 'T9O001895',
+'T9O001903', 'T9O001911', 'T9O001929', 'T9O001937', 'T9O001945', 'T9O001952', 'T9O001960', 'T9O001978', 'T9O001994', 'T9O002000',
+'T9O002026', 'T9O002034', 'T9O002042', 'T9O002059', 'T9O002067', 'T9O002083', 'T9O002091', 'T9O002117', 'T9O002125', 'T9O002133',
+'T9O002158', 'T9O002166', 'T9O002174', 'T9O002182', 'T9O002190', 'T9O002208', 'T9O002216', 'T9O002224', 'T9O002232', 'T9O002240',
+'T9O002265', 'T9O002273', 'T9O002281', 'T9O002299', 'T9O002307', 'T9O002315', 'T9O002323', 'T9O002331', 'T9O002364', 'T9O002372',
+'T9O002380', 'T9O002398', 'T9O002406', 'T9O002414', 'T9O002422', 'T9O002430', 'T9O002448', 'T9O002471', 'T9O002489', 'T9O002497',
+'T9O002505', 'T9O002521', 'T9O002547', 'T9O002554', 'T9O002562', 'T9O002570', 'T9O002588', 'T9O002596', 'T9O002604', 'T9O002620',
+'T9O002638', 'T9O002646', 'T9O002653', 'T9O002661', 'T9O002679', 'T9O002687', 'T9O002695', 'T9O002703', 'T9O002711', 'T9O002737',
+'T9O002745', 'T9O002752', 'T9O002778', 'T9O002786', 'T9O002794', 'T9O002828', 'T9O002844', 'T9O002851', 'T9O002869', 'T9O002877',
+'T9O002885', 'T9O002893', 'T9O002901', 'T9O002927', 'T9O002935', 'T9O002943', 'T9O002976', 'T9O002992', 'T9O003024', 'T9O003032',
+'T9O003040', 'T9O003057', 'T9O003065', 'T9O003073', 'T9O003099', 'T9O003107', 'T9O003115', 'T9O003123', 'T9O003131', 'T9O003164',
+'T9O003172', 'T9O003180', 'T9O003198', 'T9O003206', 'T9O003214', 'T9O003222', 'T9O003230', 'T9O003263', 'T9O003271', 'T9O003297',
+'T9O003305', 'T9O003339', 'T9O003347', 'T9O003354', 'T9O003362', 'T9O003370', 'T9O003396', 'T9O003412', 'T9O003420', 'T9O003438',
+'T9O003453', 'T9O003461', 'T9O003479', 'T9O003487', 'T9O003495', 'T9O003503', 'T9O003511', 'T9O003529', 'T9O003537', 'T9O003545',
+'T9O003560', 'T9O003578', 'T9O003586', 'T9O003602', 'T9O003628', 'T9O003644', 'T9O003651', 'T9O003669', 'T9O003677', 'T9O003693',
+'T9O003701', 'T9O003735', 'T9O003768', 'T9O003784', 'T9O003792', 'T9O003800', 'T9O003818', 'T9O003826', 'T9O003834', 'T9O003859',
+'T9O003867', 'T9O003875', 'T9O003883', 'T9O003909', 'T9O003925', 'T9O003933', 'T9O003958', 'T9O003966', 'T9O003974', 'T9O003982',
+'T9O003990', 'T9O004006', 'T9O004022', 'T9O004030', 'T9O004055', 'T9O004063', 'T9O004071', 'T9O004089', 'T9O004097', 'T9O004121',
+'T9O004139', 'T9O004147', 'T9O004162', 'T9O004170', 'T9O004188', 'T9O004196', 'T9O004204', 'T9O004212', 'T9O004246', 'T9O004253',
+'T9O004261', 'T9O004279', 'T9O004287', 'T9O004295', 'T9O004303', 'T9O004311', 'T9O004329', 'T9O004345', 'T9O004378', 'T9O004394',
+'T9O004410', 'T9O004428', 'T9O004436', 'T9O004451', 'T9O004477', 'T9O004485', 'T9O004501', 'T9O004519', 'T9O004527', 'T9O004543',
+'T9O004550', 'T9O004568', 'T9O004576', 'T9O004584', 'T9O004592', 'T9O004600', 'T9O004618', 'T9O004626', 'T9O004642', 'T9O004659',
+'T9O004667', 'T9O004683', 'T9O004691', 'T9O004709', 'T9O004717', 'T9O004766', 'T9O004774', 'T9O004790', 'T9O004808', 'T9O004816',
+'T9O004824', 'T9O004832', 'T9O004857', 'T9O004865', 'T9O004881', 'T9O004899', 'T9O004907', 'T9O004915', 'T9O004923', 'T9O004931',
+'T9O004964', 'T9O004972', 'T9O004980', 'T9O005011', 'T9O005029', 'T9O005045', 'T9O005052', 'T9O005060', 'T9O005078', 'T9O005086',
+'T9O005102', 'T9O005110', 'T9O005128', 'T9O005136', 'T9O005144', 'T9O005151', 'T9O005169', 'T9O005177', 'T9O005219', 'T9O005243',
+'T9O005250', 'T9O005268', 'T9O005276', 'T9O005284', 'T9O005292', 'T9O005300', 'T9O005326', 'T9O005359', 'T9O005367', 'T9O005375',
+'T9O005417', 'T9O005425', 'T9O005466', 'T9O005482', 'T9O005508', 'T9O005516', 'T9O005540', 'T9O005615', 'T9O005623', 'T9O005631',
+'T9O005649', 'T9O005664', 'T9O005672', 'T9O005680', 'T9O005698', 'T9O005714', 'T9O005722', 'T9O005748', 'T9O005755', 'T9O005771',
+'T9O005789', 'T9O005797', 'T9O005813', 'T9O005821', 'T9O005839', 'T9O005847', 'T9O005862', 'T9O005888', 'T9O005896', 'T9O005904',
+'T9O005938', 'T9O005961')
+group by process_date, account_no
+order by process_date, account_no
+;
+select vw_sld.process_date, vw_sld.account_no, count(*), sum(vw_sld.usde_market_value)
+from public.vw_reporte_maestro_datos_saldos vw_sld
+where vw_sld.process_date like '202603%'
+and vw_sld.account_no in
+('T9N001490', 'T9N001508', 'T9N001599', 'T9N001631', 'T9N001649', 'T9N001656', 'T9N001664', 'T9N001706', 'T9N002019', 'T9N002076',
+'T9N002134', 'T9N002167', 'T9N002183', 'T9N002225', 'T9N002324', 'T9N002407', 'T9N002423', 'T9N002431', 'T9N002456', 'T9N002514',
+'T9N002589', 'T9O001192', 'T9O001267', 'T9O001275', 'T9O001341', 'T9O001366', 'T9O001374', 'T9O001382', 'T9O001390', 'T9O001408',
+'T9O001457', 'T9O001465', 'T9O001473', 'T9O001481', 'T9O001507', 'T9O001515', 'T9O001523', 'T9O001531', 'T9O001556', 'T9O001564',
+'T9O001572', 'T9O001580', 'T9O001598', 'T9O001606', 'T9O001614', 'T9O001648', 'T9O001655', 'T9O001705', 'T9O001713', 'T9O001754',
+'T9O001796', 'T9O001804', 'T9O001812', 'T9O001820', 'T9O001838', 'T9O001846', 'T9O001853', 'T9O001879', 'T9O001887', 'T9O001895',
+'T9O001903', 'T9O001911', 'T9O001929', 'T9O001937', 'T9O001945', 'T9O001952', 'T9O001960', 'T9O001978', 'T9O001994', 'T9O002000',
+'T9O002026', 'T9O002034', 'T9O002042', 'T9O002059', 'T9O002067', 'T9O002083', 'T9O002091', 'T9O002117', 'T9O002125', 'T9O002133',
+'T9O002158', 'T9O002166', 'T9O002174', 'T9O002182', 'T9O002190', 'T9O002208', 'T9O002216', 'T9O002224', 'T9O002232', 'T9O002240',
+'T9O002265', 'T9O002273', 'T9O002281', 'T9O002299', 'T9O002307', 'T9O002315', 'T9O002323', 'T9O002331', 'T9O002364', 'T9O002372',
+'T9O002380', 'T9O002398', 'T9O002406', 'T9O002414', 'T9O002422', 'T9O002430', 'T9O002448', 'T9O002471', 'T9O002489', 'T9O002497',
+'T9O002505', 'T9O002521', 'T9O002547', 'T9O002554', 'T9O002562', 'T9O002570', 'T9O002588', 'T9O002596', 'T9O002604', 'T9O002620',
+'T9O002638', 'T9O002646', 'T9O002653', 'T9O002661', 'T9O002679', 'T9O002687', 'T9O002695', 'T9O002703', 'T9O002711', 'T9O002737',
+'T9O002745', 'T9O002752', 'T9O002778', 'T9O002786', 'T9O002794', 'T9O002828', 'T9O002844', 'T9O002851', 'T9O002869', 'T9O002877',
+'T9O002885', 'T9O002893', 'T9O002901', 'T9O002927', 'T9O002935', 'T9O002943', 'T9O002976', 'T9O002992', 'T9O003024', 'T9O003032',
+'T9O003040', 'T9O003057', 'T9O003065', 'T9O003073', 'T9O003099', 'T9O003107', 'T9O003115', 'T9O003123', 'T9O003131', 'T9O003164',
+'T9O003172', 'T9O003180', 'T9O003198', 'T9O003206', 'T9O003214', 'T9O003222', 'T9O003230', 'T9O003263', 'T9O003271', 'T9O003297',
+'T9O003305', 'T9O003339', 'T9O003347', 'T9O003354', 'T9O003362', 'T9O003370', 'T9O003396', 'T9O003412', 'T9O003420', 'T9O003438',
+'T9O003453', 'T9O003461', 'T9O003479', 'T9O003487', 'T9O003495', 'T9O003503', 'T9O003511', 'T9O003529', 'T9O003537', 'T9O003545',
+'T9O003560', 'T9O003578', 'T9O003586', 'T9O003602', 'T9O003628', 'T9O003644', 'T9O003651', 'T9O003669', 'T9O003677', 'T9O003693',
+'T9O003701', 'T9O003735', 'T9O003768', 'T9O003784', 'T9O003792', 'T9O003800', 'T9O003818', 'T9O003826', 'T9O003834', 'T9O003859',
+'T9O003867', 'T9O003875', 'T9O003883', 'T9O003909', 'T9O003925', 'T9O003933', 'T9O003958', 'T9O003966', 'T9O003974', 'T9O003982',
+'T9O003990', 'T9O004006', 'T9O004022', 'T9O004030', 'T9O004055', 'T9O004063', 'T9O004071', 'T9O004089', 'T9O004097', 'T9O004121',
+'T9O004139', 'T9O004147', 'T9O004162', 'T9O004170', 'T9O004188', 'T9O004196', 'T9O004204', 'T9O004212', 'T9O004246', 'T9O004253',
+'T9O004261', 'T9O004279', 'T9O004287', 'T9O004295', 'T9O004303', 'T9O004311', 'T9O004329', 'T9O004345', 'T9O004378', 'T9O004394',
+'T9O004410', 'T9O004428', 'T9O004436', 'T9O004451', 'T9O004477', 'T9O004485', 'T9O004501', 'T9O004519', 'T9O004527', 'T9O004543',
+'T9O004550', 'T9O004568', 'T9O004576', 'T9O004584', 'T9O004592', 'T9O004600', 'T9O004618', 'T9O004626', 'T9O004642', 'T9O004659',
+'T9O004667', 'T9O004683', 'T9O004691', 'T9O004709', 'T9O004717', 'T9O004766', 'T9O004774', 'T9O004790', 'T9O004808', 'T9O004816',
+'T9O004824', 'T9O004832', 'T9O004857', 'T9O004865', 'T9O004881', 'T9O004899', 'T9O004907', 'T9O004915', 'T9O004923', 'T9O004931',
+'T9O004964', 'T9O004972', 'T9O004980', 'T9O005011', 'T9O005029', 'T9O005045', 'T9O005052', 'T9O005060', 'T9O005078', 'T9O005086',
+'T9O005102', 'T9O005110', 'T9O005128', 'T9O005136', 'T9O005144', 'T9O005151', 'T9O005169', 'T9O005177', 'T9O005219', 'T9O005243',
+'T9O005250', 'T9O005268', 'T9O005276', 'T9O005284', 'T9O005292', 'T9O005300', 'T9O005326', 'T9O005359', 'T9O005367', 'T9O005375',
+'T9O005417', 'T9O005425', 'T9O005466', 'T9O005482', 'T9O005508', 'T9O005516', 'T9O005540', 'T9O005615', 'T9O005623', 'T9O005631',
+'T9O005649', 'T9O005664', 'T9O005672', 'T9O005680', 'T9O005698', 'T9O005714', 'T9O005722', 'T9O005748', 'T9O005755', 'T9O005771',
+'T9O005789', 'T9O005797', 'T9O005813', 'T9O005821', 'T9O005839', 'T9O005847', 'T9O005862', 'T9O005888', 'T9O005896', 'T9O005904',
+'T9O005938', 'T9O005961')
+group by process_date, account_no
+order by process_date, account_no
+;
+select vw_mov.process_date, vw_mov.account_no, count(*), sum(vw_mov.usde_net_amount)
+from public.vw_reporte_maestro_datos_movimientos vw_mov
+where vw_mov.process_date like '202603%'
+and vw_mov.account_no in
+('T9N001490', 'T9N001508', 'T9N001599', 'T9N001631', 'T9N001649', 'T9N001656', 'T9N001664', 'T9N001706', 'T9N002019', 'T9N002076',
+'T9N002134', 'T9N002167', 'T9N002183', 'T9N002225', 'T9N002324', 'T9N002407', 'T9N002423', 'T9N002431', 'T9N002456', 'T9N002514',
+'T9N002589', 'T9O001192', 'T9O001267', 'T9O001275', 'T9O001341', 'T9O001366', 'T9O001374', 'T9O001382', 'T9O001390', 'T9O001408',
+'T9O001457', 'T9O001465', 'T9O001473', 'T9O001481', 'T9O001507', 'T9O001515', 'T9O001523', 'T9O001531', 'T9O001556', 'T9O001564',
+'T9O001572', 'T9O001580', 'T9O001598', 'T9O001606', 'T9O001614', 'T9O001648', 'T9O001655', 'T9O001705', 'T9O001713', 'T9O001754',
+'T9O001796', 'T9O001804', 'T9O001812', 'T9O001820', 'T9O001838', 'T9O001846', 'T9O001853', 'T9O001879', 'T9O001887', 'T9O001895',
+'T9O001903', 'T9O001911', 'T9O001929', 'T9O001937', 'T9O001945', 'T9O001952', 'T9O001960', 'T9O001978', 'T9O001994', 'T9O002000',
+'T9O002026', 'T9O002034', 'T9O002042', 'T9O002059', 'T9O002067', 'T9O002083', 'T9O002091', 'T9O002117', 'T9O002125', 'T9O002133',
+'T9O002158', 'T9O002166', 'T9O002174', 'T9O002182', 'T9O002190', 'T9O002208', 'T9O002216', 'T9O002224', 'T9O002232', 'T9O002240',
+'T9O002265', 'T9O002273', 'T9O002281', 'T9O002299', 'T9O002307', 'T9O002315', 'T9O002323', 'T9O002331', 'T9O002364', 'T9O002372',
+'T9O002380', 'T9O002398', 'T9O002406', 'T9O002414', 'T9O002422', 'T9O002430', 'T9O002448', 'T9O002471', 'T9O002489', 'T9O002497',
+'T9O002505', 'T9O002521', 'T9O002547', 'T9O002554', 'T9O002562', 'T9O002570', 'T9O002588', 'T9O002596', 'T9O002604', 'T9O002620',
+'T9O002638', 'T9O002646', 'T9O002653', 'T9O002661', 'T9O002679', 'T9O002687', 'T9O002695', 'T9O002703', 'T9O002711', 'T9O002737',
+'T9O002745', 'T9O002752', 'T9O002778', 'T9O002786', 'T9O002794', 'T9O002828', 'T9O002844', 'T9O002851', 'T9O002869', 'T9O002877',
+'T9O002885', 'T9O002893', 'T9O002901', 'T9O002927', 'T9O002935', 'T9O002943', 'T9O002976', 'T9O002992', 'T9O003024', 'T9O003032',
+'T9O003040', 'T9O003057', 'T9O003065', 'T9O003073', 'T9O003099', 'T9O003107', 'T9O003115', 'T9O003123', 'T9O003131', 'T9O003164',
+'T9O003172', 'T9O003180', 'T9O003198', 'T9O003206', 'T9O003214', 'T9O003222', 'T9O003230', 'T9O003263', 'T9O003271', 'T9O003297',
+'T9O003305', 'T9O003339', 'T9O003347', 'T9O003354', 'T9O003362', 'T9O003370', 'T9O003396', 'T9O003412', 'T9O003420', 'T9O003438',
+'T9O003453', 'T9O003461', 'T9O003479', 'T9O003487', 'T9O003495', 'T9O003503', 'T9O003511', 'T9O003529', 'T9O003537', 'T9O003545',
+'T9O003560', 'T9O003578', 'T9O003586', 'T9O003602', 'T9O003628', 'T9O003644', 'T9O003651', 'T9O003669', 'T9O003677', 'T9O003693',
+'T9O003701', 'T9O003735', 'T9O003768', 'T9O003784', 'T9O003792', 'T9O003800', 'T9O003818', 'T9O003826', 'T9O003834', 'T9O003859',
+'T9O003867', 'T9O003875', 'T9O003883', 'T9O003909', 'T9O003925', 'T9O003933', 'T9O003958', 'T9O003966', 'T9O003974', 'T9O003982',
+'T9O003990', 'T9O004006', 'T9O004022', 'T9O004030', 'T9O004055', 'T9O004063', 'T9O004071', 'T9O004089', 'T9O004097', 'T9O004121',
+'T9O004139', 'T9O004147', 'T9O004162', 'T9O004170', 'T9O004188', 'T9O004196', 'T9O004204', 'T9O004212', 'T9O004246', 'T9O004253',
+'T9O004261', 'T9O004279', 'T9O004287', 'T9O004295', 'T9O004303', 'T9O004311', 'T9O004329', 'T9O004345', 'T9O004378', 'T9O004394',
+'T9O004410', 'T9O004428', 'T9O004436', 'T9O004451', 'T9O004477', 'T9O004485', 'T9O004501', 'T9O004519', 'T9O004527', 'T9O004543',
+'T9O004550', 'T9O004568', 'T9O004576', 'T9O004584', 'T9O004592', 'T9O004600', 'T9O004618', 'T9O004626', 'T9O004642', 'T9O004659',
+'T9O004667', 'T9O004683', 'T9O004691', 'T9O004709', 'T9O004717', 'T9O004766', 'T9O004774', 'T9O004790', 'T9O004808', 'T9O004816',
+'T9O004824', 'T9O004832', 'T9O004857', 'T9O004865', 'T9O004881', 'T9O004899', 'T9O004907', 'T9O004915', 'T9O004923', 'T9O004931',
+'T9O004964', 'T9O004972', 'T9O004980', 'T9O005011', 'T9O005029', 'T9O005045', 'T9O005052', 'T9O005060', 'T9O005078', 'T9O005086',
+'T9O005102', 'T9O005110', 'T9O005128', 'T9O005136', 'T9O005144', 'T9O005151', 'T9O005169', 'T9O005177', 'T9O005219', 'T9O005243',
+'T9O005250', 'T9O005268', 'T9O005276', 'T9O005284', 'T9O005292', 'T9O005300', 'T9O005326', 'T9O005359', 'T9O005367', 'T9O005375',
+'T9O005417', 'T9O005425', 'T9O005466', 'T9O005482', 'T9O005508', 'T9O005516', 'T9O005540', 'T9O005615', 'T9O005623', 'T9O005631',
+'T9O005649', 'T9O005664', 'T9O005672', 'T9O005680', 'T9O005698', 'T9O005714', 'T9O005722', 'T9O005748', 'T9O005755', 'T9O005771',
+'T9O005789', 'T9O005797', 'T9O005813', 'T9O005821', 'T9O005839', 'T9O005847', 'T9O005862', 'T9O005888', 'T9O005896', 'T9O005904',
+'T9O005938', 'T9O005961')
+group by process_date, account_no
+order by process_date, account_no
 ;
 
---saldos duplicados, implica retornos mal calculados
---20260310
-select count(*),
-       tb_sld.process_date, tb_sld.client_id, tb_sld.account_no,
-       tb_sld.cusip, tb_sld.symbol, tb_sld.isin_code, tb_sld.cash_margin_account, tb_sld.product_type, tb_sld.currency,
-       tb_sld.quantity
-from public.tbvw_maestro_saldos_pershing tb_sld
-group by
-       tb_sld.process_date, tb_sld.client_id, tb_sld.account_no,
-       tb_sld.cusip, tb_sld.symbol, tb_sld.isin_code, tb_sld.cash_margin_account, tb_sld.product_type, tb_sld.currency,
-       tb_sld.quantity
-having count(*)<>1
+
+
+--========================================================================
+--========================================================================
+--========================================================================
+--Ultimos recaudos
+SELECT *
+FROM public.vw_reporte_maestro_datos_movimientos vw_mov
+where vw_mov.client_id='900425189'
+and vw_mov.account_no=COALESCE(null, vw_mov.account_no)
+and (vw_mov.ingreso_egreso or vw_mov.aplica_flujo_neto=1)
+ORDER BY vw_mov.account_no, vw_mov.process_date, vw_mov.cusip
 ;
---6547
-/*
-20250518, 19, 20, 21
-20260310, 17
-*/
+
 
 
 --========================================================================

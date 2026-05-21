@@ -4,8 +4,8 @@ as
 $$
 DECLARE _row_count  BIGINT;
 /*Por clientes mal cargados en Custodio, mal proceso de SFL o similares (se modifica info del custodio)*/
-DECLARE black_list_sld character varying[] := ARRAY['20251013', '20251219', '20251224', '20251225', '20251226', '20251227', '20251228', '20251229', '20251230', '20251231', '20260101', '20260102', '20260103', '20260104', '20260105', '20260306', '20260307', '20260308'];
-DECLARE black_list_mov character varying[] := ARRAY['20251111', '20251013', '20260306'];
+DECLARE black_list_sld character varying[] := ARRAY['20251013', '20251111', '20251112', '20251113', '20251219', '20251224', '20251225', '20251226', '20251227', '20251228', '20251229', '20251230', '20251231', '20260101', '20260102', '20260103', '20260104', '20260105', '20260306', '20260307', '20260308'];
+DECLARE black_list_mov character varying[] := ARRAY['20251013', '20251111', '20260306'];
 
 
     BEGIN
