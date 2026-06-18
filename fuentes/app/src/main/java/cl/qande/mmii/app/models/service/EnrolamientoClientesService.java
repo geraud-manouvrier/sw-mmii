@@ -1,9 +1,12 @@
 package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.AccountFee;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ClientFee;
 import cl.qande.mmii.app.models.db.clientes.dao.*;
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro;
+import cl.qande.mmii.app.models.db.core.CoreDataService;
+import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
 import cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection;
 import cl.qande.mmii.app.models.db.core.entity.UniversoCuentaProjection;
 import cl.qande.mmii.app.models.dto.clientes.*;
@@ -45,10 +48,11 @@ public class EnrolamientoClientesService {
     private final PersonaRelacionadaMapper personaRelacionadaMapper;
     private final ParCargoMapper parCargoMapper;
     private final ClienteCuentaMaestroMapperAccountFee clienteCuentaMaestroMapperAccountFee;
+    private final CoreDataService coreDataService;
 
     @Autowired
     public EnrolamientoClientesService(ITipoIdentificadorDao tipoIdentificadorDao, IClienteDao clienteDao, ICuentaDao cuentaDao, IComisionCuentaDao comisionCuentaDao, IComisionMaestroDao comisionMaestroDao, IClienteCuentaMaestroDao clienteCuentaMaestroDao, IPersonaRelacionadaDao personaRelacionadaDao, ParCargoDao parCargoDao, CuentaMapper cuentaMapper, TipoIdentificadorMapper tipoIdentificadorMapper, ClienteMapper clienteMapper, ComisionCuentaMapper comisionCuentaMapper, ComisionMaestroMapper comisionMaestroMapper, PersonaRelacionadaMapper personaRelacionadaMapper, ParCargoMapper parCargoMapper,
-                                       ClienteCuentaMaestroMapperAccountFee clienteCuentaMaestroMapperAccountFee) {
+                                       ClienteCuentaMaestroMapperAccountFee clienteCuentaMaestroMapperAccountFee, CoreDataService coreDataService) {
         this.tipoIdentificadorDao = tipoIdentificadorDao;
         this.clienteDao = clienteDao;
         this.cuentaDao = cuentaDao;
@@ -65,6 +69,7 @@ public class EnrolamientoClientesService {
         this.personaRelacionadaMapper = personaRelacionadaMapper;
         this.parCargoMapper = parCargoMapper;
         this.clienteCuentaMaestroMapperAccountFee = clienteCuentaMaestroMapperAccountFee;
+        this.coreDataService = coreDataService;
     }
 
     @Transactional
@@ -268,6 +273,34 @@ public class EnrolamientoClientesService {
     @Transactional(readOnly = true)
     public TipoIdentificadorDto tipoIdentificadorById(Integer id) {
         return tipoIdentificadorMapper.toDto(tipoIdentificadorDao.findById(id).orElse(null));
+    }
+
+    public List<FnActualizaFeeRia> updateFeeFromApiRia(String processDate, List<String> localAccounts, List<ClientFee> feesFromRia) {
+        List<FnActualizaFeeRia> resultadosActualizacion = new ArrayList<>();
+        for (String account : localAccounts) {
+            var feeFromRia = feesFromRia.stream().filter(fee -> account.equalsIgnoreCase(fee.getAccountNumber())).findFirst().orElse(null);
+            var resultadoActualizacion = new FnActualizaFeeRia();
+            resultadoActualizacion.setAccountNo(account);
+            resultadoActualizacion.setProcessDate(processDate);
+            resultadoActualizacion.setNewAnnualPercentFee(feeFromRia != null ? feeFromRia.getFee() : null);
+            if (feeFromRia != null) {
+                try {
+                    resultadoActualizacion  = coreDataService.actualizaFeeRia(CUSTODIO_PERSHING, account, processDate, feeFromRia.getFee());
+
+                    CustomLog.getInstance().info("Cuenta [" + account + "] actualizada con fee [" + feeFromRia.getFee() + "]");
+                } catch (Exception e) {
+                    CustomLog.getInstance().error("Error actualizando cuenta [" + account + "] con fee [" + feeFromRia.getFee() + "]: " + e.getMessage());
+                    resultadoActualizacion.setStatusCode(-1);
+                    resultadoActualizacion.setStatusMsg("Error actualizando cuenta: " + e.getMessage());
+                }
+            } else {
+                CustomLog.getInstance().error("No se encontró fee para cuenta [" + account + "] en resultado de API Ria, no se actualizó el fee de la cuenta.");
+                resultadoActualizacion.setStatusCode(-1);
+                resultadoActualizacion.setStatusMsg("No se encontró fee para cuenta en resultado de API Ria, no se actualizó el fee de la cuenta.");
+            }
+            resultadosActualizacion.add(resultadoActualizacion);
+        }
+        return resultadosActualizacion;
     }
 
 

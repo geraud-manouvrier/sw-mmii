@@ -19,6 +19,7 @@ import java.util.List;
 public class ApiRestClientService {
 
     public static final String CUSTODIAN_PERSHING = "PERSHING";
+    private static final String REST_NAME = "SuraCorp";
     private static final String STR_FORMAT_URL = "%s%s%s";
     private final AppApiClientSuraCorpProperties apiClientSuraCorpProperties;
 
@@ -43,34 +44,40 @@ public class ApiRestClientService {
         return headers;
     }
 
+    private void logStartApi(String method) {
+        CustomLog.getInstance().info("Invocando API ["+REST_NAME+"] para obtener "+method);
+    }
+
+    private void logResponse(ResponseEntity<?> response) {
+        CustomLog.getInstance().info("Response API ["+REST_NAME+"]: " + response);
+    }
+
+    private String makeUrlRestRia(String method) {
+        String url = String.format(STR_FORMAT_URL, apiClientSuraCorpProperties.getServer(), apiClientSuraCorpProperties.getPath(), method);
+        CustomLog.getInstance().info("URL Rest ["+REST_NAME+"]: " + url);
+        return url;
+    }
+
     public ParSourceCodeResponse getListSourceCode() throws QandeMmiiException {
-        CustomLog.getInstance().info("Invocando API SuraCorp para obtener lista de códigos de fuente");
+        logStartApi("Lista de códigos de fuente");
         RestTemplate restTemplate = new RestTemplate();
-        String url = String.format(STR_FORMAT_URL,
-                apiClientSuraCorpProperties.getServer(),
-                apiClientSuraCorpProperties.getPath(),
-                apiClientSuraCorpProperties.getMethodSourceCode() );
-        CustomLog.getInstance().info("URL Rest SuraCorp: " + url);
+        String url = makeUrlRestRia(apiClientSuraCorpProperties.getMethodSourceCode() );
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(getHeaderForMmiiSuracorp());
 
         try {
             ResponseEntity<ParSourceCodeResponse> response = restTemplate.exchange(url, HttpMethod.GET, request, ParSourceCodeResponse.class);
-            CustomLog.getInstance().info("Response API: " + response);
+            logResponse(response);
             return response.getBody();
         } catch (Exception e) {
-            throw new QandeMmiiException(e, "Error en la invocación a API SuraCorp: "+e.getMessage());
+            throw new QandeMmiiException(e, "Error en la invocación a API ["+REST_NAME+"]: "+e.getMessage());
         }
     }
 
     public ClientFeeResponse getClientFee(String accountNumber) throws QandeMmiiException {
-        CustomLog.getInstance().info("Invocando API SuraCorp para obtener Fee Cliente");
+        logStartApi("Fee Cliente");
         RestTemplate restTemplate = new RestTemplate();
-        String url = String.format(STR_FORMAT_URL,
-                apiClientSuraCorpProperties.getServer(),
-                apiClientSuraCorpProperties.getPath(),
-                apiClientSuraCorpProperties.getMethodClientFee() );
-        CustomLog.getInstance().info("URL Rest SuraCorp: " + url);
+        String url = makeUrlRestRia(apiClientSuraCorpProperties.getMethodClientFee() );
 
         var clientFeeRequest = new ClientFeeRequest(CUSTODIAN_PERSHING, accountNumber);
 
@@ -78,21 +85,34 @@ public class ApiRestClientService {
 
         try {
             ResponseEntity<ClientFeeResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, ClientFeeResponse.class);
-            CustomLog.getInstance().info("Response API: " + response);
+            logResponse(response);
             return response.getBody();
         } catch (Exception e) {
-            throw new QandeMmiiException(e, "Error en la invocación a API SuraCorp: "+e.getMessage());
+            throw new QandeMmiiException(e, "Error en la invocación a API ["+REST_NAME+"]: "+e.getMessage());
+        }
+    }
+
+    public ListFeeResponse getListClientsFee(List<String> accountsList, String processDate, String custodian) throws QandeMmiiException {
+        logStartApi("Lista de Fee Clientes");
+        RestTemplate restTemplate = new RestTemplate();
+        String url = makeUrlRestRia(apiClientSuraCorpProperties.getMethodClientFeeList() );
+
+        var listFeeRequest = new ListFeeRequest(processDate, custodian, accountsList);
+        HttpEntity<ListFeeRequest> request = new HttpEntity<>(listFeeRequest, getHttpHeaderForMmiiSuracorp());
+
+        try {
+            ResponseEntity<ListFeeResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, ListFeeResponse.class);
+            logResponse(response);
+            return response.getBody();
+        } catch (Exception e) {
+            throw new QandeMmiiException(e, "Error en la invocación a API ["+REST_NAME+"]: "+e.getMessage());
         }
     }
 
     public FeeControlResponse getFeeControl(List<AccountFee> accountsFees, String custodian) throws QandeMmiiException {
-        CustomLog.getInstance().info("Invocando API SuraCorp para validar Fees de Clientes");
+        logStartApi("Control de Fee Clientes");
         RestTemplate restTemplate = new RestTemplate();
-        String url = String.format(STR_FORMAT_URL,
-                apiClientSuraCorpProperties.getServer(),
-                apiClientSuraCorpProperties.getPath(),
-                apiClientSuraCorpProperties.getMethodClientFeeControl() );
-        CustomLog.getInstance().info("URL Rest SuraCorp Pre: " + url);
+        String url = makeUrlRestRia(apiClientSuraCorpProperties.getMethodClientFeeControl() );
 
         var bodyRequest = new FeeControlRequest(custodian, accountsFees);
 
@@ -100,17 +120,17 @@ public class ApiRestClientService {
 
         try {
             ResponseEntity<FeeControlResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, FeeControlResponse.class);
-            CustomLog.getInstance().info("Respuesta API MMII SURACorp: " + response);
+            logResponse(response);
             return response.getBody();
         } catch (HttpStatusCodeException e) {
             String errorBody = e.getResponseBodyAsString();
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new QandeMmiiException(e, "Error controlado llamando API MMII SURACorp HTTP 400: " + errorBody);
+                throw new QandeMmiiException(e, "Error controlado llamando API MMII ["+REST_NAME+"] HTTP 400: " + errorBody);
             }
-            CustomLog.getInstance().error("Error no controlado llamando API MMII SuraCorp HTTP: " + e.getStatusCode() + " - Body: " + errorBody);
-            throw new QandeMmiiException(e, "Error en la invocación a API SuraCorp: " + errorBody);
+            CustomLog.getInstance().error("Error no controlado llamando API MMII ["+REST_NAME+"] HTTP: " + e.getStatusCode() + " - Body: " + errorBody);
+            throw new QandeMmiiException(e, "Error en la invocación a API ["+REST_NAME+"]: " + errorBody);
         }  catch (Exception e) {
-            throw new QandeMmiiException(e, "Error en la invocación a API SuraCorp: "+e.getMessage());
+            throw new QandeMmiiException(e, "Error en la invocación a API ["+REST_NAME+"]: "+e.getMessage());
         }
     }
 

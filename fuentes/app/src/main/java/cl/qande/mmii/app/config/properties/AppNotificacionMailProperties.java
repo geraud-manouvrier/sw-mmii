@@ -22,9 +22,10 @@ public class AppNotificacionMailProperties {
     private final NotificacionMailConfiguration repinvControl;
     private final NotificacionMailConfiguration tramosFeeControl;
     private final NotificacionMailConfiguration feeControlCuadre;
+    private final NotificacionMailConfiguration feeUpdateFromRia;
 
 
-    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria, NotificacionMailConfiguration precalculoRentabilidades, NotificacionMailConfiguration repinvControl, NotificacionMailConfiguration tramosFeeControl, NotificacionMailConfiguration feeControlCuadre) {
+    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria, NotificacionMailConfiguration precalculoRentabilidades, NotificacionMailConfiguration repinvControl, NotificacionMailConfiguration tramosFeeControl, NotificacionMailConfiguration feeControlCuadre, NotificacionMailConfiguration feeUpdateFromRia) {
         this.reportesMaestros = reportesMaestros;
         this.controlDiario = controlDiario;
         this.sflPershing = sflPershing;
@@ -35,6 +36,7 @@ public class AppNotificacionMailProperties {
         this.repinvControl = repinvControl;
         this.tramosFeeControl = tramosFeeControl;
         this.feeControlCuadre = feeControlCuadre;
+        this.feeUpdateFromRia = feeUpdateFromRia;
     }
 
     public NotificacionMailConfiguration getReportesMaestros() {
@@ -77,6 +79,10 @@ public class AppNotificacionMailProperties {
 
     public NotificacionMailConfiguration getFeeControlCuadre() {
         return feeControlCuadre;
+    }
+
+    public NotificacionMailConfiguration getFeeUpdateFromRia() {
+        return feeUpdateFromRia;
     }
 
     public static class NotificacionMailConfiguration {
