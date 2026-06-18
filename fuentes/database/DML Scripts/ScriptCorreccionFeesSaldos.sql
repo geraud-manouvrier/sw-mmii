@@ -1,21 +1,20 @@
 /*
 Calcula Fee y campos derivados para actualziar registros antiguos mal procesados.
 1.- Debe estar en el mantenedor de cuentas el fee correcto a asignar
-2.- Ejecutar el select intenrod el script usando fechas recientes que tienen fee correcto para contrastasr que campos actuales y calculados coinciden
+2.- Ejecutar el select interno del script usando fechas recientes que tienen fee correcto para contrastasr que campos actuales y calculados coinciden
 3.- Ejecutar select interno con parámetros correctos para estimar filas a actualizar
 4.- Respaldar tabla tbvw_maestro_saldos_pershing
-5.- Ejecutar update y verificar que registros actualizados coincidan con la cantidad del punto 3
+5.- Ejecutar update y verificar que cantidad de registros actualizados coincidan con la cantidad del punto 3
 6.- Ejecutar select interno para verificar que campos calculados son los mismos que los actuales
 */
 
 /*
 Para registro histórico, dejar process dates y account N° de registros a modificar
-WHERE account_no = 'T9O001390' AND process_date >= '20260425' AND process_date <  '20260505'    --64 reg.
-WHERE account_no = 'T9O001879' AND process_date >= '20260423' AND process_date <  '20260505'    --44 reg.
+WHERE account_no = 'T9O002554' AND process_date >= '20260527' AND process_date <=  '20260602'    --47 reg.
 */
 
 --Respaldo
-SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20260513 FROM public.tbvw_maestro_saldos_pershing;
+SELECT * INTO zz_backup.tbvw_maestro_saldos_pershing_20260611 FROM public.tbvw_maestro_saldos_pershing;
 
 --Cuando se debe usar el fee vigente en mantenedor
 UPDATE public.tbvw_maestro_saldos_pershing tb_sld
@@ -73,7 +72,7 @@ FROM (
             id_fee_aplicado,annual_fee,tasa_proteccion,tasa_suracorp,fee_diario,fee_diario_proteccion,fee_diario_sura_corp,comision_devengada_diaria,ingreso_proteccion
         FROM public.tbvw_maestro_saldos_pershing
         --TODO: Cambiar por rangos correctos
-        WHERE account_no = 'T9O001879' AND process_date >= '20260423' AND process_date <  '20260505'
+        WHERE account_no = 'T9O002554' AND process_date >= '20260527' AND process_date <=  '20260602'
     ) base
     JOIN clientes.vw_maestro_clientes_cuentas vw_cta
         ON base.account_no=vw_cta.id_cuenta_custodio
@@ -87,7 +86,7 @@ WHERE tb_sld.row_no = calc.row_no;
 
 
 --Respaldo
-SELECT * INTO zz_backup.tbvw_maestro_cuentas_pershing_20260514 FROM public.tbvw_maestro_cuentas_pershing;
+SELECT * INTO zz_backup.tbvw_maestro_cuentas_pershing_20260611 FROM public.tbvw_maestro_cuentas_pershing;
 
 UPDATE public.tbvw_maestro_cuentas_pershing tb_cta
 SET
@@ -107,8 +106,7 @@ FROM (
             fee
         FROM public.tbvw_maestro_cuentas_pershing
         --TODO: Cambiar por rangos correctos
-        WHERE (account_no = 'T9O001390' AND process_date >= '20260425' AND process_date <  '20260505')  --10 reg.
-        OR (account_no = 'T9O001879' AND process_date >= '20260423' AND process_date < '20260505')      --12 reg.
+        WHERE account_no = 'T9O002554' AND process_date >= '20260527' AND process_date <=  '20260602'
     ) base
     JOIN clientes.vw_maestro_clientes_cuentas vw_cta
     ON base.account_no = vw_cta.id_cuenta_custodio

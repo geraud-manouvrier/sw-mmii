@@ -4,6 +4,7 @@ import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.FeeControlResponse;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
 import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
+import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee;
 import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
@@ -126,6 +127,9 @@ public class NotificacionEmail {
     }
     public void notificaJob(boolean isOk, String startProcessDate, String endProcessDate, String jobName, FeeControlResponse resultado, String msg, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration)  {
         notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoJobToHtml(resultado, msg), mailConfiguration);
+    }
+    public void notificaJobUpdateFeeFromRia(boolean isOk, String startProcessDate, String endProcessDate, String jobName, List<FnActualizaFeeRia> resultado, String msg, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration)  {
+        notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoJobUpdateFeeFromRiaToHtml(resultado, msg), mailConfiguration);
     }
 
 

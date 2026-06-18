@@ -20,9 +20,10 @@ public class JobMallaProcesos extends CustomJob {
     private final JobRepInvControl jobRepInvControl;
     private final JobFeeControlTramos jobFeeControlTramos;
     private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
+    private final JobFeeImportaDesdeRia jobFeeImportaDesdeRia;
 
     @Autowired
-    public JobMallaProcesos(AppConfig appConfig, CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlCuadreRia jobFeeControlCuadreRia, NotificacionEmail notificacionEmail) {
+    public JobMallaProcesos(AppConfig appConfig, CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlCuadreRia jobFeeControlCuadreRia, NotificacionEmail notificacionEmail, JobFeeImportaDesdeRia jobFeeImportaDesdeRia) {
         super("Malla Procesos Diarios", appConfig, calendarioHelper, notificacionEmail);
         this.jobGetFromFtpPershing = jobGetFromFtpPershing;
         this.jobControlDiario = jobControlDiario;
@@ -32,6 +33,7 @@ public class JobMallaProcesos extends CustomJob {
         this.jobRepInvControl = jobRepInvControl;
         this.jobFeeControlTramos = jobFeeControlTramos;
         this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
+        this.jobFeeImportaDesdeRia = jobFeeImportaDesdeRia;
     }
 
     public boolean ejecutaJob(String processDate, SesionWeb sesionWeb) throws QandeMmiiException {
@@ -50,6 +52,8 @@ public class JobMallaProcesos extends CustomJob {
                 jobRepInvPrecalculoDiario.ejecutaJob(processDate) &&
                 //Controles rentabilidades
                 jobRepInvControl.ejecutaJob(processDate, processDate, sesionWeb) &&
+                //Importación Fee desde RIA
+                jobFeeImportaDesdeRia.ejecutaJob(CalendarioHelper.processDateConDesfase(processDate, -7), processDate, sesionWeb) &&
                 //Controles tramos Fee según ingresos/egresos
                 jobFeeControlTramos.ejecutaJob(processDate, processDate, sesionWeb) &&
                 //Controles Fee versus Fee contrato RIA

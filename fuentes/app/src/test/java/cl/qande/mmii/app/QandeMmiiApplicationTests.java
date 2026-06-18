@@ -1,6 +1,10 @@
 package cl.qande.mmii.app;
 
 import cl.qande.mmii.app.config.AppConfig;
+import cl.qande.mmii.app.job.JobFeeImportaDesdeRia;
+import cl.qande.mmii.app.models.exception.QandeMmiiException;
+import cl.qande.mmii.app.util.SesionWeb;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -10,6 +14,16 @@ class QandeMmiiApplicationTests {
 
 	@Autowired
 	private AppConfig appConfig;
+	@Autowired
+	private JobFeeImportaDesdeRia jobFeeImportaDesdeRia;
+	@Autowired
+	private SesionWeb sesionWeb;
+	/*
+	@Test
+	void llamaJobFee() throws QandeMmiiException {
+		jobFeeImportaDesdeRia.ejecutaJob("20250519", "20250519", sesionWeb);
+	}
+	*/
 /*
 	@Test
 	void generaPassword() {
