@@ -61,9 +61,7 @@ public class JobFeeImportaDesdeRia extends CustomJob {
 
     @Override
     protected void validateProcessDates(String startProcessDate, String endProcessDate) throws QandeMmiiException {
-        if ( ! startProcessDate.equals(endProcessDate)) {
-            throw new QandeMmiiException("El job "+this.getJobName()+" debe ejecutarse con la misma fecha de inicio y fin");
-        }
+        //Sin vlidaciones para este job
     }
 
     @Override
