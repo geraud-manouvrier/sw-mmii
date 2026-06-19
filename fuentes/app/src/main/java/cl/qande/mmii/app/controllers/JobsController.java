@@ -45,6 +45,7 @@ public class JobsController {
     private static final String MSG_APPEND_END_OK = "] finalizado OK";
 
     public static final String MALLA_DIARIA = "malla_diaria";
+    public static final String UPD_FEE_RIA = "update_fee_ria";
 
     private final SesionWeb sesionWeb;
     private final CalendarioHelper calendarioHelper;
@@ -59,9 +60,10 @@ public class JobsController {
     private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
     private final JobFeeControlTramos jobFeeControlTramos;
     private final JobMallaProcesos jobMallaProcesos;
+    private final JobFeeImportaDesdeRia jobFeeImportaDesdeRia;
 
     @Autowired
-    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlCuadreRia jobFeeControlCuadreRia, JobFeeControlTramos jobFeeControlTramos, JobMallaProcesos jobMallaProcesos) {
+    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlCuadreRia jobFeeControlCuadreRia, JobFeeControlTramos jobFeeControlTramos, JobMallaProcesos jobMallaProcesos, JobFeeImportaDesdeRia jobFeeImportaDesdeRia) {
         this.sesionWeb = sesionWeb;
         this.calendarioHelper = calendarioHelper;
         this.reportesMaestrosService = reportesMaestrosService;
@@ -75,6 +77,7 @@ public class JobsController {
         this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
         this.jobFeeControlTramos = jobFeeControlTramos;
         this.jobMallaProcesos = jobMallaProcesos;
+        this.jobFeeImportaDesdeRia = jobFeeImportaDesdeRia;
     }
 
     /****************************************************
@@ -438,7 +441,8 @@ public class JobsController {
 
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
     @GetMapping({
-            "/process/"+ MALLA_DIARIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+            "/process/"+ MALLA_DIARIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/"+ UPD_FEE_RIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
     })
     public String jobMallasHandlerByAdmin(
             @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
@@ -453,11 +457,18 @@ public class JobsController {
             String option,
             Model model, boolean isAdmin) throws QandeMmiiException {
         var estadoPeticion          = new EstadoPeticion();
-        var jobHandler = jobMallaProcesos;
-        if ( ! option.equals(MALLA_DIARIA)) {
-            estadoPeticion.setEstadoError("Error Job Mallas", "Opción de job inválida: "+option);
-            model.addAttribute(CAMPO_STATUS, estadoPeticion);
-            return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
+        CustomJob jobHandler;
+        switch (option) {
+            case MALLA_DIARIA:
+                jobHandler = jobMallaProcesos;
+                break;
+            case UPD_FEE_RIA:
+                jobHandler = jobFeeImportaDesdeRia;
+                break;
+            default:
+                estadoPeticion.setEstadoError("Error Job", "Opción de job inválida: "+option);
+                model.addAttribute(CAMPO_STATUS, estadoPeticion);
+                return inicioJobsConRangoFechasHandler(startProcessDate, endProcessDate, model, isAdmin);
         }
         try {
             jobHandler.ejecutaJob(startProcessDate, endProcessDate, sesionWeb);
