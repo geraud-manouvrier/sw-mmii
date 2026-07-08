@@ -17,9 +17,11 @@ import java.util.stream.Collectors;
 public interface EntityToHtml {
 
     public static final String ABRE_TD = "<td style=\"border: 1px solid #ddd; padding: 8px;\">";
+    public static final String ABRE_DIV_HIDDEN = "<div style=\"display:none; max-height:0; overflow:hidden; font-size:0; line-height:0; mso-hide:all;\">";
     public static final String CIERRA_TD = "</td>";
     String TH_PROCESS_DATE = "<th>Process Date</th>";
     String CIERRA_TR = "</tr>";
+    String CIERRA_DIV = "</div>";
     public static final String NO_REG_HTML = "<p>No hay registros</p>";
     String ABRE_TABLE = "<table><thead>";
     public static final String TABLE_END = "</tbody></table>";
@@ -265,20 +267,34 @@ public interface EntityToHtml {
                 (item.getStatusCode() == 0) && (
                         (item.getMaestroSaldosRowsUpdated() != null && item.getMaestroSaldosRowsUpdated() > 0)
                                 || (item.getMaestroCuentasRowsUpdated() != null && item.getMaestroCuentasRowsUpdated() > 0)
+                                || (item.getModeloClientesRowsUpdated() != null && item.getModeloClientesRowsUpdated() > 0)
                         )
                  ).collect(Collectors.toList());
         listaRegistros.removeAll(resultadoOkActualizados);
         //Los ok y no actualizados quedan en listaRegistros; u otros casos no contemplados
+        //Omitidos
+        var resultadoOmitidos   = listaRegistros.stream().filter(item ->
+                (item.getStatusCode() == 0) && (
+                        (item.getMaestroSaldosRowsUpdated() == null || item.getMaestroSaldosRowsUpdated() == 0)
+                                && (item.getMaestroCuentasRowsUpdated() == null || item.getMaestroCuentasRowsUpdated() == 0)
+                                && (item.getModeloClientesRowsUpdated() == null || item.getModeloClientesRowsUpdated() == 0)
+                )
+        ).collect(Collectors.toList());
+        listaRegistros.removeAll(resultadoOmitidos);
 
 
         StringBuilder bld = new StringBuilder();
 
-        bld.append("<h3>Registros con error en RIA (").append(resultadoError.size()).append(" registros)</h3>");
-        bld.append(generaTablaJobUpdateFeeFromRia(resultadoError).append("<br><br>"));
-        bld.append("<h3>Registros actualizados correctamente (").append(resultadoOkActualizados.size()).append(" registros)</h3>");
+        bld.append("<h3>Registros Modificados (").append(resultadoOkActualizados.size()).append(" registros)</h3>");
         bld.append(generaTablaJobUpdateFeeFromRia(resultadoOkActualizados).append("<br><br>"));
-        bld.append("<h3>Registros no considerados en grupos anteriores (").append(listaRegistros.size()).append(" registros)</h3>");
-        bld.append(generaTablaJobUpdateFeeFromRia(listaRegistros));
+        if ( ! resultadoError.isEmpty()) {
+            bld.append("<h3>Registros con error en RIA (").append(resultadoError.size()).append(" registros)</h3>");
+            bld.append(generaTablaJobUpdateFeeFromRia(resultadoError).append("<br><br>"));
+        }
+        if ( ! listaRegistros.isEmpty()) {
+            bld.append("<h3>Registros no considerados en grupos anteriores (").append(listaRegistros.size()).append(" registros)</h3>");
+            bld.append(generaTablaJobUpdateFeeFromRia(listaRegistros));
+        }
 
         if ( ! msg.isEmpty()) {
             bld.append(SALTO_CIERRE_HTML).append(msg).append("</b>");

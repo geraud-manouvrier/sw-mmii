@@ -41,6 +41,7 @@ BEGIN
             set fee = _new_annual_percent_fee
         WHERE upper(cuenta.id_custodio) = _custodian
         AND cuenta.id_cuenta_custodio   = _account_no
+        AND cuenta.fee IS DISTINCT FROM _new_annual_percent_fee
         ;
 
         GET DIAGNOSTICS _cant_update_model_cte = ROW_COUNT;

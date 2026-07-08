@@ -1,9 +1,9 @@
 //@Deprecated
 function createCustomCalendarHtml(calendarName, customRanges, multiple=false, minDate=null, maxDate=null) {
     //https://www.daterangepicker.com/#google_vignette
-    var idCalendar  = '#'+calendarName;
-    var separator   = multiple ? " -> " : " - ";
-    var dateOfStart         = moment('2024-04-29', 'YYYY-MM-DD');
+    const idCalendar  = '#'+calendarName;
+    const separator   = multiple ? " -> " : " - ";
+    const dateOfStart         = moment('2024-04-29', 'YYYY-MM-DD');
 
     if (minDate == null || moment(minDate).isBefore(dateOfStart)) {
         minDate = dateOfStart;
@@ -59,9 +59,9 @@ function createCustomCalendarHtml(calendarName, customRanges, multiple=false, mi
 
 function createCustomCalendarSingleHtml(calendarName, customRanges, multiple=false, minDate=null, maxDate=null) {
     //https://www.daterangepicker.com/#google_vignette
-    var idCalendar  = '#'+calendarName;
-    var separator   = multiple ? " -> " : " - ";
-    var dateOfStart         = moment('2024-04-29', 'YYYY-MM-DD');
+    const idCalendar  = '#'+calendarName;
+    const separator   = multiple ? " -> " : " - ";
+    const dateOfStart         = moment('2024-04-29', 'YYYY-MM-DD');
     if (customRanges==null) {
         customRanges = {
             '1 mes': [moment().startOf('month').subtract(1, 'month'), moment().startOf('month').subtract(1, 'month')],
@@ -78,8 +78,8 @@ function createCustomCalendarSingleHtml(calendarName, customRanges, multiple=fal
             "autoApply": true,
             "alwaysShowCalendars" : true,
             "showCustomRangeLabel" : false,
-            "minDate": dateOfStart,
-            maxDate: moment().subtract(1, 'days'),
+            minDate: (minDate == null ? dateOfStart : minDate),
+            maxDate: (maxDate == null ? moment().subtract(1, 'days') : maxDate),
             ranges: customRanges,
             "locale": {
                 "format": "YYYY-MM-DD",
