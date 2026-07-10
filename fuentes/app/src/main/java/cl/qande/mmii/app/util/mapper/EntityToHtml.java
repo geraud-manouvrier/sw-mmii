@@ -8,6 +8,7 @@ import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
 import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee;
 import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
+import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.CustomThymeleafHelper;
 
 import java.util.Comparator;
@@ -265,19 +266,19 @@ public interface EntityToHtml {
         //Todos los ok, y actualizados
         var resultadoOkActualizados   = listaRegistros.stream().filter(item ->
                 (item.getStatusCode() == 0) && (
-                        (item.getMaestroSaldosRowsUpdated() != null && item.getMaestroSaldosRowsUpdated() > 0)
-                                || (item.getMaestroCuentasRowsUpdated() != null && item.getMaestroCuentasRowsUpdated() > 0)
-                                || (item.getModeloClientesRowsUpdated() != null && item.getModeloClientesRowsUpdated() > 0)
-                        )
-                 ).collect(Collectors.toList());
+                        (item.getModeloClientesRowsUpdated() != null && item.getModeloClientesRowsUpdated() > 0) ||
+                        (item.getMaestroSaldosRowsUpdated() != null && item.getMaestroSaldosRowsUpdated() > 0) ||
+                        (item.getMaestroCuentasRowsUpdated() != null && item.getMaestroCuentasRowsUpdated() > 0)
+                    )
+        ).collect(Collectors.toList());
         listaRegistros.removeAll(resultadoOkActualizados);
         //Los ok y no actualizados quedan en listaRegistros; u otros casos no contemplados
         //Omitidos
         var resultadoOmitidos   = listaRegistros.stream().filter(item ->
                 (item.getStatusCode() == 0) && (
-                        (item.getMaestroSaldosRowsUpdated() == null || item.getMaestroSaldosRowsUpdated() == 0)
-                                && (item.getMaestroCuentasRowsUpdated() == null || item.getMaestroCuentasRowsUpdated() == 0)
-                                && (item.getModeloClientesRowsUpdated() == null || item.getModeloClientesRowsUpdated() == 0)
+                        (item.getModeloClientesRowsUpdated() == null || item.getModeloClientesRowsUpdated() == 0) &&
+                        (item.getMaestroSaldosRowsUpdated() == null || item.getMaestroSaldosRowsUpdated() == 0) &&
+                        (item.getMaestroCuentasRowsUpdated() == null || item.getMaestroCuentasRowsUpdated() == 0)
                 )
         ).collect(Collectors.toList());
         listaRegistros.removeAll(resultadoOmitidos);
@@ -287,13 +288,16 @@ public interface EntityToHtml {
 
         bld.append("<h3>Registros Modificados (").append(resultadoOkActualizados.size()).append(" registros)</h3>");
         bld.append(generaTablaJobUpdateFeeFromRia(resultadoOkActualizados).append("<br><br>"));
+        CustomLog.getInstance().info("Registros Modificados: " + resultadoOkActualizados);
         if ( ! resultadoError.isEmpty()) {
             bld.append("<h3>Registros con error en RIA (").append(resultadoError.size()).append(" registros)</h3>");
             bld.append(generaTablaJobUpdateFeeFromRia(resultadoError).append("<br><br>"));
+            CustomLog.getInstance().info("Registros con error en RIA: " + resultadoError);
         }
         if ( ! listaRegistros.isEmpty()) {
             bld.append("<h3>Registros no considerados en grupos anteriores (").append(listaRegistros.size()).append(" registros)</h3>");
             bld.append(generaTablaJobUpdateFeeFromRia(listaRegistros));
+            CustomLog.getInstance().info("Registros no considerados en grupos anteriores: " + listaRegistros);
         }
 
         if ( ! msg.isEmpty()) {
