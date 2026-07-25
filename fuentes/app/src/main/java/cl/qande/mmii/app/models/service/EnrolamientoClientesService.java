@@ -2,11 +2,13 @@ package cl.qande.mmii.app.models.service;
 
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.AccountFee;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ClientFee;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ClientPortfolio;
 import cl.qande.mmii.app.models.db.clientes.dao.*;
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteCuentaMaestro;
 import cl.qande.mmii.app.models.db.clientes.entity.ClienteMaestro;
 import cl.qande.mmii.app.models.db.core.CoreDataService;
 import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
+import cl.qande.mmii.app.models.db.core.entity.FnActualizaPortfolioRia;
 import cl.qande.mmii.app.models.db.core.entity.UniversoClienteProjection;
 import cl.qande.mmii.app.models.db.core.entity.UniversoCuentaProjection;
 import cl.qande.mmii.app.models.dto.clientes.*;
@@ -20,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -196,7 +198,7 @@ public class EnrolamientoClientesService {
         return comisionMaestroMapper.toDto(comisionMaestroDao.findById(id).orElse(null));
     }
     @Transactional(readOnly = true)
-    public ComisionMaestroDto listarComisionCuentaByIdCuentaFechaInicioVigencia(Integer idCuenta, Date fechaInicioVigencia) {
+    public ComisionMaestroDto listarComisionCuentaByIdCuentaFechaInicioVigencia(Integer idCuenta, LocalDate fechaInicioVigencia) {
         return comisionMaestroMapper.toDto(comisionMaestroDao.findByIdCuentaAndFechaInicioVigencia(idCuenta, fechaInicioVigencia).orElse(null));
     }
     @Transactional(readOnly = true)
@@ -297,6 +299,35 @@ public class EnrolamientoClientesService {
                 CustomLog.getInstance().error("No se encontró fee para cuenta [" + account + "] en resultado de API Ria, no se actualizó el fee de la cuenta.");
                 resultadoActualizacion.setStatusCode(-1);
                 resultadoActualizacion.setStatusMsg("No se encontró fee para cuenta en resultado de API Ria, no se actualizó el fee de la cuenta.");
+            }
+            resultadosActualizacion.add(resultadoActualizacion);
+        }
+        return resultadosActualizacion;
+    }
+
+
+    public List<FnActualizaPortfolioRia> updatePortfolioFromApiRia(String processDate, List<String> localAccounts, List<ClientPortfolio> portfolioListFromRia) {
+        List<FnActualizaPortfolioRia> resultadosActualizacion = new ArrayList<>();
+        for (String account : localAccounts) {
+            var portfolioFromRia = portfolioListFromRia.stream().filter(clientPortfolio -> account.equalsIgnoreCase(clientPortfolio.getAccountNumber())).findFirst().orElse(null);
+            var resultadoActualizacion = new FnActualizaPortfolioRia();
+            resultadoActualizacion.setAccountNo(account);
+            resultadoActualizacion.setProcessDate(processDate);
+            resultadoActualizacion.setNewPortfolio(portfolioFromRia != null ? portfolioFromRia.getPortfolio() : null);
+            if (portfolioFromRia != null) {
+                try {
+                    resultadoActualizacion  = coreDataService.actualizaPortfolioRia(CUSTODIO_PERSHING, account, processDate, portfolioFromRia.getPortfolio());
+
+                    CustomLog.getInstance().info("Cuenta [" + account + "] actualizada con Portfolio [" + portfolioFromRia.getPortfolio() + "]");
+                } catch (Exception e) {
+                    CustomLog.getInstance().error("Error actualizando cuenta [" + account + "] con Portfolio [" + portfolioFromRia.getPortfolio() + "]: " + e.getMessage());
+                    resultadoActualizacion.setStatusCode(-1);
+                    resultadoActualizacion.setStatusMsg("Error actualizando cuenta: " + e.getMessage());
+                }
+            } else {
+                CustomLog.getInstance().error("No se encontró portfolio para cuenta [" + account + "] en resultado de API Ria, no se actualizó el portfolio de la cuenta.");
+                resultadoActualizacion.setStatusCode(-1);
+                resultadoActualizacion.setStatusMsg("No se encontró portfolio para cuenta en resultado de API Ria, no se actualizó el portfolio de la cuenta.");
             }
             resultadosActualizacion.add(resultadoActualizacion);
         }

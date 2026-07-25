@@ -2,9 +2,9 @@ package cl.qande.mmii.app.job;
 
 import cl.qande.mmii.app.config.AppConfig;
 import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
-import cl.qande.mmii.app.models.api.reportes_maestros.MaestroSaldosApiDto;
-import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ListFeeResponse;
-import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
+import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ListPortfolioResponse;
+import cl.qande.mmii.app.models.db.core.entity.FnActualizaPortfolioRia;
+import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
 import cl.qande.mmii.app.models.service.ApiRestClientService;
 import cl.qande.mmii.app.models.service.EnrolamientoClientesService;
@@ -20,15 +20,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class JobFeeImportaDesdeRia extends CustomJob {
+public class JobUpdateFromRiaPortfolio extends CustomJob {
 
     private final ApiRestClientService mainService;
     private final EnrolamientoClientesService enrolamientoClientesService;
     private final ReporteMaestroDatosService reporteMaestroDatosService;
 
     @Autowired
-    public JobFeeImportaDesdeRia(AppConfig appConfig, CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, ApiRestClientService apiRestClientService, EnrolamientoClientesService enrolamientoClientesService, ReporteMaestroDatosService reporteMaestroDatosService) {
-        super("Update FEE from RIA", appConfig, calendarioHelper, notificacionEmail);
+    public JobUpdateFromRiaPortfolio(AppConfig appConfig, CalendarioHelper calendarioHelper, NotificacionEmail notificacionEmail, ApiRestClientService apiRestClientService, EnrolamientoClientesService enrolamientoClientesService, ReporteMaestroDatosService reporteMaestroDatosService) {
+        super("Update Portfolio from RIA", appConfig, calendarioHelper, notificacionEmail);
         this.mainService        = apiRestClientService;
         this.enrolamientoClientesService = enrolamientoClientesService;
         this.reporteMaestroDatosService = reporteMaestroDatosService;
@@ -38,24 +38,24 @@ public class JobFeeImportaDesdeRia extends CustomJob {
     @Override
     public boolean ejecutaJob(String processDate, SesionWeb sesionWeb) throws QandeMmiiException {
         logInfoJob("Iniciando job");
-        ListFeeResponse resultadoApi    = null;
-        List<FnActualizaFeeRia> resultado   = null;
-        var listaCuentas    = reporteMaestroDatosService.reporteMaestroSaldosApi(processDate).stream()
+        ListPortfolioResponse resultadoApi    = null;
+        List<FnActualizaPortfolioRia> resultado   = null;
+        var listaCuentas    = reporteMaestroDatosService.generaReporteClientes(processDate).stream()
                 .filter(saldo -> ApiRestClientService.CUSTODIAN_PERSHING.equalsIgnoreCase(saldo.getCustodian()))
-                .map(MaestroSaldosApiDto::getAccountNo)
+                .map(VwReporteMaestroDatosCliente::getAccountNo)
                 .distinct()
                 .collect(Collectors.toList());
         logInfoJob("Se procesarán ["+listaCuentas.size()+"] cuentas: "+listaCuentas.toString());
         var msgRes    = "";
         try {
-            resultadoApi    = mainService.getListClientsFee(listaCuentas, processDate, ApiRestClientService.CUSTODIAN_PERSHING);
-            resultado   = enrolamientoClientesService.updateFeeFromApiRia(processDate, listaCuentas, resultadoApi.getAccountsFees());
+            resultadoApi    = mainService.getListClientsPortfolio(listaCuentas, processDate, ApiRestClientService.CUSTODIAN_PERSHING);
+            resultado   = enrolamientoClientesService.updatePortfolioFromApiRia(processDate, listaCuentas, resultadoApi.getAccountsPortfolios());
             logInfoJob("Resultado Actualización: "+resultado.toString());
         } catch (Exception e) {
             logErrorJob("Error generando control:" + e.getMessage());
             msgRes  = "Error generando control: "+ e.getMessage();
         }
-        getNotificacionEmail().notificaJobUpdateFeeFromRia(msgRes.isEmpty(), processDate, processDate, getJobName(), resultado, msgRes, getMailConfiguration());
+        getNotificacionEmail().notificaJobUpdatePortfolioFromRia(msgRes.isEmpty(), processDate, processDate, getJobName(), resultado, msgRes, getMailConfiguration());
         return true;
     }
 
@@ -66,7 +66,7 @@ public class JobFeeImportaDesdeRia extends CustomJob {
 
     @Override
     protected AppNotificacionMailProperties.NotificacionMailConfiguration getMailConfiguration(){
-        var config  = getNotificacionEmail().getAppNotificacionMailProperties().getFeeUpdateFromRia();
+        var config  = getNotificacionEmail().getAppNotificacionMailProperties().getPortfolioUpdateFromRia();
         if (config == null) {
             CustomLog.getInstance().error("No se encontró configuración de notificación para job "+getJobName());
         }

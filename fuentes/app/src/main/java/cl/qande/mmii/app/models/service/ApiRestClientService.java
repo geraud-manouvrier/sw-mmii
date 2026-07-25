@@ -30,16 +30,16 @@ public class ApiRestClientService {
 
     private MultiValueMap<String, String> getHeaderForMmiiSuracorp() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add(ApiHelper.HEADER_API_KEY, apiClientSuraCorpProperties.getxApiKey());
-        headers.add(ApiHelper.HEADER_CLIENT_ID, apiClientSuraCorpProperties.getxClientId());
+        headers.add(ApiHelper.HEADER_API_KEY, apiClientSuraCorpProperties.getXApiKey());
+        headers.add(ApiHelper.HEADER_CLIENT_ID, apiClientSuraCorpProperties.getXClientId());
         headers.add("Content-Type", "application/json");
         return headers;
     }
 
     private HttpHeaders getHttpHeaderForMmiiSuracorp() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(ApiHelper.HEADER_API_KEY, apiClientSuraCorpProperties.getxApiKey());
-        headers.add(ApiHelper.HEADER_CLIENT_ID, apiClientSuraCorpProperties.getxClientId());
+        headers.add(ApiHelper.HEADER_API_KEY, apiClientSuraCorpProperties.getXApiKey());
+        headers.add(ApiHelper.HEADER_CLIENT_ID, apiClientSuraCorpProperties.getXClientId());
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
     }
@@ -102,6 +102,23 @@ public class ApiRestClientService {
 
         try {
             ResponseEntity<ListFeeResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, ListFeeResponse.class);
+            logResponse(response);
+            return response.getBody();
+        } catch (Exception e) {
+            throw new QandeMmiiException(e, "Error en la invocación a API ["+REST_NAME+"]: "+e.getMessage());
+        }
+    }
+
+    public ListPortfolioResponse getListClientsPortfolio(List<String> accountsList, String processDate, String custodian) throws QandeMmiiException {
+        logStartApi("Lista de Portfolios Clientes");
+        RestTemplate restTemplate = new RestTemplate();
+        String url = makeUrlRestRia(apiClientSuraCorpProperties.getMethodClientPortfolioList() );
+
+        var listPortfolioRequest = new ListPortfolioRequest(processDate, custodian, accountsList);
+        HttpEntity<ListPortfolioRequest> request = new HttpEntity<>(listPortfolioRequest, getHttpHeaderForMmiiSuracorp());
+
+        try {
+            ResponseEntity<ListPortfolioResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, ListPortfolioResponse.class);
             logResponse(response);
             return response.getBody();
         } catch (Exception e) {

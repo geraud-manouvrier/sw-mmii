@@ -1,11 +1,12 @@
 create table clientes.cuenta
 (
     id                 integer generated always as identity,
-    id_cliente         integer              not null,
-    id_custodio        varchar(100)         not null,
-    id_cuenta_custodio varchar(100)         not null,
-    habilitado         boolean default true not null,
-    fee                numeric(45, 20)      not null,
+    id_cliente         integer                   not null,
+    id_custodio        varchar(100)              not null,
+    id_cuenta_custodio varchar(100)              not null,
+    habilitado         boolean      default true not null,
+    fee                numeric(45, 20)           not null,
+    portfolio          varchar(100) default NULL::character varying,
     constraint cuenta_pk
         primary key (id),
     constraint cuenta_cliente_fk

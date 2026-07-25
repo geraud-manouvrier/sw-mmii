@@ -3,10 +3,7 @@ package cl.qande.mmii.app.util.mapper;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.AccountFeeValidated;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.FeeControlResponse;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
-import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
-import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
-import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
-import cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee;
+import cl.qande.mmii.app.models.db.core.entity.*;
 import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import cl.qande.mmii.app.util.helper.CustomThymeleafHelper;
@@ -306,6 +303,51 @@ public interface EntityToHtml {
         return bld.toString();
     }
 
+    public static String resultadoJobUpdatePortfolioFromRiaToHtml(List<FnActualizaPortfolioRia> listaRegistros, String msg) {
+        //Status servidor RIA error
+        var resultadoError  = listaRegistros.stream().filter(item -> item.getStatusCode() != 0).collect(Collectors.toList());
+        listaRegistros.removeAll(resultadoError);
+        //Todos los ok, y actualizados
+        var resultadoOkActualizados   = listaRegistros.stream().filter(item ->
+                (item.getStatusCode() == 0) && (
+                        (item.getModeloClientesRowsUpdated() != null && item.getModeloClientesRowsUpdated() > 0) ||
+                        (item.getMaestroCuentasRowsUpdated() != null && item.getMaestroCuentasRowsUpdated() > 0)
+                    )
+        ).collect(Collectors.toList());
+        listaRegistros.removeAll(resultadoOkActualizados);
+        //Los ok y no actualizados quedan en listaRegistros; u otros casos no contemplados
+        //Omitidos
+        var resultadoOmitidos   = listaRegistros.stream().filter(item ->
+                (item.getStatusCode() == 0) && (
+                        (item.getModeloClientesRowsUpdated() == null || item.getModeloClientesRowsUpdated() == 0) &&
+                        (item.getMaestroCuentasRowsUpdated() == null || item.getMaestroCuentasRowsUpdated() == 0)
+                )
+        ).collect(Collectors.toList());
+        listaRegistros.removeAll(resultadoOmitidos);
+
+
+        StringBuilder bld = new StringBuilder();
+
+        bld.append("<h3>Registros Modificados (").append(resultadoOkActualizados.size()).append(" registros)</h3>");
+        bld.append(generaTablaJobUpdatePortfolioFromRia(resultadoOkActualizados).append("<br><br>"));
+        CustomLog.getInstance().info("Registros Modificados: " + resultadoOkActualizados);
+        if ( ! resultadoError.isEmpty()) {
+            bld.append("<h3>Registros con error en RIA (").append(resultadoError.size()).append(" registros)</h3>");
+            bld.append(generaTablaJobUpdatePortfolioFromRia(resultadoError).append("<br><br>"));
+            CustomLog.getInstance().info("Registros con error en RIA: " + resultadoError);
+        }
+        if ( ! listaRegistros.isEmpty()) {
+            bld.append("<h3>Registros no considerados en grupos anteriores (").append(listaRegistros.size()).append(" registros)</h3>");
+            bld.append(generaTablaJobUpdatePortfolioFromRia(listaRegistros));
+            CustomLog.getInstance().info("Registros no considerados en grupos anteriores: " + listaRegistros);
+        }
+
+        if ( ! msg.isEmpty()) {
+            bld.append(SALTO_CIERRE_HTML).append(msg).append("</b>");
+        }
+        return bld.toString();
+    }
+
     private static StringBuilder generaTablaJobUpdateFeeFromRia(List<FnActualizaFeeRia> listaRegistros) {
         StringBuilder bld = new StringBuilder();
         if (listaRegistros==null || listaRegistros.isEmpty()) {
@@ -338,6 +380,40 @@ public interface EntityToHtml {
                         //.append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getMaestroCuentasOldFeeMin(), 4, null)).append(CIERRA_TD)
                         .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getMaestroCuentasOldFeeMax(), 4, null)).append(CIERRA_TD)
                         .append(ABRE_TD).append(CustomThymeleafHelper.formatNumber(registro.getMaestroCuentasNewFee(), 4, null)).append(CIERRA_TD)
+                        //Control
+                        //.append(ABRE_TD).append(registro.getStatusCode()).append(CIERRA_TD)
+                        //.append(ABRE_TD).append(registro.getStatusMsg()).append(CIERRA_TD)
+                        .append(CIERRA_TR);
+            }
+            bld.append(TABLE_END);
+        }
+        return bld;
+    }
+
+    private static StringBuilder generaTablaJobUpdatePortfolioFromRia(List<FnActualizaPortfolioRia> listaRegistros) {
+        StringBuilder bld = new StringBuilder();
+        if (listaRegistros==null || listaRegistros.isEmpty()) {
+            bld.append(NO_REG_HTML);
+        } else {
+            bld.append(TABLE_BEGIN).append(generaEncabezadoHtml("Cuenta", "Process Date", "New Portfolio", "Modelo Clientes Rows Updated",
+                    "Cuentas # Match", "Cuentas # Upd.", "Cuentas Old Portfolio", "Cuentas New Portfolio"
+                    )).append(TABLE_BODY_BEGIN);
+            int rowIndex = 0;
+            for (var registro : listaRegistros.stream().sorted(Comparator.comparing(FnActualizaPortfolioRia::getAccountNo)).collect(Collectors.toList())) {
+                if (registro.getModeloClientesRowsUpdated()>0) {
+                    bld.append("<tr style=\"background-color:").append("#D9F4EF").append(";\">");
+                } else {
+                    bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR);
+                }
+                bld.append(ABRE_TD).append(registro.getAccountNo()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getProcessDate()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getNewPortfolio()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getModeloClientesRowsUpdated()).append(CIERRA_TD)
+                        //Maestro cuentas
+                        .append(ABRE_TD).append(registro.getMaestroCuentasRowsMatch()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getMaestroCuentasRowsUpdated()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getMaestroCuentasOldPortfolio()).append(CIERRA_TD)
+                        .append(ABRE_TD).append(registro.getMaestroCuentasNewPortfolio()).append(CIERRA_TD)
                         //Control
                         //.append(ABRE_TD).append(registro.getStatusCode()).append(CIERRA_TD)
                         //.append(ABRE_TD).append(registro.getStatusMsg()).append(CIERRA_TD)

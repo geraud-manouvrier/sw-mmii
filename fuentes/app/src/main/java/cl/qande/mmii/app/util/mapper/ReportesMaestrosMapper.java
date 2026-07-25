@@ -39,6 +39,7 @@ public class ReportesMaestrosMapper {
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getCloseDate()==null ? "" : CalendarioHelper.dateToString(fila.getCloseDate())));
 
         dataRow.add(reportesMaestrosHelper.csvValue(fila.getAccountType()));
+        dataRow.add(reportesMaestrosHelper.csvValue(fila.getPortfolio()));
 
         return dataRow;
     }

@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.config.properties;
 
+import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.validation.annotation.Validated;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotNull;
 @Validated
 @ConfigurationProperties(prefix = "app.properties.api-client-mmii-suracorp")
 @ConstructorBinding
+@Getter
 public class AppApiClientSuraCorpProperties {
 
     @NotNull
@@ -27,8 +29,10 @@ public class AppApiClientSuraCorpProperties {
     private final String methodClientFeeList;
     @NotNull
     private final String methodClientFeeControl;
+    @NotNull
+    private final String methodClientPortfolioList;
 
-    public AppApiClientSuraCorpProperties(String xClientId, String xApiKey, String server, String path, String methodSourceCode, String methodClientFee, String methodClientFeeList, String methodClientFeeControl) {
+    public AppApiClientSuraCorpProperties(String xClientId, String xApiKey, String server, String path, String methodSourceCode, String methodClientFee, String methodClientFeeList, String methodClientFeeControl, String methodClientPortfolioList) {
         this.xClientId = xClientId;
         this.xApiKey = xApiKey;
         this.server = server;
@@ -37,36 +41,6 @@ public class AppApiClientSuraCorpProperties {
         this.methodClientFee = methodClientFee;
         this.methodClientFeeList = methodClientFeeList;
         this.methodClientFeeControl = methodClientFeeControl;
-    }
-
-    public @NotNull String getxClientId() {
-        return xClientId;
-    }
-
-    public @NotNull String getxApiKey() {
-        return xApiKey;
-    }
-
-    public @NotNull String getServer() {
-        return server;
-    }
-
-    public @NotNull String getPath() {
-        return path;
-    }
-
-    public @NotNull String getMethodSourceCode() {
-        return methodSourceCode;
-    }
-
-    public @NotNull String getMethodClientFee() {
-        return methodClientFee;
-    }
-
-    public @NotNull String getMethodClientFeeList() {
-        return methodClientFeeList;
-    }
-    public @NotNull String getMethodClientFeeControl() {
-        return methodClientFeeControl;
+        this.methodClientPortfolioList = methodClientPortfolioList;
     }
 }
