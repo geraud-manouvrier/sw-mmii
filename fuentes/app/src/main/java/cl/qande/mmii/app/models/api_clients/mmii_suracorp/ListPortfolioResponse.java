@@ -11,18 +11,18 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ListFeeResponse extends ApiResponse {
+public class ListPortfolioResponse extends ApiResponse {
 
-    private List<ClientFee> accountsFees;
+    private List<ClientPortfolio> accountsPortfolios;
 
-    public ListFeeResponse() {
-        this.accountsFees = new ArrayList<>();
+    public ListPortfolioResponse() {
+        this.accountsPortfolios = new ArrayList<>();
         this.setCode(0);
         this.setMessage("Mensaje recibido correctamente");
     }
 
-    public ListFeeResponse(List<ClientFee> accountsFees) {
-        this.accountsFees      = accountsFees;
+    public ListPortfolioResponse(List<ClientPortfolio> accountsPortfolios) {
+        this.accountsPortfolios      = accountsPortfolios;
         this.setCode(0);
         this.setMessage("Mensaje recibido correctamente");
     }

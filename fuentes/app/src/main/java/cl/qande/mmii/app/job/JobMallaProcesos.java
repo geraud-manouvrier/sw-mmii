@@ -20,10 +20,11 @@ public class JobMallaProcesos extends CustomJob {
     private final JobRepInvControl jobRepInvControl;
     private final JobFeeControlTramos jobFeeControlTramos;
     private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
-    private final JobFeeImportaDesdeRia jobFeeImportaDesdeRia;
+    private final JobUpdateFromRiaFee jobUpdateFromRiaFee;
+    private final JobUpdateFromRiaPortfolio jobUpdateFromRiaPortfolio;
 
     @Autowired
-    public JobMallaProcesos(AppConfig appConfig, CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlCuadreRia jobFeeControlCuadreRia, NotificacionEmail notificacionEmail, JobFeeImportaDesdeRia jobFeeImportaDesdeRia) {
+    public JobMallaProcesos(AppConfig appConfig, CalendarioHelper calendarioHelper, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobReportesMaestros jobReportesMaestros, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlTramos jobFeeControlTramos, JobFeeControlCuadreRia jobFeeControlCuadreRia, NotificacionEmail notificacionEmail, JobUpdateFromRiaFee jobUpdateFromRiaFee, JobUpdateFromRiaPortfolio jobUpdateFromRiaPortfolio) {
         super("Malla Procesos Diarios", appConfig, calendarioHelper, notificacionEmail);
         this.jobGetFromFtpPershing = jobGetFromFtpPershing;
         this.jobControlDiario = jobControlDiario;
@@ -33,7 +34,8 @@ public class JobMallaProcesos extends CustomJob {
         this.jobRepInvControl = jobRepInvControl;
         this.jobFeeControlTramos = jobFeeControlTramos;
         this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
-        this.jobFeeImportaDesdeRia = jobFeeImportaDesdeRia;
+        this.jobUpdateFromRiaFee = jobUpdateFromRiaFee;
+        this.jobUpdateFromRiaPortfolio = jobUpdateFromRiaPortfolio;
     }
 
     public boolean ejecutaJob(String processDate, SesionWeb sesionWeb) throws QandeMmiiException {
@@ -46,14 +48,18 @@ public class JobMallaProcesos extends CustomJob {
                 jobGetFromFtpPershing.processByProcessDate(processDate, false) &&
                 //Job Reportes Maestros
                 jobReportesMaestros.generaReportesByProcessDate(processDate, true, true, true, true, true, true) &&
+                //Importación Fee desde RIA
+                jobUpdateFromRiaFee.ejecutaJob(CalendarioHelper.processDateConDesfase(processDate, -6), processDate, sesionWeb) &&
+                //Importación Portfolio desde RIA
+                jobUpdateFromRiaPortfolio.ejecutaJob(CalendarioHelper.processDateConDesfase(processDate, -6), processDate, sesionWeb) &&
+                //Por Updates, re generamos archivos
+                jobReportesMaestros.generaReportesByProcessDate(processDate, false, true, true, true, true, true) &&
                 //Job Control Diario
                 jobControlDiario.realizaControlDiario(processDate, CustomScheduler.USUARIO_JOB, true) &&
                 //Job Rentabilidades
                 jobRepInvPrecalculoDiario.ejecutaJob(processDate) &&
                 //Controles rentabilidades
                 jobRepInvControl.ejecutaJob(processDate, processDate, sesionWeb) &&
-                //Importación Fee desde RIA
-                jobFeeImportaDesdeRia.ejecutaJob(CalendarioHelper.processDateConDesfase(processDate, -7), processDate, sesionWeb) &&
                 //Controles tramos Fee según ingresos/egresos
                 jobFeeControlTramos.ejecutaJob(processDate, processDate, sesionWeb) &&
                 //Controles Fee versus Fee contrato RIA

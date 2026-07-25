@@ -1,7 +1,7 @@
 package cl.qande.mmii.app.models.db.core.dao;
 
-import cl.qande.mmii.app.models.dto.core.FechasRecaudosFromMaestroMovDto;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosMovimiento;
+import cl.qande.mmii.app.models.dto.core.FechasRecaudosFromMaestroMovDto;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

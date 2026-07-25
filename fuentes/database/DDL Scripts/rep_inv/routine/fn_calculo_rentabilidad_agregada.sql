@@ -12,7 +12,8 @@ $$
             tbn.process_date_as_date, tbn.saldo_dia_anterior, tbn.saldo_rentabilidad, tbn.rentabilidad_base_pitatoria,
             tbn.agregador_n1, NULL::VARCHAR(100) as agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4
         FROM rep_inv.consolidado_agregado_n1 tbn
-        WHERE tbn.agregador_n1= _agregador_n1
+        WHERE COALESCE(_agregador_n2,'')=''    --Si queremos N1, NO se puede pasar agregador 2 (es decir, vacío/nulo)
+        AND tbn.agregador_n1= _agregador_n1
         AND tbn.process_date_as_date>=_date_ini
         AND tbn.process_date_as_date<=_date_fin
     );
@@ -20,7 +21,7 @@ $$
     INSERT INTO temptb_base_calculo
     SELECT
             tbn.process_date_as_date, tbn.saldo_dia_anterior, tbn.saldo_rentabilidad, tbn.rentabilidad_base_pitatoria,
-            tbn.agregador_n1, NULL::VARCHAR(100) as agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4
+            tbn.agregador_n1, tbn.agregador_n2, NULL::VARCHAR(100) as agregador_n3, NULL::VARCHAR(100) as agregador_n4
         FROM rep_inv.consolidado_agregado_n2 tbn
         WHERE tbn.agregador_n1= _agregador_n1 AND tbn.agregador_n2= _agregador_n2
         AND tbn.process_date_as_date>=_date_ini

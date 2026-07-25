@@ -90,7 +90,7 @@ create or replace view public.vw_maestro_cuentas_pershing
              tel_6_extension, tel_7_transaction_code, tel_7_us_ind, tel_7_type_id, tel_7_number, tel_7_extension,
              tel_8_transaction_code, tel_8_us_ind, tel_8_type_id, tel_8_number, tel_8_extension, email_address,
              external_position_ind, purge_eligible_ind, advisory_acct_ind, product_profile_code,
-             cents_per_share_discount, option_disclosure_date, country_acct_level_tax_residency)
+             cents_per_share_discount, option_disclosure_date, country_acct_level_tax_residency, portfolio)
 as
 SELECT vw_act.id,
        vw_act.custodian,
@@ -482,7 +482,8 @@ SELECT vw_act.id,
        vw_act.product_profile_code,
        vw_act.cents_per_share_discount,
        vw_act.option_disclosure_date,
-       vw_act.country_acct_level_tax_residency
+       vw_act.country_acct_level_tax_residency,
+       maestro_crm.portfolio
 FROM pershing.vw_maestro_cuenta vw_act
          LEFT JOIN clientes.vw_maestro_clientes_cuentas maestro_crm
                    ON vw_act.id_custodian::text = maestro_crm.id_custodio::text AND

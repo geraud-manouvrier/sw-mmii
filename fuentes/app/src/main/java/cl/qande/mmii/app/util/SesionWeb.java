@@ -9,8 +9,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PreDestroy;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

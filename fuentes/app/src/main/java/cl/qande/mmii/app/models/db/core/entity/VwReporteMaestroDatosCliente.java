@@ -1,5 +1,7 @@
 package cl.qande.mmii.app.models.db.core.entity;
 
+import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -16,6 +18,8 @@ import java.util.Date;
 @Entity
 @Immutable
 @Table(name = "vw_reporte_maestro_datos_clientes")
+@Getter
+@ToString
 public class VwReporteMaestroDatosCliente {
     @Id
     @Column(name = "row_id")
@@ -160,167 +164,8 @@ public class VwReporteMaestroDatosCliente {
     @Column(name = "estado_cuenta", length = 100)
     private String estadoCuenta;
 
-    public String getEstadoCuenta() {
-        return estadoCuenta;
-    }
+    @Size(max = 100)
+    @Column(name = "portfolio", length = 100)
+    private String portfolio;
 
-    public BigDecimal getFee() {
-        return fee;
-    }
-
-    public String getGlosaIdentificadorCliente() {
-        return glosaIdentificadorCliente;
-    }
-
-    public Integer getIdInternoCliente() {
-        return idInternoCliente;
-    }
-
-    public String getTipoIdentificadorCliente() {
-        return tipoIdentificadorCliente;
-    }
-
-    public Long getIdReg() {
-        return idReg;
-    }
-
-    public Long getRowId() {
-        return rowId;
-    }
-
-    public String getCustodian() {
-        return custodian;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getFirmNo() {
-        return firmNo;
-    }
-
-    public String getSubNo() {
-        return subNo;
-    }
-
-    public String getRepNo() {
-        return repNo;
-    }
-
-    public String getOfficeId() {
-        return officeId;
-    }
-
-    public String getAccountNo() {
-        return accountNo;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public String getAcctStatusValue() {
-        return acctStatusValue;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getCountryCodeValue() {
-        return countryCodeValue;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public String getW8Date() {
-        return w8Date;
-    }
-
-    public Date getW9Date() {
-        return w9Date;
-    }
-
-    public String getW8StatusValue() {
-        return w8StatusValue;
-    }
-
-    public String getW9StatusValue() {
-        return w9StatusValue;
-    }
-
-    public String getDiscrTradingCodeValue() {
-        return discrTradingCodeValue;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public String getCashMarginAccount() {
-        return cashMarginAccount;
-    }
-
-    public String getDebitCardIndicator() {
-        return debitCardIndicator;
-    }
-
-    public String getOpenDate() {
-        return openDate;
-    }
-
-    public Date getCloseDate() {
-        return closeDate;
-    }
-
-    public String getParticipantType() {
-        return participantType;
-    }
-
-    public Date getLastStatementDate() {
-        return lastStatementDate;
-    }
-
-    public String getTaxId() {
-        return taxId;
-    }
-
-    public String getProcessDate() {
-        return processDate;
-    }
-
-    public Boolean getIsLastInfo() {
-        return isLastInfo;
-    }
-
-    public Boolean getIsLastSchemaByAccountNo() {
-        return isLastSchemaByAccountNo;
-    }
-
-    public Boolean getLastInfo() {
-        return isLastInfo;
-    }
-
-    public Boolean getLastSchemaByAccountNo() {
-        return isLastSchemaByAccountNo;
-    }
 }

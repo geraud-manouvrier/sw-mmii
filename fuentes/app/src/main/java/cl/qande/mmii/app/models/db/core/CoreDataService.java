@@ -2,6 +2,7 @@ package cl.qande.mmii.app.models.db.core;
 
 import cl.qande.mmii.app.config.datasources.CoreDataSourceConfiguration;
 import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
+import cl.qande.mmii.app.models.db.core.entity.FnActualizaPortfolioRia;
 import cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee;
 import cl.qande.mmii.app.util.helper.CustomLog;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,6 +41,17 @@ public class CoreDataService {
                 .setParameter("_new_annual_percent_fee", newAnnualPercentFee)
                 .getSingleResult();
         CustomLog.getInstance().info("Actualización Fee desde RIA: ["+salida+"]", false);
+        return salida;
+    }
+
+    public FnActualizaPortfolioRia actualizaPortfolioRia(String custodian, String accountNo, String processDate, String newPortfolio) {
+        var salida = entityManager.createNamedQuery(FnActualizaPortfolioRia.ACTUALIZA_PORTFOLIO_FROM_RIA, FnActualizaPortfolioRia.class)
+                .setParameter("_custodian", custodian)
+                .setParameter("_account_no", accountNo)
+                .setParameter("_process_date", processDate)
+                .setParameter("_new_portfolio", newPortfolio)
+                .getSingleResult();
+        CustomLog.getInstance().info("Actualización Portfolio desde RIA: ["+salida+"]", false);
         return salida;
     }
 

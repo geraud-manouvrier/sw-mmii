@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.config.properties;
 
+import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.validation.annotation.Validated;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 @Validated
 @ConfigurationProperties(prefix = "app.properties.notificacion-mail")
 @ConstructorBinding
+@Getter
 public class AppNotificacionMailProperties {
 
     private final NotificacionMailConfiguration reportesMaestros;
@@ -23,9 +25,10 @@ public class AppNotificacionMailProperties {
     private final NotificacionMailConfiguration tramosFeeControl;
     private final NotificacionMailConfiguration feeControlCuadre;
     private final NotificacionMailConfiguration feeUpdateFromRia;
+    private final NotificacionMailConfiguration portfolioUpdateFromRia;
 
 
-    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria, NotificacionMailConfiguration precalculoRentabilidades, NotificacionMailConfiguration repinvControl, NotificacionMailConfiguration tramosFeeControl, NotificacionMailConfiguration feeControlCuadre, NotificacionMailConfiguration feeUpdateFromRia) {
+    public AppNotificacionMailProperties(NotificacionMailConfiguration reportesMaestros, NotificacionMailConfiguration controlDiario, NotificacionMailConfiguration sflPershing, NotificacionMailConfiguration cuentasNoMapeadas, NotificacionMailConfiguration parametrosSuracorp, NotificacionMailConfiguration mallaDiaria, NotificacionMailConfiguration precalculoRentabilidades, NotificacionMailConfiguration repinvControl, NotificacionMailConfiguration tramosFeeControl, NotificacionMailConfiguration feeControlCuadre, NotificacionMailConfiguration feeUpdateFromRia, NotificacionMailConfiguration portfolioUpdateFromRia) {
         this.reportesMaestros = reportesMaestros;
         this.controlDiario = controlDiario;
         this.sflPershing = sflPershing;
@@ -37,52 +40,7 @@ public class AppNotificacionMailProperties {
         this.tramosFeeControl = tramosFeeControl;
         this.feeControlCuadre = feeControlCuadre;
         this.feeUpdateFromRia = feeUpdateFromRia;
-    }
-
-    public NotificacionMailConfiguration getReportesMaestros() {
-        return reportesMaestros;
-    }
-
-
-    public NotificacionMailConfiguration getControlDiario() {
-        return controlDiario;
-    }
-
-
-    public NotificacionMailConfiguration getSflPershing() {
-        return sflPershing;
-    }
-
-    public NotificacionMailConfiguration getCuentasNoMapeadas() {
-        return cuentasNoMapeadas;
-    }
-
-    public NotificacionMailConfiguration getParametrosSuracorp() {
-        return parametrosSuracorp;
-    }
-
-    public NotificacionMailConfiguration getMallaDiaria() {
-        return mallaDiaria;
-    }
-
-    public NotificacionMailConfiguration getPrecalculoRentabilidades() {
-        return precalculoRentabilidades;
-    }
-
-    public NotificacionMailConfiguration getRepinvControl() {
-        return repinvControl;
-    }
-
-    public NotificacionMailConfiguration getTramosFeeControl() {
-        return tramosFeeControl;
-    }
-
-    public NotificacionMailConfiguration getFeeControlCuadre() {
-        return feeControlCuadre;
-    }
-
-    public NotificacionMailConfiguration getFeeUpdateFromRia() {
-        return feeUpdateFromRia;
+        this.portfolioUpdateFromRia = portfolioUpdateFromRia;
     }
 
     public static class NotificacionMailConfiguration {

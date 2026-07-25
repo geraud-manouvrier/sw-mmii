@@ -1,6 +1,9 @@
 package cl.qande.mmii.app.models.api.reportes_maestros;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -9,6 +12,9 @@ import java.util.Objects;
 /**
  * DTO for {@link cl.qande.mmii.app.models.db.core.entity.VwReporteMaestroDatosCliente}
  */
+@Getter
+@Setter
+@ToString
 public class MaestroCuentasApiDto implements Serializable {
     @JsonProperty("custodian")
     @Size(max = 100)
@@ -36,6 +42,8 @@ public class MaestroCuentasApiDto implements Serializable {
     @JsonProperty("process-date")
     private String processDate;
 
+
+
     public MaestroCuentasApiDto() {
     }
 
@@ -50,53 +58,6 @@ public class MaestroCuentasApiDto implements Serializable {
         this.tipoIdentificadorCliente = tipoIdentificadorCliente;
     }
 
-    public String getCustodian() {
-        return custodian;
-    }
-
-    public void setCustodian(String custodian) {
-        this.custodian = custodian;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getOfficeId() {
-        return officeId;
-    }
-
-    public void setOfficeId(String officeId) {
-        this.officeId = officeId;
-    }
-
-    public String getAccountNo() {
-        return accountNo;
-    }
-
-    public void setAccountNo(String accountNo) {
-        this.accountNo = accountNo;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getProcessDate() {
-        return processDate;
-    }
-
-    public void setProcessDate(String processDate) {
-        this.processDate = processDate;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -115,27 +76,6 @@ public class MaestroCuentasApiDto implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(custodian, clientId, tipoIdentificadorCliente, officeId, accountNo, name, processDate);
-    }
-
-    public String getTipoIdentificadorCliente() {
-        return tipoIdentificadorCliente;
-    }
-
-    public void setTipoIdentificadorCliente(String tipoIdentificadorCliente) {
-        this.tipoIdentificadorCliente = tipoIdentificadorCliente;
-    }
-
-    @Override
-    public String toString() {
-        return "MaestroCuentasApiDto{" +
-                "custodian='" + custodian + '\'' +
-                ", officeId='" + officeId + '\'' +
-                ", clientId='" + clientId + '\'' +
-                ", tipoIdentificadorCliente='" + tipoIdentificadorCliente + '\'' +
-                ", accountNo='" + accountNo + '\'' +
-                ", name='" + name + '\'' +
-                ", processDate='" + processDate + '\'' +
-                '}';
     }
 
 }

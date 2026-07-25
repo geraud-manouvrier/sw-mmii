@@ -3,10 +3,7 @@ package cl.qande.mmii.app.models.service;
 import cl.qande.mmii.app.config.properties.AppNotificacionMailProperties;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.FeeControlResponse;
 import cl.qande.mmii.app.models.api_clients.mmii_suracorp.ParSourceCode;
-import cl.qande.mmii.app.models.db.core.entity.ControlDiario;
-import cl.qande.mmii.app.models.db.core.entity.FnActualizaFeeRia;
-import cl.qande.mmii.app.models.db.core.entity.VwCuentasNoMapeadasPershingProjection;
-import cl.qande.mmii.app.models.db.core.entity.VwReporteDiferenciasFee;
+import cl.qande.mmii.app.models.db.core.entity.*;
 import cl.qande.mmii.app.models.db.rep_inv.entity.ResultadoControl;
 import cl.qande.mmii.app.models.exception.MailException;
 import cl.qande.mmii.app.models.exception.QandeMmiiException;
@@ -130,6 +127,9 @@ public class NotificacionEmail {
     }
     public void notificaJobUpdateFeeFromRia(boolean isOk, String startProcessDate, String endProcessDate, String jobName, List<FnActualizaFeeRia> resultado, String msg, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration)  {
         notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoJobUpdateFeeFromRiaToHtml(resultado, msg), mailConfiguration);
+    }
+    public void notificaJobUpdatePortfolioFromRia(boolean isOk, String startProcessDate, String endProcessDate, String jobName, List<FnActualizaPortfolioRia> resultado, String msg, AppNotificacionMailProperties.NotificacionMailConfiguration mailConfiguration)  {
+        notificacionGenerica(isOk, startProcessDate, endProcessDate, jobName, EntityToHtml.resultadoJobUpdatePortfolioFromRiaToHtml(resultado, msg), mailConfiguration);
     }
 
 

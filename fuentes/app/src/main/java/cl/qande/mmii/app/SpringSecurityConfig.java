@@ -9,7 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,13 +17,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.Collections;
 
 //Necesario para usar anotaciones en controladores @Secured y @PreAuthorize
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Configuration
 public class SpringSecurityConfig {
 
 
     private static final String API_PATH = "/api/**";
     private static final String LOG_PATH = "/logs/**";
+    private static final String UPLOAD_PATH = "/uploads/**";
     private static final String SYNCFUSION_PATH = "/syncfusion.v26.1.35/**";
     private static final String ROL_ADMIN = "ADMIN";
     private static final String ROL_USER = "USER";
@@ -39,31 +40,49 @@ public class SpringSecurityConfig {
         this.successHandler = successHandler;
     }
 
+    private static final String[] PUBLIC_PATHS = {
+            "/test/**",
+            "/build/**",
+            "/custom/**",
+            "/dist/**",
+            "/plugins/**",
+            API_PATH,
+            SYNCFUSION_PATH
+    };
+
+    private static final String[] CSRF_IGNORED_PATHS = {
+            API_PATH,
+            LOG_PATH
+    };
+
+    private static final String[] ADMIN_PATHS = {
+            "/errores/**",
+            "/mantenedores/parametros_instrumentos/**"
+    };
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().ignoringAntMatchers(API_PATH, LOG_PATH)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/test/**","/build/**", "/custom/**", "/dist/**", "/plugins/**", API_PATH, SYNCFUSION_PATH).permitAll()
-                .antMatchers(HttpMethod.GET, API_PATH).permitAll()
-                .antMatchers(HttpMethod.POST, API_PATH).permitAll()
-                .antMatchers(HttpMethod.DELETE, API_PATH).permitAll()
-                .antMatchers(HttpMethod.POST, LOG_PATH).hasAnyRole(ROL_ADMIN, ROL_USER)
-                .antMatchers("/errores/**").hasAnyRole(ROL_ADMIN, ROL_USER)
-                .antMatchers("/mantenedores/parametros_instrumentos/**").hasAnyRole(ROL_ADMIN, ROL_USER)
-                .antMatchers("/uploads/**").hasAnyRole(ROL_USER)
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .successHandler(successHandler)
-                .loginPage("/login")
-                .permitAll()
-                .and()
-                .logout().permitAll()
-                .and()
-                .exceptionHandling().accessDeniedPage("/error_403");
+                //Se aplican en orden, gana la primera coincidencia
+                .csrf(csrf -> csrf.ignoringAntMatchers(CSRF_IGNORED_PATHS))
+                .authorizeRequests(auth -> auth
+                    .antMatchers(PUBLIC_PATHS).permitAll()
+                    .antMatchers(HttpMethod.GET, API_PATH).permitAll()
+                    .antMatchers(HttpMethod.POST, API_PATH).permitAll()
+                    .antMatchers(HttpMethod.DELETE, API_PATH).permitAll()
+                    .antMatchers(HttpMethod.POST, LOG_PATH).hasAnyRole(ROL_ADMIN, ROL_USER)
+                    .antMatchers(ADMIN_PATHS).hasAnyRole(ROL_ADMIN, ROL_USER)
+                    .antMatchers(UPLOAD_PATH).hasAnyRole(ROL_USER)
+                    .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                    .successHandler(successHandler)
+                    .loginPage("/login")
+                    .permitAll()
+                )
+                .logout(logout -> logout.permitAll())
+                .exceptionHandling(ex -> ex.accessDeniedPage("/error_403"));
 
         return http.build();
     }

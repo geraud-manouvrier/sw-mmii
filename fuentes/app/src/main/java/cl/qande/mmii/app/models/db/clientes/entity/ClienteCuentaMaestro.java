@@ -1,5 +1,6 @@
 package cl.qande.mmii.app.models.db.clientes.entity;
 
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 @Immutable
 @Table(name = "vw_maestro_clientes_cuentas", schema = "clientes")
 public class ClienteCuentaMaestro {
+    @Setter
     @EmbeddedId
     private ClienteCuentaMaestroId id;
 
@@ -52,17 +54,12 @@ public class ClienteCuentaMaestro {
     @Column(name = "fee", precision = 45, scale = 20)
     private BigDecimal fee;
 
-    public BigDecimal getFee() {
-        return fee;
-    }
-
+    @Size(max = 100)
+    @Column(name = "portfolio", length = 100)
+    private String portfolio;
 
     public ClienteCuentaMaestroId getId() {
         return id;
-    }
-
-    public void setId(ClienteCuentaMaestroId id) {
-        this.id = id;
     }
 
     public String getIdentificadorCliente() {
@@ -97,5 +94,28 @@ public class ClienteCuentaMaestro {
         return habilitado;
     }
 
+    public BigDecimal getFee() {
+        return fee;
+    }
 
+    public String getPortfolio() {
+        return portfolio;
+    }
+
+    @Override
+    public String toString() {
+        return "ClienteCuentaMaestro{" +
+                "id=" + id +
+                ", identificadorCliente='" + identificadorCliente + '\'' +
+                ", nombreCliente='" + nombreCliente + '\'' +
+                ", idTipoIdentificadorCliente=" + idTipoIdentificadorCliente +
+                ", tipoIdentificadorCliente='" + tipoIdentificadorCliente + '\'' +
+                ", glosaIdentificadorCliente='" + glosaIdentificadorCliente + '\'' +
+                ", idCustodio='" + idCustodio + '\'' +
+                ", idCuentaCustodio='" + idCuentaCustodio + '\'' +
+                ", habilitado=" + habilitado +
+                ", fee=" + fee +
+                ", portfolio='" + portfolio + '\'' +
+                '}';
+    }
 }

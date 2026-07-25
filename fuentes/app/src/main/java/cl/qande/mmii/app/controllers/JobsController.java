@@ -46,6 +46,7 @@ public class JobsController {
 
     public static final String MALLA_DIARIA = "malla_diaria";
     public static final String UPD_FEE_RIA = "update_fee_ria";
+    public static final String UPD_PORTFOLIO_RIA = "update_portfolio_ria";
 
     private final SesionWeb sesionWeb;
     private final CalendarioHelper calendarioHelper;
@@ -60,10 +61,11 @@ public class JobsController {
     private final JobFeeControlCuadreRia jobFeeControlCuadreRia;
     private final JobFeeControlTramos jobFeeControlTramos;
     private final JobMallaProcesos jobMallaProcesos;
-    private final JobFeeImportaDesdeRia jobFeeImportaDesdeRia;
+    private final JobUpdateFromRiaFee jobUpdateFromRiaFee;
+    private final JobUpdateFromRiaPortfolio jobUpdateFromRiaPortfolio;
 
     @Autowired
-    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlCuadreRia jobFeeControlCuadreRia, JobFeeControlTramos jobFeeControlTramos, JobMallaProcesos jobMallaProcesos, JobFeeImportaDesdeRia jobFeeImportaDesdeRia) {
+    public JobsController(SesionWeb sesionWeb, CalendarioHelper calendarioHelper, ReportesMaestrosService reportesMaestrosService, IProcesoSflDao procesoSflPershingDao, JobGetFromFtpPershing jobGetFromFtpPershing, JobControlDiario jobControlDiario, JobCuentasNoMapeadas jobCuentasNoMapeadas, JobParametrosFromSuracorp jobParametrosFromSuracorp, JobRepInvPrecalculoDiario jobRepInvPrecalculoDiario, JobRepInvControl jobRepInvControl, JobFeeControlCuadreRia jobFeeControlCuadreRia, JobFeeControlTramos jobFeeControlTramos, JobMallaProcesos jobMallaProcesos, JobUpdateFromRiaFee jobUpdateFromRiaFee, JobUpdateFromRiaPortfolio jobUpdateFromRiaPortfolio) {
         this.sesionWeb = sesionWeb;
         this.calendarioHelper = calendarioHelper;
         this.reportesMaestrosService = reportesMaestrosService;
@@ -77,7 +79,8 @@ public class JobsController {
         this.jobFeeControlCuadreRia = jobFeeControlCuadreRia;
         this.jobFeeControlTramos = jobFeeControlTramos;
         this.jobMallaProcesos = jobMallaProcesos;
-        this.jobFeeImportaDesdeRia = jobFeeImportaDesdeRia;
+        this.jobUpdateFromRiaFee = jobUpdateFromRiaFee;
+        this.jobUpdateFromRiaPortfolio = jobUpdateFromRiaPortfolio;
     }
 
     /****************************************************
@@ -442,7 +445,8 @@ public class JobsController {
     @PreAuthorize("hasAnyRole(T(cl.qande.mmii.app.util.navegacion.Menu).roleOp(T(cl.qande.mmii.app.util.navegacion.Menu).ADMIN_JOBS))")
     @GetMapping({
             "/process/"+ MALLA_DIARIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
-            "/process/"+ UPD_FEE_RIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
+            "/process/"+ UPD_FEE_RIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}",
+            "/process/"+ UPD_PORTFOLIO_RIA +"/startProcessDate/{startProcessDate}/endProcessDate/{endProcessDate}"
     })
     public String jobMallasHandlerByAdmin(
             @PathVariable(value = CAMPO_START_PROCESS_DATE) String startProcessDate,
@@ -463,7 +467,10 @@ public class JobsController {
                 jobHandler = jobMallaProcesos;
                 break;
             case UPD_FEE_RIA:
-                jobHandler = jobFeeImportaDesdeRia;
+                jobHandler = jobUpdateFromRiaFee;
+                break;
+            case UPD_PORTFOLIO_RIA:
+                jobHandler = jobUpdateFromRiaPortfolio;
                 break;
             default:
                 estadoPeticion.setEstadoError("Error Job", "Opción de job inválida: "+option);
