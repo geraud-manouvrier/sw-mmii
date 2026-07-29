@@ -400,11 +400,7 @@ public interface EntityToHtml {
                     )).append(TABLE_BODY_BEGIN);
             int rowIndex = 0;
             for (var registro : listaRegistros.stream().sorted(Comparator.comparing(FnActualizaPortfolioRia::getAccountNo)).collect(Collectors.toList())) {
-                if (registro.getModeloClientesRowsUpdated()>0) {
-                    bld.append("<tr style=\"background-color:").append("#D9F4EF").append(";\">");
-                } else {
-                    bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR);
-                }
+                bld.append((rowIndex++ % 2 == 0) ? ABRE_TR_FILA_PAR : ABRE_TR_FILA_IMPAR);
                 bld.append(ABRE_TD).append(registro.getAccountNo()).append(CIERRA_TD)
                         .append(ABRE_TD).append(registro.getProcessDate()).append(CIERRA_TD)
                         .append(ABRE_TD).append(registro.getNewPortfolio()).append(CIERRA_TD)
