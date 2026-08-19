@@ -13,6 +13,13 @@ INSERT INTO public.authorities(user_id, authority)
 SELECT id, 'ROLE_OP_MANT_ENROL_CUENTA' FROM public.users where username in ('daniel.gomez1', 'brayan.giraldom')
 ;
 
+
+INSERT INTO public.users (enabled, password, username) VALUES (true, '', 'jeronimo.alvarez');
+
+INSERT INTO public.authorities(user_id, authority)
+SELECT id, 'ROLE_OP_CTES_INFOREJEC' FROM public.users where username in ('jeronimo.alvarez', 'sonia.ortiz')
+;
+
 --========================================================================
 --========================================================================
 --========================================================================
